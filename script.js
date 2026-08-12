@@ -175,5 +175,31 @@ if (document.body.classList.contains('relational-page')) {
       }
     `;
     document.head.appendChild(conceptExampleStyle);
+
+    const exerciseOne = Array.from(modelSection.querySelectorAll('.inquiry.light-inquiry')).find((inquiry) =>
+      inquiry.querySelector('.inquiry-kicker')?.textContent.includes('Exercício 1')
+    );
+
+    if (exerciseOne) {
+      const kicker = exerciseOne.querySelector('.inquiry-kicker');
+      const tag = exerciseOne.querySelector('.inquiry-tag');
+      const body = exerciseOne.querySelector('.inquiry-body');
+
+      if (kicker) kicker.textContent = 'Exercício 1 — caracterização de uma relação';
+      if (tag) tag.textContent = '10 minutos';
+      if (body) {
+        body.innerHTML = `
+          <p><strong>Considere a relação PEDIDO apresentada acima. Em duplas, analisem sua estrutura e sua instância utilizando o vocabulário do modelo relacional. Registrem brevemente as respostas.</strong></p>
+          <ol>
+            <li><strong>Identifiquem a relação e seus atributos.</strong></li>
+            <li><strong>Selecionem uma das tuplas apresentadas e representem-na integralmente.</strong> Expliquem qual ocorrência essa tupla representa.</li>
+            <li><strong>Determinem o grau da relação.</strong> Justifiquem a resposta a partir de sua estrutura.</li>
+            <li><strong>Determinem a cardinalidade da instância apresentada.</strong> Justifiquem a resposta a partir dos dados observados.</li>
+            <li><strong>Analisem o atributo <code>total</code>.</strong> Indiquem exemplos de valores que poderiam pertencer ao seu domínio e proponham pelo menos um valor que deveria ser considerado inválido. Expliquem o critério utilizado.</li>
+            <li><strong>Distingam estrutura e estado atual.</strong> Quais elementos observados pertencem à definição da relação e quais dependem da instância apresentada?</li>
+          </ol>
+        `;
+      }
+    }
   }
 }
