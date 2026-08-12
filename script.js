@@ -125,4 +125,27 @@ if (document.body.classList.contains('relational-page')) {
       `;
     }
   }
+
+  const modelSection = document.getElementById('modelo');
+  if (modelSection) {
+    modelSection.querySelector('.visual-legend')?.remove();
+    modelSection.querySelector('.metrics-row')?.remove();
+
+    const conceptDescriptions = {
+      Relação: 'Representa um tipo de fato ou objeto do domínio por meio de atributos e tuplas. No exemplo, <b>CLIENTE</b> é a relação.',
+      Atributo: 'Corresponde a uma propriedade que queremos registrar. Na relação CLIENTE, <b>id_cliente</b>, <b>nome</b> e <b>cidade</b> são atributos.',
+      Tupla: 'É uma combinação de valores que representa um registro da relação. A linha destacada corresponde à tupla <b>(2, Bruno, Colombo)</b>.',
+      Domínio: 'Define o conjunto de valores considerados válidos para um atributo. No exemplo, <b>Curitiba</b> e <b>Colombo</b> são valores presentes no atributo cidade e devem respeitar o domínio definido para ele.',
+      Grau: 'Indica quantos atributos formam a relação. Como CLIENTE possui <b>id_cliente</b>, <b>nome</b> e <b>cidade</b>, seu grau é <b>3</b>.',
+      Cardinalidade: 'Indica quantas tuplas existem na instância observada. Como a tabela apresenta Ana, Bruno e Carla, sua cardinalidade neste momento é <b>3</b>.'
+    };
+
+    modelSection.querySelectorAll('.concept-tile').forEach((card) => {
+      const concept = card.querySelector('.concept-kicker')?.textContent.trim();
+      const paragraph = card.querySelector('p');
+      if (concept && paragraph && conceptDescriptions[concept]) {
+        paragraph.innerHTML = conceptDescriptions[concept];
+      }
+    });
+  }
 }
