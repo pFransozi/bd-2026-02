@@ -356,7 +356,7 @@
           <div class="study-prose">
             <h3>Independência física</h3>
             <p><strong>Independência física de dados</strong> é a capacidade de alterar o esquema interno sem exigir alterações no esquema conceitual. Criar ou reorganizar estruturas de acesso, alterar a forma como registros são distribuídos, compactar dados ou mudar detalhes de armazenamento pode melhorar desempenho e capacidade sem alterar a estrutura lógica percebida pelas aplicações.</p>
-            <div class="study-callout teal"><strong>Exemplo clássico</strong><p>Um índice é criado para acelerar buscas por CPF. A aplicação continua consultando o mesmo atributo; o SGBD passa a possuir um caminho de acesso físico adicional para encontrar os registros.</p></div>
+            <div class="study-callout teal"><strong>Exemplo clássico</strong><p>Um <strong>índice</strong> é uma estrutura adicional de organização mantida pelo SGBD para localizar dados com mais rapidez. Por exemplo, um índice pode ser criado para acelerar buscas por CPF. A aplicação continua consultando o mesmo atributo; o que muda é a maneira interna usada pelo SGBD para encontrar os registros.</p></div>
 
             <h3>Independência lógica</h3>
             <p><strong>Independência lógica de dados</strong> é a capacidade de alterar o esquema conceitual preservando, quando possível, esquemas externos e programas de aplicação. Esse tipo de independência é mais difícil porque alterações lógicas podem mudar diretamente a estrutura que consumidores esperam encontrar.</p>
