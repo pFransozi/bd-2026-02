@@ -224,6 +224,12 @@ if (document.body.classList.contains('relational-page')) {
   }
 
   const keysSection = document.getElementById('chaves');
+  const keysPrompt = keysSection?.querySelector('.question-strip');
+
+  if (keysPrompt) {
+    keysPrompt.innerHTML = '<strong>Pergunta para a turma:</strong> imagine que <code>nome</code> fosse a chave de CLIENTE. O que aconteceria se duas pessoas se chamassem Ana? E se uma delas alterasse o nome cadastrado? A partir desses casos, que características um atributo precisa ter para funcionar bem como chave?';
+  }
+
   const exerciseTwo = Array.from(keysSection?.querySelectorAll('.inquiry.light-inquiry') ?? []).find((inquiry) =>
     inquiry.querySelector('.inquiry-kicker')?.textContent.includes('Exercício 2')
   );
