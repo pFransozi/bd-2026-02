@@ -222,4 +222,35 @@ if (document.body.classList.contains('relational-page')) {
       }
     }
   }
+
+  const keysSection = document.getElementById('chaves');
+  const exerciseTwo = Array.from(keysSection?.querySelectorAll('.inquiry.light-inquiry') ?? []).find((inquiry) =>
+    inquiry.querySelector('.inquiry-kicker')?.textContent.includes('Exercício 2')
+  );
+
+  if (exerciseTwo) {
+    const kicker = exerciseTwo.querySelector('.inquiry-kicker');
+    const tag = exerciseTwo.querySelector('.inquiry-tag');
+    const body = exerciseTwo.querySelector('.inquiry-body');
+    const relationGrid = body?.querySelector('.mini-relation-grid');
+    const questionList = body?.querySelector('ol');
+
+    if (kicker) kicker.textContent = 'Exercício 2 — análise de identificadores e chaves';
+    if (tag) tag.textContent = '12 minutos';
+
+    if (body && relationGrid) {
+      const introduction = document.createElement('p');
+      introduction.innerHTML = '<strong>Considere as quatro relações apresentadas. Analise os atributos de cada uma e, com base nos conceitos de identificação e referência do modelo relacional, responda às questões a seguir.</strong>';
+      body.insertBefore(introduction, relationGrid);
+    }
+
+    if (questionList) {
+      questionList.innerHTML = `
+        <li><strong>Para cada relação, identifiquem o atributo ou conjunto de atributos que poderia exercer a função de chave primária.</strong> Justifiquem a escolha.</li>
+        <li><strong>Indiquem, quando houver, outros atributos que poderiam constituir chaves candidatas.</strong> Expliquem quais regras do domínio precisariam ser satisfeitas para que essa identificação fosse válida.</li>
+        <li><strong>Identifiquem a relação cuja identidade depende da combinação de mais de um atributo.</strong> Expliquem por que um único atributo, isoladamente, não é suficiente para identificar suas ocorrências.</li>
+        <li><strong>Identifiquem os atributos que desempenham papel de referência a outras relações.</strong> Indiquem, quando possível, qual relação é referenciada em cada caso.</li>
+      `;
+    }
+  }
 }
