@@ -140,12 +140,12 @@ if (document.body.classList.contains('relational-page')) {
     modelSection.querySelector('.metrics-row')?.remove();
 
     const conceptDescriptions = {
-      Relação: 'Representa um tipo de fato ou objeto do domínio por meio de atributos e tuplas. No exemplo, <b>CLIENTE</b> é a relação.',
-      Atributo: 'Corresponde a uma propriedade que queremos registrar. Na relação CLIENTE, <b>id_cliente</b>, <b>nome</b> e <b>cidade</b> são atributos.',
-      Tupla: 'É uma combinação de valores que representa um registro da relação. A linha destacada corresponde à tupla <b>(2, Bruno, Colombo)</b>.',
-      Domínio: 'Define o conjunto de valores considerados válidos para um atributo. No exemplo, <b>Curitiba</b> e <b>Colombo</b> são valores presentes no atributo cidade e devem respeitar o domínio definido para ele.',
-      Grau: 'Indica quantos atributos formam a relação. Como CLIENTE possui <b>id_cliente</b>, <b>nome</b> e <b>cidade</b>, seu grau é <b>3</b>.',
-      Cardinalidade: 'Indica quantas tuplas existem na instância observada. Como a tabela apresenta Ana, Bruno e Carla, sua cardinalidade neste momento é <b>3</b>.'
+      Relação: 'Representa um tipo de fato ou objeto do domínio por meio de atributos e tuplas.<span class="concept-example"><b>Exemplo:</b> CLIENTE é a relação.</span>',
+      Atributo: 'Corresponde a uma propriedade que queremos registrar.<span class="concept-example"><b>Exemplo:</b> id_cliente, nome e cidade são atributos da relação CLIENTE.</span>',
+      Tupla: 'É uma combinação de valores que representa um registro da relação.<span class="concept-example"><b>Exemplo:</b> (2, Bruno, Colombo) é uma tupla.</span>',
+      Domínio: 'Define o conjunto de valores considerados válidos para um atributo.<span class="concept-example"><b>Exemplo:</b> Curitiba e Colombo são valores presentes no atributo cidade e devem respeitar o domínio definido para ele.</span>',
+      Grau: 'Indica quantos atributos formam a relação.<span class="concept-example"><b>Exemplo:</b> CLIENTE tem grau 3 porque possui id_cliente, nome e cidade.</span>',
+      Cardinalidade: 'Indica quantas tuplas existem na instância observada.<span class="concept-example"><b>Exemplo:</b> a instância apresentada tem cardinalidade 3 porque exibe três tuplas.</span>'
     };
 
     modelSection.querySelectorAll('.concept-tile').forEach((card) => {
@@ -155,5 +155,25 @@ if (document.body.classList.contains('relational-page')) {
         paragraph.innerHTML = conceptDescriptions[concept];
       }
     });
+
+    const conceptExampleStyle = document.createElement('style');
+    conceptExampleStyle.textContent = `
+      #modelo .concept-example {
+        display: block;
+        margin-top: .85rem;
+        padding: .72rem .85rem;
+        border-left: 3px solid #62d9ef;
+        border-radius: 0 10px 10px 0;
+        background: rgba(98, 217, 239, .08);
+        color: #62d9ef;
+        font-weight: 700;
+        line-height: 1.5;
+      }
+
+      #modelo .concept-example b {
+        color: #8df0ff;
+      }
+    `;
+    document.head.appendChild(conceptExampleStyle);
   }
 }
