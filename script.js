@@ -100,3 +100,29 @@ if (document.body.classList.contains('study-page') && document.getElementById('i
   `;
   document.head.appendChild(independenceTableLayout);
 }
+
+if (document.body.classList.contains('relational-page')) {
+  const problemSection = document.getElementById('problema-title')?.closest('section');
+  const diagnostic = problemSection?.querySelector('.inquiry.light-inquiry');
+
+  if (diagnostic) {
+    const kicker = diagnostic.querySelector('.inquiry-kicker');
+    const tag = diagnostic.querySelector('.inquiry-tag');
+    const body = diagnostic.querySelector('.inquiry-body');
+
+    if (kicker) kicker.textContent = 'Diagnóstico inicial — análise de problemas na estrutura';
+    if (tag) tag.textContent = '10 minutos';
+    if (body) {
+      body.innerHTML = `
+        <p><strong>Em duplas, analisem a tabela apresentada e discutam as questões a seguir. Registrem brevemente as conclusões do grupo.</strong></p>
+        <ol>
+          <li><strong>Identifiquem informações que aparecem repetidas em diferentes registros.</strong> Que consequências essa repetição pode trazer para a manutenção dos dados?</li>
+          <li><strong>Considere que Ana alterou seu número de telefone.</strong> Quantos registros precisariam ser modificados para que a informação permanecesse consistente?</li>
+          <li><strong>Avaliem a possibilidade de cadastrar um novo produto antes que ocorra sua primeira venda.</strong> A estrutura atual permite esse registro? Justifiquem.</li>
+          <li><strong>Considere a exclusão do único pedido associado a Bruno.</strong> Quais outras informações seriam perdidas como consequência dessa exclusão?</li>
+        </ol>
+        <p><strong>Neste momento, não proponham uma nova estrutura para os dados.</strong> O objetivo é identificar e descrever os problemas observados antes de introduzirmos os conceitos formais que permitem analisá-los.</p>
+      `;
+    }
+  }
+}
