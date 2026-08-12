@@ -128,6 +128,14 @@ if (document.body.classList.contains('relational-page')) {
 
   const modelSection = document.getElementById('modelo');
   if (modelSection) {
+    const modelTitle = document.getElementById('modelo-title');
+    const modelIntro = modelTitle?.nextElementSibling;
+
+    if (modelTitle) modelTitle.textContent = 'Elementos fundamentais do modelo relacional';
+    if (modelIntro) {
+      modelIntro.innerHTML = 'No modelo relacional, os dados são organizados em <strong>relações</strong>, descritas por <strong>atributos</strong> associados a determinados <strong>domínios</strong>. Em um dado estado do banco de dados, cada relação é constituída por um conjunto de <strong>tuplas</strong>.';
+    }
+
     modelSection.querySelector('.visual-legend')?.remove();
     modelSection.querySelector('.metrics-row')?.remove();
 
