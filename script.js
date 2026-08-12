@@ -492,3 +492,34 @@ if (structureExercise) {
 
   structureExercise.querySelector('details.answer-key')?.remove();
 }
+
+const relatedTablesExercise = Array.from(document.querySelectorAll('.inquiry.light-inquiry')).find((inquiry) =>
+  inquiry.querySelector('.inquiry-kicker')?.textContent.includes('Exercício 5 — lendo tabelas relacionadas')
+);
+
+if (relatedTablesExercise) {
+  const kicker = relatedTablesExercise.querySelector('.inquiry-kicker');
+  const body = relatedTablesExercise.querySelector('.inquiry-body');
+
+  if (kicker) kicker.textContent = 'Exercício 5 — análise de relações, chaves e integridade referencial';
+
+  if (body) {
+    body.innerHTML = `
+      <h3>Como a estrutura das relações representa vínculos do domínio?</h3>
+      <p>Considere novamente as relações <code>CLIENTE</code> e <code>PEDIDO</code> apresentadas no exemplo anterior. Em duplas, analisem tanto a <strong>estrutura</strong> quanto os <strong>registros mostrados</strong>. As respostas devem ser justificadas com base nos atributos e nos vínculos entre as relações.</p>
+      <ol class="question-list">
+        <li><strong>Identificação das ocorrências.</strong> Indiquem qual atributo identifica unicamente cada cliente e qual atributo identifica unicamente cada pedido.</li>
+        <li><strong>Representação do relacionamento.</strong> Identifiquem o atributo de <code>PEDIDO</code> que referencia <code>CLIENTE</code> e expliquem qual vínculo do domínio ele representa.</li>
+        <li><strong>Leitura da instância.</strong> Utilizando os registros apresentados, determinem quantos pedidos estão associados a Ana e indiquem como chegaram a essa conclusão.</li>
+        <li><strong>Cardinalidade do relacionamento.</strong> A estrutura permite que um mesmo cliente esteja associado a vários pedidos? E permite que um mesmo pedido esteja associado simultaneamente a vários clientes? Justifiquem a partir das chaves utilizadas.</li>
+        <li><strong>Redundância.</strong> Expliquem por que o nome do cliente não precisa ser repetido em cada registro de <code>PEDIDO</code>. Relacionem a resposta à manutenção da consistência dos dados.</li>
+        <li><strong>Integridade referencial.</strong> Analise a tentativa de cadastrar um pedido com um <code>cliente_id</code> que não corresponde a nenhum registro de <code>CLIENTE</code>. Que condição do modelo estaria sendo violada e qual comportamento seria esperado do SGBD?</li>
+        <li><strong>Interpretação do modelo.</strong> Formulem uma pergunta sobre o domínio que só possa ser respondida combinando informações das duas relações. Não é necessário escrever SQL.</li>
+      </ol>
+      <p><strong>Ao final, sintetizem em uma frase</strong> o papel das chaves primárias e estrangeiras na representação de relações entre dados.</p>
+      <p><strong>Objetivo:</strong> interpretar como chaves identificam ocorrências, estabelecem vínculos entre relações e contribuem para preservar a consistência do banco.</p>
+    `;
+  }
+
+  relatedTablesExercise.querySelector('details.answer-key')?.remove();
+}
