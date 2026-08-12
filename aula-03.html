@@ -824,14 +824,21 @@ cliente = ?</div></article>
     <div class="inquiry light-inquiry">
       <div class="inquiry-head"><span class="inquiry-kicker">Exercício 4 — provoque o problema</span><span class="inquiry-tag">15 minutos</span></div>
       <div class="inquiry-body">
-        <p>Em grupos, usem a tabela PEDIDOS e descrevam o que ocorre em cada operação:</p>
+        <p>Considere a relação <strong>PEDIDOS</strong> como a única estrutura disponível para armazenar as informações da loja. Analise cada uma das operações abaixo, observando os efeitos que essa estrutura pode produzir sobre a consistência e a manutenção dos dados.</p>
         <ol>
           <li>Atualizar o telefone de Ana.</li>
           <li>Alterar o preço do Mouse.</li>
           <li>Cadastrar um produto que ainda não foi vendido.</li>
           <li>Excluir o último pedido de um cliente.</li>
         </ol>
-        <p>Para cada caso, indiquem: <strong>qual fato está sendo tratado</strong>, <strong>quantas linhas são afetadas</strong> e <strong>qual inconsistência pode surgir</strong>.</p>
+        <p>Para cada operação, elabore uma análise breve indicando:</p>
+        <ul>
+          <li><strong>qual fato do domínio</strong> está sendo tratado;</li>
+          <li><strong>em quantas tuplas</strong> esse fato aparece ou precisa ser modificado;</li>
+          <li><strong>qual tipo de anomalia</strong> pode ocorrer;</li>
+          <li><strong>que inconsistência, perda de informação ou ambiguidade</strong> pode surgir em decorrência da estrutura atual.</li>
+        </ul>
+        <p>Ao final, sintetize por que a relação <strong>PEDIDOS</strong>, do modo como está organizada, dificulta a manutenção correta dos dados.</p>
       </div>
     </div>
   </div>
