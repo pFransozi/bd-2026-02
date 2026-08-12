@@ -102,6 +102,26 @@ if (document.body.classList.contains('study-page') && document.getElementById('i
 }
 
 if (document.body.classList.contains('relational-page')) {
+  const relationalLayoutFixes = document.createElement('style');
+  relationalLayoutFixes.textContent = `
+    #chaves .identity-box {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    #chaves .identity-box .relation-table {
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
+    }
+
+    #chaves .identity-box .relation-table th,
+    #chaves .identity-box .relation-table td {
+      overflow-wrap: anywhere;
+    }
+  `;
+  document.head.appendChild(relationalLayoutFixes);
+
   const problemSection = document.getElementById('problema-title')?.closest('section');
   const diagnostic = problemSection?.querySelector('.inquiry.light-inquiry');
 
