@@ -402,3 +402,9 @@ if (document.body.classList.contains('relational-page')) {
     }
   }
 }
+
+const fileStorageExercise = Array.from(document.querySelectorAll('.inquiry.light-inquiry')).find((inquiry) =>
+  inquiry.querySelector('.inquiry-kicker')?.textContent.includes('Exercício 2 — quando um arquivo deixa de ser suficiente?')
+);
+
+fileStorageExercise?.querySelector('details.answer-key')?.remove();
