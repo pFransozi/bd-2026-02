@@ -449,3 +449,46 @@ if (levelsExercise) {
 
   levelsExercise.querySelector('details.answer-key')?.remove();
 }
+
+const structureExercise = Array.from(document.querySelectorAll('.inquiry.light-inquiry')).find((inquiry) =>
+  inquiry.querySelector('.inquiry-kicker')?.textContent.includes('Exercício 4 — estrutura ou estado?')
+);
+
+if (structureExercise) {
+  const kicker = structureExercise.querySelector('.inquiry-kicker');
+  const body = structureExercise.querySelector('.inquiry-body');
+
+  if (kicker) kicker.textContent = 'Exercício 4 — análise de esquema, instância e metadados';
+
+  if (body) {
+    body.innerHTML = `
+      <h3>O que está sendo alterado ou consultado no banco?</h3>
+      <p>Considere um sistema de gestão acadêmica que mantém dados de estudantes. Para esta atividade, diferenciem três conceitos:</p>
+      <ul class="question-list">
+        <li><strong>Esquema:</strong> define a estrutura do banco, como atributos, tipos e restrições.</li>
+        <li><strong>Instância:</strong> corresponde aos dados armazenados em determinado momento.</li>
+        <li><strong>Metadados:</strong> são descrições sobre a própria estrutura do banco, mantidas pelo SGBD em seu catálogo.</li>
+      </ul>
+      <p><strong>Em duplas, analisem as situações abaixo.</strong></p>
+      <ol class="question-list">
+        <li>Cadastrar um novo estudante no sistema.</li>
+        <li>Atualizar o telefone de um estudante já cadastrado.</li>
+        <li>Adicionar o atributo <code>data_nascimento</code> à estrutura utilizada para armazenar estudantes.</li>
+        <li>Definir que o atributo <code>email</code> não pode possuir valores repetidos.</li>
+        <li>Consultar no catálogo do SGBD se o atributo <code>email</code> permite valor nulo.</li>
+        <li>Consultar no catálogo quantos atributos compõem a estrutura de estudantes e quais são seus tipos.</li>
+      </ol>
+      <h4>Para cada situação, registrem</h4>
+      <ol class="question-list">
+        <li><strong>Classificação principal:</strong> esquema, instância ou metadados.</li>
+        <li><strong>Objeto afetado ou consultado:</strong> indiquem exatamente qual dado, definição ou descrição está envolvido.</li>
+        <li><strong>Natureza da operação:</strong> expliquem se a situação altera o banco ou apenas consulta informações sobre sua estrutura.</li>
+        <li><strong>Justificativa:</strong> relacionem a decisão à definição do conceito escolhido.</li>
+      </ol>
+      <p><strong>Ao final, comparem os casos.</strong> Identifiquem quais operações modificam somente o estado atual dos dados, quais modificam a estrutura e quais apenas consultam descrições mantidas pelo SGBD.</p>
+      <p><strong>Objetivo:</strong> distinguir alterações de esquema, alterações de instância e consultas a metadados, compreendendo a relação entre estrutura, estado atual e catálogo do banco.</p>
+    `;
+  }
+
+  structureExercise.querySelector('details.answer-key')?.remove();
+}
