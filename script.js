@@ -48,3 +48,27 @@ document.querySelectorAll('.image-dialog').forEach((dialog) => {
     if (event.target === dialog) dialog.close();
   });
 });
+
+if (document.body.classList.contains('study-page') && document.getElementById('esquema')) {
+  const studyTableLayout = document.createElement('style');
+  studyTableLayout.textContent = `
+    @media (min-width: 981px) {
+      #esquema .study-grid {
+        grid-template-columns: minmax(0, 1.55fr) minmax(240px, .45fr);
+      }
+      #esquema .study-table {
+        min-width: 0;
+        table-layout: fixed;
+      }
+      #esquema .study-table th:nth-child(1),
+      #esquema .study-table td:nth-child(1) { width: 20%; }
+      #esquema .study-table th:nth-child(2),
+      #esquema .study-table td:nth-child(2) { width: 28%; }
+      #esquema .study-table th:nth-child(3),
+      #esquema .study-table td:nth-child(3) { width: 32%; }
+      #esquema .study-table th:nth-child(4),
+      #esquema .study-table td:nth-child(4) { width: 20%; }
+    }
+  `;
+  document.head.appendChild(studyTableLayout);
+}
