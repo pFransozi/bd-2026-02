@@ -251,8 +251,8 @@
       <div class="container">
         <div class="study-heading">
           <p class="study-kicker">Parte III · Abstração e arquitetura</p>
-          <h2>A realidade, o modelo lógico e o armazenamento físico não são a mesma coisa.</h2>
-          <p>Abstração permite selecionar aquilo que é relevante em cada nível de análise. Em banco de dados, ela evita que toda pessoa ou aplicação precise lidar simultaneamente com o domínio, a estrutura lógica e os detalhes de armazenamento.</p>
+          <h2>Do domínio ao armazenamento, cada nível responde a uma pergunta diferente.</h2>
+          <p>Para compreender a abstração em banco de dados, podemos separar três perguntas. <strong>O que da realidade queremos representar?</strong> Essa é a questão do domínio observado. <strong>Como esses dados serão organizados?</strong> Essa é a questão da estrutura lógica. <strong>Como o SGBD armazenará e acessará esses dados?</strong> Essa é a questão do armazenamento físico. A abstração permite trabalhar com uma dessas perspectivas sem precisar lidar, ao mesmo tempo, com todos os detalhes das demais.</p>
         </div>
 
         <div class="study-grid">
@@ -269,8 +269,8 @@
               <span>Armazenamento físico</span>
             </div>
 
-            <h3>Conceitual, lógico e físico: perspectivas do projeto</h3>
-            <p>Uma forma de organizar o projeto separa três perspectivas. O <strong>modelo conceitual</strong> busca representar o domínio sem se prender a detalhes de um SGBD específico. O <strong>modelo lógico</strong> organiza essa representação segundo uma abordagem de dados — por exemplo, relacional. O <strong>modelo físico</strong> concretiza a implementação considerando tipos suportados, índices, formatos, métodos de acesso e outras decisões do produto escolhido.</p>
+            <h3>Do domínio para o projeto: conceitual, lógico e físico</h3>
+            <p>As três perguntas anteriores podem ser refinadas durante o projeto. O <strong>modelo conceitual</strong> funciona como ponte entre o domínio observado e a solução técnica: identifica os conceitos relevantes e suas relações sem depender de um SGBD específico. O <strong>modelo lógico</strong> organiza essa representação de acordo com um modelo de dados (por exemplo, o relacional). O <strong>modelo físico</strong> concretiza a implementação considerando tipos suportados, índices, formatos, métodos de acesso e outras decisões do produto escolhido.</p>
             <p>Essas perspectivas ajudam a não transformar limitações técnicas de uma ferramenta em características do próprio domínio. Primeiro precisamos compreender o que o sistema representa; depois decidimos como essa representação será estruturada e implementada.</p>
 
             <h3>Externo, conceitual e interno: perspectivas da arquitetura</h3>
@@ -284,7 +284,7 @@
               <article class="layer-card"><span>INTERNO</span><div><strong>Organização de armazenamento e acesso</strong><p>Estruturas físicas e métodos usados para persistir e recuperar os dados.</p></div></article>
             </div>
 
-            <p>Os três esquemas são descrições. Os dados efetivamente armazenados existem no nível físico, enquanto os níveis superiores fornecem abstrações que permitem manipular esse estado sem exigir conhecimento de todos os detalhes internos.</p>
+            <p>Os três esquemas são descrições. Os dados efetivamente armazenados existem no nível físico, enquanto os níveis superiores fornecem abstrações que permitem manipular esses dados sem exigir conhecimento de todos os detalhes internos.</p>
           </div>
 
           <aside class="study-stack">
