@@ -408,3 +408,44 @@ const fileStorageExercise = Array.from(document.querySelectorAll('.inquiry.light
 );
 
 fileStorageExercise?.querySelector('details.answer-key')?.remove();
+
+const levelsExercise = Array.from(document.querySelectorAll('.inquiry.light-inquiry')).find((inquiry) =>
+  inquiry.querySelector('.inquiry-kicker')?.textContent.includes('Exercício 3 — níveis e independência')
+);
+
+if (levelsExercise) {
+  const kicker = levelsExercise.querySelector('.inquiry-kicker');
+  const body = levelsExercise.querySelector('.inquiry-body');
+
+  if (kicker) kicker.textContent = 'Exercício 3 — análise dos níveis de abstração e da independência de dados';
+
+  if (body) {
+    body.innerHTML = `
+      <h3>Em que nível ocorre cada mudança — e o que precisa permanecer estável?</h3>
+      <p>Uma escola utiliza um sistema para armazenar e consultar dados de estudantes. Considere os três níveis de abstração do banco de dados:</p>
+      <ul class="question-list">
+        <li><strong>Externo:</strong> corresponde às diferentes visões apresentadas a usuários ou aplicações.</li>
+        <li><strong>Conceitual:</strong> descreve quais informações fazem parte do banco e como estão logicamente organizadas.</li>
+        <li><strong>Interno:</strong> descreve como os dados são fisicamente armazenados e organizados pelo SGBD.</li>
+      </ul>
+      <p><strong>Em duplas, analisem cada situação abaixo.</strong></p>
+      <ol class="question-list">
+        <li>A secretaria passa a visualizar também o telefone do estudante na tela de consulta.</li>
+        <li>O banco passa a registrar a data de nascimento dos estudantes, sem retirar nenhuma informação já existente.</li>
+        <li>O responsável pelo banco altera a organização física dos dados para melhorar o desempenho das consultas, sem modificar a estrutura lógica.</li>
+        <li>Professores passam a visualizar nome, turma e notas, mas não endereço e telefone.</li>
+        <li>O banco é reorganizado internamente, mas o sistema utilizado pela secretaria continua funcionando da mesma maneira.</li>
+      </ol>
+      <h4>Para cada situação, registrem três elementos</h4>
+      <ol class="question-list">
+        <li><strong>Nível principal envolvido:</strong> externo, conceitual ou interno.</li>
+        <li><strong>Mudança realizada:</strong> descrevam objetivamente o que foi alterado.</li>
+        <li><strong>Impacto esperado:</strong> indiquem se usuários ou aplicações deveriam perceber a mudança e justifiquem.</li>
+      </ol>
+      <p><strong>Depois comparem as situações.</strong> Identifiquem quais delas ilustram a ideia de <strong>independência lógica</strong> ou <strong>independência física</strong> e expliquem qual parte do sistema pode mudar sem exigir alterações nas demais.</p>
+      <p><strong>Objetivo:</strong> relacionar os níveis de abstração às mudanças realizadas no banco e compreender por que separar esses níveis reduz o impacto de alterações no sistema.</p>
+    `;
+  }
+
+  levelsExercise.querySelector('details.answer-key')?.remove();
+}
