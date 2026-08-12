@@ -119,6 +119,10 @@ if (document.body.classList.contains('relational-page')) {
     #chaves .identity-box .relation-table td {
       overflow-wrap: anywhere;
     }
+
+    #integridade .integrity-example {
+      white-space: pre-line;
+    }
   `;
   document.head.appendChild(relationalLayoutFixes);
 
@@ -218,6 +222,74 @@ if (document.body.classList.contains('relational-page')) {
             <li><strong>Analisem o atributo <code>total</code>.</strong> Indiquem exemplos de valores que poderiam pertencer ao seu domínio e proponham pelo menos um valor que deveria ser considerado inválido. Expliquem o critério utilizado.</li>
             <li><strong>Distingam estrutura e estado atual.</strong> Quais elementos observados pertencem à definição da relação e quais dependem da instância apresentada?</li>
           </ol>
+        `;
+      }
+    }
+  }
+
+  const integritySection = document.getElementById('integridade');
+  if (integritySection) {
+    const integrityTitle = document.getElementById('integridade-title');
+    const integrityIntro = integrityTitle?.nextElementSibling;
+
+    if (integrityTitle) integrityTitle.textContent = 'Quais condições tornam um estado do banco de dados válido?';
+    if (integrityIntro) {
+      integrityIntro.innerHTML = 'Um banco de dados consistente não deve aceitar qualquer combinação de valores. As <strong>restrições de integridade</strong> definem condições que precisam permanecer verdadeiras para que os dados representem um estado válido do domínio. Nesta aula, destacamos três aspectos: <strong>identidade das ocorrências</strong>, <strong>validade dos valores</strong> e <strong>consistência das referências entre relações</strong>.';
+    }
+
+    const entityCard = integritySection.querySelector('.integrity-card.entity-card');
+    if (entityCard) {
+      const title = entityCard.querySelector('strong');
+      const paragraph = entityCard.querySelector('p');
+      const example = entityCard.querySelector('.integrity-example');
+      if (title) title.textContent = 'Cada ocorrência deve possuir identidade definida';
+      if (paragraph) paragraph.textContent = 'A integridade de entidade exige que a chave primária identifique inequivocamente cada tupla da relação. Por isso, seus valores não podem ser nulos e não podem se repetir entre ocorrências distintas.';
+      if (example) example.textContent = 'USUARIO\nid_usuario = NULL\nmatricula = 2026003\nnome = "Clara"\n\n→ a ocorrência não possui uma chave primária válida';
+    }
+
+    const domainCard = integritySection.querySelector('.integrity-card.domain-card');
+    if (domainCard) {
+      const title = domainCard.querySelector('strong');
+      const paragraph = domainCard.querySelector('p');
+      const example = domainCard.querySelector('.integrity-example');
+      if (title) title.textContent = 'Cada atributo deve receber valores válidos para seu domínio';
+      if (paragraph) paragraph.textContent = 'A integridade de domínio determina quais valores são admissíveis para um atributo, considerando aspectos como tipo, formato, intervalo e outras regras definidas para representar corretamente aquele dado.';
+      if (example) example.textContent = 'LIVRO\nano_publicacao = -1998\n\n→ o valor não representa um ano de publicação válido';
+    }
+
+    const referenceCard = integritySection.querySelector('.integrity-card.reference-card');
+    if (referenceCard) {
+      const title = referenceCard.querySelector('strong');
+      const paragraph = referenceCard.querySelector('p');
+      const example = referenceCard.querySelector('.integrity-example');
+      if (title) title.textContent = 'As referências entre relações devem permanecer consistentes';
+      if (paragraph) paragraph.textContent = 'A integridade referencial exige que uma chave estrangeira, quando informada, corresponda a uma ocorrência existente na relação referenciada. Assim, uma relação não pode apontar para uma ocorrência inexistente.';
+      if (example) example.textContent = 'EMPRESTIMO\nusuario_id = 10\nexemplar_id = 999\n\nEXEMPLAR 999 não existe\n→ a referência é inválida';
+    }
+
+    const exerciseThree = Array.from(integritySection.querySelectorAll('.inquiry.light-inquiry')).find((inquiry) =>
+      inquiry.querySelector('.inquiry-kicker')?.textContent.includes('Exercício 3')
+    );
+
+    if (exerciseThree) {
+      const kicker = exerciseThree.querySelector('.inquiry-kicker');
+      const tag = exerciseThree.querySelector('.inquiry-tag');
+      const body = exerciseThree.querySelector('.inquiry-body');
+
+      if (kicker) kicker.textContent = 'Exercício 3 — análise de regras de integridade em um sistema de biblioteca';
+      if (tag) tag.textContent = '15 minutos';
+      if (body) {
+        body.innerHTML = `
+          <p><strong>Considere que a biblioteca está validando operações antes de registrá-las no banco de dados.</strong> Para cada situação, decidam se a operação deve ser <strong>ACEITA</strong>, <strong>REJEITADA</strong> ou se a decisão <strong>DEPENDE DE UMA REGRA DO DOMÍNIO</strong>. Em seguida, indiquem qual tipo de integridade está envolvido e justifiquem a análise.</p>
+          <ol>
+            <li>Um novo usuário é cadastrado com <code>id_usuario = NULL</code>, matrícula <code>2026003</code> e nome <code>Clara</code>.</li>
+            <li>Um livro é cadastrado com <code>ano_publicacao = -1998</code>.</li>
+            <li>Um empréstimo é registrado para <code>usuario_id = 18</code>, mas não existe nenhum usuário 18 cadastrado.</li>
+            <li>Duas ocorrências de <code>EXEMPLAR</code> apresentam o mesmo <code>id_exemplar = 102</code>.</li>
+            <li>Um exemplar recebe <code>situacao = "restauração"</code>. O sistema possui um conjunto de situações permitidas, mas essa lista não foi informada no enunciado.</li>
+            <li>Um empréstimo é registrado com <code>data_prevista = NULL</code>. O enunciado não informa se a biblioteca exige uma data prevista de devolução para todo empréstimo.</li>
+          </ol>
+          <p><strong>Para os casos classificados como “depende”</strong>, explicitem qual regra precisaria ser conhecida ou formalizada para que o banco pudesse decidir automaticamente se o estado é válido.</p>
         `;
       }
     }
