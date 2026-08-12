@@ -245,17 +245,38 @@ if (document.body.classList.contains('relational-page')) {
     if (tag) tag.textContent = '12 minutos';
 
     if (body && relationGrid) {
-      const introduction = document.createElement('p');
-      introduction.innerHTML = '<strong>Considere as quatro relações apresentadas. Analise os atributos de cada uma e, com base nos conceitos de identificação e referência do modelo relacional, responda às questões a seguir.</strong>';
-      body.insertBefore(introduction, relationGrid);
+      relationGrid.innerHTML = `
+        <div class="mini-relation"><strong>LIVRO</strong><code>id_livro
+isbn
+titulo
+ano_publicacao</code></div>
+        <div class="mini-relation"><strong>EXEMPLAR</strong><code>id_exemplar
+livro_id
+numero_tombo
+situacao</code></div>
+        <div class="mini-relation"><strong>USUARIO</strong><code>id_usuario
+matricula
+email
+nome</code></div>
+        <div class="mini-relation"><strong>EMPRESTIMO</strong><code>usuario_id
+exemplar_id
+data_hora_retirada
+data_prevista</code></div>
+      `;
+
+      const introduction = body.querySelector(':scope > p');
+      if (introduction) {
+        introduction.innerHTML = '<strong>Considere as quatro relações de um sistema de biblioteca apresentadas abaixo. Analise seus atributos e proponha formas adequadas de identificar e relacionar as ocorrências representadas. Justifique as decisões com base nos conceitos estudados.</strong>';
+      }
     }
 
     if (questionList) {
       questionList.innerHTML = `
-        <li><strong>Para cada relação, identifiquem o atributo ou conjunto de atributos que poderia exercer a função de chave primária.</strong> Justifiquem a escolha.</li>
-        <li><strong>Indiquem, quando houver, outros atributos que poderiam constituir chaves candidatas.</strong> Expliquem quais regras do domínio precisariam ser satisfeitas para que essa identificação fosse válida.</li>
-        <li><strong>Identifiquem a relação cuja identidade depende da combinação de mais de um atributo.</strong> Expliquem por que um único atributo, isoladamente, não é suficiente para identificar suas ocorrências.</li>
-        <li><strong>Identifiquem os atributos que desempenham papel de referência a outras relações.</strong> Indiquem, quando possível, qual relação é referenciada em cada caso.</li>
+        <li><strong>Proponham uma chave primária para LIVRO, EXEMPLAR e USUARIO.</strong> Justifiquem por que cada atributo escolhido é adequado para identificar unicamente uma ocorrência.</li>
+        <li><strong>Identifiquem possíveis chaves candidatas.</strong> Em quais relações existe mais de um atributo que poderia, considerando as regras do domínio, identificar unicamente uma ocorrência?</li>
+        <li><strong>Analisem a relação EMPRESTIMO.</strong> Considerando que um mesmo usuário pode retirar o mesmo exemplar em momentos diferentes, proponham uma combinação de atributos capaz de distinguir cada empréstimo.</li>
+        <li><strong>Identifiquem os atributos que estabelecem referências entre relações.</strong> Para cada um deles, indiquem qual relação e qual atributo devem ser referenciados.</li>
+        <li><strong>Classifiquem as chaves identificadas</strong> como primárias, candidatas, compostas ou estrangeiras.</li>
       `;
     }
   }
