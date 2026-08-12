@@ -223,11 +223,11 @@
             <p>Em sistemas fortemente baseados em arquivos, é comum que o programa conheça diretamente o formato físico dos registros. Alterar a estrutura de um arquivo pode exigir alterar todos os programas que o interpretam. A abordagem de banco de dados procura reduzir esse acoplamento usando esquemas, mapeamentos e mecanismos de abstração.</p>
             <p>Isso não significa que uma aplicação nunca precise mudar quando o banco evolui. Significa que o sistema é organizado para que diversas mudanças possam ser absorvidas em camadas mais baixas ou em interfaces controladas, preservando consumidores sempre que possível.</p>
 
-            <h3>Múltiplas visões sobre o mesmo estado</h3>
+            <h3>Múltiplas visões sobre os mesmos dados</h3>
             <p>Usuários e aplicações diferentes não precisam enxergar todo o banco da mesma forma. Um atendente pode precisar apenas de dados de contato e situação de um pedido; um financeiro pode precisar de pagamentos; uma rotina de análise pode precisar de informações agregadas. A ideia de <strong>visão externa</strong> permite representar subconjuntos ou formas específicas de apresentação sobre uma mesma base lógica.</p>
 
             <h3>Compartilhamento com controle</h3>
-            <p>Quando vários usuários ou processos acessam o mesmo banco, o SGBD precisa coordenar operações para evitar que ações concorrentes deixem o estado em uma situação inválida. Transações, controle de concorrência e recuperação serão estudados mais adiante no curso; neste momento, importa perceber por que esses mecanismos pertencem à infraestrutura de dados e não deveriam ser reinventados isoladamente por cada aplicação.</p>
+            <p>Quando vários usuários ou processos acessam o mesmo banco, o SGBD precisa coordenar essas operações para evitar conflitos e preservar a consistência dos dados. Transações, controle de concorrência e recuperação serão estudados mais adiante no curso; neste momento, importa perceber por que esses mecanismos pertencem à infraestrutura de dados e não deveriam ser reinventados isoladamente por cada aplicação.</p>
 
             <div class="flow" aria-label="Serviços centrais de um SGBD">
               <span>Definir estruturas</span>
