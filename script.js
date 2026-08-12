@@ -72,3 +72,31 @@ if (document.body.classList.contains('study-page') && document.getElementById('e
   `;
   document.head.appendChild(studyTableLayout);
 }
+
+if (document.body.classList.contains('study-page') && document.getElementById('independencia')) {
+  const independenceTableLayout = document.createElement('style');
+  independenceTableLayout.textContent = `
+    @media (min-width: 981px) {
+      #independencia .study-grid {
+        grid-template-columns: minmax(0, 1.55fr) minmax(240px, .45fr);
+      }
+      #independencia .study-table {
+        min-width: 0;
+        table-layout: fixed;
+      }
+      #independencia .study-table th,
+      #independencia .study-table td {
+        overflow-wrap: anywhere;
+      }
+      #independencia .study-table th:nth-child(1),
+      #independencia .study-table td:nth-child(1) { width: 12%; }
+      #independencia .study-table th:nth-child(2),
+      #independencia .study-table td:nth-child(2) { width: 18%; }
+      #independencia .study-table th:nth-child(3),
+      #independencia .study-table td:nth-child(3) { width: 27%; }
+      #independencia .study-table th:nth-child(4),
+      #independencia .study-table td:nth-child(4) { width: 43%; }
+    }
+  `;
+  document.head.appendChild(independenceTableLayout);
+}
