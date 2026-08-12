@@ -242,32 +242,81 @@ if (document.body.classList.contains('relational-page')) {
     const questionList = body?.querySelector('ol');
 
     if (kicker) kicker.textContent = 'Exercício 2 — análise de identificadores e chaves';
-    if (tag) tag.textContent = '12 minutos';
+    if (tag) tag.textContent = '15 minutos';
 
     if (body && relationGrid) {
       relationGrid.innerHTML = `
-        <div class="mini-relation"><strong>LIVRO</strong><code>id_livro
-isbn
-titulo
-ano_publicacao</code></div>
-        <div class="mini-relation"><strong>EXEMPLAR</strong><code>id_exemplar
-livro_id
-numero_tombo
-situacao</code></div>
-        <div class="mini-relation"><strong>USUARIO</strong><code>id_usuario
-matricula
-email
-nome</code></div>
-        <div class="mini-relation"><strong>EMPRESTIMO</strong><code>usuario_id
-exemplar_id
-data_hora_retirada
-data_prevista</code></div>
+        <div class="mini-relation">
+          <strong>LIVRO</strong>
+          <code>id_livro\nisbn\ntitulo\nano_publicacao</code>
+          <div class="sample-records">
+            <span>Registros de exemplo</span>
+            <code>1 · 978-65-00000-01-5 · Banco de Dados · 2024</code>
+            <code>2 · 978-65-00000-02-2 · Engenharia de Software · 2023</code>
+          </div>
+        </div>
+        <div class="mini-relation">
+          <strong>EXEMPLAR</strong>
+          <code>id_exemplar\nlivro_id\nnumero_tombo\nsituacao</code>
+          <div class="sample-records">
+            <span>Registros de exemplo</span>
+            <code>101 · 1 · T-0001 · disponível</code>
+            <code>102 · 1 · T-0002 · emprestado</code>
+          </div>
+        </div>
+        <div class="mini-relation">
+          <strong>USUARIO</strong>
+          <code>id_usuario\nmatricula\nemail\nnome</code>
+          <div class="sample-records">
+            <span>Registros de exemplo</span>
+            <code>10 · 2026001 · ana@uni.edu · Ana</code>
+            <code>11 · 2026002 · bruno@uni.edu · Bruno</code>
+          </div>
+        </div>
+        <div class="mini-relation">
+          <strong>EMPRESTIMO</strong>
+          <code>usuario_id\nexemplar_id\ndata_hora_retirada\ndata_prevista</code>
+          <div class="sample-records">
+            <span>Registros de exemplo</span>
+            <code>10 · 102 · 12/08/2026 14:00 · 19/08/2026</code>
+            <code>10 · 102 · 01/09/2026 10:00 · 08/09/2026</code>
+          </div>
+        </div>
       `;
 
       const introduction = body.querySelector(':scope > p');
       if (introduction) {
-        introduction.innerHTML = '<strong>Considere as quatro relações de um sistema de biblioteca apresentadas abaixo. Analise seus atributos e proponha formas adequadas de identificar e relacionar as ocorrências representadas. Justifique as decisões com base nos conceitos estudados.</strong>';
+        introduction.innerHTML = '<strong>Considere as quatro relações de um sistema de biblioteca apresentadas abaixo. Analise seus atributos e os registros de exemplo e proponha formas adequadas de identificar e relacionar as ocorrências representadas. Justifique as decisões com base nos conceitos estudados.</strong>';
       }
+
+      const sampleStyle = document.createElement('style');
+      sampleStyle.textContent = `
+        #chaves .sample-records {
+          display: grid;
+          gap: .45rem;
+          margin-top: 1rem;
+          padding-top: .9rem;
+          border-top: 1px solid rgba(127, 127, 127, .18);
+        }
+
+        #chaves .sample-records > span {
+          color: #8db0ff;
+          font-size: .72rem;
+          font-weight: 900;
+          letter-spacing: .07em;
+          text-transform: uppercase;
+        }
+
+        #chaves .sample-records code {
+          padding: .55rem .65rem;
+          border-radius: 9px;
+          background: rgba(95, 130, 255, .08);
+          font-size: .77rem;
+          line-height: 1.45;
+          overflow-wrap: anywhere;
+        }
+      `;
+      document.head.appendChild(sampleStyle);
     }
 
     if (questionList) {
