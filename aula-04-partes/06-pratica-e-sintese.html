@@ -1,58 +1,39 @@
-<section aria-labelledby="pratica-title" class="section-pad">
+<section aria-labelledby="fechamento-title" class="section-pad">
   <div class="container">
     <div class="section-heading">
-      <p class="eyebrow">Transferência para um novo problema</p>
-      <h2 id="pratica-title">Agora repita o processo com menos apoio</h2>
-      <p>Na reserva de salas, o raciocínio foi mostrado. Na clínica, cada passo foi acompanhado por perguntas e uma conferência posterior. Neste terceiro domínio, a equipe deverá organizar o próprio percurso e justificar as decisões.</p>
+      <p class="eyebrow">Fechamento da atividade</p>
+      <h2 id="fechamento-title">A entrega registra o diagrama e o raciocínio que o sustenta</h2>
+      <p>O produto da aula não é apenas uma imagem organizada. O arquivo precisa permitir revisão, mostrar as regras centrais e registrar as decisões que ainda dependem de confirmação.</p>
     </div>
 
-    <div class="practice-grid">
-      <article class="practice-card primary-practice">
-        <span>Novo cenário</span>
-        <strong>Projetos acadêmicos</strong>
-        <div class="scenario-compact">
-          <p>O sistema registra <strong>estudantes</strong>, <strong>professores</strong> e <strong>projetos</strong>.</p>
-          <p>Um estudante pode participar de vários projetos e um projeto pode reunir vários estudantes. De cada participação devem ser registrados papel, data de entrada e horas semanais.</p>
-          <p>Cada projeto possui exatamente um professor orientador; um professor pode orientar vários projetos.</p>
-          <p>Um projeto pode ser continuação de outro projeto, e um projeto pode originar várias continuações.</p>
-        </div>
-        <p><strong>Nível de apoio:</strong> o cenário contém os fatos principais, mas não informa quais construções do Modelo ER devem ser utilizadas.</p>
-      </article>
-
-      <article class="practice-card secondary-practice">
-        <span>Roteiro de trabalho</span>
-        <strong>Percorra as mesmas nove decisões</strong>
-        <ol class="practice-steps">
-          <li>Delimite o domínio e registre dúvidas.</li>
-          <li>Identifique e justifique as entidades.</li>
-          <li>Associe atributos e escolha identificadores.</li>
-          <li>Escreva cada relacionamento nos dois sentidos.</li>
-          <li>Defina cardinalidades mínima e máxima.</li>
-          <li>Analise onde existe participação total e parcial.</li>
-          <li>Verifique se alguma ocorrência N:N possui dados próprios.</li>
-          <li>Represente o relacionamento recursivo e nomeie os papéis.</li>
-          <li>Desenhe e valide o DER com casos permitidos e proibidos.</li>
-        </ol>
-      </article>
-    </div>
-
-    <div class="rule-panel">
-      <h3>Produto esperado</h3>
-      <p>Entregue o DER, as regras direcionais dos relacionamentos, pelo menos duas dúvidas sobre o domínio e uma justificativa breve para a modelagem da participação entre estudante e projeto.</p>
-    </div>
-
-    <div class="inquiry">
-      <div class="inquiry-head"><span class="inquiry-kicker">Comparação entre equipes</span><span class="inquiry-tag">15 minutos</span></div>
-      <div class="inquiry-body">
-        <p>Ao comparar dois modelos, não procure apenas diferenças visuais. Para cada divergência, perguntem:</p>
-        <ul>
-          <li>Qual requisito ou regra sustenta esta escolha?</li>
-          <li>As duas soluções preservam o mesmo significado?</li>
-          <li>Alguma equipe acrescentou uma suposição que não estava no cenário?</li>
-          <li>Que pergunta ao responsável pelo domínio resolveria a divergência?</li>
-          <li>O modelo aceita alguma ocorrência que deveria ser proibida?</li>
+    <div class="learning-sequence">
+      <article class="learning-block theory-block">
+        <div class="learning-block-head"><span>1</span><div><small>Verifique o conteúdo</small><h3>O DER representa o cenário?</h3></div></div>
+        <ul class="check-list">
+          <li>PACIENTE, PROFISSIONAL e CONSULTA estão identificados.</li>
+          <li>Os atributos estão associados ao elemento correto.</li>
+          <li>Relacionamentos e papéis podem ser lidos sem ambiguidade.</li>
+          <li>Cardinalidades mínimas e máximas estão explícitas.</li>
+          <li>A supervisão recursiva está representada.</li>
         </ul>
-      </div>
+      </article>
+
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>2</span><div><small>Registre a revisão</small><h3>Mostre o que mudou após a auditoria</h3></div></div>
+        <p>Inclua no arquivo uma pequena nota com pelo menos uma correção realizada após a comparação com outra equipe. A mudança pode envolver entidade, atributo, relacionamento, cardinalidade, papel ou clareza visual.</p>
+      </article>
+
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>3</span><div><small>Envie os artefatos</small><h3>Arquivo editável e exportação final</h3></div></div>
+        <ul class="check-list">
+          <li>Arquivo <code>.drawio</code> com o modelo editável.</li>
+          <li>Exportação em PDF ou PNG.</li>
+          <li>Três decisões justificadas.</li>
+          <li>Duas dúvidas ou suposições registradas.</li>
+          <li>Uma correção realizada após a auditoria.</li>
+        </ul>
+        <a class="button button-primary" href="https://app.diagrams.net/" rel="noopener noreferrer" target="_blank">Continuar no diagrams.net →</a>
+      </article>
     </div>
   </div>
 </section>
@@ -69,7 +50,7 @@
       <article class="quick-check-card"><span>Caso 1</span><strong>Um paciente possui vários telefones.</strong><div class="quick-example">telefone = ?</div><details><summary>Ver resposta</summary><p>Atributo multivalorado, considerando os requisitos atuais.</p></details></article>
       <article class="quick-check-card"><span>Caso 2</span><strong>A idade muda com o passar do tempo.</strong><div class="quick-example">idade = ?</div><details><summary>Ver resposta</summary><p>Atributo derivado da data de nascimento e da data de referência.</p></details></article>
       <article class="quick-check-card"><span>Caso 3</span><strong>Profissional supervisiona profissional.</strong><div class="quick-example">supervisiona = ?</div><details><summary>Ver resposta</summary><p>Relacionamento recursivo, com papéis de supervisor e supervisionado.</p></details></article>
-      <article class="quick-check-card"><span>Caso 4</span><strong>Papel e horas pertencem à participação em um projeto.</strong><div class="quick-example">participação = ?</div><details><summary>Ver resposta</summary><p>Dados próprios da ocorrência N:N; a participação precisa ser explicitada como entidade associativa.</p></details></article>
+      <article class="quick-check-card"><span>Caso 4</span><strong>Data e motivo pertencem ao atendimento.</strong><div class="quick-example">consulta = ?</div><details><summary>Ver resposta</summary><p>Dados próprios de uma ocorrência do relacionamento, explicitada como CONSULTA.</p></details></article>
       <article class="quick-check-card"><span>Caso 5</span><strong>Cada consulta exige um paciente.</strong><div class="quick-example">mínimo = ?</div><details><summary>Ver resposta</summary><p>Participação total de CONSULTA nessa relação; cardinalidade mínima 1.</p></details></article>
     </div>
   </div>
@@ -94,18 +75,13 @@
     </div>
 
     <div class="comparison-panel">
-      <h3>Três níveis de apoio usados nesta aula</h3>
-      <p><strong>Eu acompanho:</strong> reserva de salas. <strong>Nós construímos:</strong> clínica-escola. <strong>Vocês transferem:</strong> projetos acadêmicos. A progressão mantém a mesma sequência de decisões enquanto reduz as pistas oferecidas.</p>
+      <h3>A progressão utilizada nesta aula</h3>
+      <p><strong>Explicação teórica:</strong> compreender a decisão. <strong>Exercício guiado:</strong> acompanhar a reserva de salas. <strong>Prática dos estudantes:</strong> construir, auditar e entregar o modelo da clínica-escola.</p>
     </div>
 
     <div class="rule-panel">
       <h3>Ideia central para levar desta aula</h3>
       <p><strong>Modelar não é copiar substantivos para caixas.</strong> É selecionar conceitos relevantes, representar fatos que os conectam, explicitar limites e obrigações e testar se o modelo preserva o significado do domínio.</p>
-    </div>
-
-    <div class="tool-grid">
-      <article class="tool-card"><span>Ferramenta</span><strong>diagrams.net</strong><p>Use para construir, revisar e compartilhar o DER. Dê preferência a nomes legíveis, alinhamento simples e cardinalidades explícitas.</p><a href="https://app.diagrams.net/" rel="noopener noreferrer" target="_blank">Abrir diagrams.net →</a></article>
-      <article class="tool-card"><span>Registro das decisões</span><strong>Diagrama acompanhado de justificativas</strong><p>Mantenha junto ao DER as regras direcionais, dúvidas, suposições e testes utilizados na validação. O desenho sozinho não registra todo o raciocínio.</p></article>
     </div>
   </div>
 </section>
