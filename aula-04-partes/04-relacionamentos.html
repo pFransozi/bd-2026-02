@@ -6,10 +6,19 @@
       <p>Relacionamentos representam fatos que conectam entidades. Para evitar uma linha ambígua, leia cada relacionamento nos dois sentidos e registre o que cada direção permite.</p>
     </div>
 
-    <div class="practice-grid">
-      <article class="practice-card primary-practice">
-        <span>Resolvido com a turma</span>
-        <strong>Relacionamentos da reserva de salas</strong>
+    <div class="learning-sequence">
+      <article class="learning-block theory-block">
+        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Um relacionamento precisa formar frases legíveis</h3></div></div>
+        <div class="verb-model"><div class="verb-entity"><strong>ENTIDADE A</strong><small>primeiro participante</small></div><div class="verb-link">relaciona-se com</div><div class="verb-entity"><strong>ENTIDADE B</strong><small>segundo participante</small></div></div>
+        <p>O nome do relacionamento ajuda a comunicar o domínio, mas a linha sozinha não explica todas as regras. Por isso, escrevemos duas leituras:</p>
+        <div class="directional-rules">
+          <div class="directional-rule"><b>Leitura 1:</b> o que uma ocorrência de A pode ou deve fazer em relação a B?</div>
+          <div class="directional-rule"><b>Leitura 2:</b> o que uma ocorrência de B pode ou deve fazer em relação a A?</div>
+        </div>
+      </article>
+
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Relacionamentos da reserva de salas</h3></div></div>
         <div class="verb-model"><div class="verb-entity"><strong>USUÁRIO</strong><small>pessoa cadastrada</small></div><div class="verb-link">realiza</div><div class="verb-entity"><strong>RESERVA</strong><small>uso agendado</small></div></div>
         <div class="directional-rules">
           <div class="directional-rule"><b>Leitura 1:</b> um usuário pode realizar reservas.</div>
@@ -22,14 +31,13 @@
         </div>
       </article>
 
-      <article class="practice-card secondary-practice">
-        <span>Agora é com a turma</span>
-        <strong>Escreva os relacionamentos da clínica</strong>
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Escreva os relacionamentos da clínica</h3></div></div>
         <ol class="practice-steps">
           <li>Escreva uma frase ligando PACIENTE e CONSULTA.</li>
           <li>Reescreva a mesma relação no sentido inverso.</li>
           <li>Faça o mesmo entre PROFISSIONAL e CONSULTA.</li>
-          <li>Escreva as duas leituras da supervisão entre profissionais, nomeando os papéis.</li>
+          <li>Escreva as duas leituras da supervisão entre profissionais e nomeie os papéis.</li>
           <li>Verifique se cada frase pode ser confirmada pelo cenário.</li>
         </ol>
         <details>
@@ -53,10 +61,22 @@
       <p>A cardinalidade máxima informa o limite superior de participação. A mínima informa se a participação é obrigatória ou opcional. Ambas decorrem das regras do domínio.</p>
     </div>
 
-    <div class="practice-grid">
-      <article class="practice-card primary-practice">
-        <span>Resolvido com a turma</span>
-        <strong>Mínimos e máximos na reserva de salas</strong>
+    <div class="learning-sequence">
+      <article class="learning-block theory-block">
+        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Máximo e mínimo respondem a perguntas diferentes</h3></div></div>
+        <div class="cardinality-grid">
+          <article class="cardinality-card one-one"><span>1:1</span><strong>Uma ocorrência para uma</strong><div class="cardinality-symbol">1 ↔ 1</div><p>Cada ocorrência de um lado relaciona-se, no máximo, com uma do outro.</p></article>
+          <article class="cardinality-card one-many"><span>1:N</span><strong>Uma ocorrência para várias</strong><div class="cardinality-symbol">1 ↔ N</div><p>Uma ocorrência de um lado pode se relacionar com várias do outro.</p></article>
+          <article class="cardinality-card many-many"><span>N:N</span><strong>Várias ocorrências para várias</strong><div class="cardinality-symbol">N ↔ N</div><p>Ocorrências dos dois lados podem participar várias vezes.</p></article>
+        </div>
+        <div class="rule-panel">
+          <h3>Participação total e parcial</h3>
+          <p>Se toda ocorrência precisa participar do relacionamento, o mínimo é 1 e a participação é total. Se pode existir sem participar, o mínimo é 0 e a participação é parcial.</p>
+        </div>
+      </article>
+
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Mínimos e máximos na reserva de salas</h3></div></div>
         <div class="participation-line"><div class="participation-node"><strong>USUÁRIO</strong><span>0..N reservas</span></div><div class="participation-connector">realiza</div><div class="participation-node"><strong>RESERVA</strong><span>1..1 usuário</span></div></div>
         <div class="participation-line"><div class="participation-node"><strong>SALA</strong><span>0..N reservas</span></div><div class="participation-connector">é utilizada em</div><div class="participation-node"><strong>RESERVA</strong><span>1..1 sala</span></div></div>
         <ol class="practice-steps">
@@ -67,9 +87,8 @@
         </ol>
       </article>
 
-      <article class="practice-card secondary-practice">
-        <span>Agora é com a turma</span>
-        <strong>Defina as cardinalidades da clínica</strong>
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Defina as cardinalidades da clínica</h3></div></div>
         <ol class="practice-steps">
           <li>Qual é o mínimo e o máximo de consultas para um paciente?</li>
           <li>Qual é o mínimo e o máximo de pacientes para uma consulta?</li>
@@ -87,12 +106,6 @@
         </details>
       </article>
     </div>
-
-    <div class="cardinality-grid">
-      <article class="cardinality-card one-one"><span>1:1</span><strong>Uma ocorrência para uma</strong><div class="cardinality-symbol">1 ↔ 1</div><p>Exemplo: cada prontuário pertence a um paciente e cada paciente possui um prontuário.</p></article>
-      <article class="cardinality-card one-many"><span>1:N</span><strong>Uma ocorrência para várias</strong><div class="cardinality-symbol">1 ↔ N</div><p>Exemplo: uma sala pode aparecer em várias reservas; cada reserva utiliza uma sala.</p></article>
-      <article class="cardinality-card many-many"><span>N:N</span><strong>Várias ocorrências para várias</strong><div class="cardinality-symbol">N ↔ N</div><p>Exemplo: ao longo do tempo, usuários podem utilizar várias salas e salas podem ser utilizadas por vários usuários.</p></article>
-    </div>
   </div>
 </section>
 
@@ -104,10 +117,14 @@
       <p>Uma relação N:N pode esconder ocorrências importantes. Quando cada ocorrência possui atributos próprios ou precisa ser identificada, podemos explicitá-la como entidade associativa.</p>
     </div>
 
-    <div class="practice-grid">
-      <article class="practice-card primary-practice">
-        <span>Resolvido com a turma</span>
-        <strong>De USUÁRIO–SALA para RESERVA</strong>
+    <div class="learning-sequence">
+      <article class="learning-block theory-block">
+        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Atributos podem pertencer ao fato, não às entidades participantes</h3></div></div>
+        <p>Quando dois conceitos se relacionam várias vezes ao longo do tempo, pergunte se cada participação precisa ser distinguida. Datas, papéis, quantidades, valores ou situações geralmente descrevem uma ocorrência da conexão.</p>
+      </article>
+
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>De USUÁRIO–SALA para RESERVA</h3></div></div>
         <div class="association-transition">
           <article class="mini-model"><h3>Leitura inicial</h3><p>Ao longo do tempo, usuários utilizam várias salas e salas são utilizadas por vários usuários.</p><code>USUÁRIO N ── utiliza ── N SALA</code></article>
           <div aria-hidden="true" class="transition-arrow">→</div>
@@ -118,12 +135,11 @@ RESERVA:
 reserva_id, data,
 horário, situação</code></article>
         </div>
-        <p><strong>Conclusão:</strong> data, horário e situação não descrevem permanentemente o usuário nem a sala. Descrevem uma ocorrência específica do uso da sala.</p>
+        <p><strong>Conclusão:</strong> data, horário e situação não descrevem permanentemente o usuário nem a sala. Descrevem uma ocorrência específica do uso.</p>
       </article>
 
-      <article class="practice-card secondary-practice">
-        <span>Agora é com a turma</span>
-        <strong>Analise o papel de CONSULTA</strong>
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Analise o papel de CONSULTA</h3></div></div>
         <ol class="practice-steps">
           <li>Leia diretamente a relação entre PACIENTE e PROFISSIONAL ao longo do tempo.</li>
           <li>Determine se ela seria 1:1, 1:N ou N:N.</li>
@@ -146,32 +162,33 @@ horário, situação</code></article>
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Passo 7 · casos especiais</p>
-      <h2 id="grau-title">Aplique o mesmo método a relacionamentos recursivos e ternários</h2>
-      <p>O grau indica quantos tipos de entidade participam do fato. Casos especiais não exigem uma nova lógica de análise: ainda precisamos escrever as regras, identificar papéis e verificar o significado preservado.</p>
+      <h2 id="grau-title">Relacionamentos recursivos e ternários preservam fatos diferentes</h2>
+      <p>O grau indica quantos tipos de entidade participam do fato. A análise continua a mesma: escrever as regras, identificar papéis e verificar se o significado foi preservado.</p>
     </div>
 
-    <div class="degree-grid">
-      <article class="degree-card binary"><span>Binário</span><strong>Duas entidades participantes</strong><p>USUÁRIO realiza RESERVA. É o formato mais frequente.</p><div class="degree-example">USUÁRIO — realiza — RESERVA</div></article>
-      <article class="degree-card recursive"><span>Recursivo</span><strong>Uma entidade em papéis diferentes</strong><p>FUNCIONÁRIO relaciona-se consigo mesmo nos papéis supervisor e supervisionado.</p><div class="degree-example">FUNCIONÁRIO — supervisiona — FUNCIONÁRIO</div><div class="role-row"><span class="role-chip">supervisor</span><span class="role-chip">supervisionado</span></div></article>
-      <article class="degree-card ternary"><span>Ternário</span><strong>Três entidades formam um único fato</strong><p>FORNECEDOR fornece determinada PEÇA para determinado PROJETO.</p><div class="degree-example">FORNECEDOR — PEÇA — PROJETO</div></article>
-    </div>
+    <div class="learning-sequence">
+      <article class="learning-block theory-block">
+        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Dois casos que exigem atenção</h3></div></div>
+        <div class="degree-grid">
+          <article class="degree-card recursive"><span>Recursivo</span><strong>Uma entidade em papéis diferentes</strong><p>O mesmo tipo participa mais de uma vez, mas cada participação exerce um papel distinto.</p><div class="degree-example">FUNCIONÁRIO — supervisiona — FUNCIONÁRIO</div><div class="role-row"><span class="role-chip">supervisor</span><span class="role-chip">supervisionado</span></div></article>
+          <article class="degree-card ternary"><span>Ternário</span><strong>Três entidades formam um único fato</strong><p>O significado depende da combinação dos três participantes.</p><div class="degree-example">FORNECEDOR — PEÇA — PROJETO</div></article>
+        </div>
+        <div class="decision-panel"><h3>Nem todo ternário equivale a três binários</h3><p>Separar automaticamente “um fornecedor fornece uma peça para um projeto” pode perder qual fornecedor entregou qual peça para qual projeto.</p></div>
+      </article>
 
-    <div class="practice-grid">
-      <article class="practice-card primary-practice">
-        <span>Microexemplos resolvidos</span>
-        <strong>O que precisa ser preservado</strong>
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Reconheça papéis e combinação</h3></div></div>
         <ol class="practice-steps">
-          <li><strong>Recursivo:</strong> “um funcionário pode supervisionar vários funcionários; cada supervisionado possui, no máximo, um supervisor”. Os papéis evitam confundir as duas participações.</li>
-          <li><strong>Ternário:</strong> quantidade e preço podem depender da combinação fornecedor–peça–projeto. Três relações binárias separadas não registrariam necessariamente qual fornecedor entregou qual peça para qual projeto.</li>
+          <li><strong>Recursivo:</strong> um funcionário pode supervisionar vários funcionários; cada supervisionado possui, no máximo, um supervisor. Os papéis evitam confundir as duas participações.</li>
+          <li><strong>Ternário:</strong> quantidade e preço podem depender da combinação fornecedor–peça–projeto. O atributo pertence ao fato combinado.</li>
         </ol>
       </article>
 
-      <article class="practice-card secondary-practice">
-        <span>Agora é com a turma</span>
-        <strong>Dois exercícios espelhados</strong>
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Aplique os dois casos</h3></div></div>
         <ol class="practice-steps">
-          <li>Transfira o exemplo recursivo para PROFISSIONAL, indicando os papéis e as cardinalidades do cenário da clínica.</li>
-          <li>Modele o fato: “uma transportadora entrega determinado produto para determinada filial; de cada combinação são registrados valor do frete e prazo”.</li>
+          <li>Transfira o exemplo recursivo para PROFISSIONAL, indicando os papéis e as cardinalidades da clínica.</li>
+          <li>Analise o fato: “uma transportadora entrega determinado produto para determinada filial; de cada combinação são registrados valor do frete e prazo”.</li>
           <li>Explique por que o segundo fato pode perder significado se for separado automaticamente em três relações binárias.</li>
         </ol>
         <details>
@@ -184,9 +201,9 @@ horário, situação</code></article>
       </article>
     </div>
 
-    <div class="decision-panel">
-      <h3>Não transforme complexidade em decoração</h3>
-      <p>Relacionamentos recursivos e ternários só devem aparecer quando representam uma regra real do domínio. O objetivo não é incluir todos os símbolos no mesmo DER, mas escolher a construção que preserva corretamente o significado.</p>
+    <div class="activity-note diagram-ready-note">
+      <strong>Agora já existem decisões suficientes para construir o DER.</strong>
+      <p>Entidades, atributos, identificadores, relacionamentos, cardinalidades e participação já foram analisados. A próxima seção transforma esse conjunto de decisões em um arquivo editável no diagrams.net.</p>
     </div>
   </div>
 </section>
