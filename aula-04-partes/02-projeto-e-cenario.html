@@ -1,1 +1,121 @@
-<section aria-labelledby='projeto-title' class='section-pad section-soft' id='projeto'><div class='container'><div class='section-heading'><p class='eyebrow'>Projeto de banco de dados</p><h2 id='projeto-title'>Antes de criar tabelas, precisamos construir uma representação compartilhada</h2><p>O banco deve refletir uma parte da realidade que interessa ao sistema. Essa parte observada é o domínio — ou minimundo — que será descrito, analisado, modelado e, somente depois, implementado.</p></div><div aria-label='Etapas do projeto de banco de dados' class='design-flow'><article class='flow-step'><span>01</span><strong>Compreender o domínio</strong><p>Identificar objetivos, pessoas envolvidas, processos, informações importantes e limites do problema.</p></article><article class='flow-step'><span>02</span><strong>Levantar requisitos</strong><p>Registrar fatos, regras de negócio, necessidades de consulta, restrições e situações ainda ambíguas.</p></article><article class='flow-step'><span>03</span><strong>Modelar conceitualmente</strong><p>Representar entidades, atributos, relacionamentos, cardinalidades e participação em um DER.</p></article><article class='flow-step'><span>04</span><strong>Estruturar logicamente</strong><p>Transformar o modelo conceitual segundo a abordagem escolhida, como o modelo relacional.</p></article><article class='flow-step'><span>05</span><strong>Implementar fisicamente</strong><p>Definir tipos, restrições e demais detalhes específicos do SGBD e do ambiente de execução.</p></article></div><div class='rule-panel'><h3>O foco de hoje é o modelo conceitual</h3><p>Nesta etapa, ainda não estamos decidindo nomes de tabelas, tipos SQL, índices ou comandos. Procuramos uma descrição de alto nível que possa ser compreendida e validada com quem conhece o domínio.</p></div></div></section><section aria-labelledby='cenario-title' class='section-pad'><div class='container'><div class='section-heading'><p class='eyebrow'>Situação-problema</p><h2 id='cenario-title'>Uma clínica-escola precisa organizar seu atendimento</h2><p>Vamos construir o primeiro modelo progressivamente. Leia o cenário como analista: procure elementos que precisam ser lembrados, características que os descrevem, interações e regras que limitam essas interações.</p></div><article class='scenario-panel'><h3>Clínica-escola</h3><p>A clínica registra pacientes, profissionais de saúde e os atendimentos realizados. O sistema deverá preservar o histórico de consultas e permitir que a equipe compreenda quem foi atendido, por qual profissional, quando e em que situação.</p><ol class='requirement-list'><li>Para cada paciente, devem ser registrados um identificador, nome, data de nascimento, endereço e um ou mais telefones.</li><li>Para cada profissional, devem ser registrados um identificador, nome, número de registro e especialidade.</li><li>Uma consulta ocorre entre exatamente um paciente e exatamente um profissional.</li><li>De cada consulta, devem ser registrados data e horário, motivo e situação do atendimento.</li><li>Um paciente pode ser cadastrado antes de realizar sua primeira consulta.</li><li>Um profissional pode ser cadastrado antes de realizar seu primeiro atendimento.</li><li>Um profissional pode supervisionar outros profissionais; cada supervisionado possui, no máximo, um supervisor.</li></ol></article><div class='inquiry'><div class='inquiry-head'><span class='inquiry-kicker'>Primeira leitura — ainda sem desenhar</span><span class='inquiry-tag'>10 minutos</span></div><div class='inquiry-body'><p>Em duplas, marquem no texto quatro tipos de informação:</p><ol><li><strong>Coisas ou conceitos</strong> sobre os quais o sistema precisa manter histórico.</li><li><strong>Características</strong> que descrevem essas coisas.</li><li><strong>Ações ou associações</strong> que conectam os elementos.</li><li><strong>Regras</strong> expressas por termos como “exatamente”, “pode”, “um ou mais” e “no máximo”.</li></ol><p><strong>Registrem também as dúvidas.</strong> Um requisito ambíguo não deve ser transformado silenciosamente em uma decisão de modelagem.</p></div></div></div></section><section aria-labelledby='leitura-title' class='section-pad section-soft'><div class='container'><div class='section-heading'><p class='eyebrow'>Da linguagem do domínio ao modelo</p><h2 id='leitura-title'>O texto oferece pistas, não respostas automáticas</h2><p>Substantivos, adjetivos, verbos e expressões quantitativas ajudam a iniciar a análise. O contexto e as necessidades de informação determinam o que realmente será representado.</p></div><div class='reading-grid'><article class='reading-card'><span>Substantivos</span><strong>Candidatos a entidades</strong><p>Paciente, profissional e consulta podem representar conceitos sobre os quais o sistema mantém dados próprios e histórico.</p></article><article class='reading-card'><span>Características</span><strong>Candidatos a atributos</strong><p>Nome, data de nascimento, telefone, registro, especialidade, data e situação descrevem elementos do domínio.</p></article><article class='reading-card'><span>Verbos</span><strong>Candidatos a relacionamentos</strong><p>Realiza, participa, supervisiona e é atendido por ajudam a explicitar como os conceitos se conectam.</p></article><article class='reading-card'><span>Quantificadores</span><strong>Candidatos a restrições</strong><p>“Exatamente um”, “um ou mais”, “pode” e “no máximo” ajudam a definir cardinalidade e participação.</p></article></div><div class='decision-panel'><h3>Nem todo substantivo vira entidade</h3><p><strong>Especialidade</strong>, por exemplo, pode ser inicialmente um atributo de profissional. Ela pode tornar-se uma entidade se o domínio exigir código próprio, descrição, conselho responsável, procedimentos autorizados ou relacionamentos com outros conceitos. A escolha depende dos requisitos, não apenas da palavra encontrada no texto.</p></div></div></section>
+<section aria-labelledby="projeto-title" class="section-pad section-soft" id="projeto">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">Projeto de banco de dados</p>
+      <h2 id="projeto-title">Modelar é transformar uma situação em uma representação que possa ser discutida</h2>
+      <p>O banco deve refletir a parte da realidade que interessa ao sistema. Essa parte observada é o domínio — ou minimundo — que será descrito, analisado, modelado e, somente depois, implementado.</p>
+    </div>
+
+    <div aria-label="Etapas do projeto de banco de dados" class="design-flow">
+      <article class="flow-step"><span>01</span><strong>Compreender o domínio</strong><p>Identificar objetivos, pessoas envolvidas, processos, informações importantes e limites do problema.</p></article>
+      <article class="flow-step"><span>02</span><strong>Levantar requisitos</strong><p>Registrar fatos, regras de negócio, necessidades de informação, restrições e situações ainda ambíguas.</p></article>
+      <article class="flow-step"><span>03</span><strong>Modelar conceitualmente</strong><p>Representar entidades, atributos, relacionamentos, cardinalidades e participação em um DER.</p></article>
+      <article class="flow-step"><span>04</span><strong>Estruturar logicamente</strong><p>Transformar o modelo conceitual segundo a abordagem escolhida, como o modelo relacional.</p></article>
+      <article class="flow-step"><span>05</span><strong>Implementar fisicamente</strong><p>Definir tipos, restrições e demais detalhes específicos do SGBD e do ambiente de execução.</p></article>
+    </div>
+
+    <div class="rule-panel">
+      <h3>O foco de hoje é o modelo conceitual</h3>
+      <p>Nesta etapa, buscamos uma descrição de alto nível que possa ser compreendida e validada com quem conhece o domínio. Tabelas e chaves já fazem parte do nosso repertório, mas agora o percurso começa na situação real e nas regras que precisam ser representadas.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="trilhas-title" class="section-pad">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">Como vamos aprender</p>
+      <h2 id="trilhas-title">Um exemplo resolvido e um problema guiado avançarão juntos</h2>
+      <p>Em cada etapa, primeiro acompanharemos uma decisão completa no domínio de reserva de salas. Logo depois, os estudantes aplicarão a mesma decisão à clínica-escola. A solução da clínica ficará recolhida para conferência após a tentativa.</p>
+    </div>
+
+    <div class="practice-grid">
+      <article class="practice-card primary-practice">
+        <span>Exemplo acompanhado</span>
+        <strong>Reserva de salas de estudo</strong>
+        <div class="scenario-compact">
+          <p>Um espaço de estudos cadastra <strong>usuários</strong> e <strong>salas</strong>.</p>
+          <p>Cada reserva associa exatamente um usuário a exatamente uma sala. De cada reserva são registrados data, horário inicial e situação.</p>
+          <p>Usuários e salas podem ser cadastrados mesmo que ainda não tenham participado de reservas.</p>
+          <p>Para cada usuário são registrados identificador, nome, data de nascimento e um ou mais telefones. Para cada sala são registrados identificador, nome e capacidade.</p>
+        </div>
+        <p>Esse exemplo será resolvido passo a passo, com todas as decisões justificadas.</p>
+      </article>
+
+      <article class="practice-card secondary-practice">
+        <span>Aplicação guiada</span>
+        <strong>Clínica-escola</strong>
+        <div class="scenario-compact">
+          <p>A clínica registra pacientes, profissionais de saúde e os atendimentos realizados. O sistema deve preservar o histórico de consultas e permitir compreender quem foi atendido, por qual profissional, quando e em que situação.</p>
+        </div>
+        <ol class="requirement-list">
+          <li>Para cada paciente, devem ser registrados um identificador, nome, data de nascimento, endereço e um ou mais telefones.</li>
+          <li>Para cada profissional, devem ser registrados um identificador, nome, número de registro e especialidade.</li>
+          <li>Uma consulta ocorre entre exatamente um paciente e exatamente um profissional.</li>
+          <li>De cada consulta, devem ser registrados data e horário, motivo e situação do atendimento.</li>
+          <li>Um paciente pode ser cadastrado antes de realizar sua primeira consulta.</li>
+          <li>Um profissional pode ser cadastrado antes de realizar seu primeiro atendimento.</li>
+          <li>Um profissional pode supervisionar outros profissionais; cada supervisionado possui, no máximo, um supervisor.</li>
+        </ol>
+      </article>
+    </div>
+
+    <div class="comparison-panel">
+      <h3>O apoio diminuirá gradualmente</h3>
+      <p><strong>Reserva de salas:</strong> raciocínio mostrado e solução construída com a turma. <strong>Clínica-escola:</strong> perguntas orientadoras, tentativa dos estudantes e conferência posterior. <strong>Projetos acadêmicos:</strong> novo domínio com menos pistas, trabalhado ao final da aula.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="cenario-title" class="section-pad section-soft" id="cenario">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">Passo 1 · leitura e delimitação</p>
+      <h2 id="cenario-title">Antes de desenhar, separe conceitos, características, conexões, regras e dúvidas</h2>
+      <p>O texto oferece pistas, mas não produz o modelo automaticamente. Precisamos interpretar o significado de cada informação e decidir o que pertence ao recorte observado.</p>
+    </div>
+
+    <div class="practice-grid">
+      <article class="practice-card primary-practice">
+        <span>Resolvido com a turma</span>
+        <strong>Como lemos o cenário de reserva de salas</strong>
+        <ol class="practice-steps">
+          <li><strong>Conceitos que precisam de histórico:</strong> usuário, sala e reserva.</li>
+          <li><strong>Características:</strong> nome, data de nascimento, telefone, capacidade, data, horário e situação.</li>
+          <li><strong>Conexões:</strong> usuário realiza reserva; reserva utiliza sala.</li>
+          <li><strong>Quantificadores:</strong> “exatamente um”, “um ou mais” e “podem ser cadastrados sem reserva”.</li>
+          <li><strong>Limite adotado:</strong> o modelo não tratará pagamento, limpeza, acesso físico ou equipamentos da sala, pois nada disso foi solicitado.</li>
+          <li><strong>Dúvida registrada:</strong> reservas canceladas permanecem no histórico? O texto menciona situação, mas não determina a política de exclusão.</li>
+        </ol>
+        <div class="axis-note"><b>i</b><div><strong>Resultado do passo:</strong> ainda não temos um DER. Temos uma leitura organizada e um recorte explícito do domínio.</div></div>
+      </article>
+
+      <article class="practice-card secondary-practice">
+        <span>Agora é com a turma</span>
+        <strong>Faça a mesma leitura da clínica-escola</strong>
+        <ol class="practice-steps">
+          <li>Liste os conceitos sobre os quais a clínica precisa manter informações próprias ou histórico.</li>
+          <li>Separe as características que descrevem cada conceito.</li>
+          <li>Marque os verbos ou fatos que conectam os elementos.</li>
+          <li>Destaque expressões como “exatamente”, “pode”, “um ou mais” e “no máximo”.</li>
+          <li>Registre pelo menos uma informação que parece estar fora do escopo atual.</li>
+          <li>Escreva duas dúvidas que precisariam ser confirmadas com a clínica.</li>
+        </ol>
+        <details>
+          <summary>Conferir a leitura depois da tentativa</summary>
+          <div class="scenario-compact">
+            <p><strong>Conceitos candidatos:</strong> paciente, profissional, consulta e a supervisão entre profissionais.</p>
+            <p><strong>Características:</strong> identificadores, nomes, data de nascimento, endereço, telefones, registro profissional, especialidade, data e horário, motivo e situação.</p>
+            <p><strong>Regras:</strong> cada consulta exige um paciente e um profissional; pacientes e profissionais podem existir sem consultas; um profissional pode supervisionar vários profissionais; cada supervisionado possui, no máximo, um supervisor.</p>
+            <p><strong>Dúvidas possíveis:</strong> uma consulta pode ser remarcada? A supervisão precisa preservar histórico? Endereço será tratado como uma unidade ou por partes?</p>
+          </div>
+        </details>
+      </article>
+    </div>
+
+    <div class="decision-panel">
+      <h3>Uma regra para toda a aula</h3>
+      <p>Em cada novo passo, o exemplo resolvido aparecerá primeiro. A tarefa da clínica pedirá a mesma operação intelectual, e a conferência só deverá ser aberta depois que a equipe registrar sua própria decisão.</p>
+    </div>
+  </div>
+</section>
