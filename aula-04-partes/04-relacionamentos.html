@@ -40,14 +40,6 @@
           <li>Escreva as duas leituras da supervisão entre profissionais e nomeie os papéis.</li>
           <li>Verifique se cada frase pode ser confirmada pelo cenário.</li>
         </ol>
-        <details>
-          <summary>Conferir as regras direcionais depois da tentativa</summary>
-          <div class="scenario-compact">
-            <p>Um paciente <strong>participa de</strong> consultas; cada consulta <strong>refere-se a</strong> exatamente um paciente.</p>
-            <p>Um profissional <strong>realiza</strong> consultas; cada consulta <strong>é realizada por</strong> exatamente um profissional.</p>
-            <p>Um profissional, no papel de <strong>supervisor</strong>, pode supervisionar outros profissionais; um profissional, no papel de <strong>supervisionado</strong>, possui no máximo um supervisor.</p>
-          </div>
-        </details>
       </article>
     </div>
   </div>
@@ -96,14 +88,6 @@
           <li>Identifique quais participações são totais e quais são parciais.</li>
           <li>Defina os mínimos e máximos dos papéis supervisor e supervisionado.</li>
         </ol>
-        <details>
-          <summary>Conferir as cardinalidades depois da tentativa</summary>
-          <div class="scenario-compact">
-            <p><strong>PACIENTE 0..N ↔ CONSULTA 1..1:</strong> o paciente pode existir sem consulta e participar de várias; cada consulta exige um paciente.</p>
-            <p><strong>PROFISSIONAL 0..N ↔ CONSULTA 1..1:</strong> o profissional pode existir sem atendimento e realizar vários; cada consulta exige um profissional.</p>
-            <p><strong>Supervisão:</strong> no papel de supervisor, um profissional pode supervisionar 0..N profissionais; no papel de supervisionado, pode possuir 0..1 supervisor.</p>
-          </div>
-        </details>
       </article>
     </div>
   </div>
@@ -146,13 +130,6 @@ horário, situação</code></article>
           <li>Indique a que elemento pertencem data, horário, motivo e situação.</li>
           <li>Justifique se CONSULTA deve ser apenas um relacionamento ou uma entidade associativa.</li>
         </ol>
-        <details>
-          <summary>Conferir a decisão depois da tentativa</summary>
-          <div class="scenario-compact">
-            <p>Ao longo do tempo, um paciente pode ser atendido por vários profissionais e um profissional pode atender vários pacientes: a leitura direta é N:N.</p>
-            <p>Data, horário, motivo e situação descrevem um atendimento específico. CONSULTA explicita essa ocorrência, recebe identidade própria e preserva o histórico.</p>
-          </div>
-        </details>
       </article>
     </div>
   </div>
@@ -191,13 +168,6 @@ horário, situação</code></article>
           <li>Analise o fato: “uma transportadora entrega determinado produto para determinada filial; de cada combinação são registrados valor do frete e prazo”.</li>
           <li>Explique por que o segundo fato pode perder significado se for separado automaticamente em três relações binárias.</li>
         </ol>
-        <details>
-          <summary>Conferir os casos especiais depois da tentativa</summary>
-          <div class="scenario-compact">
-            <p><strong>Recursivo:</strong> PROFISSIONAL, no papel supervisor, participa de 0..N supervisões; no papel supervisionado, participa de 0..1.</p>
-            <p><strong>Ternário:</strong> TRANSPORTADORA–PRODUTO–FILIAL representa a entrega daquela combinação. Valor do frete e prazo pertencem ao fato combinado.</p>
-          </div>
-        </details>
       </article>
     </div>
 
