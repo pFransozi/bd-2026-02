@@ -1,0 +1,68 @@
+.modeling-page .practice-card > details,
+.modeling-page .decision-panel > details {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(127, 127, 127, .22);
+}
+
+.modeling-page details > summary {
+  cursor: pointer;
+  color: #8db0ff;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.modeling-page details[open] > summary {
+  margin-bottom: 1rem;
+}
+
+.modeling-page .practice-card .concept-grid,
+.modeling-page .practice-card .identifier-grid {
+  grid-template-columns: 1fr;
+}
+
+.modeling-page .practice-card .verb-model {
+  grid-template-columns: minmax(0, 1fr) 130px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.modeling-page .practice-card .directional-rules {
+  grid-template-columns: 1fr;
+}
+
+.modeling-page .practice-card .participation-line {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.modeling-page .practice-card .participation-connector {
+  text-align: center;
+  white-space: normal;
+}
+
+.modeling-page .practice-card .association-transition {
+  grid-template-columns: 1fr;
+}
+
+.modeling-page .practice-card .transition-arrow {
+  transform: rotate(90deg);
+}
+
+.modeling-page .decision-panel details .diagram-panel {
+  margin-bottom: 0;
+}
+
+.modeling-page .practice-card .scenario-compact + p {
+  margin-top: 1rem;
+}
+
+@media (max-width: 760px) {
+  .modeling-page .practice-card .verb-model {
+    grid-template-columns: 1fr;
+  }
+
+  .modeling-page .practice-card .verb-link::before,
+  .modeling-page .practice-card .verb-link::after {
+    display: none;
+  }
+}
