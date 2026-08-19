@@ -6,26 +6,36 @@
       <p>Uma entidade representa algo distinguível sobre o qual o sistema precisa manter informação. O nome encontrado no texto é apenas um candidato; a decisão precisa ser justificada pelo papel do conceito no domínio.</p>
     </div>
 
-    <div class="practice-grid">
-      <article class="practice-card primary-practice">
-        <span>Resolvido com a turma</span>
-        <strong>Entidades do domínio de reserva de salas</strong>
+    <div class="learning-sequence">
+      <article class="learning-block theory-block">
+        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Entidade, tipo e ocorrência</h3></div></div>
+        <p>O DER representa <strong>tipos de entidade</strong>, como PACIENTE ou SALA. Quando o banco for preenchido, cada pessoa ou sala cadastrada será uma <strong>ocorrência</strong> desse tipo.</p>
+        <div class="concept-grid">
+          <article class="concept-card"><span>Tipo</span><strong>USUÁRIO</strong><p>Categoria de pessoas cadastradas.</p><div class="entity-example">Ocorrência: usuário 184<br/>nome = 'Marina Alves'</div></article>
+          <article class="concept-card"><span>Tipo</span><strong>SALA</strong><p>Categoria de espaços disponíveis.</p><div class="entity-example">Ocorrência: sala 12<br/>nome = 'Sala Horizonte'</div></article>
+          <article class="concept-card"><span>Tipo</span><strong>RESERVA</strong><p>Categoria de usos agendados.</p><div class="entity-example">Ocorrência: reserva 903<br/>data = '21/08/2026'</div></article>
+        </div>
+        <div class="rule-panel">
+          <h3>Teste de independência conceitual</h3>
+          <p>Pergunte: precisamos reconhecer ocorrências distintas deste conceito, guardar informações próprias e relacioná-las a outros elementos? Uma resposta positiva fortalece a hipótese de entidade.</p>
+        </div>
+      </article>
+
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Entidades da reserva de salas</h3></div></div>
         <ol class="practice-steps">
           <li><strong>USUÁRIO</strong> é entidade porque precisamos distinguir pessoas cadastradas, manter seus dados e associá-las a reservas.</li>
           <li><strong>SALA</strong> é entidade porque cada espaço possui identidade e características próprias e pode participar de várias reservas.</li>
           <li><strong>RESERVA</strong> é entidade porque representa uma ocorrência específica, possui dados próprios e deve permanecer no histórico.</li>
         </ol>
-        <div class="concept-grid">
-          <article class="concept-card"><span>Tipo de entidade</span><strong>USUÁRIO</strong><p>Categoria representada no modelo.</p><div class="entity-example">Ocorrência: usuário 184<br/>nome = 'Marina Alves'</div></article>
-          <article class="concept-card"><span>Tipo de entidade</span><strong>SALA</strong><p>Categoria de espaços disponíveis.</p><div class="entity-example">Ocorrência: sala 12<br/>nome = 'Sala Horizonte'</div></article>
-          <article class="concept-card"><span>Ocorrência relevante</span><strong>RESERVA</strong><p>Um uso específico de uma sala.</p><div class="entity-example">Ocorrência: reserva 903<br/>data = '21/08/2026'</div></article>
+        <div class="comparison-panel">
+          <h3>Por que “capacidade” não é entidade?</h3>
+          <p>No cenário atual, capacidade apenas descreve uma sala. Não precisamos identificar capacidades distintas, guardar histórico próprio ou relacioná-las a outros conceitos.</p>
         </div>
-        <div class="rule-panel"><h3>Teste usado</h3><p>Perguntamos se precisamos reconhecer ocorrências distintas, guardar informações próprias e relacioná-las a outros elementos. Nos três casos, a resposta foi positiva.</p></div>
       </article>
 
-      <article class="practice-card secondary-practice">
-        <span>Agora é com a turma</span>
-        <strong>Proponha as entidades da clínica-escola</strong>
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Proponha as entidades da clínica-escola</h3></div></div>
         <ol class="practice-steps">
           <li>Liste os conceitos candidatos encontrados no cenário.</li>
           <li>Para cada candidato, explique por que suas ocorrências precisam ser distinguidas.</li>
@@ -43,11 +53,6 @@
         </details>
       </article>
     </div>
-
-    <div class="comparison-panel">
-      <h3>Tipo de entidade não é ocorrência</h3>
-      <p><strong>PACIENTE</strong> é uma categoria do modelo. “Marina Alves” é uma ocorrência dessa categoria. O DER representa tipos e regras; os registros concretos aparecerão quando o banco for preenchido.</p>
-    </div>
   </div>
 </section>
 
@@ -59,32 +64,42 @@
       <p>Os atributos registram características relevantes. O identificador permite reconhecer uma ocorrência sem ambiguidade. As classificações de atributos observam dimensões diferentes e podem se combinar.</p>
     </div>
 
-    <div class="attribute-grid">
-      <article class="attribute-card"><span>Estrutura</span><strong>Simples</strong><p>É tratado como uma unidade no modelo.</p><div class="attribute-example">SALA.capacidade</div></article>
-      <article class="attribute-card"><span>Estrutura</span><strong>Composto</strong><p>Pode ser dividido em partes significativas.</p><div class="attribute-example">endereço → logradouro, número, cidade, CEP</div></article>
-      <article class="attribute-card"><span>Quantidade</span><strong>Monovalorado</strong><p>Possui um valor por ocorrência.</p><div class="attribute-example">USUÁRIO.data_nascimento</div></article>
-      <article class="attribute-card"><span>Quantidade</span><strong>Multivalorado</strong><p>Pode possuir vários valores por ocorrência.</p><div class="attribute-example">USUÁRIO.telefone = {41..., 41...}</div></article>
-      <article class="attribute-card"><span>Origem</span><strong>Armazenado</strong><p>É registrado diretamente como fato de referência.</p><div class="attribute-example">data_nascimento = 15/03/2002</div></article>
-      <article class="attribute-card"><span>Origem</span><strong>Derivado</strong><p>Pode ser calculado a partir de outros valores.</p><div class="attribute-example">idade ← data_atual − data_nascimento</div></article>
-    </div>
-
-    <div class="axis-note"><b>i</b><div><strong>As categorias não formam uma lista única de alternativas.</strong> Data de nascimento pode ser simples, monovalorada e armazenada. Idade pode ser simples, monovalorada e derivada.</div></div>
-
-    <div class="practice-grid">
-      <article class="practice-card primary-practice">
-        <span>Resolvido com a turma</span>
-        <strong>Atributos e identificadores da reserva de salas</strong>
-        <div class="identifier-grid">
-          <article class="identifier-card"><span>Usuário</span><strong>usuario_id</strong><p>Identificador introduzido para não depender de nome, telefone ou outros dados que podem mudar ou se repetir.</p><div class="identifier-example">USUÁRIO(<u>usuario_id</u>, nome, data_nascimento, telefone)</div></article>
-          <article class="identifier-card"><span>Sala</span><strong>sala_id</strong><p>Distingue cada espaço, inclusive quando duas salas possuem nomes parecidos.</p><div class="identifier-example">SALA(<u>sala_id</u>, nome, capacidade)</div></article>
-          <article class="identifier-card"><span>Reserva</span><strong>reserva_id</strong><p>Distingue reservas diferentes, mesmo quando o mesmo usuário utiliza a mesma sala em datas distintas.</p><div class="identifier-example">RESERVA(<u>reserva_id</u>, data, horário, situação)</div></article>
+    <div class="learning-sequence">
+      <article class="learning-block theory-block">
+        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Tipos de atributo</h3></div></div>
+        <div class="attribute-grid">
+          <article class="attribute-card"><span>Estrutura</span><strong>Simples</strong><p>É tratado como uma unidade no modelo.</p><div class="attribute-example">SALA.capacidade</div></article>
+          <article class="attribute-card"><span>Estrutura</span><strong>Composto</strong><p>Pode ser dividido em partes significativas.</p><div class="attribute-example">endereço → logradouro, número, cidade, CEP</div></article>
+          <article class="attribute-card"><span>Quantidade</span><strong>Monovalorado</strong><p>Possui um valor por ocorrência.</p><div class="attribute-example">USUÁRIO.data_nascimento</div></article>
+          <article class="attribute-card"><span>Quantidade</span><strong>Multivalorado</strong><p>Pode possuir vários valores por ocorrência.</p><div class="attribute-example">USUÁRIO.telefone = {41..., 41...}</div></article>
+          <article class="attribute-card"><span>Origem</span><strong>Armazenado</strong><p>É registrado diretamente como fato de referência.</p><div class="attribute-example">data_nascimento = 15/03/2002</div></article>
+          <article class="attribute-card"><span>Origem</span><strong>Derivado</strong><p>Pode ser calculado a partir de outros valores.</p><div class="attribute-example">idade ← data_atual − data_nascimento</div></article>
         </div>
-        <div class="rule-panel"><h3>Checklist aplicado</h3><p>O identificador deve ser único, obrigatório, suficientemente estável e conter somente o necessário para identificar a ocorrência.</p></div>
+        <div class="axis-note"><b>i</b><div><strong>As categorias não formam uma lista única de alternativas.</strong> Data de nascimento pode ser simples, monovalorada e armazenada. Idade pode ser simples, monovalorada e derivada.</div></div>
+
+        <div class="decision-panel">
+          <h3>O identificador não precisa ser o nome</h3>
+          <p>Nomes podem se repetir e mudar. Um bom identificador deve ser único, obrigatório, suficientemente estável e conter somente o necessário para distinguir a ocorrência.</p>
+        </div>
       </article>
 
-      <article class="practice-card secondary-practice">
-        <span>Agora é com a turma</span>
-        <strong>Distribua os atributos da clínica-escola</strong>
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Atributos e identificadores da reserva de salas</h3></div></div>
+        <div class="identifier-grid">
+          <article class="identifier-card"><span>Usuário</span><strong>usuario_id</strong><p>Identificador introduzido para não depender de nome ou telefone.</p><div class="identifier-example">USUÁRIO(<u>usuario_id</u>, nome, data_nascimento, telefone)</div></article>
+          <article class="identifier-card"><span>Sala</span><strong>sala_id</strong><p>Distingue cada espaço, inclusive quando nomes são parecidos.</p><div class="identifier-example">SALA(<u>sala_id</u>, nome, capacidade)</div></article>
+          <article class="identifier-card"><span>Reserva</span><strong>reserva_id</strong><p>Distingue reservas diferentes do mesmo usuário para a mesma sala.</p><div class="identifier-example">RESERVA(<u>reserva_id</u>, data, horario_inicial, situação)</div></article>
+        </div>
+        <ol class="practice-steps">
+          <li><strong>telefone</strong> é multivalorado porque o cenário admite um ou mais valores por usuário.</li>
+          <li><strong>data_nascimento</strong> é armazenada; <strong>idade</strong> poderia ser derivada.</li>
+          <li><strong>capacidade</strong> é simples e monovalorada no recorte atual.</li>
+          <li><strong>data, horário e situação</strong> descrevem a reserva, não o usuário nem a sala.</li>
+        </ol>
+      </article>
+
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Distribua os atributos da clínica-escola</h3></div></div>
         <ol class="practice-steps">
           <li>Associe cada atributo do cenário à entidade que ele descreve.</li>
           <li>Escolha um identificador para PACIENTE, PROFISSIONAL e CONSULTA.</li>
@@ -96,7 +111,7 @@
           <summary>Conferir atributos e identificadores depois da tentativa</summary>
           <div class="scenario-compact">
             <p><strong>PACIENTE:</strong> paciente_id; nome; data_nascimento; endereço composto; telefone multivalorado. Idade pode ser derivada.</p>
-            <p><strong>PROFISSIONAL:</strong> profissional_id; nome; registro; especialidade. O registro profissional também pode ser candidato a identificador, desde que seja único e estável no escopo definido.</p>
+            <p><strong>PROFISSIONAL:</strong> profissional_id; nome; registro; especialidade. O registro também pode ser candidato a identificador, desde que seja único e estável no escopo definido.</p>
             <p><strong>CONSULTA:</strong> consulta_id; data_hora; motivo; situação.</p>
             <p><strong>Decisão a confirmar:</strong> o endereço precisa ser separado em partes? A resposta depende das consultas, validações e integrações esperadas.</p>
           </div>
@@ -104,9 +119,9 @@
       </article>
     </div>
 
-    <div class="decision-panel">
-      <h3>Um atributo pode tornar-se entidade</h3>
-      <p>Telefone pode ser apenas um atributo multivalorado no modelo inicial. Se o sistema precisar registrar tipo, prioridade, confirmação ou histórico de alterações, talvez seja necessário representá-lo como conceito próprio. O requisito determina a escolha.</p>
+    <div class="activity-note no-tool-note">
+      <strong>Ainda não é hora de desenhar o DER completo.</strong>
+      <p>Guarde a lista de entidades, atributos e identificadores. No próximo passo, relacionamentos e cardinalidades fornecerão as informações que faltam para abrir o diagrams.net.</p>
     </div>
   </div>
 </section>
