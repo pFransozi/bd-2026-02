@@ -1,153 +1,133 @@
-<section aria-labelledby="der-title" class="section-pad">
+<section aria-labelledby="laboratorio-title" class="section-pad" id="laboratorio">
   <div class="container">
     <div class="section-heading">
-      <p class="eyebrow">Passo 8 · construção do DER</p>
-      <h2 id="der-title">Junte as decisões somente depois de construí-las separadamente</h2>
-      <p>O diagrama final não surge de um salto. Ele reúne o recorte do domínio, as entidades justificadas, os atributos, os identificadores, as regras direcionais e as cardinalidades definidas nos passos anteriores.</p>
+      <p class="eyebrow">Laboratório de modelagem</p>
+      <h2 id="laboratorio-title">Agora as decisões serão transformadas em um DER no diagrams.net</h2>
+      <p>A ferramenta entra somente neste momento porque o desenho precisa representar decisões já discutidas. O objetivo não é explorar toda a interface, mas construir um diagrama legível, editável e justificável.</p>
     </div>
 
-    <figure class="diagram-panel">
-      <h3>Exemplo resolvido — reserva de salas</h3>
-      <svg aria-labelledby="reserva-svg-title reserva-svg-desc" role="img" viewBox="0 0 1100 390">
-        <title id="reserva-svg-title">Diagrama Entidade-Relacionamento do domínio de reserva de salas</title>
-        <desc id="reserva-svg-desc">Usuário realiza reservas e sala é utilizada em reservas. Usuários e salas podem existir sem reservas. Cada reserva exige exatamente um usuário e exatamente uma sala.</desc>
-        <defs>
-          <linearGradient id="reserveHead" x1="0" x2="1"><stop offset="0%" stop-color="#5f82ff"></stop><stop offset="100%" stop-color="#7c67e8"></stop></linearGradient>
-          <filter height="140%" id="reserveShadow" width="140%" x="-20%" y="-20%"><feDropShadow dx="0" dy="10" flood-color="#000000" flood-opacity=".12" stdDeviation="10"></feDropShadow></filter>
-        </defs>
-        <line stroke="#8db0ff" stroke-width="3" x1="285" x2="405" y1="190" y2="190"></line>
-        <line stroke="#8db0ff" stroke-width="3" x1="695" x2="815" y1="190" y2="190"></line>
-        <text fill="currentColor" font-size="15" font-weight="700" x="318" y="166">realiza</text>
-        <text fill="currentColor" font-size="15" font-weight="700" x="720" y="166">utiliza</text>
-        <text fill="#8db0ff" font-size="15" font-weight="800" x="292" y="220">0..N</text>
-        <text fill="#62d9ef" font-size="15" font-weight="800" x="365" y="220">1..1</text>
-        <text fill="#62d9ef" font-size="15" font-weight="800" x="702" y="220">1..1</text>
-        <text fill="#8db0ff" font-size="15" font-weight="800" x="777" y="220">0..N</text>
-
-        <g filter="url(#reserveShadow)">
-          <rect fill="rgba(127,127,127,.055)" height="245" rx="18" stroke="rgba(127,127,127,.34)" stroke-width="2" width="250" x="35" y="70"></rect>
-          <path d="M53 70 H267 Q285 70 285 88 V120 H35 V88 Q35 70 53 70Z" fill="url(#reserveHead)"></path>
-          <text fill="#ffffff" font-size="19" font-weight="900" text-anchor="middle" x="160" y="103">USUÁRIO</text>
-          <text fill="currentColor" font-size="15" font-weight="800" x="58" y="151">usuario_id</text><line stroke="currentColor" stroke-width="1.5" x1="58" x2="135" y1="155" y2="155"></line>
-          <text fill="currentColor" font-size="15" x="58" y="184">nome</text>
-          <text fill="currentColor" font-size="15" x="58" y="213">data_nascimento</text>
-          <text fill="currentColor" font-size="15" x="58" y="242">telefone {multivalorado}</text>
-          <text fill="#8db0ff" font-size="13" font-weight="700" x="58" y="292">participação parcial</text>
-        </g>
-
-        <g filter="url(#reserveShadow)">
-          <rect fill="rgba(127,127,127,.055)" height="285" rx="18" stroke="rgba(98,217,239,.55)" stroke-width="2.5" width="290" x="405" y="50"></rect>
-          <path d="M423 50 H677 Q695 50 695 68 V104 H405 V68 Q405 50 423 50Z" fill="url(#reserveHead)"></path>
-          <text fill="#ffffff" font-size="19" font-weight="900" text-anchor="middle" x="550" y="86">RESERVA</text>
-          <text fill="currentColor" font-size="15" font-weight="800" x="432" y="137">reserva_id</text><line stroke="currentColor" stroke-width="1.5" x1="432" x2="509" y1="141" y2="141"></line>
-          <text fill="currentColor" font-size="15" x="432" y="170">data</text>
-          <text fill="currentColor" font-size="15" x="432" y="201">horario_inicial</text>
-          <text fill="currentColor" font-size="15" x="432" y="232">situação</text>
-          <text fill="currentColor" font-size="15" x="432" y="263">usuário participante</text>
-          <text fill="currentColor" font-size="15" x="432" y="294">sala utilizada</text>
-          <text fill="#62d9ef" font-size="13" font-weight="700" x="432" y="321">entidade associativa · participação total</text>
-        </g>
-
-        <g filter="url(#reserveShadow)">
-          <rect fill="rgba(127,127,127,.055)" height="245" rx="18" stroke="rgba(127,127,127,.34)" stroke-width="2" width="250" x="815" y="70"></rect>
-          <path d="M833 70 H1047 Q1065 70 1065 88 V120 H815 V88 Q815 70 833 70Z" fill="url(#reserveHead)"></path>
-          <text fill="#ffffff" font-size="19" font-weight="900" text-anchor="middle" x="940" y="103">SALA</text>
-          <text fill="currentColor" font-size="15" font-weight="800" x="838" y="151">sala_id</text><line stroke="currentColor" stroke-width="1.5" x1="838" x2="891" y1="155" y2="155"></line>
-          <text fill="currentColor" font-size="15" x="838" y="184">nome</text>
-          <text fill="currentColor" font-size="15" x="838" y="213">capacidade</text>
-          <text fill="#8db0ff" font-size="13" font-weight="700" x="838" y="292">participação parcial</text>
-        </g>
-      </svg>
-      <figcaption class="diagram-legend"><span><b>Sublinhado</b> identificador</span><span><b>0</b> participação opcional</span><span><b>1</b> participação obrigatória</span><span><b>N</b> várias ocorrências</span></figcaption>
-    </figure>
-
-    <div class="rule-panel">
-      <h3>Leia o DER como regras</h3>
-      <p>Um usuário pode realizar nenhuma ou várias reservas; cada reserva pertence a exatamente um usuário. Uma sala pode não ter reservas ou aparecer em várias; cada reserva utiliza exatamente uma sala. A reserva possui identidade e dados próprios.</p>
-    </div>
-
-    <div class="inquiry">
-      <div class="inquiry-head"><span class="inquiry-kicker">Aplicação guiada — construa antes de conferir</span><span class="inquiry-tag">25 minutos</span></div>
-      <div class="inquiry-body">
-        <p>Agora reúna as decisões registradas sobre a clínica-escola:</p>
-        <ol>
-          <li>Desenhe PACIENTE, PROFISSIONAL e CONSULTA.</li>
-          <li>Inclua identificadores e os atributos centrais.</li>
-          <li>Represente as relações de PACIENTE e PROFISSIONAL com CONSULTA.</li>
-          <li>Indique mínimos e máximos nos dois sentidos.</li>
-          <li>Represente telefone como multivalorado e endereço como composto, conforme a notação adotada.</li>
-          <li>Acrescente a supervisão recursiva com os papéis supervisor e supervisionado.</li>
-          <li>Escreva ao lado do desenho qualquer suposição que não esteja explícita no cenário.</li>
-        </ol>
+    <div class="diagram-tool-panel">
+      <div>
+        <span>Ferramenta da atividade</span>
+        <h3>diagrams.net</h3>
+        <p>Use uma notação simples e consistente: entidades em caixas, atributos dentro delas, identificadores destacados, relacionamentos nomeados e cardinalidades mínimas e máximas próximas às extremidades.</p>
       </div>
+      <a class="button button-primary" href="https://app.diagrams.net/" rel="noopener noreferrer" target="_blank">Abrir diagrams.net →</a>
     </div>
 
-    <div class="decision-panel">
-      <details>
-        <summary><strong>Resolução comentada — abrir somente após concluir a versão da equipe</strong></summary>
-        <figure class="diagram-panel">
-          <h3>Clínica-escola — uma solução conceitual inicial</h3>
-          <svg aria-labelledby="clinica-svg-title clinica-svg-desc" role="img" viewBox="0 0 1100 400">
-            <title id="clinica-svg-title">Diagrama Entidade-Relacionamento inicial da clínica-escola</title>
-            <desc id="clinica-svg-desc">Paciente se relaciona com Consulta em um para muitos. Profissional também se relaciona com Consulta em um para muitos. Cada consulta exige um paciente e um profissional. Pacientes e profissionais podem existir sem consultas. Profissional possui relacionamento recursivo de supervisão.</desc>
-            <defs>
-              <linearGradient id="clinicHead" x1="0" x2="1"><stop offset="0%" stop-color="#5f82ff"></stop><stop offset="100%" stop-color="#7c67e8"></stop></linearGradient>
-              <filter height="140%" id="clinicShadow" width="140%" x="-20%" y="-20%"><feDropShadow dx="0" dy="10" flood-color="#000000" flood-opacity=".12" stdDeviation="10"></feDropShadow></filter>
-            </defs>
-            <line stroke="#8db0ff" stroke-width="3" x1="285" x2="405" y1="192" y2="192"></line>
-            <line stroke="#8db0ff" stroke-width="3" x1="695" x2="815" y1="192" y2="192"></line>
-            <text fill="currentColor" font-size="15" font-weight="700" x="304" y="168">participa de</text>
-            <text fill="currentColor" font-size="15" font-weight="700" x="718" y="168">é realizada por</text>
-            <text fill="#8db0ff" font-size="15" font-weight="800" x="292" y="220">0..N</text>
-            <text fill="#62d9ef" font-size="15" font-weight="800" x="365" y="220">1..1</text>
-            <text fill="#62d9ef" font-size="15" font-weight="800" x="702" y="220">1..1</text>
-            <text fill="#8db0ff" font-size="15" font-weight="800" x="777" y="220">0..N</text>
+    <div class="learning-sequence">
+      <article class="learning-block theory-block">
+        <div class="learning-block-head"><span>T</span><div><small>Preparação da ferramenta</small><h3>Defina a linguagem visual antes de começar</h3></div></div>
+        <div class="notation-grid">
+          <article><strong>Entidade</strong><p>Retângulo com o nome em letras maiúsculas.</p></article>
+          <article><strong>Atributo</strong><p>Lista dentro da entidade ou notação equivalente adotada pela turma.</p></article>
+          <article><strong>Identificador</strong><p>Sublinhado ou acompanhado da marcação <code>ID</code>.</p></article>
+          <article><strong>Relacionamento</strong><p>Linha nomeada por um verbo ou expressão legível.</p></article>
+          <article><strong>Cardinalidade</strong><p>Use <code>0..1</code>, <code>1..1</code>, <code>0..N</code> ou <code>1..N</code>.</p></article>
+          <article><strong>Dúvidas</strong><p>Registre notas no próprio arquivo sem transformá-las em regras definitivas.</p></article>
+        </div>
+        <div class="activity-note no-tool-note">
+          <strong>Não misture modelo conceitual e implementação.</strong>
+          <p>Nesta atividade, não inclua tipos SQL, comandos, índices ou detalhes físicos do PostgreSQL. O foco permanece no domínio e nas regras de informação.</p>
+        </div>
+      </article>
 
-            <g filter="url(#clinicShadow)">
-              <rect fill="rgba(127,127,127,.055)" height="245" rx="18" stroke="rgba(127,127,127,.34)" stroke-width="2" width="250" x="35" y="70"></rect>
-              <path d="M53 70 H267 Q285 70 285 88 V120 H35 V88 Q35 70 53 70Z" fill="url(#clinicHead)"></path>
-              <text fill="#ffffff" font-size="19" font-weight="900" text-anchor="middle" x="160" y="103">PACIENTE</text>
-              <text fill="currentColor" font-size="15" font-weight="800" x="58" y="151">paciente_id</text><line stroke="currentColor" stroke-width="1.5" x1="58" x2="146" y1="155" y2="155"></line>
-              <text fill="currentColor" font-size="15" x="58" y="184">nome</text>
-              <text fill="currentColor" font-size="15" x="58" y="213">data_nascimento</text>
-              <text fill="currentColor" font-size="15" x="58" y="242">endereço (composto)</text>
-              <text fill="currentColor" font-size="15" x="58" y="271">telefone {multivalorado}</text>
-              <text fill="#8db0ff" font-size="13" font-weight="700" x="58" y="298">participação parcial</text>
-            </g>
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado no diagrams.net</small><h3>Construa o DER de reserva de salas com o professor</h3></div></div>
+        <p>Abra um arquivo novo e acompanhe a construção. Cada passo deve corresponder a uma decisão já explicada:</p>
+        <ol class="practice-steps">
+          <li>Crie as entidades USUÁRIO, RESERVA e SALA.</li>
+          <li>Inclua os identificadores e os atributos centrais.</li>
+          <li>Ligue USUÁRIO a RESERVA pelo relacionamento <strong>realiza</strong>.</li>
+          <li>Ligue RESERVA a SALA pelo relacionamento <strong>utiliza</strong>.</li>
+          <li>Adicione <code>0..N</code> junto a USUÁRIO e SALA e <code>1..1</code> junto a RESERVA.</li>
+          <li>Marque RESERVA como a ocorrência que preserva data, horário e situação.</li>
+          <li>Leia o diagrama inteiro em voz alta para verificar se as regras permanecem compreensíveis.</li>
+        </ol>
 
-            <g filter="url(#clinicShadow)">
-              <rect fill="rgba(127,127,127,.055)" height="305" rx="18" stroke="rgba(98,217,239,.55)" stroke-width="2.5" width="290" x="405" y="40"></rect>
-              <path d="M423 40 H677 Q695 40 695 58 V94 H405 V58 Q405 40 423 40Z" fill="url(#clinicHead)"></path>
-              <text fill="#ffffff" font-size="19" font-weight="900" text-anchor="middle" x="550" y="76">CONSULTA</text>
-              <text fill="currentColor" font-size="15" font-weight="800" x="432" y="127">consulta_id</text><line stroke="currentColor" stroke-width="1.5" x1="432" x2="516" y1="131" y2="131"></line>
-              <text fill="currentColor" font-size="15" x="432" y="160">data_hora</text>
-              <text fill="currentColor" font-size="15" x="432" y="191">motivo</text>
-              <text fill="currentColor" font-size="15" x="432" y="222">situação</text>
-              <text fill="currentColor" font-size="15" x="432" y="253">paciente participante</text>
-              <text fill="currentColor" font-size="15" x="432" y="284">profissional responsável</text>
-              <text fill="#62d9ef" font-size="13" font-weight="700" x="432" y="321">entidade associativa · participação total</text>
-            </g>
+        <details>
+          <summary>Ver o resultado de referência da atividade guiada</summary>
+          <div class="model-sketch" aria-label="Modelo de referência da reserva de salas">
+            <article class="model-node">
+              <header>USUÁRIO</header>
+              <ul><li><u>usuario_id</u></li><li>nome</li><li>data_nascimento</li><li>telefone {multivalorado}</li></ul>
+              <small>participação parcial</small>
+            </article>
+            <div class="model-edge"><strong>realiza</strong><span>0..N ⟷ 1..1</span></div>
+            <article class="model-node associated-node">
+              <header>RESERVA</header>
+              <ul><li><u>reserva_id</u></li><li>data</li><li>horario_inicial</li><li>situação</li></ul>
+              <small>participação total</small>
+            </article>
+            <div class="model-edge"><strong>utiliza</strong><span>1..1 ⟷ 0..N</span></div>
+            <article class="model-node">
+              <header>SALA</header>
+              <ul><li><u>sala_id</u></li><li>nome</li><li>capacidade</li></ul>
+              <small>participação parcial</small>
+            </article>
+          </div>
+        </details>
 
-            <g filter="url(#clinicShadow)">
-              <rect fill="rgba(127,127,127,.055)" height="245" rx="18" stroke="rgba(127,127,127,.34)" stroke-width="2" width="250" x="815" y="70"></rect>
-              <path d="M833 70 H1047 Q1065 70 1065 88 V120 H815 V88 Q815 70 833 70Z" fill="url(#clinicHead)"></path>
-              <text fill="#ffffff" font-size="19" font-weight="900" text-anchor="middle" x="940" y="103">PROFISSIONAL</text>
-              <text fill="currentColor" font-size="15" font-weight="800" x="838" y="151">profissional_id</text><line stroke="currentColor" stroke-width="1.5" x1="838" x2="947" y1="155" y2="155"></line>
-              <text fill="currentColor" font-size="15" x="838" y="184">nome</text>
-              <text fill="currentColor" font-size="15" x="838" y="213">registro</text>
-              <text fill="currentColor" font-size="15" x="838" y="242">especialidade</text>
-              <text fill="#8db0ff" font-size="13" font-weight="700" x="838" y="298">participação parcial</text>
-            </g>
+        <div class="activity-note guided-tool-note">
+          <strong>Este arquivo é de acompanhamento.</strong>
+          <p>Ele pode ser usado como treino, mas não é o produto principal da entrega. O exercício seguinte deverá ser construído pela equipe.</p>
+        </div>
+      </article>
 
-            <path d="M940 315 C940 365 815 365 815 315" fill="none" stroke="#62d9ef" stroke-dasharray="7 6" stroke-width="2.5"></path>
-            <text fill="currentColor" font-size="14" font-weight="700" text-anchor="middle" x="875" y="386">supervisiona</text>
-            <text fill="#8db0ff" font-size="13" font-weight="800" x="800" y="350">supervisor 0..N</text>
-            <text fill="#8db0ff" font-size="13" font-weight="800" x="938" y="350">supervisionado 0..1</text>
-          </svg>
-          <figcaption class="diagram-legend"><span><b>Sublinhado</b> identificador</span><span><b>0</b> participação opcional</span><span><b>1</b> participação obrigatória</span><span><b>N</b> várias ocorrências</span><span><b>Laço</b> relacionamento recursivo</span></figcaption>
-        </figure>
-        <p>Esta é uma solução inicial compatível com o cenário, não a única aparência possível. Mudanças de notação são aceitáveis quando preservam as mesmas regras e são explicadas.</p>
-      </details>
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes no diagrams.net</small><h3>Construa o DER da clínica-escola</h3></div></div>
+        <p>Utilize as decisões registradas nas etapas anteriores. Não copie o modelo de reserva trocando apenas os nomes: cada cardinalidade e cada elemento precisam ser sustentados pelo cenário da clínica.</p>
+        <ol class="practice-steps">
+          <li>Crie PACIENTE, PROFISSIONAL e CONSULTA.</li>
+          <li>Inclua identificadores e os atributos centrais de cada entidade.</li>
+          <li>Represente endereço como composto e telefone como multivalorado conforme a notação adotada.</li>
+          <li>Relacione PACIENTE e PROFISSIONAL com CONSULTA.</li>
+          <li>Indique mínimos e máximos em todas as extremidades.</li>
+          <li>Represente a supervisão recursiva entre profissionais e nomeie os papéis supervisor e supervisionado.</li>
+          <li>Inclua no próprio arquivo uma área intitulada <strong>Dúvidas e suposições</strong>.</li>
+          <li>Teste o modelo com casos permitidos e proibidos antes de considerá-lo concluído.</li>
+        </ol>
+
+        <div class="delivery-panel" id="entrega">
+          <div class="delivery-panel-head"><span>Entrega da atividade</span><strong>DER da clínica-escola</strong></div>
+          <p>A equipe deverá entregar no ambiente indicado pelo professor:</p>
+          <ul>
+            <li>o arquivo <strong>editável</strong> do diagrams.net, preferencialmente no formato <code>.drawio</code>;</li>
+            <li>uma exportação do diagrama em <strong>PDF ou PNG</strong> para consulta rápida;</li>
+            <li>no próprio diagrama, pelo menos <strong>três decisões justificadas</strong> e <strong>duas dúvidas ou suposições</strong> registradas.</li>
+          </ul>
+          <p class="delivery-name"><strong>Nome sugerido:</strong> <code>equipe_nome-aula04-clinica.drawio</code></p>
+          <p><strong>Não entregue somente uma captura de tela.</strong> O arquivo editável será necessário para as revisões e para as próximas etapas da disciplina.</p>
+        </div>
+
+        <details>
+          <summary>Resolução comentada — abrir somente após concluir a versão da equipe</summary>
+          <div class="model-sketch clinic-sketch" aria-label="Uma solução conceitual inicial para a clínica-escola">
+            <article class="model-node">
+              <header>PACIENTE</header>
+              <ul><li><u>paciente_id</u></li><li>nome</li><li>data_nascimento</li><li>endereço (composto)</li><li>telefone {multivalorado}</li></ul>
+              <small>participação parcial</small>
+            </article>
+            <div class="model-edge"><strong>participa de</strong><span>0..N ⟷ 1..1</span></div>
+            <article class="model-node associated-node">
+              <header>CONSULTA</header>
+              <ul><li><u>consulta_id</u></li><li>data_hora</li><li>motivo</li><li>situação</li></ul>
+              <small>participação total</small>
+            </article>
+            <div class="model-edge"><strong>é realizada por</strong><span>1..1 ⟷ 0..N</span></div>
+            <article class="model-node recursive-node">
+              <header>PROFISSIONAL</header>
+              <ul><li><u>profissional_id</u></li><li>nome</li><li>registro</li><li>especialidade</li></ul>
+              <small>supervisor 0..N · supervisionado 0..1</small>
+            </article>
+          </div>
+          <div class="scenario-compact">
+            <p><strong>Leitura:</strong> pacientes e profissionais podem existir sem consultas; cada consulta exige exatamente um paciente e um profissional.</p>
+            <p><strong>Supervisão:</strong> o relacionamento é recursivo e os papéis precisam estar explícitos.</p>
+            <p><strong>Observação:</strong> esta é uma solução inicial. Decisões sobre histórico de supervisão, estrutura do endereço e regras de remarcação ainda podem exigir validação.</p>
+          </div>
+        </details>
+      </article>
     </div>
   </div>
 </section>
@@ -155,62 +135,51 @@
 <section aria-labelledby="validacao-title" class="section-pad section-soft" id="validacao">
   <div class="container">
     <div class="section-heading">
-      <p class="eyebrow">Passo 9 · validação</p>
-      <h2 id="validacao-title">Teste o significado do modelo com casos permitidos e proibidos</h2>
-      <p>Um DER não está correto apenas porque parece organizado. Validar é confrontar o desenho com requisitos, ocorrências possíveis, regras do domínio, dúvidas e suposições.</p>
-    </div>
-
-    <div class="practice-grid">
-      <article class="practice-card primary-practice">
-        <span>Resolvido com a turma</span>
-        <strong>Testes sobre a reserva de salas</strong>
-        <ol class="practice-steps">
-          <li><strong>Marina foi cadastrada e ainda não reservou uma sala:</strong> permitido, porque o mínimo de USUÁRIO é 0.</li>
-          <li><strong>A reserva 903 foi registrada sem sala:</strong> proibido, porque cada RESERVA exige exatamente uma SALA.</li>
-          <li><strong>Marina reservou a sala 12 em duas datas diferentes:</strong> permitido, pois cada ocorrência possui reserva_id próprio.</li>
-          <li><strong>A sala 12 nunca foi reservada:</strong> permitido, porque o mínimo de SALA é 0.</li>
-        </ol>
-      </article>
-
-      <article class="practice-card secondary-practice">
-        <span>Agora é com a turma</span>
-        <strong>Audite o DER da clínica</strong>
-        <ol class="practice-steps">
-          <li>O modelo permite cadastrar paciente e profissional antes da primeira consulta?</li>
-          <li>Permite uma consulta sem paciente ou sem profissional?</li>
-          <li>O mesmo paciente pode consultar o mesmo profissional em datas diferentes?</li>
-          <li>Onde está representado que um paciente possui vários telefones?</li>
-          <li>Um profissional pode ter dois supervisores simultâneos?</li>
-          <li>Quais decisões ainda dependem de confirmação com a clínica?</li>
-        </ol>
-        <details>
-          <summary>Conferir a auditoria depois da tentativa</summary>
-          <div class="scenario-compact">
-            <p>Paciente e profissional podem existir sem consulta; consulta não pode existir sem ambos; atendimentos repetidos são distinguidos por consulta_id; telefone está marcado como multivalorado; o máximo do papel supervisionado é 1.</p>
-            <p>A política de remarcação, o histórico da supervisão, a estrutura do endereço e a lista controlada de situações são exemplos de decisões que podem exigir confirmação.</p>
-          </div>
-        </details>
-      </article>
+      <p class="eyebrow">Validação do modelo</p>
+      <h2 id="validacao-title">Um DER não está correto apenas porque parece organizado</h2>
+      <p>Validar significa confrontar o desenho com os requisitos, as regras do domínio, os casos possíveis e as dúvidas registradas.</p>
     </div>
 
     <div class="validation-grid">
-      <article class="validation-card"><span>Completude</span><strong>Os fatos necessários aparecem?</strong><p>Verifique se o modelo representa as informações que o sistema precisa manter e as perguntas que deverá responder.</p></article>
-      <article class="validation-card"><span>Coerência</span><strong>As regras não se contradizem?</strong><p>Cardinalidades, participação e identificadores devem ser compatíveis com os requisitos e entre si.</p></article>
-      <article class="validation-card"><span>Clareza</span><strong>Outra pessoa compreende o modelo?</strong><p>Nomes, papéis e relacionamentos precisam comunicar o domínio sem depender de explicações escondidas.</p></article>
-      <article class="validation-card"><span>Justificativa</span><strong>As escolhas podem ser defendidas?</strong><p>Decisões, suposições, alternativas descartadas e dúvidas devem estar registradas para revisão.</p></article>
+      <article class="validation-card"><span>Completude</span><strong>Os fatos necessários aparecem?</strong><p>Verifique se o modelo representa as informações que o sistema precisa manter.</p></article>
+      <article class="validation-card"><span>Coerência</span><strong>As regras não se contradizem?</strong><p>Cardinalidades, participação e identificadores devem ser compatíveis entre si.</p></article>
+      <article class="validation-card"><span>Clareza</span><strong>Outra pessoa compreende o modelo?</strong><p>Nomes, papéis e relacionamentos precisam comunicar o domínio sem explicações escondidas.</p></article>
+      <article class="validation-card"><span>Justificativa</span><strong>As escolhas podem ser defendidas?</strong><p>Decisões, suposições, alternativas descartadas e dúvidas devem estar registradas.</p></article>
     </div>
 
-    <div aria-label="Checklist de validação do DER" class="validation-checklist">
-      <div class="validation-item">Cada entidade possui uma razão clara para existir.</div>
-      <div class="validation-item">Cada entidade pode ser identificada sem ambiguidade.</div>
-      <div class="validation-item">Cada atributo descreve o elemento correto.</div>
-      <div class="validation-item">Atributos multivalorados e derivados foram analisados.</div>
-      <div class="validation-item">Cada relacionamento pode ser lido nos dois sentidos.</div>
-      <div class="validation-item">Cardinalidades mínima e máxima foram verificadas.</div>
-      <div class="validation-item">Participação obrigatória e opcional está explícita.</div>
-      <div class="validation-item">Relacionamentos N:N e seus atributos foram revisados.</div>
-      <div class="validation-item">Papéis de relacionamentos recursivos estão nomeados.</div>
-      <div class="validation-item">Dúvidas e suposições não foram escondidas no desenho.</div>
+    <div class="learning-sequence validation-sequence">
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>G</span><div><small>Auditoria guiada</small><h3>Teste o modelo de reserva de salas</h3></div></div>
+        <ol class="practice-steps">
+          <li>Um usuário pode existir sem reserva?</li>
+          <li>Uma sala pode ser cadastrada sem uso registrado?</li>
+          <li>Uma reserva pode existir sem usuário ou sala?</li>
+          <li>O mesmo usuário pode reservar a mesma sala em datas diferentes?</li>
+          <li>Onde ficam data, horário e situação?</li>
+        </ol>
+        <p>As respostas devem ser localizáveis no DER. Quando uma regra depende de explicação oral que não aparece no modelo ou nas notas, o artefato ainda está incompleto.</p>
+      </article>
+
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>P</span><div><small>Revisão entre equipes</small><h3>Audite o DER da clínica-escola</h3></div></div>
+        <p>Troque o arquivo exportado com outra equipe. A equipe revisora deve registrar observações antes que o modelo seja alterado.</p>
+        <div class="validation-checklist">
+          <div class="validation-item">Cada entidade possui uma razão clara para existir.</div>
+          <div class="validation-item">Cada entidade pode ser identificada sem ambiguidade.</div>
+          <div class="validation-item">Cada atributo descreve o elemento correto.</div>
+          <div class="validation-item">Atributos multivalorados e derivados foram analisados.</div>
+          <div class="validation-item">Cada relacionamento pode ser lido nos dois sentidos.</div>
+          <div class="validation-item">Cardinalidades mínimas e máximas correspondem ao cenário.</div>
+          <div class="validation-item">Participação obrigatória e opcional está explícita.</div>
+          <div class="validation-item">Os papéis da supervisão recursiva estão nomeados.</div>
+          <div class="validation-item">Dúvidas e suposições aparecem no arquivo.</div>
+          <div class="validation-item">O modelo não acrescenta regras sem justificativa.</div>
+        </div>
+        <div class="rule-panel">
+          <h3>Antes de entregar</h3>
+          <p>Incorpore as correções aceitas, registre ao menos uma alteração realizada após a auditoria e salve novamente o arquivo editável e a exportação final.</p>
+        </div>
+      </article>
     </div>
   </div>
 </section>
