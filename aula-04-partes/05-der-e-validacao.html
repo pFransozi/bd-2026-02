@@ -45,29 +45,6 @@
           <li>Leia o diagrama inteiro em voz alta para verificar se as regras permanecem compreensíveis.</li>
         </ol>
 
-        <details>
-          <summary>Ver o resultado de referência da atividade guiada</summary>
-          <div class="model-sketch" aria-label="Modelo de referência da reserva de salas">
-            <article class="model-node">
-              <header>USUÁRIO</header>
-              <ul><li><u>usuario_id</u></li><li>nome</li><li>data_nascimento</li><li>telefone {multivalorado}</li></ul>
-              <small>participação parcial</small>
-            </article>
-            <div class="model-edge"><strong>realiza</strong><span>0..N ⟷ 1..1</span></div>
-            <article class="model-node associated-node">
-              <header>RESERVA</header>
-              <ul><li><u>reserva_id</u></li><li>data</li><li>horario_inicial</li><li>situação</li></ul>
-              <small>participação total</small>
-            </article>
-            <div class="model-edge"><strong>utiliza</strong><span>1..1 ⟷ 0..N</span></div>
-            <article class="model-node">
-              <header>SALA</header>
-              <ul><li><u>sala_id</u></li><li>nome</li><li>capacidade</li></ul>
-              <small>participação parcial</small>
-            </article>
-          </div>
-        </details>
-
         <div class="activity-note guided-tool-note">
           <strong>Este arquivo é de acompanhamento.</strong>
           <p>Ele pode ser usado como treino, mas não é o produto principal da entrega. O exercício seguinte deverá ser construído pela equipe.</p>
@@ -99,34 +76,6 @@
           <p class="delivery-name"><strong>Nome sugerido:</strong> <code>equipe_nome-aula04-clinica.drawio</code></p>
           <p><strong>Não entregue somente uma captura de tela.</strong> O arquivo editável será necessário para as revisões e para as próximas etapas da disciplina.</p>
         </div>
-
-        <details>
-          <summary>Resolução comentada — abrir somente após concluir a versão da equipe</summary>
-          <div class="model-sketch clinic-sketch" aria-label="Uma solução conceitual inicial para a clínica-escola">
-            <article class="model-node">
-              <header>PACIENTE</header>
-              <ul><li><u>paciente_id</u></li><li>nome</li><li>data_nascimento</li><li>endereço (composto)</li><li>telefone {multivalorado}</li></ul>
-              <small>participação parcial</small>
-            </article>
-            <div class="model-edge"><strong>participa de</strong><span>0..N ⟷ 1..1</span></div>
-            <article class="model-node associated-node">
-              <header>CONSULTA</header>
-              <ul><li><u>consulta_id</u></li><li>data_hora</li><li>motivo</li><li>situação</li></ul>
-              <small>participação total</small>
-            </article>
-            <div class="model-edge"><strong>é realizada por</strong><span>1..1 ⟷ 0..N</span></div>
-            <article class="model-node recursive-node">
-              <header>PROFISSIONAL</header>
-              <ul><li><u>profissional_id</u></li><li>nome</li><li>registro</li><li>especialidade</li></ul>
-              <small>supervisor 0..N · supervisionado 0..1</small>
-            </article>
-          </div>
-          <div class="scenario-compact">
-            <p><strong>Leitura:</strong> pacientes e profissionais podem existir sem consultas; cada consulta exige exatamente um paciente e um profissional.</p>
-            <p><strong>Supervisão:</strong> o relacionamento é recursivo e os papéis precisam estar explícitos.</p>
-            <p><strong>Observação:</strong> esta é uma solução inicial. Decisões sobre histórico de supervisão, estrutura do endereço e regras de remarcação ainda podem exigir validação.</p>
-          </div>
-        </details>
       </article>
     </div>
   </div>
