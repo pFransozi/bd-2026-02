@@ -523,3 +523,21 @@ if (relatedTablesExercise) {
 
   relatedTablesExercise.querySelector('details.answer-key')?.remove();
 }
+
+const nullFieldsSection = document.getElementById('nulos-title')?.closest('section');
+
+if (nullFieldsSection) {
+  const title = document.getElementById('nulos-title');
+  const intro = title?.nextElementSibling;
+  const relationTag = nullFieldsSection.querySelector('.relation-name span');
+  const prompt = nullFieldsSection.querySelector('.question-strip');
+
+  if (title) title.textContent = 'Campos vazios são uma pista, não o problema';
+  if (intro) {
+    intro.innerHTML = 'Um campo sem valor pode ser legítimo: nem todo funcionário possui carro da empresa ou notebook. A atenção surge quando os vazios aparecem em grupos de colunas que descrevem outros objetos. Aqui, <code>carro_empresa</code> e <code>placa</code> descrevem um veículo; <code>notebook</code> e <code>ram</code> descrevem um equipamento.';
+  }
+  if (relationTag) relationTag.textContent = 'dados misturados';
+  if (prompt) {
+    prompt.innerHTML = '<strong>Pergunta de diagnóstico:</strong> quais colunas descrevem o funcionário e quais descrevem objetos associados a ele? Os campos vazios são apenas uma pista de que esses fatos podem precisar de estruturas próprias.';
+  }
+}
