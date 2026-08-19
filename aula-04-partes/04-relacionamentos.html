@@ -37,7 +37,6 @@
           <li>Escreva uma frase ligando PACIENTE e CONSULTA.</li>
           <li>Reescreva a mesma relação no sentido inverso.</li>
           <li>Faça o mesmo entre PROFISSIONAL e CONSULTA.</li>
-          <li>Escreva as duas leituras da supervisão entre profissionais e nomeie os papéis.</li>
           <li>Verifique se cada frase pode ser confirmada pelo cenário.</li>
         </ol>
       </article>
@@ -86,7 +85,6 @@
           <li>Qual é o mínimo e o máximo de pacientes para uma consulta?</li>
           <li>Repita a análise entre PROFISSIONAL e CONSULTA.</li>
           <li>Identifique quais participações são totais e quais são parciais.</li>
-          <li>Defina os mínimos e máximos dos papéis supervisor e supervisionado.</li>
         </ol>
       </article>
     </div>
@@ -129,44 +127,6 @@ horário, situação</code></article>
           <li>Determine se ela seria 1:1, 1:N ou N:N.</li>
           <li>Indique a que elemento pertencem data, horário, motivo e situação.</li>
           <li>Justifique se CONSULTA deve ser apenas um relacionamento ou uma entidade associativa.</li>
-        </ol>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section aria-labelledby="grau-title" class="section-pad section-soft">
-  <div class="container">
-    <div class="section-heading">
-      <p class="eyebrow">Passo 7 · casos especiais</p>
-      <h2 id="grau-title">Relacionamentos recursivos e ternários preservam fatos diferentes</h2>
-      <p>O grau indica quantos tipos de entidade participam do fato. A análise continua a mesma: escrever as regras, identificar papéis e verificar se o significado foi preservado.</p>
-    </div>
-
-    <div class="learning-sequence">
-      <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Dois casos que exigem atenção</h3></div></div>
-        <div class="degree-grid">
-          <article class="degree-card recursive"><span>Recursivo</span><strong>Uma entidade em papéis diferentes</strong><p>O mesmo tipo participa mais de uma vez, mas cada participação exerce um papel distinto.</p><div class="degree-example">FUNCIONÁRIO — supervisiona — FUNCIONÁRIO</div><div class="role-row"><span class="role-chip">supervisor</span><span class="role-chip">supervisionado</span></div></article>
-          <article class="degree-card ternary"><span>Ternário</span><strong>Três entidades formam um único fato</strong><p>O significado depende da combinação dos três participantes.</p><div class="degree-example">FORNECEDOR — PEÇA — PROJETO</div></article>
-        </div>
-        <div class="decision-panel"><h3>Nem todo ternário equivale a três binários</h3><p>Separar automaticamente “um fornecedor fornece uma peça para um projeto” pode perder qual fornecedor entregou qual peça para qual projeto.</p></div>
-      </article>
-
-      <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Reconheça papéis e combinação</h3></div></div>
-        <ol class="practice-steps">
-          <li><strong>Recursivo:</strong> um funcionário pode supervisionar vários funcionários; cada supervisionado possui, no máximo, um supervisor. Os papéis evitam confundir as duas participações.</li>
-          <li><strong>Ternário:</strong> quantidade e preço podem depender da combinação fornecedor–peça–projeto. O atributo pertence ao fato combinado.</li>
-        </ol>
-      </article>
-
-      <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Aplique os dois casos</h3></div></div>
-        <ol class="practice-steps">
-          <li>Transfira o exemplo recursivo para PROFISSIONAL, indicando os papéis e as cardinalidades da clínica.</li>
-          <li>Analise o fato: “uma transportadora entrega determinado produto para determinada filial; de cada combinação são registrados valor do frete e prazo”.</li>
-          <li>Explique por que o segundo fato pode perder significado se for separado automaticamente em três relações binárias.</li>
         </ol>
       </article>
     </div>
