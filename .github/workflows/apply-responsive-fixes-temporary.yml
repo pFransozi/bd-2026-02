@@ -1,0 +1,131 @@
+name: Aplicar ajustes responsivos temporários
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter repositório
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Aplicar, validar e publicar
+        run: |
+          set -euo pipefail
+
+          if ! grep -Fq '/* Responsividade: calendários e agenda móvel — v2 */' styles.css; then
+            cat >> styles.css <<'CSS'
+
+          /* Responsividade: calendários e agenda móvel — v2 */
+          .day-cell {
+            min-width: 0;
+          }
+
+          .has-event strong,
+          .has-event small,
+          .calendar-title {
+            min-width: 0;
+            overflow-wrap: anywhere;
+          }
+
+          @media (max-width: 900px) {
+            .calendar-board {
+              grid-template-columns: 1fr;
+            }
+          }
+
+          @media (max-width: 600px) {
+            .month-calendar {
+              padding: .85rem;
+            }
+
+            .month-calendar h3 {
+              margin-bottom: .7rem;
+            }
+
+            .weekdays {
+              display: none;
+            }
+
+            .month-grid {
+              display: grid;
+              grid-template-columns: 1fr;
+              gap: .65rem;
+            }
+
+            .month-grid > .day-cell:not(.has-event) {
+              display: none;
+            }
+
+            .day-cell.has-event {
+              display: grid;
+              grid-template-columns: 3.25rem minmax(0, 1fr);
+              grid-auto-rows: min-content;
+              align-items: start;
+              column-gap: .85rem;
+              row-gap: .18rem;
+              min-height: 0;
+              padding: .75rem .85rem;
+              border-radius: 12px;
+            }
+
+            .day-cell.has-event time {
+              grid-column: 1;
+              grid-row: 1 / span 3;
+              display: grid;
+              place-items: center;
+              min-height: 3.25rem;
+              padding: .35rem;
+              border: 1px solid var(--line);
+              border-radius: 10px;
+              background: var(--surface-soft);
+              font-size: .88rem;
+              line-height: 1;
+            }
+
+            .day-cell.has-event > :not(time) {
+              grid-column: 2;
+              min-width: 0;
+              overflow-wrap: anywhere;
+            }
+
+            .day-cell.has-event strong {
+              margin: 0;
+              font-size: .9rem;
+              line-height: 1.25;
+            }
+
+            .day-cell.has-event .calendar-title {
+              display: block;
+              margin: .04rem 0 0;
+              color: var(--muted);
+              font-size: .78rem;
+              line-height: 1.35;
+            }
+
+            .day-cell.has-event small {
+              margin: .08rem 0 0;
+              font-size: .72rem;
+              line-height: 1.3;
+            }
+          }
+          CSS
+          fi
+
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- styles.css
+          git rm -- .github/workflows/apply-responsive-fixes-temporary.yml
+          git commit -m "fix: melhora responsividade dos calendários"
+          git push origin HEAD:main
+          git push origin --delete chore/responsividade-geral-20260820 || true
