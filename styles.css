@@ -740,3 +740,97 @@ body.theme-dark .deliverable-list article { background: var(--surface); }
 @media (max-width: 1080px) { .content-map-grid, .applications { grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 760px) { .content-map-grid, .applications, .decision-grid { grid-template-columns: 1fr; } .worksheet-head { align-items: flex-start; flex-direction: column; } }
 @media (max-width: 760px) { .protocol-grid { grid-template-columns: 1fr; } }
+
+/* Responsividade: calendários e agenda móvel — v2 */
+.day-cell {
+  min-width: 0;
+}
+
+.has-event strong,
+.has-event small,
+.calendar-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .calendar-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .month-calendar {
+    padding: .85rem;
+  }
+
+  .month-calendar h3 {
+    margin-bottom: .7rem;
+  }
+
+  .weekdays {
+    display: none;
+  }
+
+  .month-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .65rem;
+  }
+
+  .month-grid > .day-cell:not(.has-event) {
+    display: none;
+  }
+
+  .day-cell.has-event {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    align-items: start;
+    column-gap: .85rem;
+    row-gap: .18rem;
+    min-height: 0;
+    padding: .75rem .85rem;
+    border-radius: 12px;
+  }
+
+  .day-cell.has-event time {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    display: grid;
+    place-items: center;
+    min-height: 3.25rem;
+    padding: .35rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface-soft);
+    font-size: .88rem;
+    line-height: 1;
+  }
+
+  .day-cell.has-event > :not(time) {
+    grid-column: 2;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .day-cell.has-event strong {
+    margin: 0;
+    font-size: .9rem;
+    line-height: 1.25;
+  }
+
+  .day-cell.has-event .calendar-title {
+    display: block;
+    margin: .04rem 0 0;
+    color: var(--muted);
+    font-size: .78rem;
+    line-height: 1.35;
+  }
+
+  .day-cell.has-event small {
+    margin: .08rem 0 0;
+    font-size: .72rem;
+    line-height: 1.3;
+  }
+}
