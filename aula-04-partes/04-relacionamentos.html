@@ -3,7 +3,7 @@
     <div class="section-heading">
       <p class="eyebrow">Passo 4 · relacionamentos</p>
       <h2 id="relacionamentos-title">Escreva as conexões como regras antes de transformá-las em linhas</h2>
-      <p>Relacionamentos representam fatos que conectam entidades. Para evitar uma linha ambígua, leia cada relacionamento nos dois sentidos e registre o que cada direção permite.</p>
+      <p>Relacionamentos representam fatos que conectam entidades. Para evitar uma linha ambígua, leia cada relacionamento nos dois sentidos e registre o que cada direção significa no domínio.</p>
     </div>
 
     <div class="learning-sequence">
@@ -18,27 +18,21 @@
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Relacionamentos da reserva de salas</h3></div></div>
-        <div class="verb-model"><div class="verb-entity"><strong>USUÁRIO</strong><small>pessoa cadastrada</small></div><div class="verb-link">realiza</div><div class="verb-entity"><strong>RESERVA</strong><small>uso agendado</small></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>Comece pela conexão mais direta: USUÁRIO reserva SALA</h3></div></div>
+        <div class="verb-model"><div class="verb-entity"><strong>USUÁRIO</strong><small>pessoa cadastrada</small></div><div class="verb-link">reserva</div><div class="verb-entity"><strong>SALA</strong><small>espaço disponível</small></div></div>
         <div class="directional-rules">
-          <div class="directional-rule"><b>Leitura 1:</b> um usuário pode realizar reservas.</div>
-          <div class="directional-rule"><b>Leitura 2:</b> cada reserva é realizada por um usuário.</div>
+          <div class="directional-rule"><b>Leitura 1:</b> um usuário pode reservar uma sala.</div>
+          <div class="directional-rule"><b>Leitura 2:</b> uma sala pode ser reservada por um usuário.</div>
         </div>
-        <div class="verb-model"><div class="verb-entity"><strong>RESERVA</strong><small>uso agendado</small></div><div class="verb-link">utiliza</div><div class="verb-entity"><strong>SALA</strong><small>espaço reservado</small></div></div>
-        <div class="directional-rules">
-          <div class="directional-rule"><b>Leitura 1:</b> cada reserva utiliza uma sala.</div>
-          <div class="directional-rule"><b>Leitura 2:</b> uma sala pode aparecer em várias reservas ao longo do tempo.</div>
-        </div>
-      </article>
 
-      <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Escreva os relacionamentos da clínica</h3></div></div>
+        <h4>Agora observe o que a linha ainda não explica</h4>
         <ol class="practice-steps">
-          <li>Escreva uma frase ligando PACIENTE e CONSULTA.</li>
-          <li>Reescreva a mesma relação no sentido inverso.</li>
-          <li>Faça o mesmo entre PROFISSIONAL e CONSULTA.</li>
-          <li>Verifique se cada frase pode ser confirmada pelo cenário.</li>
+          <li>O mesmo usuário pode reservar salas diferentes ao longo do tempo?</li>
+          <li>A mesma sala pode ser reservada por usuários diferentes ao longo do tempo?</li>
+          <li>Se o mesmo usuário reservar a mesma sala em duas datas diferentes, como distinguiremos essas duas ocorrências?</li>
+          <li>Onde ficam data, horário inicial e situação?</li>
         </ol>
+        <div class="axis-note"><b>i</b><div><strong>Importante:</strong> a relação direta entre USUÁRIO e SALA é um bom ponto de partida, mas ainda precisamos representar seus limites e as informações que pertencem a cada ocorrência da reserva.</div></div>
       </article>
     </div>
   </div>
@@ -67,25 +61,18 @@
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Mínimos e máximos na reserva de salas</h3></div></div>
-        <div class="participation-line"><div class="participation-node"><strong>USUÁRIO</strong><span>0..N reservas</span></div><div class="participation-connector">realiza</div><div class="participation-node"><strong>RESERVA</strong><span>1..1 usuário</span></div></div>
-        <div class="participation-line"><div class="participation-node"><strong>SALA</strong><span>0..N reservas</span></div><div class="participation-connector">é utilizada em</div><div class="participation-node"><strong>RESERVA</strong><span>1..1 sala</span></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>O relacionamento direto é N:N ao longo do tempo</h3></div></div>
+        <div class="participation-line"><div class="participation-node"><strong>USUÁRIO</strong><span>0..N salas reservadas</span></div><div class="participation-connector">reserva</div><div class="participation-node"><strong>SALA</strong><span>0..N usuários</span></div></div>
         <ol class="practice-steps">
-          <li>O mínimo de USUÁRIO é 0 porque ele pode ser cadastrado antes da primeira reserva.</li>
-          <li>O máximo de USUÁRIO é N porque ele pode realizar várias reservas.</li>
-          <li>O mínimo e o máximo de RESERVA são 1 em cada relação, pois uma reserva exige exatamente um usuário e uma sala.</li>
-          <li>USUÁRIO e SALA têm participação parcial; RESERVA tem participação total nas duas relações.</li>
+          <li>O mínimo é <strong>0</strong> dos dois lados porque usuários e salas podem ser cadastrados antes de qualquer reserva.</li>
+          <li>O máximo é <strong>N</strong> para USUÁRIO porque uma pessoa pode realizar várias reservas.</li>
+          <li>O máximo é <strong>N</strong> para SALA porque o mesmo espaço pode ser reservado várias vezes ao longo do tempo.</li>
         </ol>
-      </article>
 
-      <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Defina as cardinalidades da clínica</h3></div></div>
-        <ol class="practice-steps">
-          <li>Qual é o mínimo e o máximo de consultas para um paciente?</li>
-          <li>Qual é o mínimo e o máximo de pacientes para uma consulta?</li>
-          <li>Repita a análise entre PROFISSIONAL e CONSULTA.</li>
-          <li>Identifique quais participações são totais e quais são parciais.</li>
-        </ol>
+        <div class="comparison-panel">
+          <h3>A cardinalidade revelou outro problema</h3>
+          <p>O relacionamento N:N informa quem pode se relacionar com quem, mas precisamos distinguir <strong>cada ocorrência</strong> da reserva. Data, horário e situação não pertencem permanentemente a nenhuma das duas entidades; pertencem ao fato ocorrido entre elas.</p>
+        </div>
       </article>
     </div>
   </div>
@@ -94,46 +81,78 @@
 <section aria-labelledby="associativa-title" class="section-pad">
   <div class="container">
     <div class="section-heading">
-      <p class="eyebrow">Passo 6 · ocorrência com dados próprios</p>
-      <h2 id="associativa-title">Quando a conexão possui identidade e histórico, ela precisa aparecer no modelo</h2>
-      <p>Uma relação N:N pode esconder ocorrências importantes. Quando cada ocorrência possui atributos próprios ou precisa ser identificada, podemos explicitá-la como entidade associativa.</p>
+      <p class="eyebrow">Passo 6 · atributos do relacionamento e entidade associativa</p>
+      <h2 id="associativa-title">Quando precisamos distinguir cada ocorrência da conexão, o modelo precisa evoluir</h2>
+      <p>Relacionamentos também podem possuir atributos. Quando cada ocorrência da relação precisa ser reconhecida, manter histórico ou participar de outras relações, uma entidade associativa pode tornar esse fato explícito no modelo.</p>
     </div>
 
     <div class="learning-sequence">
       <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Atributos podem pertencer ao fato, não às entidades participantes</h3></div></div>
-        <p>Quando dois conceitos se relacionam várias vezes ao longo do tempo, pergunte se cada participação precisa ser distinguida. Datas, papéis, quantidades, valores ou situações geralmente descrevem uma ocorrência da conexão.</p>
+        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Pergunte a quem o atributo realmente pertence</h3></div></div>
+        <p>Datas, papéis, quantidades, valores ou situações frequentemente descrevem <strong>uma ocorrência do relacionamento</strong>, e não uma característica permanente das entidades participantes. Antes de criar uma nova entidade, identifique esse fato e verifique se suas ocorrências precisam ser distinguidas.</p>
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>De USUÁRIO–SALA para RESERVA</h3></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>É aqui que RESERVA aparece no modelo</h3></div></div>
         <div class="association-transition">
-          <article class="mini-model"><h3>Leitura inicial</h3><p>Ao longo do tempo, usuários utilizam várias salas e salas são utilizadas por vários usuários.</p><code>USUÁRIO N ── utiliza ── N SALA</code></article>
+          <article class="mini-model"><h3>Primeira representação</h3><p>USUÁRIO e SALA se relacionam várias vezes; a própria relação possui informações.</p><code>USUÁRIO N ── reserva ── N SALA
+              │
+              ├─ data
+              ├─ horário_inicial
+              └─ situação</code></article>
           <div aria-hidden="true" class="transition-arrow">→</div>
-          <article class="mini-model"><h3>Ocorrência explicitada</h3><p>RESERVA distingue cada uso e guarda data, horário e situação.</p><code>USUÁRIO 1 ── N RESERVA
-SALA    1 ── N RESERVA
+          <article class="mini-model"><h3>Ocorrência explicitada</h3><p>RESERVA passa a representar cada ocorrência do fato e preserva seus dados.</p><code>USUÁRIO 1 ── N RESERVA N ── 1 SALA
 
 RESERVA:
-reserva_id, data,
-horário, situação</code></article>
+data
+horário_inicial
+situação</code></article>
         </div>
-        <p><strong>Conclusão:</strong> data, horário e situação não descrevem permanentemente o usuário nem a sala. Descrevem uma ocorrência específica do uso.</p>
+
+        <ol class="practice-steps">
+          <li><strong>USUÁRIO</strong> pode participar de 0..N reservas; cada <strong>RESERVA</strong> exige 1..1 usuário.</li>
+          <li><strong>SALA</strong> pode participar de 0..N reservas; cada <strong>RESERVA</strong> exige 1..1 sala.</li>
+          <li><strong>data, horário inicial e situação</strong> passam a descrever RESERVA, porque representam uma ocorrência específica do uso da sala.</li>
+        </ol>
+
+        <div class="decision-panel">
+          <h3>A modelagem revelou uma informação que o requisito não forneceu</h3>
+          <p>Como distinguimos duas reservas de maneira única? O cenário não define essa regra. Não vamos assumir silenciosamente que uma combinação de usuário, sala, data e horário é sempre única. No DER, registre <strong>“identificador da reserva: a validar”</strong>. Descobrir uma lacuna do requisito também é resultado da modelagem.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="grau-title" class="section-pad section-soft">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">Outras formas de relacionamento</p>
+      <h2 id="grau-title">Nem todo relacionamento liga dois tipos diferentes de entidade</h2>
+      <p>O exemplo principal usa relacionamentos binários, mas o Modelo ER também permite representar fatos recursivos e relacionamentos que dependem simultaneamente de três participantes.</p>
+    </div>
+
+    <div class="concept-grid">
+      <article class="concept-card"><span>Binário</span><strong>USUÁRIO reserva SALA</strong><p>Duas entidades participam do fato. Foi a estrutura inicial utilizada no nosso exemplo.</p><div class="entity-example">USUÁRIO ↔ SALA</div></article>
+      <article class="concept-card"><span>Recursivo</span><strong>FUNCIONÁRIO supervisiona FUNCIONÁRIO</strong><p>O mesmo tipo de entidade participa em papéis diferentes. Um funcionário pode atuar como supervisor e outro como supervisionado.</p><div class="entity-example">papéis: supervisor / subordinado</div></article>
+      <article class="concept-card"><span>Ternário</span><strong>FORNECEDOR fornece PEÇA para PROJETO</strong><p>O fato depende dos três participantes ao mesmo tempo. Uma quantidade fornecida, por exemplo, pode descrever exatamente essa combinação.</p><div class="entity-example">FORNECEDOR + PEÇA + PROJETO</div></article>
+    </div>
+
+    <div class="learning-sequence">
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>R</span><div><small>Microcaso recursivo</small><h3>Leia os papéis, não apenas o nome da entidade</h3></div></div>
+        <p>Em <strong>FUNCIONÁRIO supervisiona FUNCIONÁRIO</strong>, pergunte separadamente quantos subordinados um supervisor pode acompanhar e quantos supervisores um funcionário pode possuir. Os papéis evitam interpretar a linha como se fossem duas entidades diferentes.</p>
       </article>
 
-      <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Analise o papel de CONSULTA</h3></div></div>
-        <ol class="practice-steps">
-          <li>Leia diretamente a relação entre PACIENTE e PROFISSIONAL ao longo do tempo.</li>
-          <li>Determine se ela seria 1:1, 1:N ou N:N.</li>
-          <li>Indique a que elemento pertencem data, horário, motivo e situação.</li>
-          <li>Justifique se CONSULTA deve ser apenas um relacionamento ou uma entidade associativa.</li>
-        </ol>
+      <article class="learning-block guided-block">
+        <div class="learning-block-head"><span>3</span><div><small>Microcaso ternário</small><h3>Não decomponha automaticamente um fato em três relações binárias</h3></div></div>
+        <p>Dizer que um FORNECEDOR fornece uma PEÇA, que uma PEÇA aparece em um PROJETO e que um FORNECEDOR atende um PROJETO não informa necessariamente <strong>qual fornecedor forneceu qual peça para qual projeto</strong>. Quando o significado depende da combinação dos três participantes, o relacionamento ternário preserva essa informação.</p>
       </article>
     </div>
 
     <div class="activity-note diagram-ready-note">
-      <strong>Agora já existem decisões suficientes para construir o DER.</strong>
-      <p>Entidades, atributos, identificadores, relacionamentos, cardinalidades e participação já foram analisados. A próxima seção transforma esse conjunto de decisões em um arquivo editável no diagrams.net.</p>
+      <strong>Agora já existem decisões suficientes para construir o DER principal.</strong>
+      <p>Entidades, atributos, relacionamentos, cardinalidades, participação e a transformação do N:N em RESERVA já foram analisados. O identificador de RESERVA permanece registrado como uma questão a validar, em vez de ser inventado silenciosamente.</p>
     </div>
   </div>
 </section>
