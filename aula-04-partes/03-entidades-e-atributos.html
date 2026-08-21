@@ -1,28 +1,32 @@
 <section aria-labelledby="entidades-title" class="section-pad" id="entidades">
   <div class="container">
     <div class="section-heading">
-      <p class="eyebrow">Passo 2 · entidades</p>
-      <h2 id="entidades-title">Identifique os conceitos que precisam ser reconhecidos como ocorrências distintas</h2>
-      <p>Uma entidade representa algo distinguível sobre o qual o sistema precisa manter informação. O nome encontrado no texto é apenas um candidato; a decisão precisa ser justificada pelo papel do conceito no domínio.</p>
+      <p class="eyebrow">Passo 2 · dos conceitos às entidades</p>
+      <h2 id="entidades-title">Dos conceitos identificados, quais precisam virar entidades?</h2>
+      <p>No passo anterior, separamos o requisito em conceitos, características, conexões, regras e dúvidas. Agora retomamos especialmente os <strong>conceitos</strong> encontrados e analisamos quais deles precisam ser representados como entidades no modelo.</p>
     </div>
 
     <div class="learning-sequence">
       <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Entidade, tipo e ocorrência</h3></div></div>
-        <p>O DER representa <strong>tipos de entidade</strong>, como USUÁRIO ou SALA. Quando o banco for preenchido, cada pessoa ou sala cadastrada será uma <strong>ocorrência</strong> desse tipo.</p>
+        <div class="learning-block-head"><span>T</span><div><small>Da leitura à modelagem</small><h3>Conceito é candidato; entidade é uma decisão</h3></div></div>
+        <p>Encontrar um conceito no texto não significa transformá-lo automaticamente em uma entidade. Primeiro precisamos verificar se suas ocorrências precisam ser distinguidas, descritas por informações próprias e relacionadas a outros elementos do domínio.</p>
+
         <div class="concept-grid">
-          <article class="concept-card"><span>Tipo</span><strong>USUÁRIO</strong><p>Categoria de pessoas cadastradas.</p><div class="entity-example">Ocorrência: usuário 184<br/>nome = 'Marina Alves'</div></article>
-          <article class="concept-card"><span>Tipo</span><strong>SALA</strong><p>Categoria de espaços disponíveis.</p><div class="entity-example">Ocorrência: sala 12<br/>nome = 'Sala Horizonte'</div></article>
-          <article class="concept-card"><span>Pergunta</span><strong>RESERVA?</strong><p>O texto menciona reservas, mas ainda precisamos decidir se estamos diante apenas de um relacionamento ou de algo que precisa ser reconhecido separadamente.</p><div class="entity-example">Decisão adiada até analisarmos o relacionamento.</div></article>
+          <article class="concept-card"><span>Conceito encontrado</span><strong>usuário</strong><p>No passo anterior, apareceu como algo sobre o qual o sistema mantém informações próprias.</p><div class="entity-example">Pergunta: precisamos distinguir cada usuário?<br/><strong>Sim → candidato a entidade USUÁRIO.</strong></div></article>
+          <article class="concept-card"><span>Conceito encontrado</span><strong>sala</strong><p>Também apareceu como algo que possui características próprias e existe independentemente de uma reserva.</p><div class="entity-example">Pergunta: precisamos distinguir cada sala?<br/><strong>Sim → candidato a entidade SALA.</strong></div></article>
+          <article class="concept-card"><span>Conexão encontrada</span><strong>reservar</strong><p>No passo anterior, apareceu como um fato que conecta usuário e sala e possui data, horário e situação.</p><div class="entity-example">Pergunta: o fato precisa ser reconhecido separadamente?<br/><strong>Ainda vamos analisar.</strong></div></article>
         </div>
+
         <div class="rule-panel">
-          <h3>Teste de independência conceitual</h3>
-          <p>Pergunte: precisamos reconhecer ocorrências distintas deste conceito, guardar informações próprias e relacioná-las a outros elementos? Uma resposta positiva fortalece a hipótese de entidade. Nem todo substantivo do requisito precisa virar uma caixa.</p>
+          <h3>Teste para decidir se um conceito vira entidade</h3>
+          <p>Pergunte: precisamos reconhecer ocorrências distintas deste conceito, guardar informações próprias sobre elas e relacioná-las a outros elementos? Uma resposta positiva fortalece a hipótese de entidade. Nem todo substantivo do requisito precisa virar uma caixa.</p>
         </div>
+
+        <div class="axis-note"><b>i</b><div><strong>Tipo e ocorrência:</strong> o DER representa tipos de entidade, como USUÁRIO ou SALA. Quando o banco for preenchido, cada pessoa ou sala cadastrada será uma ocorrência desse tipo.</div></div>
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>O que já podemos afirmar na reserva de salas?</h3></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Aplicando ao que encontramos no Passo 1</small><h3>O que já podemos afirmar na reserva de salas?</h3></div></div>
         <h4>Pense antes de conferir</h4>
         <ol class="practice-steps">
           <li>Um usuário continua existindo no sistema mesmo sem ter realizado uma reserva?</li>
@@ -32,10 +36,10 @@
         <ol class="practice-steps">
           <li><strong>USUÁRIO</strong> é entidade porque precisamos distinguir pessoas cadastradas, manter seus dados e relacioná-las ao uso das salas.</li>
           <li><strong>SALA</strong> é entidade porque cada espaço possui identidade e características próprias e existe independentemente de ter sido utilizado.</li>
-          <li><strong>capacidade</strong> não é entidade no cenário atual: ela apenas descreve uma sala.</li>
-          <li><strong>RESERVA permanece em aberto.</strong> Sabemos que existe um fato importante entre USUÁRIO e SALA, mas vamos analisar primeiro o que pertence a esse fato.</li>
+          <li><strong>capacidade</strong>, encontrada entre as características, não é entidade no cenário atual: ela apenas descreve uma sala.</li>
+          <li><strong>reservar</strong>, encontrado entre as conexões, ainda não será transformado em entidade. Primeiro vamos analisar o fato e as informações que pertencem a cada ocorrência dele.</li>
         </ol>
-        <div class="axis-note"><b>i</b><div><strong>Modelo parcial:</strong> neste momento temos duas entidades claras — USUÁRIO e SALA — e uma conexão ainda não completamente modelada entre elas.</div></div>
+        <div class="axis-note"><b>i</b><div><strong>Modelo parcial:</strong> dos elementos encontrados na leitura anterior, USUÁRIO e SALA já podem ser representados como entidades. A conexão entre eles continua em análise.</div></div>
       </article>
     </div>
   </div>
