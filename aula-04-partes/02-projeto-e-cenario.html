@@ -25,24 +25,24 @@
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Organização da aula</p>
-      <h2 id="metodo-title">Cada conceito será seguido por aplicação</h2>
-      <p>A aula não alternará dois problemas lado a lado. Em cada tópico, primeiro construiremos a ideia, depois resolveremos um exemplo com acompanhamento e, por fim, os estudantes aplicarão o mesmo raciocínio.</p>
+      <h2 id="metodo-title">Um mesmo problema vai crescer junto com os conceitos</h2>
+      <p>Em vez de resolver um exercício diferente a cada tópico, vamos acompanhar o domínio de reserva de salas do início ao fim. O modelo será construído aos poucos e cada nova decisão responderá a uma pergunta que apareceu no próprio cenário.</p>
     </div>
 
     <div class="learning-sequence sequence-overview">
       <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>1</span><div><small>Explicação teórica</small><h3>Compreender a decisão de modelagem</h3></div></div>
-        <p>Apresentamos o conceito, a pergunta que ele responde e os critérios usados para reconhecê-lo no domínio.</p>
+        <div class="learning-block-head"><span>1</span><div><small>Começamos pelo problema</small><h3>Ler antes de desenhar</h3></div></div>
+        <p>Primeiro organizamos fatos, regras, dúvidas e limites do domínio. Ainda não há caixas nem linhas.</p>
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>2</span><div><small>Exercício guiado</small><h3>Resolver o domínio de reserva de salas</h3></div></div>
-        <p>O raciocínio será construído passo a passo, com justificativas e conferência coletiva.</p>
+        <div class="learning-block-head"><span>2</span><div><small>Construção progressiva</small><h3>O modelo muda quando aprendemos algo novo</h3></div></div>
+        <p>Entidades, atributos, relacionamentos e cardinalidades serão incorporados ao mesmo exemplo. Pequenas perguntas serão feitas antes de cada decisão ser revelada.</p>
       </article>
 
       <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>3</span><div><small>Prática dos estudantes</small><h3>Aplicar o processo à clínica-escola</h3></div></div>
-        <p>A turma resolverá um cenário mais completo. As decisões serão registradas pela equipe e retomadas na discussão coletiva.</p>
+        <div class="learning-block-head"><span>3</span><div><small>Transferência</small><h3>No final, a equipe modela outro domínio</h3></div></div>
+        <p>Depois de acompanhar o processo completo, os estudantes receberão um cenário de biblioteca com relações diferentes para construir, justificar e validar o próprio DER.</p>
       </article>
     </div>
 
@@ -78,46 +78,28 @@
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Reserva de salas de estudo</h3></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Exemplo que acompanhará a aula</small><h3>Reserva de salas de estudo</h3></div></div>
         <div class="scenario-panel embedded-scenario">
-          <p>Um espaço de estudos cadastra <strong>usuários</strong> e <strong>salas</strong>. Cada reserva associa exatamente um usuário a exatamente uma sala. De cada reserva são registrados data, horário inicial e situação. Usuários e salas podem ser cadastrados mesmo que ainda não tenham participado de reservas. Para cada usuário são registrados identificador, nome, data de nascimento e um ou mais telefones. Para cada sala são registrados identificador, nome e capacidade.</p>
+          <p>Um espaço de estudos cadastra <strong>usuários</strong> e <strong>salas</strong>. Um usuário pode reservar uma sala para determinada data e horário inicial. Cada ocorrência envolve exatamente um usuário e exatamente uma sala e possui uma situação, como ativa ou cancelada. Usuários e salas podem ser cadastrados mesmo que ainda não tenham participado de reservas. Para cada usuário são registrados identificador, nome, data de nascimento e um ou mais telefones. Para cada sala são registrados identificador, nome e capacidade.</p>
         </div>
 
-        <h4>Resolução acompanhada</h4>
+        <h4>Antes de classificar qualquer coisa</h4>
         <ol class="practice-steps">
-          <li><strong>Conceitos candidatos:</strong> usuário, sala e reserva.</li>
-          <li><strong>Características associadas a cada conceito:</strong> <strong>USUÁRIO</strong> — identificador, nome, data de nascimento e telefone; <strong>SALA</strong> — identificador, nome e capacidade; <strong>RESERVA</strong> — data, horário inicial e situação.</li>
-          <li><strong>Conexões:</strong> usuário realiza reserva; reserva utiliza sala.</li>
-          <li><strong>Regras quantitativas:</strong> cada reserva exige exatamente um usuário e uma sala; usuários e salas podem existir sem reservas.</li>
+          <li>Quais elementos possuem informações próprias e existem independentemente de uma reserva?</li>
+          <li>O verbo <strong>reservar</strong> representa um objeto ou, inicialmente, um fato que conecta outros elementos?</li>
+          <li>Data, horário e situação descrevem permanentemente um usuário? Descrevem permanentemente uma sala?</li>
+        </ol>
+
+        <h4>Primeira leitura organizada</h4>
+        <ol class="practice-steps">
+          <li><strong>Conceitos claramente reconhecíveis:</strong> usuário e sala.</li>
+          <li><strong>Fato importante:</strong> um usuário reserva uma sala; cada ocorrência desse fato possui data, horário inicial e situação.</li>
+          <li><strong>Regras quantitativas:</strong> cada ocorrência envolve exatamente um usuário e uma sala; usuários e salas podem existir sem participar desse fato.</li>
           <li><strong>Recorte adotado:</strong> pagamento, limpeza, equipamentos e controle de acesso ficam fora do modelo porque não aparecem entre as necessidades informadas.</li>
           <li><strong>Dúvida registrada:</strong> uma reserva cancelada permanece no histórico? O cenário informa uma situação, mas não define a política de exclusão.</li>
         </ol>
-        <div class="axis-note"><b>i</b><div><strong>Resultado desta etapa:</strong> ainda não temos um DER. Temos uma leitura organizada e um recorte explícito do domínio.</div></div>
-      </article>
 
-      <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Uma clínica-escola precisa organizar seu atendimento</h3></div></div>
-        <article class="scenario-panel embedded-scenario">
-          <p>A clínica registra pacientes, profissionais de saúde e os atendimentos realizados. O sistema deve preservar o histórico de consultas e permitir compreender quem foi atendido, por qual profissional, quando e em que situação.</p>
-          <ol class="requirement-list">
-            <li>Para cada paciente, devem ser registrados um identificador, nome, data de nascimento, endereço e um ou mais telefones.</li>
-            <li>Para cada profissional, devem ser registrados um identificador, nome, número de registro e especialidade.</li>
-            <li>Uma consulta ocorre entre exatamente um paciente e exatamente um profissional.</li>
-            <li>De cada consulta, devem ser registrados data e horário, motivo e situação do atendimento.</li>
-            <li>Um paciente pode ser cadastrado antes de realizar sua primeira consulta.</li>
-            <li>Um profissional pode ser cadastrado antes de realizar seu primeiro atendimento.</li>
-          </ol>
-        </article>
-
-        <h4>Tarefa</h4>
-        <ol class="practice-steps">
-          <li>Liste os conceitos sobre os quais a clínica precisa manter informações próprias ou histórico.</li>
-          <li>Separe as características que descrevem cada conceito.</li>
-          <li>Marque os fatos ou verbos que conectam os elementos.</li>
-          <li>Destaque expressões que indiquem obrigatoriedade, possibilidade ou limite.</li>
-          <li>Registre pelo menos duas dúvidas que precisariam ser confirmadas com a clínica.</li>
-          <li>Indique uma informação que parece estar fora do escopo atual.</li>
-        </ol>
+        <div class="axis-note"><b>i</b><div><strong>Resultado desta etapa:</strong> ainda não decidimos se RESERVA será uma entidade. Primeiro vamos entender os elementos e o fato que os conecta. A estrutura aparecerá como consequência das próximas decisões.</div></div>
       </article>
     </div>
   </div>
