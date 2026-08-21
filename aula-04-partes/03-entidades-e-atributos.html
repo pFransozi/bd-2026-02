@@ -9,39 +9,33 @@
     <div class="learning-sequence">
       <article class="learning-block theory-block">
         <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Entidade, tipo e ocorrência</h3></div></div>
-        <p>O DER representa <strong>tipos de entidade</strong>, como PACIENTE ou SALA. Quando o banco for preenchido, cada pessoa ou sala cadastrada será uma <strong>ocorrência</strong> desse tipo.</p>
+        <p>O DER representa <strong>tipos de entidade</strong>, como USUÁRIO ou SALA. Quando o banco for preenchido, cada pessoa ou sala cadastrada será uma <strong>ocorrência</strong> desse tipo.</p>
         <div class="concept-grid">
           <article class="concept-card"><span>Tipo</span><strong>USUÁRIO</strong><p>Categoria de pessoas cadastradas.</p><div class="entity-example">Ocorrência: usuário 184<br/>nome = 'Marina Alves'</div></article>
           <article class="concept-card"><span>Tipo</span><strong>SALA</strong><p>Categoria de espaços disponíveis.</p><div class="entity-example">Ocorrência: sala 12<br/>nome = 'Sala Horizonte'</div></article>
-          <article class="concept-card"><span>Tipo</span><strong>RESERVA</strong><p>Categoria de usos agendados.</p><div class="entity-example">Ocorrência: reserva 903<br/>data = '21/08/2026'</div></article>
+          <article class="concept-card"><span>Pergunta</span><strong>RESERVA?</strong><p>O texto menciona reservas, mas ainda precisamos decidir se estamos diante apenas de um relacionamento ou de algo que precisa ser reconhecido separadamente.</p><div class="entity-example">Decisão adiada até analisarmos o relacionamento.</div></article>
         </div>
         <div class="rule-panel">
           <h3>Teste de independência conceitual</h3>
-          <p>Pergunte: precisamos reconhecer ocorrências distintas deste conceito, guardar informações próprias e relacioná-las a outros elementos? Uma resposta positiva fortalece a hipótese de entidade.</p>
+          <p>Pergunte: precisamos reconhecer ocorrências distintas deste conceito, guardar informações próprias e relacioná-las a outros elementos? Uma resposta positiva fortalece a hipótese de entidade. Nem todo substantivo do requisito precisa virar uma caixa.</p>
         </div>
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Entidades da reserva de salas</h3></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>O que já podemos afirmar na reserva de salas?</h3></div></div>
+        <h4>Pense antes de conferir</h4>
         <ol class="practice-steps">
-          <li><strong>USUÁRIO</strong> é entidade porque precisamos distinguir pessoas cadastradas, manter seus dados e associá-las a reservas.</li>
-          <li><strong>SALA</strong> é entidade porque cada espaço possui identidade e características próprias e pode participar de várias reservas.</li>
-          <li><strong>RESERVA</strong> é entidade porque representa uma ocorrência específica, possui dados próprios e deve permanecer no histórico.</li>
+          <li>Um usuário continua existindo no sistema mesmo sem ter realizado uma reserva?</li>
+          <li>Uma sala continua existindo mesmo sem nunca ter sido reservada?</li>
+          <li>Capacidade precisa ser identificada, possuir histórico próprio ou se relacionar com outros elementos?</li>
         </ol>
-        <div class="comparison-panel">
-          <h3>Por que “capacidade” não é entidade?</h3>
-          <p>No cenário atual, capacidade apenas descreve uma sala. Não precisamos identificar capacidades distintas, guardar histórico próprio ou relacioná-las a outros conceitos.</p>
-        </div>
-      </article>
-
-      <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Proponha as entidades da clínica-escola</h3></div></div>
         <ol class="practice-steps">
-          <li>Liste os conceitos candidatos encontrados no cenário.</li>
-          <li>Para cada candidato, explique por que suas ocorrências precisam ser distinguidas.</li>
-          <li>Indique quais candidatos poderiam ser apenas atributos ou descrições.</li>
-          <li>Decida se CONSULTA é somente uma ligação ou se precisa ser representada como conceito próprio.</li>
+          <li><strong>USUÁRIO</strong> é entidade porque precisamos distinguir pessoas cadastradas, manter seus dados e relacioná-las ao uso das salas.</li>
+          <li><strong>SALA</strong> é entidade porque cada espaço possui identidade e características próprias e existe independentemente de ter sido utilizado.</li>
+          <li><strong>capacidade</strong> não é entidade no cenário atual: ela apenas descreve uma sala.</li>
+          <li><strong>RESERVA permanece em aberto.</strong> Sabemos que existe um fato importante entre USUÁRIO e SALA, mas vamos analisar primeiro o que pertence a esse fato.</li>
         </ol>
+        <div class="axis-note"><b>i</b><div><strong>Modelo parcial:</strong> neste momento temos duas entidades claras — USUÁRIO e SALA — e uma conexão ainda não completamente modelada entre elas.</div></div>
       </article>
     </div>
   </div>
@@ -70,40 +64,33 @@
 
         <div class="decision-panel">
           <h3>O identificador não precisa ser o nome</h3>
-          <p>Nomes podem se repetir e mudar. Um bom identificador deve ser único, obrigatório, suficientemente estável e conter somente o necessário para distinguir a ocorrência.</p>
+          <p>Nomes podem se repetir e mudar. Um bom identificador deve distinguir uma ocorrência sem ambiguidade e ser suficientemente estável para o domínio. Quando o requisito não informa como algo será identificado, essa ausência deve ser registrada em vez de esconder uma decisão inventada.</p>
         </div>
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado</small><h3>Atributos e identificadores da reserva de salas</h3></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>Distribua os atributos que já possuem um lugar claro</h3></div></div>
         <div class="identifier-grid">
-          <article class="identifier-card"><span>Usuário</span><strong>usuario_id</strong><p>Identificador introduzido para não depender de nome ou telefone.</p><div class="identifier-example">USUÁRIO(<u>usuario_id</u>, nome, data_nascimento, telefone)</div></article>
-          <article class="identifier-card"><span>Sala</span><strong>sala_id</strong><p>Distingue cada espaço, inclusive quando nomes são parecidos.</p><div class="identifier-example">SALA(<u>sala_id</u>, nome, capacidade)</div></article>
-          <article class="identifier-card"><span>Reserva</span><strong>reserva_id</strong><p>Distingue reservas diferentes do mesmo usuário para a mesma sala.</p><div class="identifier-example">RESERVA(<u>reserva_id</u>, data, horario_inicial, situação)</div></article>
+          <article class="identifier-card"><span>Usuário</span><strong>identificador</strong><p>O próprio cenário informa que cada usuário possui um identificador.</p><div class="identifier-example">USUÁRIO(<u>identificador</u>, nome, data_nascimento, telefone)</div></article>
+          <article class="identifier-card"><span>Sala</span><strong>identificador</strong><p>O cenário também informa um identificador para cada sala.</p><div class="identifier-example">SALA(<u>identificador</u>, nome, capacidade)</div></article>
         </div>
+
         <ol class="practice-steps">
           <li><strong>telefone</strong> é multivalorado porque o cenário admite um ou mais valores por usuário.</li>
-          <li><strong>data_nascimento</strong> é armazenada; <strong>idade</strong> poderia ser derivada.</li>
+          <li><strong>data_nascimento</strong> é armazenada; <strong>idade</strong> poderia ser derivada e, portanto, não precisa necessariamente ser armazenada.</li>
           <li><strong>capacidade</strong> é simples e monovalorada no recorte atual.</li>
-          <li><strong>data, horário e situação</strong> descrevem a reserva, não o usuário nem a sala.</li>
         </ol>
-      </article>
 
-      <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes</small><h3>Distribua os atributos da clínica-escola</h3></div></div>
-        <ol class="practice-steps">
-          <li>Associe cada atributo do cenário à entidade que ele descreve.</li>
-          <li>Escolha um identificador para PACIENTE, PROFISSIONAL e CONSULTA.</li>
-          <li>Classifique endereço, telefone, data de nascimento e idade.</li>
-          <li>Explique por que nome não é um identificador seguro.</li>
-          <li>Indique um atributo cuja modelagem ainda dependa de confirmação do domínio.</li>
-        </ol>
-      </article>
-    </div>
+        <div class="comparison-panel">
+          <h3>E data, horário e situação?</h3>
+          <p>Eles não descrevem permanentemente USUÁRIO nem SALA. Os três valores descrevem <strong>uma ocorrência do fato de reservar</strong>. Por enquanto, vamos mantê-los junto da conexão e verificar no próximo passo que estrutura consegue representá-los corretamente.</p>
+        </div>
 
-    <div class="activity-note no-tool-note">
-      <strong>Ainda não é hora de desenhar o DER completo.</strong>
-      <p>Guarde a lista de entidades, atributos e identificadores. No próximo passo, relacionamentos e cardinalidades fornecerão as informações que faltam para abrir o diagrams.net.</p>
+        <div class="activity-note no-tool-note">
+          <strong>Não invente um <code>reserva_id</code> apenas por costume.</strong>
+          <p>O requisito não informa como duas ocorrências de reserva são distinguidas. Primeiro precisamos decidir como a própria reserva aparecerá no modelo; depois voltaremos ao problema de identificação.</p>
+        </div>
+      </article>
     </div>
   </div>
 </section>
