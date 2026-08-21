@@ -65,10 +65,7 @@
           <article class="reading-card"><span>Características</span><strong>O que descreve cada conceito?</strong><p>Nomes, datas, estados, códigos, medidas e outras propriedades relevantes.</p></article>
           <article class="reading-card"><span>Conexões</span><strong>Que fatos ligam os elementos?</strong><p>Verbos e expressões que indicam participação, responsabilidade, uso ou associação.</p></article>
           <article class="reading-card"><span>Regras</span><strong>O que é permitido ou obrigatório?</strong><p>Expressões como “pode”, “exatamente um”, “um ou mais” e “no máximo”.</p></article>
-        </div>
-        <div class="decision-panel">
-          <h3>Dúvidas também fazem parte da análise</h3>
-          <p>Quando o cenário não determina uma regra, não devemos escondê-la dentro do desenho. A dúvida deve ser registrada para validação com quem conhece o domínio.</p>
+          <article class="reading-card"><span>Dúvidas</span><strong>O que o texto ainda não responde?</strong><p>Informações ausentes ou ambíguas que precisam ser confirmadas antes de virarem regras do modelo.</p></article>
         </div>
       </article>
 
@@ -87,12 +84,17 @@
 
         <h4>Primeira leitura organizada</h4>
         <ol class="practice-steps">
-          <li><strong>Conceitos claramente reconhecíveis:</strong> usuário e sala.</li>
-          <li><strong>Fato importante:</strong> um usuário reserva uma sala; cada ocorrência desse fato possui data, horário inicial e situação.</li>
-          <li><strong>Regras quantitativas:</strong> cada ocorrência envolve exatamente um usuário e uma sala; usuários e salas podem existir sem participar desse fato.</li>
-          <li><strong>Recorte adotado:</strong> pagamento, limpeza, equipamentos e controle de acesso ficam fora do modelo porque não aparecem entre as necessidades informadas.</li>
-          <li><strong>Dúvida registrada:</strong> uma reserva cancelada permanece no histórico? O cenário informa uma situação, mas não define a política de exclusão.</li>
+          <li><strong>Conceitos:</strong> usuário e sala são elementos sobre os quais o sistema precisa manter informações próprias.</li>
+          <li><strong>Características:</strong> usuário possui identificador, nome, data de nascimento e telefones; sala possui identificador, nome e capacidade; cada ocorrência do fato de reservar possui data, horário inicial e situação.</li>
+          <li><strong>Conexões:</strong> o fato <strong>“um usuário reserva uma sala”</strong> conecta USUÁRIO e SALA.</li>
+          <li><strong>Regras:</strong> cada ocorrência envolve exatamente um usuário e exatamente uma sala; usuários e salas podem existir mesmo sem participar de uma reserva.</li>
+          <li><strong>Dúvidas:</strong> uma reserva cancelada permanece no histórico? O cenário informa uma situação, mas não define a política de exclusão.</li>
         </ol>
+
+        <div class="comparison-panel">
+          <h3>Recorte do domínio</h3>
+          <p>Pagamento, limpeza, equipamentos e controle de acesso ficam fora do modelo porque não aparecem entre as necessidades informadas no cenário.</p>
+        </div>
 
         <div class="axis-note"><b>i</b><div><strong>Resultado desta etapa:</strong> ainda não decidimos se RESERVA será uma entidade. Primeiro vamos entender os elementos e o fato que os conecta. A estrutura aparecerá como consequência das próximas decisões.</div></div>
       </article>
