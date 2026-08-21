@@ -126,18 +126,62 @@
       <article class="learning-block guided-block">
         <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>É aqui que RESERVA aparece no modelo</h3></div></div>
         <div class="association-transition">
-          <article class="mini-model"><h3>Primeira representação</h3><p>USUÁRIO e SALA se relacionam várias vezes; a própria relação possui informações.</p><code>USUÁRIO N ── reserva ── N SALA
-              │
-              ├─ data
-              ├─ horário_inicial
-              └─ situação</code></article>
-          <div aria-hidden="true" class="transition-arrow">→</div>
-          <article class="mini-model"><h3>Ocorrência explicitada</h3><p>RESERVA passa a representar cada ocorrência do fato e preserva seus dados.</p><code>USUÁRIO 1 ── N RESERVA N ── 1 SALA
+          <article class="mini-model">
+            <h3>Relacionamento com atributos</h3>
+            <p>Antes de explicitar RESERVA, o fato aparece como um relacionamento N:N entre USUÁRIO e SALA. Data, horário inicial e situação descrevem cada ocorrência dessa relação.</p>
+            <svg aria-label="USUÁRIO e SALA ligados pelo relacionamento reserva, com os atributos data, horário inicial e situação" role="img" viewBox="0 0 520 280" style="width:100%;height:auto;display:block;margin-top:1rem;">
+              <rect x="20" y="34" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
+              <text x="88" y="68" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">USUÁRIO</text>
+              <rect x="364" y="34" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
+              <text x="432" y="68" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">SALA</text>
+              <polygon points="220,62 260,30 300,62 260,94" fill="none" stroke="currentColor" stroke-opacity="0.6" stroke-width="2"></polygon>
+              <text x="260" y="68" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">reserva</text>
+              <line x1="156" y1="62" x2="220" y2="62" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
+              <line x1="300" y1="62" x2="364" y2="62" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
+              <text x="188" y="50" text-anchor="middle" font-size="15" font-family="Inter, Arial, sans-serif" fill="currentColor">N</text>
+              <text x="332" y="50" text-anchor="middle" font-size="15" font-family="Inter, Arial, sans-serif" fill="currentColor">N</text>
+              <line x1="260" y1="94" x2="260" y2="122" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
+              <ellipse cx="118" cy="186" rx="66" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
+              <text x="118" y="192" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">data</text>
+              <line x1="184" y1="174" x2="247" y2="132" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
+              <ellipse cx="260" cy="228" rx="98" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
+              <text x="260" y="234" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">horário inicial</text>
+              <line x1="260" y1="202" x2="260" y2="122" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
+              <ellipse cx="402" cy="186" rx="78" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
+              <text x="402" y="192" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">situação</text>
+              <line x1="334" y1="174" x2="273" y2="132" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
+            </svg>
+          </article>
 
-RESERVA:
-data
-horário_inicial
-situação</code></article>
+          <div aria-hidden="true" class="transition-arrow">→</div>
+
+          <article class="mini-model">
+            <h3>Entidade associativa RESERVA</h3>
+            <p>Quando precisamos distinguir cada ocorrência do fato, RESERVA passa a representar essa ocorrência e preserva seus atributos.</p>
+            <svg aria-label="RESERVA como entidade associativa entre USUÁRIO e SALA, com os atributos data, horário inicial e situação" role="img" viewBox="0 0 520 320" style="width:100%;height:auto;display:block;margin-top:1rem;">
+              <rect x="20" y="28" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
+              <text x="88" y="62" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">USUÁRIO</text>
+              <rect x="364" y="28" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
+              <text x="432" y="62" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">SALA</text>
+              <rect x="190" y="122" width="140" height="60" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.6" stroke-width="2.5"></rect>
+              <text x="260" y="158" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">RESERVA</text>
+              <line x1="112" y1="84" x2="216" y2="122" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
+              <text x="136" y="96" text-anchor="middle" font-size="14" font-family="Inter, Arial, sans-serif" fill="currentColor">1</text>
+              <text x="204" y="112" text-anchor="middle" font-size="14" font-family="Inter, Arial, sans-serif" fill="currentColor">N</text>
+              <line x1="408" y1="84" x2="304" y2="122" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
+              <text x="384" y="96" text-anchor="middle" font-size="14" font-family="Inter, Arial, sans-serif" fill="currentColor">1</text>
+              <text x="316" y="112" text-anchor="middle" font-size="14" font-family="Inter, Arial, sans-serif" fill="currentColor">N</text>
+              <ellipse cx="118" cy="246" rx="66" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
+              <text x="118" y="252" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">data</text>
+              <line x1="184" y1="234" x2="226" y2="182" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
+              <ellipse cx="260" cy="286" rx="98" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
+              <text x="260" y="292" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">horário inicial</text>
+              <line x1="260" y1="260" x2="260" y2="182" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
+              <ellipse cx="402" cy="246" rx="78" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
+              <text x="402" y="252" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">situação</text>
+              <line x1="336" y1="234" x2="294" y2="182" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
+            </svg>
+          </article>
         </div>
 
         <ol class="practice-steps">
