@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Material de aprofundamento da Aula 03 de Banco de Dados: modelo relacional, relações, domínios, valores nulos, chaves, integridade, redundância, anomalias e motivação para normalização.">
   <meta name="theme-color" content="#0f172a">
-  <title>Aula 03 — Material de aprofundamento | Banco de Dados</title>
+  <title>Aula 03, Material de aprofundamento | Banco de Dados</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="script.js"></script>
   <style>
@@ -44,6 +44,7 @@
     .study-callout { padding: 1.15rem 1.25rem; border-left: 4px solid var(--primary); border-radius: 0 16px 16px 0; background: color-mix(in srgb, var(--primary) 9%, var(--surface)); }
     .study-callout > strong { display: block; margin-bottom: .35rem; color: var(--primary); }
     .study-callout p { margin: 0; color: var(--muted); }
+    .study-callout p + p { margin-top: .7rem; }
     .study-callout p strong { display: inline; margin: 0; }
     .study-callout.violet { border-left-color: var(--secondary); background: color-mix(in srgb, var(--secondary) 10%, var(--surface)); }
     .study-callout.violet strong { color: var(--secondary); }
@@ -129,7 +130,7 @@
 
   <header class="site-header" id="inicio">
     <div class="container nav-wrap">
-      <a class="brand" href="index.html" aria-label="Banco de Dados — página principal">
+      <a class="brand" href="index.html" aria-label="Banco de Dados, página principal">
         <span class="brand-mark" aria-hidden="true">BD</span>
         <span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span>
       </a>
@@ -158,7 +159,6 @@
             <span>Engenharia de Software</span>
             <span>2026/2</span>
             <span>Leitura ampliada</span>
-            <span>Sem exercícios</span>
           </div>
           <div class="study-actions">
             <a class="button button-primary" href="#relacoes">Começar a leitura</a>
@@ -194,7 +194,7 @@
         <div class="study-grid">
           <div class="study-prose">
             <h3>Do esquema para as tuplas</h3>
-            <p>Considere o esquema <code>CLIENTE(id_cliente, nome, cidade)</code>. Ele afirma que o banco registra clientes por meio de três atributos. A relação existente em um instante — também chamada de <strong>estado</strong> ou <strong>instância da relação</strong> — é o conjunto de tuplas que atualmente satisfaz essa estrutura e suas restrições.</p>
+            <p>Considere o esquema <code>CLIENTE(id_cliente, nome, cidade)</code>. Ele afirma que o banco registra clientes por meio de três atributos. A relação existente em um instante, também chamada de <strong>estado</strong> ou <strong>instância da relação</strong>, é o conjunto de tuplas que atualmente satisfaz essa estrutura e suas restrições.</p>
 
             <div class="relation-demo" aria-label="Exemplo da relação CLIENTE">
               <div class="relation-demo-header"><strong>CLIENTE</strong><span>esquema de grau 3 · estado com cardinalidade 3</span></div>
@@ -207,6 +207,18 @@
                 </tbody>
               </table>
             </div>
+
+            <h4>Grau e cardinalidade medem dimensões diferentes</h4>
+            <div class="study-table-wrap">
+              <table class="study-table" style="min-width:640px">
+                <thead><tr><th>Conceito</th><th>O que é contado?</th><th>No exemplo CLIENTE</th><th>Como perceber a diferença?</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Grau</strong></td><td>A quantidade de atributos, isto é, as colunas definidas no esquema.</td><td><strong>3</strong>: <code>id_cliente</code>, <code>nome</code> e <code>cidade</code>.</td><td>Se acrescentarmos o atributo <code>email</code>, o grau passa para 4, mesmo que nenhuma nova linha seja inserida.</td></tr>
+                  <tr><td><strong>Cardinalidade da relação</strong></td><td>A quantidade de tuplas, isto é, as linhas existentes no estado observado.</td><td><strong>3</strong>: Ana, Bruno e Carla.</td><td>Se cadastrarmos um novo cliente, a cardinalidade passa para 4, sem alterar o grau.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Neste exemplo os dois números coincidem por acaso, grau 3 e cardinalidade 3. Eles medem coisas diferentes: <strong>grau olha para a estrutura; cardinalidade olha para o estado.</strong></p>
 
             <p>Cada tupla pode ser lida como uma afirmação particular: “existe um cliente identificado por 101, chamado Ana Lima, associado à cidade Curitiba”. Essa leitura é importante porque o valor de uma tabela não está apenas em sua aparência, mas no significado dos fatos que suas linhas representam.</p>
 
@@ -229,7 +241,12 @@
           </div>
 
           <aside class="study-stack">
-            <div class="study-callout"><strong>Duas cardinalidades, dois contextos</strong><p>Nesta aula, <strong>cardinalidade da relação</strong> é a quantidade de tuplas de um estado. Na modelagem ER, trabalharemos também com <strong>cardinalidade de relacionamento</strong>, como 1:1, 1:N e N:N. O termo é o mesmo, mas a pergunta respondida é diferente.</p></div>
+            <div class="study-callout">
+              <strong>Duas cardinalidades, dois contextos</strong>
+              <p><strong>Cardinalidade da relação</strong> responde à pergunta: <em>“Quantas tuplas existem nesta relação neste momento?”</em> No exemplo CLIENTE, a resposta é 3.</p>
+              <p><strong>Cardinalidade de relacionamento</strong>, usada no modelo ER, responde à pergunta: <em>“Com quantas ocorrências de uma entidade uma ocorrência da outra pode se relacionar?”</em> As respostas aparecem como 1:1, 1:N ou N:N.</p>
+              <p>Portanto, a primeira mede o <strong>tamanho de um estado da relação</strong>; a segunda descreve uma <strong>regra estrutural entre entidades</strong>.</p>
+            </div>
             <div class="study-callout teal"><strong>Esquema não é amostra</strong><p>Três linhas observadas hoje não definem todas as situações permitidas. O esquema e suas restrições devem descrever qualquer estado válido que possa surgir no futuro.</p></div>
             <div class="study-callout violet"><strong>Base conceitual</strong><p>Elmasri &amp; Navathe, cap. 3; Silberschatz, Korth &amp; Sudarshan, cap. 2; Machado, cap. 3.</p></div>
           </aside>
@@ -248,7 +265,7 @@
         <div class="study-grid">
           <div class="study-prose">
             <h3>Tipo de dado é apenas parte da definição</h3>
-            <p>Dizer que <code>idade</code> é um inteiro não basta. O domínio pode exigir valores compatíveis com pessoas, excluir negativos e estabelecer um limite plausível. Da mesma forma, <code>status_pedido</code> pode ser armazenado como texto, mas apenas alguns termos — como “aberto”, “pago”, “enviado” e “cancelado” — pertencem ao domínio pretendido.</p>
+            <p>Dizer que <code>idade</code> é um inteiro não basta. O domínio pode exigir valores compatíveis com pessoas, excluir negativos e estabelecer um limite plausível. Da mesma forma, <code>status_pedido</code> pode ser armazenado como texto, mas apenas alguns termos, como “aberto”, “pago”, “enviado” e “cancelado”, pertencem ao domínio pretendido.</p>
 
             <div class="study-table-wrap">
               <table class="study-table">
@@ -316,7 +333,7 @@
               <article class="key-step"><strong>Chave candidata</strong><p>Conjunto mínimo que identifica uma tupla em qualquer estado válido. Uma relação pode possuir várias candidatas.</p></article>
               <article class="key-step"><strong>Chave primária</strong><p>Candidata escolhida como referência principal da relação. Deve permanecer única e nenhum de seus componentes pode ser nulo.</p></article>
               <article class="key-step"><strong>Chave alternativa</strong><p>Candidata que não foi escolhida como primária, mas cuja unicidade ainda precisa ser preservada.</p></article>
-              <article class="key-step"><strong>Chave estrangeira</strong><p>Atributo ou conjunto de atributos que referencia uma chave candidata de outra relação — ou da própria relação, em uma autorreferência.</p></article>
+              <article class="key-step"><strong>Chave estrangeira</strong><p>Atributo ou conjunto de atributos que referencia uma chave candidata de outra relação, ou da própria relação, em uma autorreferência.</p></article>
             </div>
 
             <h3>O caso de ALUNO</h3>
@@ -328,7 +345,7 @@
             </div>
 
             <h3>O que torna uma chave primária adequada</h3>
-            <p>Uma boa chave deve ser única, obrigatória, estável e tão simples quanto possível. Atributos cujo significado muda com frequência — como telefone, e-mail pessoal ou cargo — tendem a produzir referências frágeis. Chaves curtas também reduzem o custo de propagá-las como referências em outras relações.</p>
+            <p>Uma boa chave deve ser única, obrigatória, estável e tão simples quanto possível. Atributos cujo significado muda com frequência, como telefone, e-mail pessoal ou cargo, tendem a produzir referências frágeis. Chaves curtas também reduzem o custo de propagá-las como referências em outras relações.</p>
             <p>Quando não existe uma candidata natural adequada, pode-se introduzir uma chave substituta, como um identificador numérico gerado. Isso resolve a identificação técnica, mas não elimina regras de unicidade do negócio. Se CPF e e-mail não podem se repetir, essas restrições continuam necessárias mesmo após a criação de <code>id_aluno</code>.</p>
 
             <h3>Chaves compostas dependem da regra de ocorrência</h3>
@@ -495,7 +512,7 @@ CLIENTE 999 inexistente</code></article>
               <article class="schema-card"><h4>PEDIDO <span>transação</span></h4><code><strong>id_pedido</strong><br>data<br><em>id_cliente → CLIENTE</em></code></article>
               <article class="schema-card"><h4>ITEM_PEDIDO <span>linha da transação</span></h4><code><strong>id_pedido + numero_item</strong><br><em>id_produto → PRODUTO</em><br>quantidade<br>preco_venda</code></article>
             </div>
-            <div class="schema-links">CLIENTE 1 — N PEDIDO · PEDIDO 1 — N ITEM_PEDIDO · PRODUTO 1 — N ITEM_PEDIDO</div>
+            <div class="schema-links">CLIENTE 1:N PEDIDO · PEDIDO 1:N ITEM_PEDIDO · PRODUTO 1:N ITEM_PEDIDO</div>
 
             <h3>O que a decomposição melhora</h3>
             <div class="study-table-wrap">
@@ -511,7 +528,7 @@ CLIENTE 999 inexistente</code></article>
             </div>
 
             <h3>Decomposição precisa preservar informação</h3>
-            <p>Dividir uma relação não é suficiente. As partes devem poder ser recombinadas por atributos comuns de modo a recuperar os fatos originais. Uma decomposição inadequada pode perder associações ou gerar combinações espúrias — linhas que aparecem ao recompor as tabelas, embora nunca tenham existido no estado original.</p>
+            <p>Dividir uma relação não é suficiente. As partes devem poder ser recombinadas por atributos comuns de modo a recuperar os fatos originais. Uma decomposição inadequada pode perder associações ou gerar combinações espúrias, isto é, linhas que aparecem ao recompor as tabelas, embora nunca tenham existido no estado original.</p>
             <p>Por isso, a normalização formal avalia não apenas a redução de redundância, mas também propriedades como decomposição sem perda e preservação das regras relevantes. Essas propriedades serão estudadas posteriormente com dependências funcionais e formas normais.</p>
 
             <h3>Mais tabelas não significam automaticamente melhor projeto</h3>
@@ -571,7 +588,7 @@ CLIENTE 999 inexistente</code></article>
 
   <footer class="site-footer">
     <div class="container footer-grid">
-      <div><strong>Aula 03 — Material de aprofundamento</strong><p>Engenharia de Software · Banco de Dados · 2026/2</p></div>
+      <div><strong>Aula 03, Material de aprofundamento</strong><p>Engenharia de Software · Banco de Dados · 2026/2</p></div>
       <a href="#inicio">Voltar ao início ↑</a>
     </div>
   </footer>
