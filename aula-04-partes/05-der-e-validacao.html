@@ -2,8 +2,8 @@
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Laboratório de modelagem</p>
-      <h2 id="laboratorio-title">Agora as decisões serão transformadas em um DER no diagrams.net</h2>
-      <p>A ferramenta entra somente neste momento porque o desenho precisa representar decisões já discutidas. O objetivo não é explorar toda a interface, mas construir um diagrama legível, editável e justificável.</p>
+      <h2 id="laboratorio-title">Transforme as decisões em um DER e depois aplique o processo a outro domínio</h2>
+      <p>A ferramenta entra somente neste momento porque o desenho precisa representar decisões já discutidas. Primeiro concluiremos o exemplo de reserva de salas. Em seguida, a equipe construirá um modelo novo, com relações diferentes.</p>
     </div>
 
     <div class="diagram-tool-panel">
@@ -21,7 +21,7 @@
         <div class="notation-grid">
           <article><strong>Entidade</strong><p>Retângulo com o nome em letras maiúsculas.</p></article>
           <article><strong>Atributo</strong><p>Lista dentro da entidade ou notação equivalente adotada pela turma.</p></article>
-          <article><strong>Identificador</strong><p>Sublinhado ou acompanhado da marcação <code>ID</code>.</p></article>
+          <article><strong>Identificador</strong><p>Sublinhado ou acompanhado da marcação <code>ID</code> quando o requisito sustenta essa decisão.</p></article>
           <article><strong>Relacionamento</strong><p>Linha nomeada por um verbo ou expressão legível.</p></article>
           <article><strong>Cardinalidade</strong><p>Use <code>0..1</code>, <code>1..1</code>, <code>0..N</code> ou <code>1..N</code>.</p></article>
           <article><strong>Dúvidas</strong><p>Registre notas no próprio arquivo sem transformá-las em regras definitivas.</p></article>
@@ -33,54 +33,90 @@
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exercício guiado no diagrams.net</small><h3>Construa o DER de reserva de salas com o professor</h3></div></div>
-        <p>Abra um arquivo novo e acompanhe a construção. Cada passo deve corresponder a uma decisão já explicada:</p>
+        <div class="learning-block-head"><span>G</span><div><small>Conclusão do exemplo guiado</small><h3>Construa o DER de reserva de salas com o professor</h3></div></div>
+        <p>Agora o diagrama reúne decisões que foram aparecendo ao longo da aula:</p>
         <ol class="practice-steps">
-          <li>Crie as entidades USUÁRIO, RESERVA e SALA.</li>
-          <li>Inclua os identificadores e os atributos centrais.</li>
-          <li>Ligue USUÁRIO a RESERVA pelo relacionamento <strong>realiza</strong>.</li>
-          <li>Ligue RESERVA a SALA pelo relacionamento <strong>utiliza</strong>.</li>
-          <li>Adicione <code>0..N</code> junto a USUÁRIO e SALA e <code>1..1</code> junto a RESERVA.</li>
-          <li>Marque RESERVA como a ocorrência que preserva data, horário e situação.</li>
-          <li>Leia o diagrama inteiro em voz alta para verificar se as regras permanecem compreensíveis.</li>
+          <li>Crie <strong>USUÁRIO</strong> e <strong>SALA</strong> com os identificadores fornecidos pelo cenário e seus atributos.</li>
+          <li>Crie <strong>RESERVA</strong> para representar cada ocorrência do fato de reservar.</li>
+          <li>Inclua em RESERVA <strong>data</strong>, <strong>horário inicial</strong> e <strong>situação</strong>.</li>
+          <li>Ligue USUÁRIO a RESERVA pelo relacionamento <strong>realiza</strong>: USUÁRIO participa de <code>0..N</code> reservas e cada RESERVA exige <code>1..1</code> usuário.</li>
+          <li>Ligue RESERVA a SALA pelo relacionamento <strong>utiliza</strong>: SALA participa de <code>0..N</code> reservas e cada RESERVA exige <code>1..1</code> sala.</li>
+          <li>Em RESERVA, registre a nota <strong>“identificador: a validar com o domínio”</strong>, pois o requisito não definiu a regra de unicidade.</li>
+          <li>Leia o diagrama inteiro em voz alta e confira se cada elemento pode ser explicado por uma informação do cenário.</li>
         </ol>
 
         <div class="activity-note guided-tool-note">
-          <strong>Este arquivo é de acompanhamento.</strong>
-          <p>Ele pode ser usado como treino, mas não é o produto principal da entrega. O exercício seguinte deverá ser construído pela equipe.</p>
-        </div>
-      </article>
-
-      <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Prática dos estudantes no diagrams.net</small><h3>Construa o DER da clínica-escola</h3></div></div>
-        <p>Utilize as decisões registradas nas etapas anteriores. Não copie o modelo de reserva trocando apenas os nomes: cada cardinalidade e cada elemento precisam ser sustentados pelo cenário da clínica.</p>
-        <ol class="practice-steps">
-          <li>Crie PACIENTE, PROFISSIONAL e CONSULTA.</li>
-          <li>Inclua identificadores e os atributos centrais de cada entidade.</li>
-          <li>Represente endereço como composto e telefone como multivalorado conforme a notação adotada.</li>
-          <li>Relacione PACIENTE e PROFISSIONAL com CONSULTA.</li>
-          <li>Indique mínimos e máximos em todas as extremidades.</li>
-          <li>Inclua no próprio arquivo uma área intitulada <strong>Dúvidas e suposições</strong>.</li>
-          <li>Teste o modelo com casos permitidos e proibidos antes de considerá-lo concluído.</li>
-        </ol>
-
-        <div class="delivery-panel" id="entrega">
-          <div class="delivery-panel-head"><span>Entrega da atividade</span><strong>DER da clínica-escola</strong></div>
-          <p>A equipe deverá entregar no ambiente indicado pelo professor:</p>
-          <ul>
-            <li>o arquivo <strong>editável</strong> do diagrams.net, preferencialmente no formato <code>.drawio</code>;</li>
-            <li>uma exportação do diagrama em <strong>PDF ou PNG</strong> para consulta rápida;</li>
-            <li>no próprio diagrama, pelo menos <strong>três decisões justificadas</strong> e <strong>duas dúvidas ou suposições</strong> registradas.</li>
-          </ul>
-          <p class="delivery-name"><strong>Nome sugerido:</strong> <code>equipe_nome-aula04-clinica.drawio</code></p>
-          <p><strong>Não entregue somente uma captura de tela.</strong> O arquivo editável será necessário para as revisões e para as próximas etapas da disciplina.</p>
+          <strong>Observe o percurso completo.</strong>
+          <p>RESERVA não apareceu porque decidimos previamente que toda ação vira entidade. Ela surgiu porque o relacionamento N:N possuía ocorrências que precisavam ser distinguidas e informações próprias que precisavam ser preservadas.</p>
         </div>
       </article>
     </div>
   </div>
 </section>
 
-<section aria-labelledby="validacao-title" class="section-pad section-soft" id="validacao">
+<section aria-labelledby="pratica-title" class="section-pad section-soft" id="pratica">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">Agora é com a equipe</p>
+      <h2 id="pratica-title">Modele uma biblioteca sem copiar a estrutura do exemplo anterior</h2>
+      <p>O novo domínio possui relações 1:N, N:N e uma ocorrência histórica de empréstimo. A tarefa é repetir o <strong>processo de análise</strong>, não trocar os nomes das caixas do exemplo de reserva.</p>
+    </div>
+
+    <article class="scenario-panel embedded-scenario">
+      <h3>Biblioteca universitária</h3>
+      <p>Uma biblioteca precisa organizar usuários, livros, autores, exemplares físicos e os empréstimos realizados.</p>
+      <ol class="requirement-list">
+        <li>Para cada <strong>usuário</strong>, são registrados identificador, nome e e-mail. Um usuário pode ser cadastrado antes de realizar qualquer empréstimo.</li>
+        <li>Para cada <strong>livro</strong>, são registrados ISBN, título e ano de publicação. Um livro pode ser catalogado antes de a biblioteca possuir um exemplar físico.</li>
+        <li>Para cada <strong>autor</strong>, são registrados identificador e nome. Um livro possui um ou mais autores, e um autor pode participar de vários livros.</li>
+        <li>Cada <strong>exemplar físico</strong> possui um número de patrimônio, data de aquisição e situação. Cada exemplar corresponde a exatamente um livro, enquanto um livro pode possuir vários exemplares.</li>
+        <li>Quando um usuário toma um exemplar emprestado, devem ser registrados data do empréstimo, data prevista de devolução e, quando ocorrer, data de devolução.</li>
+        <li>Um usuário pode realizar vários empréstimos ao longo do tempo. Um exemplar também pode participar de vários empréstimos ao longo do seu histórico.</li>
+      </ol>
+    </article>
+
+    <div class="learning-sequence">
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>1</span><div><small>Análise antes do desenho</small><h3>Reconstrua o caminho feito no exemplo guiado</h3></div></div>
+        <ol class="practice-steps">
+          <li>Separe conceitos, características, conexões, regras e pelo menos duas dúvidas do domínio.</li>
+          <li>Identifique as entidades que possuem ocorrências próprias e justifique cada uma.</li>
+          <li>Distribua os atributos e destaque os identificadores que o cenário realmente fornece.</li>
+          <li>Escreva os relacionamentos em frases e leia cada um nos dois sentidos.</li>
+          <li>Defina cardinalidades mínimas e máximas.</li>
+          <li>Analise separadamente <strong>LIVRO–AUTOR</strong>, <strong>LIVRO–EXEMPLAR</strong> e o histórico entre <strong>USUÁRIO–EXEMPLAR</strong>.</li>
+          <li>Decida como <strong>EMPRÉSTIMO</strong> deve aparecer no modelo e justifique sua decisão.</li>
+        </ol>
+      </article>
+
+      <article class="learning-block practice-block">
+        <div class="learning-block-head"><span>2</span><div><small>Construção no diagrams.net</small><h3>Transforme as decisões em um DER</h3></div></div>
+        <ol class="practice-steps">
+          <li>Construa o DER usando a mesma notação adotada no exemplo guiado.</li>
+          <li>Represente claramente a diferença entre a obra catalogada (<strong>LIVRO</strong>) e cada cópia física (<strong>EXEMPLAR</strong>).</li>
+          <li>Represente a autoria e suas cardinalidades sem criar uma entidade apenas por hábito.</li>
+          <li>Represente o histórico de empréstimos preservando data do empréstimo, previsão e devolução.</li>
+          <li>Inclua no próprio arquivo uma área intitulada <strong>Dúvidas e suposições</strong>.</li>
+          <li>Marque qualquer decisão que não seja diretamente sustentada pelo cenário como algo que precisa ser validado.</li>
+        </ol>
+      </article>
+    </div>
+
+    <div class="delivery-panel" id="entrega">
+      <div class="delivery-panel-head"><span>Entrega da atividade</span><strong>DER da biblioteca</strong></div>
+      <p>A equipe deverá entregar no ambiente indicado pelo professor:</p>
+      <ul>
+        <li>o arquivo <strong>editável</strong> do diagrams.net, preferencialmente no formato <code>.drawio</code>;</li>
+        <li>uma exportação do diagrama em <strong>PDF ou PNG</strong> para consulta rápida;</li>
+        <li>no próprio diagrama, pelo menos <strong>três decisões justificadas</strong> e <strong>duas dúvidas ou suposições</strong> registradas.</li>
+      </ul>
+      <p class="delivery-name"><strong>Nome sugerido:</strong> <code>equipe_nome-aula04-biblioteca.drawio</code></p>
+      <p><strong>Não entregue somente uma captura de tela.</strong> O arquivo editável será necessário para as revisões e para as próximas etapas da disciplina.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="validacao-title" class="section-pad" id="validacao">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Validação do modelo</p>
@@ -97,30 +133,31 @@
 
     <div class="learning-sequence validation-sequence">
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Auditoria guiada</small><h3>Teste o modelo de reserva de salas</h3></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Auditoria do exemplo</small><h3>Teste o modelo de reserva de salas</h3></div></div>
         <ol class="practice-steps">
           <li>Um usuário pode existir sem reserva?</li>
           <li>Uma sala pode ser cadastrada sem uso registrado?</li>
           <li>Uma reserva pode existir sem usuário ou sala?</li>
           <li>O mesmo usuário pode reservar a mesma sala em datas diferentes?</li>
           <li>Onde ficam data, horário e situação?</li>
+          <li>Qual pergunta ainda precisamos fazer para identificar uma reserva sem ambiguidade?</li>
         </ol>
-        <p>As respostas devem ser localizáveis no DER. Quando uma regra depende de explicação oral que não aparece no modelo ou nas notas, o artefato ainda está incompleto.</p>
+        <p>As respostas devem ser localizáveis no DER ou aparecer explicitamente como uma questão ainda não respondida pelo requisito.</p>
       </article>
 
       <article class="learning-block practice-block">
-        <div class="learning-block-head"><span>P</span><div><small>Revisão entre equipes</small><h3>Audite o DER da clínica-escola</h3></div></div>
-        <p>Troque o arquivo exportado com outra equipe. A equipe revisora deve registrar observações antes que o modelo seja alterado.</p>
+        <div class="learning-block-head"><span>P</span><div><small>Revisão entre equipes</small><h3>Audite o DER da biblioteca</h3></div></div>
+        <p>Troque a exportação com outra equipe. A equipe revisora deve testar o modelo antes que qualquer alteração seja feita.</p>
         <div class="validation-checklist">
-          <div class="validation-item">Cada entidade possui uma razão clara para existir.</div>
-          <div class="validation-item">Cada entidade pode ser identificada sem ambiguidade.</div>
-          <div class="validation-item">Cada atributo descreve o elemento correto.</div>
-          <div class="validation-item">Atributos multivalorados e derivados foram analisados.</div>
-          <div class="validation-item">Cada relacionamento pode ser lido nos dois sentidos.</div>
-          <div class="validation-item">Cardinalidades mínimas e máximas correspondem ao cenário.</div>
-          <div class="validation-item">Participação obrigatória e opcional está explícita.</div>
+          <div class="validation-item">Um livro pode existir no catálogo sem exemplar físico.</div>
+          <div class="validation-item">Cada exemplar corresponde a exatamente um livro.</div>
+          <div class="validation-item">Um livro pode possuir vários autores e um autor pode participar de vários livros.</div>
+          <div class="validation-item">Um usuário pode existir sem empréstimos.</div>
+          <div class="validation-item">O mesmo exemplar pode aparecer em empréstimos diferentes ao longo do tempo.</div>
+          <div class="validation-item">As datas do empréstimo descrevem o evento correto, não USUÁRIO ou EXEMPLAR.</div>
+          <div class="validation-item">Cada entidade pode ser identificada sem acrescentar uma regra não informada.</div>
           <div class="validation-item">Dúvidas e suposições aparecem no arquivo.</div>
-          <div class="validation-item">O modelo não acrescenta regras sem justificativa.</div>
+          <div class="validation-item">O modelo diferencia claramente LIVRO de EXEMPLAR.</div>
         </div>
         <div class="rule-panel">
           <h3>Antes de entregar</h3>
