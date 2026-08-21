@@ -1,38 +1,69 @@
 <section aria-labelledby="relacionamentos-title" class="section-pad" id="relacionamentos">
   <div class="container">
     <div class="section-heading">
-      <p class="eyebrow">Passo 4 · relacionamentos</p>
-      <h2 id="relacionamentos-title">Escreva as conexões como regras antes de transformá-las em linhas</h2>
-      <p>Relacionamentos representam fatos que conectam entidades. Para evitar uma linha ambígua, leia cada relacionamento nos dois sentidos e registre o que cada direção significa no domínio.</p>
+      <p class="eyebrow">Passo 4 · das conexões aos relacionamentos</p>
+      <h2 id="relacionamentos-title">Transforme as conexões encontradas no texto em relações entre entidades</h2>
+      <p>No Passo 1 identificamos que <strong>“um usuário reserva uma sala”</strong> é uma conexão importante do domínio. Depois reconhecemos USUÁRIO e SALA como entidades e distribuímos suas características. Agora voltamos àquela conexão para representá-la como um relacionamento.</p>
     </div>
 
     <div class="learning-sequence">
       <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Um relacionamento precisa formar frases legíveis</h3></div></div>
-        <div class="verb-model"><div class="verb-entity"><strong>ENTIDADE A</strong><small>primeiro participante</small></div><div class="verb-link">relaciona-se com</div><div class="verb-entity"><strong>ENTIDADE B</strong><small>segundo participante</small></div></div>
-        <p>O nome do relacionamento ajuda a comunicar o domínio, mas a linha sozinha não explica todas as regras. Por isso, escrevemos duas leituras:</p>
+        <div class="learning-block-head"><span>T</span><div><small>Da leitura à modelagem</small><h3>Relacionamento representa um fato entre entidades</h3></div></div>
+        <p>Um relacionamento aparece quando o domínio informa que ocorrências de duas ou mais entidades podem estar conectadas por algum fato. Normalmente essa conexão pode ser expressa por um verbo ou por uma pequena frase.</p>
+
+        <div class="concept-grid">
+          <article class="concept-card">
+            <span>1 · No requisito</span>
+            <strong>“um usuário reserva uma sala”</strong>
+            <p>A leitura do cenário revelou uma conexão que precisa ser preservada pelo modelo.</p>
+          </article>
+          <article class="concept-card">
+            <span>2 · Entidades envolvidas</span>
+            <strong>USUÁRIO + SALA</strong>
+            <p>Nos passos anteriores, concluímos que os dois conceitos possuem ocorrências próprias e precisam ser representados como entidades.</p>
+          </article>
+          <article class="concept-card">
+            <span>3 · Relacionamento</span>
+            <strong>USUÁRIO reserva SALA</strong>
+            <p>O verbo <strong>reserva</strong> dá nome ao fato que conecta as duas entidades no domínio.</p>
+          </article>
+        </div>
+
+        <div class="rule-panel">
+          <h3>A linha sozinha não é o relacionamento</h3>
+          <p>O importante é o <strong>significado do fato</strong> que a linha representa. Por isso, antes de pensar em símbolos ou cardinalidades, tente escrever a relação como uma frase que faça sentido no domínio.</p>
+        </div>
+
+        <h4>Leia a relação nos dois sentidos</h4>
+        <p>A mesma conexão precisa ser compreendida a partir de cada participante. Isso ajuda a revelar as regras que serão transformadas em cardinalidades no próximo passo.</p>
         <div class="directional-rules">
-          <div class="directional-rule"><b>Leitura 1:</b> o que uma ocorrência de A pode ou deve fazer em relação a B?</div>
-          <div class="directional-rule"><b>Leitura 2:</b> o que uma ocorrência de B pode ou deve fazer em relação a A?</div>
+          <div class="directional-rule"><b>Partindo de USUÁRIO:</b> com quantas salas um usuário pode se relacionar por meio de reservas?</div>
+          <div class="directional-rule"><b>Partindo de SALA:</b> com quantos usuários uma sala pode se relacionar por meio de reservas?</div>
         </div>
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>Comece pela conexão mais direta: USUÁRIO reserva SALA</h3></div></div>
-        <div class="verb-model"><div class="verb-entity"><strong>USUÁRIO</strong><small>pessoa cadastrada</small></div><div class="verb-link">reserva</div><div class="verb-entity"><strong>SALA</strong><small>espaço disponível</small></div></div>
-        <div class="directional-rules">
-          <div class="directional-rule"><b>Leitura 1:</b> um usuário pode reservar uma sala.</div>
-          <div class="directional-rule"><b>Leitura 2:</b> uma sala pode ser reservada por um usuário.</div>
+        <div class="learning-block-head"><span>G</span><div><small>Retomando o exemplo</small><h3>O que a conexão “usuário reserva sala” já nos permite afirmar?</h3></div></div>
+
+        <div class="comparison-panel">
+          <h3>Do texto para o modelo</h3>
+          <p><strong>Passo 1:</strong> encontramos a conexão “um usuário reserva uma sala”.<br/><strong>Passo 4:</strong> representamos essa conexão como <strong>USUÁRIO — reserva — SALA</strong>.</p>
         </div>
 
-        <h4>Agora observe o que a linha ainda não explica</h4>
+        <div class="directional-rules">
+          <div class="directional-rule"><b>Leitura a partir de USUÁRIO:</b> um usuário pode reservar salas.</div>
+          <div class="directional-rule"><b>Leitura a partir de SALA:</b> uma sala pode ser reservada por usuários.</div>
+        </div>
+
+        <h4>Mas ainda faltam regras importantes</h4>
         <ol class="practice-steps">
-          <li>O mesmo usuário pode reservar salas diferentes ao longo do tempo?</li>
-          <li>A mesma sala pode ser reservada por usuários diferentes ao longo do tempo?</li>
-          <li>Se o mesmo usuário reservar a mesma sala em duas datas diferentes, como distinguiremos essas duas ocorrências?</li>
-          <li>Onde ficam data, horário inicial e situação?</li>
+          <li>Um usuário pode realizar nenhuma, uma ou várias reservas?</li>
+          <li>Uma sala pode nunca ser reservada? Pode aparecer em várias reservas?</li>
+          <li>O mesmo usuário pode reservar a mesma sala mais de uma vez?</li>
+          <li>Data, horário inicial e situação pertencem ao USUÁRIO, à SALA ou à própria ocorrência da reserva?</li>
         </ol>
-        <div class="axis-note"><b>i</b><div><strong>Importante:</strong> a relação direta entre USUÁRIO e SALA é um bom ponto de partida, mas ainda precisamos representar seus limites e as informações que pertencem a cada ocorrência da reserva.</div></div>
+
+        <div class="axis-note"><b>i</b><div><strong>Resultado deste passo:</strong> já sabemos <em>qual fato conecta</em> USUÁRIO e SALA. No próximo passo vamos determinar <em>quantas vezes</em> cada entidade pode participar desse relacionamento e se essa participação é obrigatória ou opcional.</div></div>
       </article>
     </div>
   </div>
