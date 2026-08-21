@@ -113,18 +113,45 @@
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Passo 6 · atributos do relacionamento e entidade associativa</p>
-      <h2 id="associativa-title">Quando precisamos distinguir cada ocorrência da conexão, o modelo precisa evoluir</h2>
-      <p>Relacionamentos também podem possuir atributos. Quando cada ocorrência da relação precisa ser reconhecida, manter histórico ou participar de outras relações, uma entidade associativa pode tornar esse fato explícito no modelo.</p>
+      <h2 id="associativa-title">Nem todo relacionamento precisa se tornar uma entidade associativa</h2>
+      <p>Um relacionamento pode continuar sendo apenas um relacionamento — inclusive quando possui atributos. A entidade associativa é uma possibilidade usada quando o próprio fato precisa ser tratado como algo que possui ocorrências reconhecíveis, histórico ou participação em outras relações.</p>
     </div>
 
     <div class="learning-sequence">
       <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Pergunte a quem o atributo realmente pertence</h3></div></div>
-        <p>Datas, papéis, quantidades, valores ou situações frequentemente descrevem <strong>uma ocorrência do relacionamento</strong>, e não uma característica permanente das entidades participantes. Antes de criar uma nova entidade, identifique esse fato e verifique se suas ocorrências precisam ser distinguidas.</p>
+        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Primeiro pergunte se o relacionamento já é suficiente</h3></div></div>
+        <p>Relacionamentos representam fatos entre entidades e <strong>não viram entidades associativas por padrão</strong>. Antes de criar uma nova entidade, observe o que o domínio exige de cada ocorrência desse fato.</p>
+
+        <div class="concept-grid">
+          <article class="concept-card">
+            <span>Relacionamento</span>
+            <strong>FUNCIONÁRIO trabalha em DEPARTAMENTO</strong>
+            <p>Se precisamos apenas registrar o fato de que um funcionário trabalha em um departamento, o relacionamento pode ser suficiente.</p>
+          </article>
+          <article class="concept-card">
+            <span>Relacionamento com atributos</span>
+            <strong>FORNECEDOR fornece PRODUTO</strong>
+            <p>Um valor como <strong>preço negociado</strong> pode descrever a relação sem obrigar, por si só, a criação de uma nova entidade.</p>
+          </article>
+          <article class="concept-card">
+            <span>Entidade associativa</span>
+            <strong>RESERVA</strong>
+            <p>Aqui precisamos distinguir cada ocorrência, preservar data, horário e situação e manter o histórico do fato.</p>
+          </article>
+        </div>
+
+        <div class="rule-panel">
+          <h3>Regra prática</h3>
+          <p>Considere uma entidade associativa quando o domínio exigir que cada ocorrência do relacionamento seja tratada como algo próprio: por exemplo, quando precisa ser distinguida, manter histórico, possuir identificação própria ou participar de outros relacionamentos.</p>
+        </div>
+
+        <div class="axis-note"><b>i</b><div><strong>Não confunda com a próxima etapa do projeto.</strong> Um relacionamento N:N não se transforma automaticamente em entidade associativa apenas por ser N:N no modelo conceitual. Mais adiante, ao mapear o modelo ER para tabelas relacionais, relacionamentos N:N exigirão uma estrutura intermediária. Essa é uma decisão do modelo lógico, não a regra que estamos aplicando aqui.</div></div>
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>É aqui que RESERVA aparece no modelo</h3></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>Por que RESERVA precisa aparecer como algo próprio?</h3></div></div>
+        <p>No nosso cenário, não basta saber que um usuário pode se relacionar com uma sala. Precisamos reconhecer <strong>cada reserva realizada</strong>, inclusive quando o mesmo usuário reserva a mesma sala em momentos diferentes. É essa necessidade que faz o modelo evoluir.</p>
+
         <div class="association-transition">
           <article class="mini-model">
             <h3>Relacionamento com atributos</h3>
@@ -157,7 +184,7 @@
 
           <article class="mini-model">
             <h3>Entidade associativa RESERVA</h3>
-            <p>Quando precisamos distinguir cada ocorrência do fato, RESERVA passa a representar essa ocorrência e preserva seus atributos.</p>
+            <p>Como cada reserva precisa ser distinguida e preservada no histórico, RESERVA passa a representar cada ocorrência desse fato.</p>
             <svg aria-label="RESERVA como entidade associativa entre USUÁRIO e SALA, com os atributos data, horário inicial e situação" role="img" viewBox="0 0 520 320" style="width:100%;height:auto;display:block;margin-top:1rem;">
               <rect x="20" y="28" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
               <text x="88" y="62" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">USUÁRIO</text>
