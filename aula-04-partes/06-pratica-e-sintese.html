@@ -1,4 +1,4 @@
-<section aria-labelledby="fechamento-title" class="section-pad">
+<section aria-labelledby="fechamento-title" class="section-pad section-soft">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Fechamento da atividade</p>
@@ -8,12 +8,13 @@
 
     <div class="learning-sequence">
       <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>1</span><div><small>Verifique o conteúdo</small><h3>O DER representa o cenário?</h3></div></div>
+        <div class="learning-block-head"><span>1</span><div><small>Verifique o conteúdo</small><h3>O DER representa a biblioteca?</h3></div></div>
         <ul class="check-list">
-          <li>PACIENTE, PROFISSIONAL e CONSULTA estão identificados.</li>
+          <li>As entidades possuem uma razão clara para existir.</li>
           <li>Os atributos estão associados ao elemento correto.</li>
-          <li>Os relacionamentos podem ser lidos sem ambiguidade.</li>
+          <li>Os relacionamentos podem ser lidos nos dois sentidos.</li>
           <li>Cardinalidades mínimas e máximas estão explícitas.</li>
+          <li>O histórico de empréstimos permanece representado.</li>
         </ul>
       </article>
 
@@ -37,24 +38,24 @@
   </div>
 </section>
 
-<section aria-labelledby="checagem-title" class="section-pad section-soft">
+<section aria-labelledby="checagem-title" class="section-pad">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Verificação formativa</p>
       <h2 id="checagem-title">Reconheça a decisão e explique o requisito que a sustenta</h2>
-      <p>Registre sua explicação e compare o raciocínio durante a discussão coletiva.</p>
+      <p>Mais importante do que acertar o nome da estrutura é conseguir explicar por que ela representa corretamente o fato observado.</p>
     </div>
 
     <div class="quick-check-grid">
-      <article class="quick-check-card"><span>Caso 1</span><strong>Um paciente possui vários telefones.</strong><div class="quick-example">telefone = ?</div></article>
-      <article class="quick-check-card"><span>Caso 2</span><strong>A idade muda com o passar do tempo.</strong><div class="quick-example">idade = ?</div></article>
-      <article class="quick-check-card"><span>Caso 3</span><strong>Data e motivo pertencem ao atendimento.</strong><div class="quick-example">consulta = ?</div></article>
-      <article class="quick-check-card"><span>Caso 4</span><strong>Cada consulta exige um paciente.</strong><div class="quick-example">mínimo = ?</div></article>
+      <article class="quick-check-card"><span>Caso 1</span><strong>Um livro pode ser catalogado antes de existir um exemplar físico.</strong><div class="quick-example">participação mínima de LIVRO = ?</div></article>
+      <article class="quick-check-card"><span>Caso 2</span><strong>Um livro possui vários autores e um autor pode escrever vários livros.</strong><div class="quick-example">cardinalidade = ?</div></article>
+      <article class="quick-check-card"><span>Caso 3</span><strong>Data prevista e data de devolução descrevem uma ocorrência de empréstimo.</strong><div class="quick-example">atributo pertence a quê?</div></article>
+      <article class="quick-check-card"><span>Caso 4</span><strong>FUNCIONÁRIO supervisiona FUNCIONÁRIO.</strong><div class="quick-example">grau/tipo do relacionamento = ?</div></article>
     </div>
   </div>
 </section>
 
-<section aria-labelledby="sintese-title" class="section-pad">
+<section aria-labelledby="sintese-title" class="section-pad section-soft">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Síntese</p>
@@ -69,22 +70,24 @@
       <div class="synthesis-step">Definir atributos e identificadores</div>
       <div class="synthesis-step">Escrever relacionamentos</div>
       <div class="synthesis-step">Definir cardinalidade e participação</div>
+      <div class="synthesis-step">Analisar atributos do relacionamento</div>
+      <div class="synthesis-step">Explicitar ocorrências quando necessário</div>
       <div class="synthesis-step">Validar e justificar o DER</div>
     </div>
 
     <div class="comparison-panel">
       <h3>A progressão utilizada nesta aula</h3>
-      <p><strong>Explicação teórica:</strong> compreender a decisão. <strong>Exercício guiado:</strong> acompanhar a reserva de salas. <strong>Prática dos estudantes:</strong> construir, auditar e entregar o modelo da clínica-escola.</p>
+      <p><strong>Primeiro:</strong> um único cenário de reserva de salas cresceu junto com os conceitos. <strong>Depois:</strong> microcasos mostraram relacionamentos recursivos e ternários. <strong>Por fim:</strong> a equipe aplicou o processo completo a uma biblioteca, com estruturas diferentes do exemplo guiado.</p>
     </div>
 
     <div class="rule-panel">
       <h3>Ideia central para levar desta aula</h3>
-      <p><strong>Modelar não é copiar substantivos para caixas.</strong> É selecionar conceitos relevantes, representar fatos que os conectam, explicitar limites e obrigações e testar se o modelo preserva o significado do domínio.</p>
+      <p><strong>Modelar não é copiar substantivos para caixas.</strong> É selecionar conceitos relevantes, representar fatos que os conectam, explicitar limites e obrigações, reconhecer quando o próprio relacionamento carrega informação e testar se o modelo preserva o significado do domínio.</p>
     </div>
   </div>
 </section>
 
-<section aria-labelledby="referencias-title" class="section-pad section-soft">
+<section aria-labelledby="referencias-title" class="section-pad">
   <div class="container">
     <div class="section-heading"><p class="eyebrow">Para aprofundar</p><h2 id="referencias-title">Referências utilizadas na organização desta aula</h2></div>
     <ul class="references-list">
