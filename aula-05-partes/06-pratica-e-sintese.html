@@ -1,0 +1,124 @@
+<section aria-labelledby='pratica-title' class='section-pad section-soft' id='pratica'>
+  <div class='container'>
+    <div class='section-heading'>
+      <p class='eyebrow'>Parte 3 · prática guiada</p>
+      <h2 id='pratica-title'>Mapear é seguir uma sequência de perguntas</h2>
+      <p>Em vez de tentar transformar o DER inteiro de uma vez, percorra seus elementos em uma ordem previsível. Cada etapa resolve um tipo de estrutura.</p>
+    </div>
+
+    <div class='mapping-checklist'>
+      <article><span>1</span><div><strong>Entidades fortes</strong><p>Crie uma relação para cada entidade e leve seus atributos simples. Defina a chave primária.</p></div></article>
+      <article><span>2</span><div><strong>Entidades fracas</strong><p>Leve também a chave da proprietária e complete a identificação da entidade dependente.</p></div></article>
+      <article><span>3</span><div><strong>Relacionamentos 1:1</strong><p>Escolha onde a FK ficará e preserve o máximo 1 com unicidade.</p></div></article>
+      <article><span>4</span><div><strong>Relacionamentos 1:N</strong><p>Leve a chave do lado 1 como FK para a relação do lado N.</p></div></article>
+      <article><span>5</span><div><strong>Relacionamentos N:N</strong><p>Crie uma nova relação com as chaves das entidades participantes e os atributos do relacionamento.</p></div></article>
+      <article><span>6</span><div><strong>Atributos multivalorados</strong><p>Crie uma relação própria contendo a chave da proprietária e o valor do atributo.</p></div></article>
+      <article><span>7</span><div><strong>Especializações</strong><p>Aplique a estratégia escolhida e verifique se herança e restrições continuam representáveis.</p></div></article>
+    </div>
+
+    <div class='rule-panel'><h3>Depois do mapeamento, faça uma leitura de volta</h3><p>Olhe para o esquema relacional e tente reconstruir as regras do DER. Se a estrutura permite situações que o domínio proibia — ou impede situações que o domínio permitia — alguma decisão do mapeamento precisa ser revista.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby='atividade-title' class='section-pad'>
+  <div class='container'>
+    <div class='section-heading'>
+      <p class='eyebrow'>Atividade integradora</p>
+      <h2 id='atividade-title'>Transforme o modelo sem pular direto para SQL</h2>
+      <p>Trabalhe em dupla. O produto é um esquema relacional, não um script. Marque claramente PKs e FKs e escreva uma justificativa curta para cada decisão de relacionamento.</p>
+    </div>
+
+    <div class='practice-grid'>
+      <article class='practice-card primary-practice'>
+        <span>Desafio A · cenário conhecido</span>
+        <strong>Mapeie a versão final do domínio de reserva de salas</strong>
+        <p>Considere USUÁRIO, SALA e RESERVA, além da especialização USUÁRIO → ALUNO / PROFESSOR e do atributo multivalorado telefone.</p>
+        <ol class='practice-steps'>
+          <li>Liste todas as relações necessárias.</li>
+          <li>Defina os atributos de cada relação.</li>
+          <li>Marque as chaves primárias.</li>
+          <li>Marque as chaves estrangeiras e escreva para qual relação elas apontam.</li>
+          <li>Explique por que RESERVA contém referências para USUÁRIO e SALA.</li>
+          <li>Explique por que TELEFONE_USUARIO precisa ser uma relação própria.</li>
+        </ol>
+        <details class='solution-details'><summary>Comparar com uma solução possível</summary><div class='solution-schema'><code>USUARIO(<u>id_usuario</u>, nome, email)</code><code>ALUNO(<u>id_usuario</u> FK→USUARIO, matricula, curso)</code><code>PROFESSOR(<u>id_usuario</u> FK→USUARIO, registro_funcional)</code><code>TELEFONE_USUARIO(<u>id_usuario</u> FK→USUARIO, <u>telefone</u>)</code><code>SALA(<u>id_sala</u>, nome, capacidade)</code><code>RESERVA(<u>id_reserva</u>, id_usuario FK→USUARIO, id_sala FK→SALA, data, hora_inicio, situacao)</code></div><p>Essa é uma solução coerente com as decisões trabalhadas na aula. Outras escolhas podem ser possíveis se forem acompanhadas de regras e justificativas equivalentes.</p></details>
+      </article>
+
+      <article class='practice-card secondary-practice'>
+        <span>Desafio B · transferência</span>
+        <strong>Mapeie um pequeno sistema acadêmico</strong>
+        <div class='scenario-compact'>
+          <p><strong>Requisitos:</strong></p>
+          <p>Um PROFESSOR orienta vários PROJETOS, e cada PROJETO possui exatamente um orientador. Um ALUNO pode participar de vários PROJETOS e cada PROJETO pode ter vários alunos. Em cada participação, registramos a função exercida pelo aluno. Um ALUNO pode possuir vários e-mails de contato.</p>
+        </div>
+        <ol class='practice-steps'>
+          <li>Identifique os relacionamentos 1:N e N:N.</li>
+          <li>Decida onde aparece a FK do relacionamento de orientação.</li>
+          <li>Crie a relação necessária para a participação dos alunos nos projetos.</li>
+          <li>Posicione o atributo <strong>função</strong> na relação correta.</li>
+          <li>Trate o atributo multivalorado e-mail.</li>
+        </ol>
+        <details class='solution-details'><summary>Ver uma solução possível</summary><div class='solution-schema'><code>PROFESSOR(<u>id_professor</u>, nome)</code><code>PROJETO(<u>id_projeto</u>, titulo, id_professor FK→PROFESSOR)</code><code>ALUNO(<u>id_aluno</u>, nome)</code><code>PARTICIPACAO(<u>id_aluno</u> FK→ALUNO, <u>id_projeto</u> FK→PROJETO, funcao)</code><code>EMAIL_ALUNO(<u>id_aluno</u> FK→ALUNO, <u>email</u>)</code></div></details>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby='checagem-title' class='section-pad section-soft'>
+  <div class='container'>
+    <div class='section-heading'>
+      <p class='eyebrow'>Checagem rápida</p>
+      <h2 id='checagem-title'>Você consegue justificar a estrutura sem depender do desenho?</h2>
+    </div>
+    <div class='quick-check-grid aula05-quick-grid'>
+      <article class='quick-check-card'><span>01</span><strong>Onde fica a FK em 1:N?</strong><details><summary>Ver resposta</summary><p>Na relação correspondente ao lado N, referenciando a chave do lado 1.</p></details></article>
+      <article class='quick-check-card'><span>02</span><strong>O que acontece com N:N?</strong><details><summary>Ver resposta</summary><p>Cria-se uma nova relação com as chaves das entidades participantes e, quando houver, os atributos do relacionamento.</p></details></article>
+      <article class='quick-check-card'><span>03</span><strong>Por que FK não basta em 1:1?</strong><details><summary>Ver resposta</summary><p>Porque sem unicidade várias linhas poderiam repetir a mesma referência e o resultado seria 1:N.</p></details></article>
+      <article class='quick-check-card'><span>04</span><strong>Como mapear vários telefones?</strong><details><summary>Ver resposta</summary><p>Com uma relação separada contendo a chave do proprietário e o valor do telefone.</p></details></article>
+      <article class='quick-check-card'><span>05</span><strong>O que caracteriza a entidade fraca?</strong><details><summary>Ver resposta</summary><p>Sua identificação depende da chave de uma entidade proprietária, combinada com sua chave parcial ou atributos identificadores.</p></details></article>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby='sintese-title' class='section-pad'>
+  <div class='container'>
+    <div class='section-heading'>
+      <p class='eyebrow'>Síntese</p>
+      <h2 id='sintese-title'>O mapeamento preserva o significado enquanto muda a forma de representação</h2>
+      <p>O modelo conceitual e o modelo relacional não usam os mesmos elementos, mas descrevem o mesmo domínio em níveis diferentes do projeto.</p>
+    </div>
+
+    <div class='synthesis-path aula05-synthesis'>
+      <div class='synthesis-step'>Requisitos</div>
+      <div class='synthesis-step'>DER</div>
+      <div class='synthesis-step'>Extensões quando necessárias</div>
+      <div class='synthesis-step'>Relações</div>
+      <div class='synthesis-step'>PKs</div>
+      <div class='synthesis-step'>FKs</div>
+      <div class='synthesis-step'>Validação</div>
+    </div>
+
+    <div class='lesson-takeaways'>
+      <article><strong>1</strong><p>MEER amplia o ER para representar hierarquias e dependências quando o domínio exige.</p></article>
+      <article><strong>2</strong><p>Entidades fortes viram relações; identificadores orientam as chaves primárias.</p></article>
+      <article><strong>3</strong><p>Cardinalidades orientam o mapeamento: 1:N usa FK no lado N; N:N cria uma nova relação.</p></article>
+      <article><strong>4</strong><p>Multivalorados e entidades fracas exigem relações próprias para preservar seu significado.</p></article>
+      <article><strong>5</strong><p>O esquema deve ser validado contra as regras do domínio, não apenas contra um conjunto de regras mecânicas.</p></article>
+    </div>
+
+    <div class='decision-panel'><h3>Na próxima aula</h3><p>A APS 1 retoma o percurso completo. A equipe deverá interpretar um cenário, registrar requisitos e regras de negócio, construir e auditar um DER e produzir um esquema relacional preliminar com as decisões justificadas.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby='referencias-title' class='section-pad section-soft'>
+  <div class='container'>
+    <div class='section-heading'><p class='eyebrow'>Referências para esta aula</p><h2 id='referencias-title'>Onde aprofundar os conceitos</h2></div>
+    <div class='references-list'>
+      <article><strong>ELMASRI, R.; NAVATHE, S. B.</strong><p><em>Sistemas de Banco de Dados</em>. Capítulos 8 e 9: Modelo ER Estendido e mapeamento ER/EER para o modelo relacional.</p></article>
+      <article><strong>SILBERSCHATZ, A.; KORTH, H. F.; SUDARSHAN, S.</strong><p><em>Database System Concepts</em>. Capítulo 6: projeto usando o modelo E-R, redução de diagramas E-R a esquemas relacionais e recursos E-R estendidos.</p></article>
+      <article><strong>MACHADO, F. N. R.</strong><p><em>Banco de Dados: Projeto e Implementação</em>. Extensões do Modelo Entidade-Relacionamento e mapeamento para estruturas relacionais.</p></article>
+      <article><strong>HAO, Q.; TSIKERDEKIS, M.</strong><p><em>Grokking Relational Database Design</em>. Capítulos 5 e 6: relacionamentos, entidades fracas, normalização e implementação do projeto.</p></article>
+    </div>
+    <nav aria-label='Navegação entre aulas' class='lesson-bottom-nav'><a href='aula-04.html'>← Aula 04</a><a href='index.html'>Página da disciplina</a></nav>
+  </div>
+</section>
