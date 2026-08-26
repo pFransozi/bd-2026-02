@@ -22,44 +22,41 @@
 <section aria-labelledby='atividade-title' class='section-pad'>
   <div class='container'>
     <div class='section-heading'>
-      <p class='eyebrow'>Atividade integradora</p>
-      <h2 id='atividade-title'>Transforme o modelo sem pular direto para SQL</h2>
-      <p>Trabalhe em dupla. O produto é um esquema relacional, não um script. Marque claramente PKs e FKs e escreva uma justificativa curta para cada decisão de relacionamento.</p>
+      <p class='eyebrow'>Atividade prática · retomando a Aula 04</p>
+      <h2 id='atividade-title'>Retome o DER da Aula 04 e transforme-o em um modelo relacional</h2>
+      <p>O ponto de partida desta atividade é o DER de reserva de salas construído na Aula 04. Não crie outro cenário e não pule para SQL: o objetivo é observar cada decisão do modelo conceitual e decidir como ela aparece no modelo relacional.</p>
     </div>
 
-    <div class='practice-grid'>
-      <article class='practice-card primary-practice'>
-        <span>Desafio A · cenário conhecido</span>
-        <strong>Mapeie a versão final do domínio de reserva de salas</strong>
-        <p>Considere USUÁRIO, SALA e RESERVA, além do atributo multivalorado telefone.</p>
-        <ol class='practice-steps'>
-          <li>Liste todas as relações necessárias.</li>
-          <li>Defina os atributos de cada relação.</li>
-          <li>Marque as chaves primárias.</li>
-          <li>Marque as chaves estrangeiras e escreva para qual relação elas apontam.</li>
-          <li>Explique por que RESERVA contém referências para USUÁRIO e SALA.</li>
-          <li>Explique por que TELEFONE_USUARIO precisa ser uma relação própria.</li>
-        </ol>
-        <details class='solution-details'><summary>Comparar com uma solução possível</summary><div class='solution-schema'><code>USUARIO(<u>id_usuario</u>, nome, email)</code><code>TELEFONE_USUARIO(<u>id_usuario</u> FK→USUARIO, <u>telefone</u>)</code><code>SALA(<u>id_sala</u>, nome, capacidade)</code><code>RESERVA(<u>id_reserva</u>, id_usuario FK→USUARIO, id_sala FK→SALA, data, hora_inicio, situacao)</code></div><p>Essa é uma solução coerente com as decisões trabalhadas na aula. Outras escolhas podem ser possíveis se forem acompanhadas de regras e justificativas equivalentes.</p></details>
-      </article>
-
-      <article class='practice-card secondary-practice'>
-        <span>Desafio B · transferência</span>
-        <strong>Mapeie um pequeno sistema acadêmico</strong>
-        <div class='scenario-compact'>
-          <p><strong>Requisitos:</strong></p>
-          <p>Um PROFESSOR orienta vários PROJETOS, e cada PROJETO possui exatamente um orientador. Um ALUNO pode participar de vários PROJETOS e cada PROJETO pode ter vários alunos. Em cada participação, registramos a função exercida pelo aluno. Um ALUNO pode possuir vários e-mails de contato.</p>
-        </div>
-        <ol class='practice-steps'>
-          <li>Identifique os relacionamentos 1:N e N:N.</li>
-          <li>Decida onde aparece a FK do relacionamento de orientação.</li>
-          <li>Crie a relação necessária para a participação dos alunos nos projetos.</li>
-          <li>Posicione o atributo <strong>função</strong> na relação correta.</li>
-          <li>Trate o atributo multivalorado e-mail.</li>
-        </ol>
-        <details class='solution-details'><summary>Ver uma solução possível</summary><div class='solution-schema'><code>PROFESSOR(<u>id_professor</u>, nome)</code><code>PROJETO(<u>id_projeto</u>, titulo, id_professor FK→PROFESSOR)</code><code>ALUNO(<u>id_aluno</u>, nome)</code><code>PARTICIPACAO(<u>id_aluno</u> FK→ALUNO, <u>id_projeto</u> FK→PROJETO, funcao)</code><code>EMAIL_ALUNO(<u>id_aluno</u> FK→ALUNO, <u>email</u>)</code></div></details>
-      </article>
+    <div class='decision-panel'>
+      <h3>Comece pelo modelo que vocês já construíram</h3>
+      <p>Abra o DER da Aula 04 e use-o como fonte de todas as decisões. O novo modelo deve ser consequência daquele diagrama: entidades, atributos, identificadores, relacionamentos e cardinalidades precisam ter uma representação correspondente.</p>
     </div>
+
+    <article class='practice-card primary-practice'>
+      <span>Trabalho em dupla</span>
+      <strong>Do DER ao modelo relacional</strong>
+      <p>Trabalhem sobre o domínio de reserva de salas utilizado na aula anterior. Ao final, vocês deverão produzir um esquema relacional completo e conseguir explicar de onde veio cada relação, chave primária e chave estrangeira.</p>
+
+      <ol class='practice-steps'>
+        <li><strong>Recupere o DER da Aula 04.</strong> Antes de transformar qualquer coisa, identifique nele USUÁRIO, SALA, RESERVA, seus atributos, identificadores e os relacionamentos existentes.</li>
+        <li><strong>Comece pelas entidades.</strong> Para cada entidade do DER, crie a relação correspondente e transfira os atributos que podem ser mapeados diretamente.</li>
+        <li><strong>Defina as chaves primárias.</strong> Observe os identificadores registrados no DER e indique quais atributos passam a identificar cada relação.</li>
+        <li><strong>Volte aos relacionamentos.</strong> Analise as cardinalidades do DER e decida onde devem aparecer as chaves estrangeiras. Não coloque uma FK apenas por costume: explique qual relacionamento ela representa.</li>
+        <li><strong>Trate RESERVA como parte do modelo.</strong> Verifique como ela se conecta a USUÁRIO e SALA e como essas conexões aparecem no esquema relacional.</li>
+        <li><strong>Retome o atributo telefone.</strong> Como a Aula 04 permitia mais de um telefone por usuário, decida como esse atributo deve ser representado sem criar <code>telefone1</code>, <code>telefone2</code> e <code>telefone3</code>.</li>
+        <li><strong>Faça uma leitura de volta.</strong> Compare o modelo relacional produzido com o DER original e verifique se ainda é possível reconhecer nele as regras representadas na Aula 04.</li>
+      </ol>
+
+      <div class='rule-panel'>
+        <h3>O que deve aparecer no resultado</h3>
+        <p>Apresente cada relação com seus atributos e marque claramente <strong>PK</strong> e <strong>FK</strong>. Para cada FK, indique também qual relação ela referencia. Inclua pelo menos três justificativas curtas explicando decisões feitas durante o mapeamento.</p>
+      </div>
+
+      <div class='comparison-panel'>
+        <h3>Não escreva SQL ainda</h3>
+        <p>O produto desta atividade é o <strong>modelo relacional</strong>. Não é necessário escrever <code>CREATE TABLE</code>, escolher tipos de dados ou implementar constraints no PostgreSQL. Essas decisões pertencem à próxima etapa.</p>
+      </div>
+    </article>
   </div>
 </section>
 
