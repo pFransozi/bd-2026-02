@@ -64,20 +64,30 @@
 <section aria-labelledby='atributos-title' class='section-pad'>
   <div class='container'>
     <div class='section-heading'>
-      <p class='eyebrow'>Atributos no mapeamento</p>
-      <h2 id='atributos-title'>Nem todo atributo pode ser copiado como uma única coluna</h2>
-      <p>Antes de levar um atributo ao esquema relacional, observe sua estrutura e a forma como seus valores aparecem no domínio.</p>
+      <p class='eyebrow'>Segundo passo do mapeamento</p>
+      <h2 id='atributos-title'>Para cada atributo, observe como seus valores aparecem no domínio</h2>
+      <p>No exemplo de SALA, <code>nome</code> e <code>capacidade</code> foram levados diretamente para a relação porque cada sala possui um único valor de cada atributo. Antes de fazer o mesmo com os demais atributos do DER, precisamos verificar se todos se comportam dessa forma.</p>
+    </div>
+
+    <div class='decision-panel'>
+      <h3>Faça três perguntas antes de mapear um atributo</h3>
+      <p><strong>Ele possui um único valor?</strong> <strong>Esse valor possui partes que precisam ser representadas separadamente?</strong> <strong>Uma mesma ocorrência pode possuir vários valores?</strong> As respostas indicam como o atributo será levado ao esquema relacional.</p>
     </div>
 
     <div class='attribute-grid mapping-attribute-grid'>
-      <article class='attribute-card'><span>Simples</span><strong>Mapeamento direto</strong><p>Um valor elementar pode aparecer como um atributo da relação.</p><div class='attribute-example'>capacidade → capacidade</div></article>
-      <article class='attribute-card'><span>Composto</span><strong>Use os componentes simples</strong><p>Se ENDEREÇO foi modelado com rua, número e cidade, o esquema relacional recebe esses componentes.</p><div class='attribute-example'>endereço → rua, numero, cidade</div></article>
-      <article class='attribute-card'><span>Multivalorado</span><strong>Não cabe em uma única posição</strong><p>Um usuário com vários telefones exigirá uma relação própria. Retomaremos esse caso adiante.</p><div class='attribute-example'>telefones {…} → relação separada</div></article>
+      <article class='attribute-card'><span>1 · Simples</span><strong>Um valor: mapeamento direto</strong><p>Quando cada ocorrência possui um único valor elementar, o atributo pode ser levado diretamente para a relação.</p><div class='attribute-example'>SALA.capacidade → capacidade</div></article>
+      <article class='attribute-card'><span>2 · Composto</span><strong>Um valor formado por partes</strong><p>Se o atributo foi decomposto no DER, levamos para a relação os componentes simples que precisam ser armazenados separadamente.</p><div class='attribute-example'>endereço → rua, numero, cidade</div></article>
+      <article class='attribute-card'><span>3 · Multivalorado</span><strong>Vários valores: não é mapeamento direto</strong><p>Se uma mesma ocorrência pode possuir vários valores, não basta criar um único atributo na relação. Esse caso exigirá uma relação própria.</p><div class='attribute-example'>USUARIO.telefone {…} → relação separada</div></article>
+    </div>
+
+    <div class='rule-panel'>
+      <h3>Aplicando ao modelo que estamos usando</h3>
+      <p><code>SALA.nome</code>, <code>SALA.capacidade</code>, <code>USUARIO.nome</code> e <code>USUARIO.email</code> podem seguir diretamente para suas relações. Já <code>USUARIO.telefone</code> precisa ficar de fora por enquanto, porque um usuário pode possuir mais de um telefone. Trataremos esse caso separadamente.</p>
     </div>
 
     <div class='comparison-panel'>
-      <h3>O modelo relacional pressupõe valores atômicos nas posições da relação</h3>
-      <p>Não resolvemos “vários telefones” criando colunas <code>telefone1</code>, <code>telefone2</code> e <code>telefone3</code>. Também não colocamos uma lista inteira em uma célula apenas para conservar o desenho original. O mapeamento precisa preservar o significado sem criar uma estrutura rígida ou repetitiva.</p>
+      <h3>Não force vários valores dentro de uma única relação</h3>
+      <p>Evite soluções como <code>telefone1</code>, <code>telefone2</code> e <code>telefone3</code> ou uma lista inteira dentro de um único atributo. Antes de criar colunas, pense em <strong>quantos valores cada ocorrência pode possuir e como esses valores precisam ser representados</strong>.</p>
     </div>
   </div>
 </section>
