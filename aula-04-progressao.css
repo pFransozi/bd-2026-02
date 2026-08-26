@@ -364,6 +364,12 @@
   margin-top: 1rem;
 }
 
+.modeling-page .concept-card p strong {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+}
+
 body.theme-dark .modeling-page .learning-block,
 body.theme-dark .modeling-page .notation-grid article,
 body.theme-dark .modeling-page .model-node,
