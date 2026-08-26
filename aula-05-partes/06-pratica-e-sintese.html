@@ -13,7 +13,6 @@
       <article><span>4</span><div><strong>Relacionamentos 1:N</strong><p>Leve a chave do lado 1 como FK para a relação do lado N.</p></div></article>
       <article><span>5</span><div><strong>Relacionamentos N:N</strong><p>Crie uma nova relação com as chaves das entidades participantes e os atributos do relacionamento.</p></div></article>
       <article><span>6</span><div><strong>Atributos multivalorados</strong><p>Crie uma relação própria contendo a chave da proprietária e o valor do atributo.</p></div></article>
-      <article><span>7</span><div><strong>Especializações</strong><p>Aplique a estratégia escolhida e verifique se herança e restrições continuam representáveis.</p></div></article>
     </div>
 
     <div class='rule-panel'><h3>Depois do mapeamento, faça uma leitura de volta</h3><p>Olhe para o esquema relacional e tente reconstruir as regras do DER. Se a estrutura permite situações que o domínio proibia — ou impede situações que o domínio permitia — alguma decisão do mapeamento precisa ser revista.</p></div>
@@ -32,7 +31,7 @@
       <article class='practice-card primary-practice'>
         <span>Desafio A · cenário conhecido</span>
         <strong>Mapeie a versão final do domínio de reserva de salas</strong>
-        <p>Considere USUÁRIO, SALA e RESERVA, além da especialização USUÁRIO → ALUNO / PROFESSOR e do atributo multivalorado telefone.</p>
+        <p>Considere USUÁRIO, SALA e RESERVA, além do atributo multivalorado telefone.</p>
         <ol class='practice-steps'>
           <li>Liste todas as relações necessárias.</li>
           <li>Defina os atributos de cada relação.</li>
@@ -41,7 +40,7 @@
           <li>Explique por que RESERVA contém referências para USUÁRIO e SALA.</li>
           <li>Explique por que TELEFONE_USUARIO precisa ser uma relação própria.</li>
         </ol>
-        <details class='solution-details'><summary>Comparar com uma solução possível</summary><div class='solution-schema'><code>USUARIO(<u>id_usuario</u>, nome, email)</code><code>ALUNO(<u>id_usuario</u> FK→USUARIO, matricula, curso)</code><code>PROFESSOR(<u>id_usuario</u> FK→USUARIO, registro_funcional)</code><code>TELEFONE_USUARIO(<u>id_usuario</u> FK→USUARIO, <u>telefone</u>)</code><code>SALA(<u>id_sala</u>, nome, capacidade)</code><code>RESERVA(<u>id_reserva</u>, id_usuario FK→USUARIO, id_sala FK→SALA, data, hora_inicio, situacao)</code></div><p>Essa é uma solução coerente com as decisões trabalhadas na aula. Outras escolhas podem ser possíveis se forem acompanhadas de regras e justificativas equivalentes.</p></details>
+        <details class='solution-details'><summary>Comparar com uma solução possível</summary><div class='solution-schema'><code>USUARIO(<u>id_usuario</u>, nome, email)</code><code>TELEFONE_USUARIO(<u>id_usuario</u> FK→USUARIO, <u>telefone</u>)</code><code>SALA(<u>id_sala</u>, nome, capacidade)</code><code>RESERVA(<u>id_reserva</u>, id_usuario FK→USUARIO, id_sala FK→SALA, data, hora_inicio, situacao)</code></div><p>Essa é uma solução coerente com as decisões trabalhadas na aula. Outras escolhas podem ser possíveis se forem acompanhadas de regras e justificativas equivalentes.</p></details>
       </article>
 
       <article class='practice-card secondary-practice'>
@@ -91,7 +90,6 @@
     <div class='synthesis-path aula05-synthesis'>
       <div class='synthesis-step'>Requisitos</div>
       <div class='synthesis-step'>DER</div>
-      <div class='synthesis-step'>Extensões quando necessárias</div>
       <div class='synthesis-step'>Relações</div>
       <div class='synthesis-step'>PKs</div>
       <div class='synthesis-step'>FKs</div>
@@ -99,11 +97,10 @@
     </div>
 
     <div class='lesson-takeaways'>
-      <article><strong>1</strong><p>MEER amplia o ER para representar hierarquias e dependências quando o domínio exige.</p></article>
-      <article><strong>2</strong><p>Entidades fortes viram relações; identificadores orientam as chaves primárias.</p></article>
-      <article><strong>3</strong><p>Cardinalidades orientam o mapeamento: 1:N usa FK no lado N; N:N cria uma nova relação.</p></article>
-      <article><strong>4</strong><p>Multivalorados e entidades fracas exigem relações próprias para preservar seu significado.</p></article>
-      <article><strong>5</strong><p>O esquema deve ser validado contra as regras do domínio, não apenas contra um conjunto de regras mecânicas.</p></article>
+      <article><strong>1</strong><p>Entidades fortes viram relações; identificadores orientam as chaves primárias.</p></article>
+      <article><strong>2</strong><p>Cardinalidades orientam o mapeamento: 1:N usa FK no lado N; N:N cria uma nova relação.</p></article>
+      <article><strong>3</strong><p>Multivalorados e entidades fracas exigem relações próprias para preservar seu significado.</p></article>
+      <article><strong>4</strong><p>O esquema deve ser validado contra as regras do domínio, não apenas contra um conjunto de regras mecânicas.</p></article>
     </div>
 
     <div class='decision-panel'><h3>Na próxima aula</h3><p>A APS 1 retoma o percurso completo. A equipe deverá interpretar um cenário, registrar requisitos e regras de negócio, construir e auditar um DER e produzir um esquema relacional preliminar com as decisões justificadas.</p></div>
@@ -114,9 +111,9 @@
   <div class='container'>
     <div class='section-heading'><p class='eyebrow'>Referências para esta aula</p><h2 id='referencias-title'>Onde aprofundar os conceitos</h2></div>
     <div class='references-list'>
-      <article><strong>ELMASRI, R.; NAVATHE, S. B.</strong><p><em>Sistemas de Banco de Dados</em>. Capítulos 8 e 9: Modelo ER Estendido e mapeamento ER/EER para o modelo relacional.</p></article>
-      <article><strong>SILBERSCHATZ, A.; KORTH, H. F.; SUDARSHAN, S.</strong><p><em>Database System Concepts</em>. Capítulo 6: projeto usando o modelo E-R, redução de diagramas E-R a esquemas relacionais e recursos E-R estendidos.</p></article>
-      <article><strong>MACHADO, F. N. R.</strong><p><em>Banco de Dados: Projeto e Implementação</em>. Extensões do Modelo Entidade-Relacionamento e mapeamento para estruturas relacionais.</p></article>
+      <article><strong>ELMASRI, R.; NAVATHE, S. B.</strong><p><em>Sistemas de Banco de Dados</em>. Mapeamento do modelo ER para o modelo relacional e tratamento de relacionamentos e entidades fracas.</p></article>
+      <article><strong>SILBERSCHATZ, A.; KORTH, H. F.; SUDARSHAN, S.</strong><p><em>Database System Concepts</em>. Capítulo 6: projeto usando o modelo E-R e redução de diagramas E-R a esquemas relacionais.</p></article>
+      <article><strong>MACHADO, F. N. R.</strong><p><em>Banco de Dados: Projeto e Implementação</em>. Mapeamento do Modelo Entidade-Relacionamento para estruturas relacionais.</p></article>
       <article><strong>HAO, Q.; TSIKERDEKIS, M.</strong><p><em>Grokking Relational Database Design</em>. Capítulos 5 e 6: relacionamentos, entidades fracas, normalização e implementação do projeto.</p></article>
     </div>
     <nav aria-label='Navegação entre aulas' class='lesson-bottom-nav'><a href='aula-04.html'>← Aula 04</a><a href='index.html'>Página da disciplina</a></nav>
