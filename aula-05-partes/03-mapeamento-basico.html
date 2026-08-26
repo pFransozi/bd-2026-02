@@ -65,29 +65,29 @@
   <div class='container'>
     <div class='section-heading'>
       <p class='eyebrow'>Segundo passo do mapeamento</p>
-      <h2 id='atributos-title'>Para cada atributo, observe como seus valores aparecem no domínio</h2>
-      <p>No exemplo de SALA, <code>nome</code> e <code>capacidade</code> foram levados diretamente para a relação porque cada sala possui um único valor de cada atributo. Antes de fazer o mesmo com os demais atributos do DER, precisamos verificar se todos se comportam dessa forma.</p>
+      <h2 id='atributos-title'>Retome a classificação dos atributos antes de decidir como mapeá-los</h2>
+      <p>Na Aula 04, usamos diferentes exemplos para observar a estrutura, a quantidade de valores e a origem de um atributo. Agora vamos recuperar os mesmos exemplos e perguntar o que acontece com cada um quando passamos para o modelo relacional.</p>
     </div>
 
-    <div class='decision-panel'>
-      <h3>Faça três perguntas antes de mapear um atributo</h3>
-      <p><strong>Ele possui um único valor?</strong> <strong>Esse valor possui partes que precisam ser representadas separadamente?</strong> <strong>Uma mesma ocorrência pode possuir vários valores?</strong> As respostas indicam como o atributo será levado ao esquema relacional.</p>
-    </div>
+    <div class='axis-note'><b>i</b><div><strong>As classificações continuam se combinando.</strong> Um atributo pode ser, ao mesmo tempo, simples, monovalorado e armazenado. O objetivo agora não é criar novas categorias, mas usar o que já vimos para orientar o mapeamento.</div></div>
 
     <div class='attribute-grid mapping-attribute-grid'>
-      <article class='attribute-card'><span>1 · Simples</span><strong>Um valor: mapeamento direto</strong><p>Quando cada ocorrência possui um único valor elementar, o atributo pode ser levado diretamente para a relação.</p><div class='attribute-example'>SALA.capacidade → capacidade</div></article>
-      <article class='attribute-card'><span>2 · Composto</span><strong>Um valor formado por partes</strong><p>Se o atributo foi decomposto no DER, levamos para a relação os componentes simples que precisam ser armazenados separadamente.</p><div class='attribute-example'>endereço → rua, numero, cidade</div></article>
-      <article class='attribute-card'><span>3 · Multivalorado</span><strong>Vários valores: não é mapeamento direto</strong><p>Se uma mesma ocorrência pode possuir vários valores, não basta criar um único atributo na relação. Esse caso exigirá uma relação própria.</p><div class='attribute-example'>USUARIO.telefone {…} → relação separada</div></article>
+      <article class='attribute-card'><span>Estrutura · simples</span><strong>Mapeamento direto</strong><p>Como <code>capacidade</code> é tratada como uma unidade, ela pode aparecer diretamente na relação SALA.</p><div class='attribute-example'>SALA.capacidade → capacidade</div></article>
+      <article class='attribute-card'><span>Estrutura · composto</span><strong>Leve os componentes simples</strong><p>Quando um atributo foi dividido em partes significativas, são essas partes que aparecem no esquema relacional.</p><div class='attribute-example'>endereço → logradouro, número, cidade, CEP</div></article>
+      <article class='attribute-card'><span>Quantidade · monovalorado</span><strong>Um valor por ocorrência</strong><p>Se cada usuário possui uma única data de nascimento, esse valor pode ser mantido como atributo da relação.</p><div class='attribute-example'>USUÁRIO.data_nascimento → data_nascimento</div></article>
+      <article class='attribute-card'><span>Quantidade · multivalorado</span><strong>Vários valores exigem outra estrutura</strong><p>Um usuário pode possuir vários telefones. Por isso, não basta reservar uma única posição para telefone na relação USUARIO.</p><div class='attribute-example'>USUÁRIO.telefone = {41..., 41...} → relação própria</div></article>
+      <article class='attribute-card'><span>Origem · armazenado</span><strong>O valor pode ser registrado</strong><p>A data de nascimento é um fato informado pelo domínio e pode ser armazenada diretamente.</p><div class='attribute-example'>data_nascimento = 15/03/2002</div></article>
+      <article class='attribute-card'><span>Origem · derivado</span><strong>Nem todo valor precisa ser armazenado</strong><p>Se um valor pode ser obtido a partir de outros dados, precisamos avaliar se faz sentido guardá-lo ou calculá-lo quando necessário.</p><div class='attribute-example'>idade ← data_atual − data_nascimento</div></article>
     </div>
 
     <div class='rule-panel'>
-      <h3>Aplicando ao modelo que estamos usando</h3>
-      <p><code>SALA.nome</code>, <code>SALA.capacidade</code>, <code>USUARIO.nome</code> e <code>USUARIO.email</code> podem seguir diretamente para suas relações. Já <code>USUARIO.telefone</code> precisa ficar de fora por enquanto, porque um usuário pode possuir mais de um telefone. Trataremos esse caso separadamente.</p>
+      <h3>O que muda quando passamos para o modelo relacional?</h3>
+      <p>Atributos simples, monovalorados e armazenados tendem a seguir diretamente para a relação. Atributos compostos são representados por seus componentes. Atributos multivalorados exigem uma relação própria. Já atributos derivados precisam ser avaliados: se podem ser calculados a partir de dados já armazenados, não precisam necessariamente ocupar um atributo persistido.</p>
     </div>
 
     <div class='comparison-panel'>
       <h3>Não force vários valores dentro de uma única relação</h3>
-      <p>Evite soluções como <code>telefone1</code>, <code>telefone2</code> e <code>telefone3</code> ou uma lista inteira dentro de um único atributo. Antes de criar colunas, pense em <strong>quantos valores cada ocorrência pode possuir e como esses valores precisam ser representados</strong>.</p>
+      <p>No caso de <code>USUÁRIO.telefone</code>, evite soluções como <code>telefone1</code>, <code>telefone2</code> e <code>telefone3</code> ou uma lista inteira dentro de um único atributo. O fato de o telefone ser multivalorado é justamente a pista de que precisaremos representá-lo de outra forma.</p>
     </div>
   </div>
 </section>
