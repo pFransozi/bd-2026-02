@@ -60,24 +60,30 @@
   <div class='container'>
     <div class='section-heading'>
       <p class='eyebrow'>Síntese</p>
-      <h2 id='sintese-title'>O mapeamento preserva o significado enquanto muda a forma de representação</h2>
-      <p>O modelo conceitual e o modelo relacional não usam os mesmos elementos, mas descrevem o mesmo domínio em níveis diferentes do projeto.</p>
+      <h2 id='sintese-title'>Do DER ao modelo relacional: o que muda e o que precisa permanecer?</h2>
+      <p>Ao mapear, não estamos criando outro domínio. Estamos representando as mesmas decisões do DER com os elementos do modelo relacional. Por isso, cada relação, chave e referência deve poder ser explicada a partir do modelo conceitual.</p>
     </div>
 
     <div class='synthesis-path aula05-synthesis'>
-      <div class='synthesis-step'>Requisitos</div>
-      <div class='synthesis-step'>DER</div>
-      <div class='synthesis-step'>Relações</div>
-      <div class='synthesis-step'>PKs</div>
-      <div class='synthesis-step'>FKs</div>
-      <div class='synthesis-step'>Validação</div>
+      <div class='synthesis-step'>DER validado</div>
+      <div class='synthesis-step'>Entidades → relações</div>
+      <div class='synthesis-step'>Identificadores → PKs</div>
+      <div class='synthesis-step'>Relacionamentos → FKs ou novas relações</div>
+      <div class='synthesis-step'>Atributos especiais → estruturas próprias</div>
+      <div class='synthesis-step'>Leitura de volta</div>
     </div>
 
     <div class='lesson-takeaways'>
-      <article><strong>1</strong><p>Entidades fortes viram relações; identificadores orientam as chaves primárias.</p></article>
-      <article><strong>2</strong><p>Cardinalidades orientam o mapeamento: 1:N usa FK no lado N; N:N cria uma nova relação.</p></article>
-      <article><strong>3</strong><p>Multivalorados e entidades fracas exigem relações próprias para preservar seu significado.</p></article>
-      <article><strong>4</strong><p>O esquema deve ser validado contra as regras do domínio, não apenas contra um conjunto de regras mecânicas.</p></article>
+      <article><strong>1</strong><p><strong>O DER é o ponto de partida.</strong> Antes de pensar em tabelas, observe quais entidades, atributos, identificadores e relacionamentos já foram definidos no modelo conceitual.</p></article>
+      <article><strong>2</strong><p><strong>Entidades e identificadores dão a estrutura inicial.</strong> As entidades dão origem às relações e seus identificadores orientam a definição das chaves primárias.</p></article>
+      <article><strong>3</strong><p><strong>As cardinalidades orientam as conexões.</strong> Em 1:N, a FK aparece no lado N; em N:N, o relacionamento precisa de uma nova relação para conectar as entidades participantes.</p></article>
+      <article><strong>4</strong><p><strong>Nem todo atributo é levado diretamente.</strong> Atributos compostos precisam ser decompostos em seus componentes e atributos multivalorados exigem uma estrutura própria.</p></article>
+      <article><strong>5</strong><p><strong>O mapeamento termina com uma validação.</strong> Leia o esquema relacional de volta e verifique se as regras que apareciam no DER continuam reconhecíveis na nova representação.</p></article>
+    </div>
+
+    <div class='decision-panel'>
+      <h3>Use a Biblioteca Universitária como teste</h3>
+      <p>No modelo produzido pela equipe, deve ser possível explicar de onde surgiram as relações de USUÁRIO, LIVRO, AUTOR e EXEMPLAR; por que EXEMPLAR referencia LIVRO; por que LIVRO–AUTOR exige uma relação própria; e como o histórico de EMPRÉSTIMOS preserva a ligação entre usuário, exemplar e as datas registradas no DER.</p>
     </div>
 
     <div class='decision-panel'><h3>Na próxima aula</h3><p>A APS 1 retoma o percurso completo. A equipe deverá interpretar um cenário, registrar requisitos e regras de negócio, construir e auditar um DER e produzir um esquema relacional preliminar com as decisões justificadas.</p></div>
