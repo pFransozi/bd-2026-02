@@ -17,18 +17,51 @@
 
     <div class="learning-sequence">
       <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>T</span><div><small>Preparação da ferramenta</small><h3>Defina a linguagem visual antes de começar</h3></div></div>
-        <div class="notation-grid">
-          <article><strong>Entidade</strong><p>Retângulo com o nome em letras maiúsculas.</p></article>
-          <article><strong>Atributo</strong><p>Lista dentro da entidade ou notação equivalente adotada pela turma.</p></article>
-          <article><strong>Identificador</strong><p>Sublinhado ou acompanhado da marcação <code>ID</code> quando o requisito sustenta essa decisão.</p></article>
-          <article><strong>Relacionamento</strong><p>Linha nomeada por um verbo ou expressão legível.</p></article>
-          <article><strong>Cardinalidade</strong><p>Use <code>0..1</code>, <code>1..1</code>, <code>0..N</code> ou <code>1..N</code>.</p></article>
-          <article><strong>Dúvidas</strong><p>Registre notas no próprio arquivo sem transformá-las em regras definitivas.</p></article>
-        </div>
-        <div class="activity-note no-tool-note">
-          <strong>Não misture modelo conceitual e implementação.</strong>
-          <p>Nesta atividade, não inclua tipos SQL, comandos, índices ou detalhes físicos do PostgreSQL. O foco permanece no domínio e nas regras de informação.</p>
+        <div class="diagram-panel" style="margin:0;">
+          <h3>Exemplo visual · Reserva de sala</h3>
+          <svg aria-label="Exemplo visual do DER de reserva de salas para reproduzir no diagrams.net" role="img" viewBox="0 0 1200 520">
+            <title>Exemplo visual de reserva de sala</title>
+            <desc>USUÁRIO realiza RESERVA e RESERVA utiliza SALA. Um usuário e uma sala podem participar de zero a muitas reservas, enquanto cada reserva exige exatamente um usuário e exatamente uma sala.</desc>
+
+            <rect x="55" y="95" width="285" height="320" rx="18" fill="currentColor" fill-opacity="0.025" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
+            <rect x="55" y="95" width="285" height="72" rx="18" fill="#5f82ff" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
+            <line x1="55" y1="167" x2="340" y2="167" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
+            <text x="197" y="140" text-anchor="middle" font-size="27" font-weight="800" fill="currentColor">USUÁRIO</text>
+            <text x="82" y="212" font-size="19" fill="currentColor">identificador</text>
+            <text x="82" y="250" font-size="19" fill="currentColor">nome</text>
+            <text x="82" y="288" font-size="19" fill="currentColor">data_nascimento</text>
+            <text x="82" y="326" font-size="19" fill="currentColor">telefone</text>
+            <line x1="82" y1="218" x2="190" y2="218" stroke="#5f82ff" stroke-width="2"/>
+
+            <rect x="458" y="65" width="285" height="380" rx="18" fill="currentColor" fill-opacity="0.025" stroke="currentColor" stroke-opacity="0.62" stroke-width="2"/>
+            <rect x="458" y="65" width="285" height="72" rx="18" fill="#62d9ef" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.62" stroke-width="2"/>
+            <line x1="458" y1="137" x2="743" y2="137" stroke="currentColor" stroke-opacity="0.62" stroke-width="2"/>
+            <text x="600" y="110" text-anchor="middle" font-size="27" font-weight="800" fill="currentColor">RESERVA</text>
+            <text x="485" y="190" font-size="19" fill="currentColor">data</text>
+            <text x="485" y="228" font-size="19" fill="currentColor">horário inicial</text>
+            <text x="485" y="266" font-size="19" fill="currentColor">situação</text>
+            <rect x="484" y="315" width="233" height="70" rx="13" fill="#5f82ff" fill-opacity="0.06" stroke="#5f82ff" stroke-width="2" stroke-dasharray="8 7"/>
+            <text x="600" y="357" text-anchor="middle" font-size="18" font-style="italic" fill="#5f82ff">identificador: a validar</text>
+
+            <rect x="860" y="95" width="285" height="320" rx="18" fill="currentColor" fill-opacity="0.025" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
+            <rect x="860" y="95" width="285" height="72" rx="18" fill="#9d8dff" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
+            <line x1="860" y1="167" x2="1145" y2="167" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
+            <text x="1002" y="140" text-anchor="middle" font-size="27" font-weight="800" fill="currentColor">SALA</text>
+            <text x="887" y="212" font-size="19" fill="currentColor">identificador</text>
+            <text x="887" y="250" font-size="19" fill="currentColor">nome</text>
+            <text x="887" y="288" font-size="19" fill="currentColor">capacidade</text>
+            <line x1="887" y1="218" x2="995" y2="218" stroke="#5f82ff" stroke-width="2"/>
+
+            <line x1="340" y1="255" x2="458" y2="255" stroke="#5f82ff" stroke-width="3"/>
+            <text x="399" y="226" text-anchor="middle" font-size="19" font-weight="700" fill="currentColor">realiza</text>
+            <text x="354" y="285" font-size="17" font-weight="800" fill="#5f82ff">0..N</text>
+            <text x="414" y="285" font-size="17" font-weight="800" fill="#5f82ff">1..1</text>
+
+            <line x1="743" y1="255" x2="860" y2="255" stroke="#5f82ff" stroke-width="3"/>
+            <text x="801" y="226" text-anchor="middle" font-size="19" font-weight="700" fill="currentColor">utiliza</text>
+            <text x="757" y="285" font-size="17" font-weight="800" fill="#5f82ff">1..1</text>
+            <text x="818" y="285" font-size="17" font-weight="800" fill="#5f82ff">0..N</text>
+          </svg>
         </div>
       </article>
 
