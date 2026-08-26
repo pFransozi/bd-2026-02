@@ -23,38 +23,39 @@
   <div class='container'>
     <div class='section-heading'>
       <p class='eyebrow'>Atividade prática · retomando a Aula 04</p>
-      <h2 id='atividade-title'>Retome o DER da Aula 04 e transforme-o em um modelo relacional</h2>
-      <p>O ponto de partida desta atividade é o DER de reserva de salas construído na Aula 04. Não crie outro cenário e não pule para SQL: o objetivo é observar cada decisão do modelo conceitual e decidir como ela aparece no modelo relacional.</p>
+      <h2 id='atividade-title'>Retome o DER da Biblioteca Universitária e transforme-o em um modelo relacional</h2>
+      <p>O ponto de partida desta atividade é o DER que sua equipe construiu para o exercício da <strong>Biblioteca Universitária</strong> na Aula 04. Não refaça o problema do zero e não pule para SQL: agora vocês irão usar aquele modelo conceitual como entrada para construir o modelo relacional.</p>
     </div>
 
     <div class='decision-panel'>
-      <h3>Comece pelo modelo que vocês já construíram</h3>
-      <p>Abra o DER da Aula 04 e use-o como fonte de todas as decisões. O novo modelo deve ser consequência daquele diagrama: entidades, atributos, identificadores, relacionamentos e cardinalidades precisam ter uma representação correspondente.</p>
+      <h3>Comece pelo DER que a equipe já produziu</h3>
+      <p>Abra o arquivo do exercício da Biblioteca Universitária e releia as decisões registradas nele. Entidades, atributos, identificadores, relacionamentos, cardinalidades, dúvidas e suposições devem orientar o mapeamento. O novo modelo precisa ser consequência do DER, e não um desenho criado independentemente dele.</p>
     </div>
 
     <article class='practice-card primary-practice'>
-      <span>Trabalho em dupla</span>
-      <strong>Do DER ao modelo relacional</strong>
-      <p>Trabalhem sobre o domínio de reserva de salas utilizado na aula anterior. Ao final, vocês deverão produzir um esquema relacional completo e conseguir explicar de onde veio cada relação, chave primária e chave estrangeira.</p>
+      <span>Trabalho em equipe</span>
+      <strong>Do DER da biblioteca ao modelo relacional</strong>
+      <p>Utilizem o modelo construído para organizar usuários, livros, autores, exemplares físicos e empréstimos. Ao final, vocês deverão apresentar um esquema relacional e conseguir explicar como cada relação e cada chave surgiram das decisões feitas na Aula 04.</p>
 
       <ol class='practice-steps'>
-        <li><strong>Recupere o DER da Aula 04.</strong> Antes de transformar qualquer coisa, identifique nele USUÁRIO, SALA, RESERVA, seus atributos, identificadores e os relacionamentos existentes.</li>
-        <li><strong>Comece pelas entidades.</strong> Para cada entidade do DER, crie a relação correspondente e transfira os atributos que podem ser mapeados diretamente.</li>
-        <li><strong>Defina as chaves primárias.</strong> Observe os identificadores registrados no DER e indique quais atributos passam a identificar cada relação.</li>
-        <li><strong>Volte aos relacionamentos.</strong> Analise as cardinalidades do DER e decida onde devem aparecer as chaves estrangeiras. Não coloque uma FK apenas por costume: explique qual relacionamento ela representa.</li>
-        <li><strong>Trate RESERVA como parte do modelo.</strong> Verifique como ela se conecta a USUÁRIO e SALA e como essas conexões aparecem no esquema relacional.</li>
-        <li><strong>Retome o atributo telefone.</strong> Como a Aula 04 permitia mais de um telefone por usuário, decida como esse atributo deve ser representado sem criar <code>telefone1</code>, <code>telefone2</code> e <code>telefone3</code>.</li>
-        <li><strong>Faça uma leitura de volta.</strong> Compare o modelo relacional produzido com o DER original e verifique se ainda é possível reconhecer nele as regras representadas na Aula 04.</li>
+        <li><strong>Recupere o DER da Biblioteca Universitária.</strong> Identifique nele as entidades que sua equipe modelou, seus atributos, identificadores e relacionamentos. Compare também o desenho com as dúvidas e suposições registradas.</li>
+        <li><strong>Mapeie primeiro as entidades.</strong> Para cada entidade do DER, crie a relação correspondente e leve os atributos que podem ser representados diretamente.</li>
+        <li><strong>Defina as chaves primárias.</strong> Use os identificadores definidos ou fornecidos pelo cenário — por exemplo, identificador do usuário, ISBN do livro, identificador do autor e número de patrimônio do exemplar — e registre claramente a PK de cada relação.</li>
+        <li><strong>Retome LIVRO–EXEMPLAR.</strong> Observe a cardinalidade definida no DER e decida onde a chave estrangeira deve aparecer para representar que cada exemplar corresponde a exatamente um livro.</li>
+        <li><strong>Retome LIVRO–AUTOR.</strong> Como um livro possui um ou mais autores e um autor pode participar de vários livros, analise como o relacionamento N:N deve ser transformado no modelo relacional.</li>
+        <li><strong>Retome o histórico de empréstimos.</strong> Preserve no modelo relacional a ligação entre USUÁRIO e EXEMPLAR e os dados de cada ocorrência: data do empréstimo, data prevista de devolução e, quando existir, data de devolução.</li>
+        <li><strong>Reveja a identificação de EMPRÉSTIMO.</strong> Se o DER da equipe deixou essa decisão como dúvida ou suposição, registre agora a solução adotada ou mantenha explicitamente o ponto que ainda precisa ser validado. Não invente uma chave sem justificar.</li>
+        <li><strong>Faça uma leitura de volta.</strong> Compare o esquema relacional produzido com o DER da Aula 04 e verifique se ainda é possível reconhecer as regras de autoria, exemplares e histórico de empréstimos.</li>
       </ol>
 
       <div class='rule-panel'>
         <h3>O que deve aparecer no resultado</h3>
-        <p>Apresente cada relação com seus atributos e marque claramente <strong>PK</strong> e <strong>FK</strong>. Para cada FK, indique também qual relação ela referencia. Inclua pelo menos três justificativas curtas explicando decisões feitas durante o mapeamento.</p>
+        <p>Apresente cada relação com seus atributos e marque claramente <strong>PK</strong> e <strong>FK</strong>. Para cada FK, indique qual relação ela referencia. Inclua pelo menos três justificativas curtas explicando decisões tomadas durante o mapeamento, especialmente nos relacionamentos <strong>LIVRO–EXEMPLAR</strong>, <strong>LIVRO–AUTOR</strong> e no histórico de <strong>EMPRÉSTIMOS</strong>.</p>
       </div>
 
       <div class='comparison-panel'>
         <h3>Não escreva SQL ainda</h3>
-        <p>O produto desta atividade é o <strong>modelo relacional</strong>. Não é necessário escrever <code>CREATE TABLE</code>, escolher tipos de dados ou implementar constraints no PostgreSQL. Essas decisões pertencem à próxima etapa.</p>
+        <p>O produto desta atividade é o <strong>modelo relacional</strong>. Não é necessário escrever <code>CREATE TABLE</code>, escolher tipos de dados ou implementar constraints no PostgreSQL. O objetivo é transformar corretamente o DER da biblioteca em relações e chaves.</p>
       </div>
     </article>
   </div>
