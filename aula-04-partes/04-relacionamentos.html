@@ -101,113 +101,119 @@
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Passo 6 · atributos do relacionamento e entidade associativa</p>
-      <h2 id="associativa-title">Nem todo relacionamento precisa se tornar uma entidade associativa</h2>
-      <p>Um relacionamento pode continuar sendo apenas um relacionamento — inclusive quando possui atributos. A entidade associativa é uma possibilidade usada quando o próprio fato precisa ser tratado como algo que possui ocorrências reconhecíveis, histórico ou participação em outras relações.</p>
+      <h2 id="associativa-title">Quando o relacionamento basta — e quando o fato precisa aparecer como algo próprio</h2>
+      <p>Nem todo relacionamento com atributos precisa se transformar em entidade associativa. Neste passo vamos separar duas decisões: descobrir <strong>a quem pertencem os atributos</strong> e verificar se <strong>cada ocorrência do fato precisa ser reconhecida separadamente</strong>.</p>
     </div>
 
     <div class="learning-sequence">
       <article class="learning-block theory-block">
-        <div class="learning-block-head"><span>T</span><div><small>Explicação teórica</small><h3>Primeiro pergunte se o relacionamento já é suficiente</h3></div></div>
-        <p>Relacionamentos representam fatos entre entidades e <strong>não viram entidades associativas por padrão</strong>. Antes de criar uma nova entidade, observe o que o domínio exige de cada ocorrência desse fato.</p>
+        <div class="learning-block-head"><span>T</span><div><small>Construindo a ideia</small><h3>Três situações ajudam a organizar a decisão</h3></div></div>
+        <p>Comece pelo caso mais simples e aumente a exigência somente quando o domínio pedir. A presença de um relacionamento N:N ou de um atributo no relacionamento, por si só, não obriga a criar uma entidade associativa.</p>
 
         <div class="concept-grid">
           <article class="concept-card">
-            <span>Relacionamento</span>
+            <span>1 · Relacionamento simples</span>
             <strong>FUNCIONÁRIO trabalha em DEPARTAMENTO</strong>
-            <p>Se precisamos apenas registrar o fato de que um funcionário trabalha em um departamento, o relacionamento pode ser suficiente.</p>
+            <p>Se precisamos apenas registrar que um funcionário trabalha em um departamento, o relacionamento representa o fato de maneira suficiente.</p>
+            <div class="entity-example">O fato não precisa ser identificado separadamente.</div>
           </article>
           <article class="concept-card">
-            <span>Relacionamento com atributos</span>
+            <span>2 · Relacionamento com atributo</span>
             <strong>FORNECEDOR fornece PRODUTO</strong>
-            <p>Um valor como <strong>preço negociado</strong> pode descrever a relação sem obrigar, por si só, a criação de uma nova entidade.</p>
+            <p>Um valor como preço negociado pode pertencer ao próprio fato de fornecer. Isso ainda não exige, automaticamente, uma nova entidade.</p>
+            <div class="entity-example">atributo do relacionamento: preço negociado</div>
           </article>
           <article class="concept-card">
-            <span>Entidade associativa</span>
+            <span>3 · Fato tratado como algo próprio</span>
             <strong>RESERVA</strong>
-            <p>Aqui precisamos distinguir cada ocorrência, preservar data, horário e situação e manter o histórico do fato.</p>
+            <p>Se cada ocorrência precisa ser distinguida, manter informações próprias e permanecer no histórico, o fato passa a exigir uma representação própria.</p>
+            <div class="entity-example">data · horário inicial · situação</div>
           </article>
         </div>
 
         <div class="rule-panel">
-          <h3>Regra prática</h3>
-          <p>Considere uma entidade associativa quando o domínio exigir que cada ocorrência do relacionamento seja tratada como algo próprio: por exemplo, quando precisa ser distinguida, manter histórico, possuir identificação própria ou participar de outros relacionamentos.</p>
+          <h3>Ter atributos não é o critério decisivo</h3>
+          <p>O ponto principal é saber se basta registrar <strong>que as entidades se relacionam</strong> ou se precisamos reconhecer <strong>cada ocorrência desse relacionamento</strong> como um fato individual do domínio.</p>
         </div>
 
-        <div class="axis-note"><b>i</b><div><strong>Não confunda com a próxima etapa do projeto.</strong> Um relacionamento N:N não se transforma automaticamente em entidade associativa apenas por ser N:N no modelo conceitual. Mais adiante, ao mapear o modelo ER para tabelas relacionais, relacionamentos N:N exigirão uma estrutura intermediária. Essa é uma decisão do modelo lógico, não a regra que estamos aplicando aqui.</div></div>
+        <h4>Como decidir se o fato precisa ser representado como entidade associativa?</h4>
+        <ol class="practice-steps">
+          <li>Precisamos distinguir uma ocorrência desse fato de outra?</li>
+          <li>As mesmas entidades podem participar novamente, gerando uma nova ocorrência com outro significado?</li>
+          <li>Cada ocorrência possui dados ou estados próprios que precisam ser preservados?</li>
+          <li>Precisamos manter histórico dessas ocorrências?</li>
+          <li>O próprio fato poderá participar de outros relacionamentos?</li>
+        </ol>
+
+        <div class="comparison-panel">
+          <h3>Uma forma simples de lembrar</h3>
+          <p>Se basta saber <strong>quem se relaciona com quem</strong>, o relacionamento pode ser suficiente. Se precisamos saber <strong>qual ocorrência aconteceu, quando aconteceu e o que aconteceu com ela</strong>, uma entidade associativa passa a fazer sentido.</p>
+        </div>
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Exemplo em evolução</small><h3>Por que RESERVA precisa aparecer como algo próprio?</h3></div></div>
-        <p>No nosso cenário, não basta saber que um usuário pode se relacionar com uma sala. Precisamos reconhecer <strong>cada reserva realizada</strong>, inclusive quando o mesmo usuário reserva a mesma sala em momentos diferentes. É essa necessidade que faz o modelo evoluir.</p>
+        <div class="learning-block-head"><span>G</span><div><small>Aplicando ao exemplo de reserva de salas</small><h3>A necessidade de RESERVA aparece passo a passo</h3></div></div>
+        <p>Vamos voltar ao cenário sem partir diretamente da conclusão. Primeiro observamos o relacionamento, depois os atributos do fato e, por fim, perguntamos se cada ocorrência precisa ser distinguida.</p>
 
-        <div class="association-transition">
-          <article class="mini-model">
-            <h3>Relacionamento com atributos</h3>
-            <p>Antes de explicitar RESERVA, o fato aparece como um relacionamento N:N entre USUÁRIO e SALA. Data, horário inicial e situação descrevem cada ocorrência dessa relação.</p>
-            <svg aria-label="USUÁRIO e SALA ligados pelo relacionamento reserva, com os atributos data, horário inicial e situação" role="img" viewBox="0 0 520 280" style="width:100%;height:auto;display:block;margin-top:1rem;">
-              <rect x="20" y="34" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
-              <text x="88" y="68" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">USUÁRIO</text>
-              <rect x="364" y="34" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
-              <text x="432" y="68" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">SALA</text>
-              <polygon points="220,62 260,30 300,62 260,94" fill="none" stroke="currentColor" stroke-opacity="0.6" stroke-width="2"></polygon>
-              <text x="260" y="68" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">reserva</text>
-              <line x1="156" y1="62" x2="220" y2="62" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
-              <line x1="300" y1="62" x2="364" y2="62" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
-              <text x="188" y="50" text-anchor="middle" font-size="15" font-family="Inter, Arial, sans-serif" fill="currentColor">N</text>
-              <text x="332" y="50" text-anchor="middle" font-size="15" font-family="Inter, Arial, sans-serif" fill="currentColor">N</text>
-              <line x1="260" y1="94" x2="260" y2="122" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
-              <ellipse cx="118" cy="186" rx="66" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
-              <text x="118" y="192" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">data</text>
-              <line x1="184" y1="174" x2="247" y2="132" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
-              <ellipse cx="260" cy="228" rx="98" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
-              <text x="260" y="234" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">horário inicial</text>
-              <line x1="260" y1="202" x2="260" y2="122" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
-              <ellipse cx="402" cy="186" rx="78" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
-              <text x="402" y="192" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">situação</text>
-              <line x1="334" y1="174" x2="273" y2="132" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
-            </svg>
+        <h4>1. Começamos com o relacionamento direto</h4>
+        <div class="participation-line"><div class="participation-node"><strong>USUÁRIO</strong><span>0..N</span></div><div class="participation-connector">reserva</div><div class="participation-node"><strong>SALA</strong><span>0..N</span></div></div>
+        <p>Esse modelo já informa que usuários podem reservar salas e que uma sala pode aparecer em diferentes reservas ao longo do tempo.</p>
+
+        <h4>2. Depois observamos os dados da ocorrência</h4>
+        <div class="comparison-panel">
+          <h3>Data, horário inicial e situação descrevem o quê?</h3>
+          <p>Esses valores não descrevem permanentemente o USUÁRIO nem a SALA. Eles mudam de uma reserva para outra e, portanto, pertencem à <strong>ocorrência do fato de reservar</strong>.</p>
+        </div>
+
+        <h4>3. Agora fazemos a pergunta decisiva</h4>
+        <p>Imagine que o mesmo usuário reserve a mesma sala às 10h e novamente às 15h. Temos apenas uma ligação entre USUÁRIO e SALA ou duas reservas diferentes?</p>
+        <ol class="practice-steps">
+          <li>As duas ocorrências precisam ser distinguidas porque aconteceram em horários diferentes.</li>
+          <li>Uma delas pode ser cancelada enquanto a outra permanece ativa.</li>
+          <li>O histórico precisa preservar cada reserva realizada separadamente.</li>
+        </ol>
+
+        <div class="decision-panel">
+          <h3>Conclusão: RESERVA passa a ser representada como entidade associativa</h3>
+          <p>No nosso domínio, cada reserva é um fato individual que precisa ser reconhecido e descrito. Por isso, RESERVA passa a ocupar uma posição própria entre USUÁRIO e SALA.</p>
+        </div>
+
+        <div class="model-sketch" aria-label="RESERVA como entidade associativa entre USUÁRIO e SALA">
+          <article class="model-node">
+            <header>USUÁRIO</header>
+            <small>pode participar de 0..N reservas</small>
           </article>
-
-          <div aria-hidden="true" class="transition-arrow">→</div>
-
-          <article class="mini-model">
-            <h3>Entidade associativa RESERVA</h3>
-            <p>Como cada reserva precisa ser distinguida e preservada no histórico, RESERVA passa a representar cada ocorrência desse fato.</p>
-            <svg aria-label="RESERVA como entidade associativa entre USUÁRIO e SALA, com os atributos data, horário inicial e situação" role="img" viewBox="0 0 520 320" style="width:100%;height:auto;display:block;margin-top:1rem;">
-              <rect x="20" y="28" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
-              <text x="88" y="62" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">USUÁRIO</text>
-              <rect x="364" y="28" width="136" height="56" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></rect>
-              <text x="432" y="62" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">SALA</text>
-              <rect x="190" y="122" width="140" height="60" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.6" stroke-width="2.5"></rect>
-              <text x="260" y="158" text-anchor="middle" font-size="18" font-family="Inter, Arial, sans-serif" font-weight="700" fill="currentColor">RESERVA</text>
-              <line x1="112" y1="84" x2="216" y2="122" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
-              <text x="136" y="96" text-anchor="middle" font-size="14" font-family="Inter, Arial, sans-serif" fill="currentColor">1</text>
-              <text x="204" y="112" text-anchor="middle" font-size="14" font-family="Inter, Arial, sans-serif" fill="currentColor">N</text>
-              <line x1="408" y1="84" x2="304" y2="122" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></line>
-              <text x="384" y="96" text-anchor="middle" font-size="14" font-family="Inter, Arial, sans-serif" fill="currentColor">1</text>
-              <text x="316" y="112" text-anchor="middle" font-size="14" font-family="Inter, Arial, sans-serif" fill="currentColor">N</text>
-              <ellipse cx="118" cy="246" rx="66" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
-              <text x="118" y="252" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">data</text>
-              <line x1="184" y1="234" x2="226" y2="182" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
-              <ellipse cx="260" cy="286" rx="98" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
-              <text x="260" y="292" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">horário inicial</text>
-              <line x1="260" y1="260" x2="260" y2="182" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
-              <ellipse cx="402" cy="246" rx="78" ry="26" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-width="2"></ellipse>
-              <text x="402" y="252" text-anchor="middle" font-size="16" font-family="Inter, Arial, sans-serif" fill="currentColor">situação</text>
-              <line x1="336" y1="234" x2="294" y2="182" stroke="currentColor" stroke-opacity="0.35" stroke-width="2"></line>
-            </svg>
+          <div class="model-edge"><span>1..1</span><strong>realiza</strong><span>0..N</span></div>
+          <article class="model-node associated-node">
+            <header>RESERVA</header>
+            <ul>
+              <li>data</li>
+              <li>horário inicial</li>
+              <li>situação</li>
+            </ul>
+            <small>cada ocorrência do fato</small>
+          </article>
+          <div class="model-edge"><span>1..1</span><strong>usa</strong><span>0..N</span></div>
+          <article class="model-node">
+            <header>SALA</header>
+            <small>pode participar de 0..N reservas</small>
           </article>
         </div>
 
         <ol class="practice-steps">
-          <li><strong>USUÁRIO</strong> pode participar de 0..N reservas; cada <strong>RESERVA</strong> exige 1..1 usuário.</li>
-          <li><strong>SALA</strong> pode participar de 0..N reservas; cada <strong>RESERVA</strong> exige 1..1 sala.</li>
-          <li><strong>data, horário inicial e situação</strong> passam a descrever RESERVA, porque representam uma ocorrência específica do uso da sala.</li>
+          <li>Cada RESERVA está ligada a exatamente um USUÁRIO; um USUÁRIO pode participar de várias reservas.</li>
+          <li>Cada RESERVA está ligada a exatamente uma SALA; uma SALA pode participar de várias reservas.</li>
+          <li>Data, horário inicial e situação passam a descrever cada ocorrência de RESERVA.</li>
         </ol>
 
         <div class="decision-panel">
-          <h3>A modelagem revelou uma informação que o requisito não forneceu</h3>
-          <p>Como distinguimos duas reservas de maneira única? O cenário não define essa regra. Não vamos assumir silenciosamente que uma combinação de usuário, sala, data e horário é sempre única. No DER, registre <strong>“identificador da reserva: a validar”</strong>. Descobrir uma lacuna do requisito também é resultado da modelagem.</p>
+          <h3>Ainda existe uma pergunta em aberto</h3>
+          <p>Como distinguimos duas reservas de maneira única? O requisito não informa essa regra. Em vez de inventar uma solução, registramos no DER <strong>“identificador da reserva: a validar”</strong>.</p>
+        </div>
+
+        <div class="activity-note no-tool-note">
+          <strong>Entidade associativa e tabela intermediária não são a mesma decisão.</strong>
+          <p>Aqui, RESERVA surgiu porque o domínio exige reconhecer cada ocorrência do fato. Mais adiante, ao mapear o modelo conceitual para o modelo relacional, qualquer relacionamento N:N exigirá uma estrutura intermediária. Essa é uma decisão do modelo lógico.</p>
         </div>
       </article>
     </div>
@@ -242,7 +248,7 @@
 
     <div class="activity-note diagram-ready-note">
       <strong>Agora já existem decisões suficientes para construir o DER principal.</strong>
-      <p>Entidades, atributos, relacionamentos, cardinalidades, participação e a transformação do N:N em RESERVA já foram analisados. O identificador de RESERVA permanece registrado como uma questão a validar, em vez de ser inventado silenciosamente.</p>
+      <p>Entidades, atributos, relacionamentos, cardinalidades, participação e o tratamento de RESERVA como entidade associativa já foram analisados. O identificador de RESERVA permanece registrado como uma questão a validar, em vez de ser inventado silenciosamente.</p>
     </div>
   </div>
 </section>
