@@ -34,8 +34,15 @@
     <div class='section-heading'>
       <p class='eyebrow'>Entidade fraca</p>
       <h2 id='fraca-map-title'>A chave da proprietária passa a fazer parte da identificação</h2>
-      <p>FAIXA_AGENDA não possui identidade global. Ela é reconhecida dentro de uma SALA pela combinação de data e horário inicial. Por isso, a chave da sala precisa participar da chave da relação resultante.</p>
+      <p>Para observar esse caso, vamos acrescentar uma pequena necessidade ao domínio de reserva de salas: além de registrar as reservas realizadas, o sistema também precisa organizar as <strong>faixas de agenda disponíveis de cada sala</strong>, registrando a data, o horário inicial e a situação de cada faixa.</p>
     </div>
+
+    <div class='decision-panel'>
+      <h3>De onde surge FAIXA_AGENDA?</h3>
+      <p>Surge justamente dessa nova necessidade de controlar a agenda de cada sala. Uma ocorrência como <code>10/09 · 19:00</code> não identifica uma faixa de forma global, porque duas salas diferentes podem possuir uma faixa no mesmo dia e horário. A faixa só faz sentido quando sabemos <strong>a qual SALA ela pertence</strong>.</p>
+    </div>
+
+    <p>Por isso, FAIXA_AGENDA depende de SALA para ser identificada. A combinação de <code>data</code> e <code>hora_inicio</code> distingue uma faixa apenas dentro de uma sala específica; consequentemente, <code>id_sala</code> também precisa participar da identificação da relação resultante.</p>
 
     <div class='schema-grid two-schemas'>
       <article class='schema-card'><header><span>Proprietária</span><h3>SALA</h3></header><div class='schema-field'><span class='key-badge pk'>PK</span><code>id_sala</code></div><div class='schema-field'><span class='key-placeholder'></span><code>nome</code></div></article>
