@@ -26,26 +26,31 @@
 <section aria-labelledby='entidade-relacao-title' class='section-pad section-soft'>
   <div class='container'>
     <div class='section-heading'>
-      <p class='eyebrow'>Mapeamento básico</p>
-      <h2 id='entidade-relacao-title'>Comece pelo que é mais direto: entidade, atributos e identificador</h2>
-      <p>Para uma entidade forte com atributos simples, a transformação inicial é quase uma correspondência entre os elementos dos dois modelos.</p>
+      <p class='eyebrow'>Primeiro passo do mapeamento</p>
+      <h2 id='entidade-relacao-title'>Comece por uma entidade antes de tratar os relacionamentos</h2>
+      <p>Para entender a passagem do DER para o esquema relacional, vamos primeiro isolar uma entidade forte. Nesse caso, o mapeamento pode ser feito em três decisões simples: criar a relação, levar os atributos e definir a chave primária.</p>
     </div>
 
     <div class='mapping-rule-grid'>
-      <article class='mapping-rule-card'><span>Entidade</span><strong>vira uma relação</strong><p>A entidade SALA dá origem a uma relação SALA.</p><div class='mapping-example'>SALA → SALA(...)</div></article>
-      <article class='mapping-rule-card'><span>Atributo simples</span><strong>vira atributo da relação</strong><p>Nome e capacidade permanecem associados à sala.</p><div class='mapping-example'>nome · capacidade</div></article>
-      <article class='mapping-rule-card'><span>Identificador</span><strong>vira chave primária</strong><p>O atributo que identifica cada sala passa a exercer a função de PK.</p><div class='mapping-example'>id_sala → PK</div></article>
+      <article class='mapping-rule-card'><span>1 · Entidade</span><strong>cria a relação</strong><p>Cada entidade forte dá origem a uma relação que representa o mesmo tipo de objeto no esquema relacional.</p><div class='mapping-example'>SALA → SALA(...)</div></article>
+      <article class='mapping-rule-card'><span>2 · Atributos</span><strong>preenchem a relação</strong><p>Os atributos simples da entidade passam a aparecer como atributos da relação correspondente.</p><div class='mapping-example'>nome · capacidade</div></article>
+      <article class='mapping-rule-card'><span>3 · Identificador</span><strong>define a chave primária</strong><p>O atributo usado no DER para distinguir cada ocorrência passa a identificar cada tupla da relação.</p><div class='mapping-example'>id_sala → PK</div></article>
+    </div>
+
+    <div class='decision-panel'>
+      <h3>Aplicando as três decisões à entidade SALA</h3>
+      <p>No DER, SALA possui o identificador <code>id_sala</code> e os atributos <code>nome</code> e <code>capacidade</code>. Agora vamos transformar apenas esse pequeno trecho do modelo e observar o resultado.</p>
     </div>
 
     <div class='mapping-stage'>
       <article class='conceptual-card'>
-        <span>Modelo conceitual</span>
+        <span>No DER</span>
         <h3>SALA</h3>
         <ul><li><u>id_sala</u></li><li>nome</li><li>capacidade</li></ul>
       </article>
-      <div class='mapping-stage-arrow'><span>mapear</span><strong>→</strong></div>
+      <div class='mapping-stage-arrow'><span>aplicar as 3 regras</span><strong>→</strong></div>
       <article class='schema-card featured-schema'>
-        <header><span>Relação</span><h3>SALA</h3></header>
+        <header><span>No esquema relacional</span><h3>SALA</h3></header>
         <div class='schema-field'><span class='key-badge pk'>PK</span><code>id_sala</code></div>
         <div class='schema-field'><span class='key-placeholder'></span><code>nome</code></div>
         <div class='schema-field'><span class='key-placeholder'></span><code>capacidade</code></div>
