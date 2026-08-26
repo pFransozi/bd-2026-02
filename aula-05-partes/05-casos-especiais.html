@@ -3,7 +3,7 @@
     <div class='section-heading'>
       <p class='eyebrow'>Casos especiais</p>
       <h2 id='especiais-title'>Algumas estruturas do DER exigem mais do que uma cópia direta</h2>
-      <p>Atributos multivalorados, entidades fracas e especializações precisam preservar dependências que não cabem em uma relação simples.</p>
+      <p>Atributos multivalorados e entidades fracas precisam preservar dependências que não cabem em uma relação simples.</p>
     </div>
   </div>
 </section>
@@ -47,34 +47,6 @@
   </div>
 </section>
 
-<section aria-labelledby='especializacao-map-title' class='section-pad section-soft'>
-  <div class='container'>
-    <div class='section-heading'>
-      <p class='eyebrow'>Especialização</p>
-      <h2 id='especializacao-map-title'>Uma estratégia simples preserva o supertipo e cria uma relação para cada subtipo</h2>
-      <p>Existem diferentes estratégias para mapear especializações. Para esta aula, vamos dominar uma: uma relação para o supertipo e uma relação para cada subtipo.</p>
-    </div>
-
-    <div class='specialization-schema'>
-      <article class='schema-card supertype-schema'><header><span>Supertipo</span><h3>USUARIO</h3></header><div class='schema-field'><span class='key-badge pk'>PK</span><code>id_usuario</code></div><div class='schema-field'><span class='key-placeholder'></span><code>nome</code></div><div class='schema-field'><span class='key-placeholder'></span><code>email</code></div></article>
-      <div class='specialization-lines' aria-hidden='true'><span></span><span></span></div>
-      <div class='schema-grid two-schemas subtype-schemas'>
-        <article class='schema-card'><header><span>Subtipo</span><h3>ALUNO</h3></header><div class='schema-field'><span class='key-badge pkfk'>PK/FK</span><code>id_usuario</code></div><div class='schema-field'><span class='key-placeholder'></span><code>matricula</code></div><div class='schema-field'><span class='key-placeholder'></span><code>curso</code></div></article>
-        <article class='schema-card'><header><span>Subtipo</span><h3>PROFESSOR</h3></header><div class='schema-field'><span class='key-badge pkfk'>PK/FK</span><code>id_usuario</code></div><div class='schema-field'><span class='key-placeholder'></span><code>registro_funcional</code></div></article>
-      </div>
-    </div>
-
-    <ol class='mapping-logic-list specialization-logic'>
-      <li><span>1</span><div><strong>USUARIO guarda os dados comuns</strong><p>Nome e e-mail não são repetidos nas relações de subtipo.</p></div></li>
-      <li><span>2</span><div><strong>O subtipo reutiliza a mesma identidade</strong><p><code>ALUNO.id_usuario</code> é simultaneamente PK da relação ALUNO e FK para USUARIO.</p></div></li>
-      <li><span>3</span><div><strong>O subtipo guarda apenas o que é específico</strong><p>Matrícula e curso ficam em ALUNO; registro funcional fica em PROFESSOR.</p></div></li>
-      <li><span>4</span><div><strong>As restrições ainda precisam ser consideradas</strong><p>Total/parcial e exclusiva/sobreposta continuam sendo regras que a implementação futura precisará preservar.</p></div></li>
-    </ol>
-
-    <div class='comparison-panel'><h3>Existem outras estratégias</h3><p>Uma especialização também pode ser representada, em determinados cenários, com uma única relação e um atributo discriminador ou com relações apenas para os subtipos. Essas alternativas têm consequências diferentes. Nesta aula, nosso objetivo é compreender profundamente uma estratégia antes de comparar todas as variações.</p></div>
-  </div>
-</section>
-
 <section aria-labelledby='esquema-final-title' class='section-pad'>
   <div class='container'>
     <div class='section-heading'>
@@ -84,9 +56,7 @@
     </div>
 
     <div class='schema-grid full-schema-grid'>
-      <article class='schema-card'><header><span>Supertipo</span><h3>USUARIO</h3></header><div class='schema-field'><span class='key-badge pk'>PK</span><code>id_usuario</code></div><div class='schema-field'><span class='key-placeholder'></span><code>nome</code></div><div class='schema-field'><span class='key-placeholder'></span><code>email</code></div></article>
-      <article class='schema-card'><header><span>Subtipo</span><h3>ALUNO</h3></header><div class='schema-field'><span class='key-badge pkfk'>PK/FK</span><code>id_usuario</code></div><div class='schema-field'><span class='key-placeholder'></span><code>matricula</code></div><div class='schema-field'><span class='key-placeholder'></span><code>curso</code></div></article>
-      <article class='schema-card'><header><span>Subtipo</span><h3>PROFESSOR</h3></header><div class='schema-field'><span class='key-badge pkfk'>PK/FK</span><code>id_usuario</code></div><div class='schema-field'><span class='key-placeholder'></span><code>registro_funcional</code></div></article>
+      <article class='schema-card'><header><span>Entidade</span><h3>USUARIO</h3></header><div class='schema-field'><span class='key-badge pk'>PK</span><code>id_usuario</code></div><div class='schema-field'><span class='key-placeholder'></span><code>nome</code></div><div class='schema-field'><span class='key-placeholder'></span><code>email</code></div></article>
       <article class='schema-card'><header><span>Multivalorado</span><h3>TELEFONE_USUARIO</h3></header><div class='schema-field'><span class='key-badge pkfk'>PK/FK</span><code>id_usuario</code></div><div class='schema-field'><span class='key-badge pk'>PK</span><code>telefone</code></div></article>
       <article class='schema-card'><header><span>Entidade</span><h3>SALA</h3></header><div class='schema-field'><span class='key-badge pk'>PK</span><code>id_sala</code></div><div class='schema-field'><span class='key-placeholder'></span><code>nome</code></div><div class='schema-field'><span class='key-placeholder'></span><code>capacidade</code></div></article>
       <article class='schema-card'><header><span>Entidade fraca</span><h3>FAIXA_AGENDA</h3></header><div class='schema-field'><span class='key-badge pkfk'>PK/FK</span><code>id_sala</code></div><div class='schema-field'><span class='key-badge pk'>PK</span><code>data</code></div><div class='schema-field'><span class='key-badge pk'>PK</span><code>hora_inicio</code></div><div class='schema-field'><span class='key-placeholder'></span><code>situacao</code></div></article>
