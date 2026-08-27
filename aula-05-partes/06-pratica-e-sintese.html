@@ -24,35 +24,51 @@
     <div class='section-heading'>
       <p class='eyebrow'>Atividade prática · retomando a Aula 04</p>
       <h2 id='atividade-title'>Retome o DER da Biblioteca Universitária e transforme-o em um modelo relacional</h2>
-      <p>O ponto de partida desta atividade é o DER que sua equipe construiu para o exercício da <strong>Biblioteca Universitária</strong> na Aula 04. Não refaça o problema do zero e não pule para SQL: agora vocês irão usar aquele modelo conceitual como entrada para construir o modelo relacional.</p>
+      <p>O ponto de partida é o DER construído pela equipe para a Biblioteca Universitária. Nesta atividade, vocês irão primeiro registrar por escrito as decisões do mapeamento e, em seguida, representar o modelo relacional no diagrams.net.</p>
     </div>
 
-    <div class='decision-panel'>
-      <h3>Comece pelo DER que a equipe já produziu</h3>
-      <p>Abra o arquivo do exercício da Biblioteca Universitária e releia as decisões registradas nele. Entidades, atributos, identificadores, relacionamentos, cardinalidades, dúvidas e suposições devem orientar o mapeamento. O novo modelo precisa ser consequência do DER, e não um desenho criado independentemente dele.</p>
+    <div class='learning-sequence'>
+      <article class='learning-block practice-block'>
+        <div class='learning-block-head'><span>1</span><div><small>Análise antes do desenho</small><h3>Explique por escrito como o DER será mapeado</h3></div></div>
+        <p>Use o DER da Aula 04 como fonte das decisões. Responda aos itens abaixo em um texto curto, mantendo a mesma ordem.</p>
+        <ol class='practice-steps'>
+          <li><strong>Recupere o DER da Biblioteca Universitária.</strong> Liste as entidades, seus atributos, identificadores e relacionamentos conforme aparecem no modelo produzido pela equipe.</li>
+          <li><strong>Mapeie as entidades.</strong> Para cada entidade, indique qual relação será criada e quais atributos seguirão diretamente para ela.</li>
+          <li><strong>Defina as chaves primárias.</strong> Explique como os identificadores do DER orientam a PK de cada relação.</li>
+          <li><strong>Analise LIVRO–EXEMPLAR.</strong> Explique onde a chave estrangeira deve aparecer e como essa escolha representa a cardinalidade definida no DER.</li>
+          <li><strong>Analise LIVRO–AUTOR.</strong> Explique como o relacionamento N:N será transformado e quais chaves precisarão aparecer na nova relação.</li>
+          <li><strong>Analise o histórico de empréstimos.</strong> Explique como o modelo relacional preservará a ligação entre USUÁRIO e EXEMPLAR e os dados de cada empréstimo: data do empréstimo, data prevista de devolução e, quando existir, data de devolução.</li>
+          <li><strong>Reveja a identificação de EMPRÉSTIMO.</strong> Registre qual solução a equipe adotará para identificar cada ocorrência e justifique a decisão. Se o DER deixou esse ponto em aberto, mantenha a dúvida explicitamente registrada.</li>
+          <li><strong>Faça uma leitura de volta.</strong> Explique como o esquema proposto continua preservando as regras de autoria, exemplares e histórico de empréstimos presentes no DER.</li>
+        </ol>
+      </article>
+
+      <article class='learning-block practice-block'>
+        <div class='learning-block-head'><span>2</span><div><small>Construção no diagrams.net</small><h3>Transforme as decisões em um modelo relacional</h3></div></div>
+        <p>Depois de registrar as decisões por escrito, represente o resultado no diagrams.net.</p>
+        <ol class='practice-steps'>
+          <li>Crie uma caixa para cada relação resultante do mapeamento.</li>
+          <li>Liste os atributos dentro de cada relação e destaque claramente as <strong>PKs</strong>.</li>
+          <li>Marque as <strong>FKs</strong> e indique qual relação cada uma referencia.</li>
+          <li>Represente corretamente o mapeamento de <strong>LIVRO–EXEMPLAR</strong>.</li>
+          <li>Crie a relação necessária para representar <strong>LIVRO–AUTOR</strong> e deixe visíveis as chaves que conectam as duas relações participantes.</li>
+          <li>Represente <strong>EMPRÉSTIMO</strong> de modo que seja possível reconhecer o usuário, o exemplar e as datas registradas no DER.</li>
+          <li>Compare o modelo relacional pronto com o DER original e corrija qualquer estrutura que altere uma regra do domínio.</li>
+        </ol>
+      </article>
     </div>
 
-    <article class='practice-card primary-practice'>
-      <span>Trabalho em equipe</span>
-      <strong>Do DER da biblioteca ao modelo relacional</strong>
-      <p>Utilizem o modelo construído para organizar usuários, livros, autores, exemplares físicos e empréstimos. Ao final, vocês deverão apresentar um esquema relacional e conseguir explicar como cada relação e cada chave surgiram das decisões feitas na Aula 04.</p>
-
-      <ol class='practice-steps'>
-        <li><strong>Recupere o DER da Biblioteca Universitária.</strong> Identifique nele as entidades que sua equipe modelou, seus atributos, identificadores e relacionamentos. Compare também o desenho com as dúvidas e suposições registradas.</li>
-        <li><strong>Mapeie primeiro as entidades.</strong> Para cada entidade do DER, crie a relação correspondente e leve os atributos que podem ser representados diretamente.</li>
-        <li><strong>Defina as chaves primárias.</strong> Use os identificadores definidos ou fornecidos pelo cenário — por exemplo, identificador do usuário, ISBN do livro, identificador do autor e número de patrimônio do exemplar — e registre claramente a PK de cada relação.</li>
-        <li><strong>Retome LIVRO–EXEMPLAR.</strong> Observe a cardinalidade definida no DER e decida onde a chave estrangeira deve aparecer para representar que cada exemplar corresponde a exatamente um livro.</li>
-        <li><strong>Retome LIVRO–AUTOR.</strong> Como um livro possui um ou mais autores e um autor pode participar de vários livros, analise como o relacionamento N:N deve ser transformado no modelo relacional.</li>
-        <li><strong>Retome o histórico de empréstimos.</strong> Preserve no modelo relacional a ligação entre USUÁRIO e EXEMPLAR e os dados de cada ocorrência: data do empréstimo, data prevista de devolução e, quando existir, data de devolução.</li>
-        <li><strong>Reveja a identificação de EMPRÉSTIMO.</strong> Se o DER da equipe deixou essa decisão como dúvida ou suposição, registre agora a solução adotada ou mantenha explicitamente o ponto que ainda precisa ser validado. Não invente uma chave sem justificar.</li>
-        <li><strong>Faça uma leitura de volta.</strong> Compare o esquema relacional produzido com o DER da Aula 04 e verifique se ainda é possível reconhecer as regras de autoria, exemplares e histórico de empréstimos.</li>
-      </ol>
-
-      <div class='rule-panel'>
-        <h3>O que deve aparecer no resultado</h3>
-        <p>Apresente cada relação com seus atributos e marque claramente <strong>PK</strong> e <strong>FK</strong>. Para cada FK, indique qual relação ela referencia. Inclua pelo menos três justificativas curtas explicando decisões tomadas durante o mapeamento, especialmente nos relacionamentos <strong>LIVRO–EXEMPLAR</strong>, <strong>LIVRO–AUTOR</strong> e no histórico de <strong>EMPRÉSTIMOS</strong>.</p>
-      </div>
-    </article>
+    <div class='delivery-panel' id='entrega-aula05'>
+      <div class='delivery-panel-head'><span>Formato da entrega</span><strong>Um único arquivo ZIP</strong></div>
+      <p>Ao final da atividade, compacte os três arquivos abaixo em um único <code>.zip</code>:</p>
+      <ul>
+        <li><code>equipe_nome-aula05-biblioteca-mapeamento.pdf</code> ou <code>.docx</code> — texto com as respostas da etapa <strong>Explique por escrito como o DER será mapeado</strong>;</li>
+        <li><code>equipe_nome-aula05-biblioteca-relacional.drawio</code> — modelo relacional editável no diagrams.net;</li>
+        <li><code>equipe_nome-aula05-biblioteca-relacional.png</code> — exportação final do modelo relacional para consulta rápida.</li>
+      </ul>
+      <p>No texto, responda aos oito itens na ordem apresentada. No diagrama, todas as relações devem mostrar seus atributos, PKs e FKs, e cada FK deve indicar claramente a relação referenciada.</p>
+      <p class='delivery-name'><strong>Nome do ZIP:</strong> <code>equipe_nome-aula05-biblioteca.zip</code></p>
+    </div>
   </div>
 </section>
 
