@@ -364,7 +364,7 @@
           <div class="stage-head"><span class="stage-number">3</span><div><small>Terceira Forma Normal</small><h3>3FN · cada informação deve depender diretamente da chave</h3></div></div>
           <div class="soft-callout">
             <h3>Conceito · Terceira Forma Normal</h3>
-            <p>A <strong>3FN</strong> entra depois da 2FN. Ela verifica se um atributo que não faz parte da chave depende de outro atributo que também não faz parte da chave. Quando isso acontece, temos uma dependência indireta: a chave determina um atributo, e esse atributo determina outro. Esse segundo fato provavelmente deve ficar em outra relação.</p>
+            <p>A <strong>3FN</strong> verifica se uma informação depende diretamente da chave. Se um atributo só pode ser determinado passando por outro atributo que não é chave, isso indica que provavelmente estamos guardando um fato de outro objeto na mesma relação.</p>
           </div>
           <p>Use uma pergunta simples: <strong>este atributo depende diretamente da chave ou depende de outro atributo?</strong></p>
           <p>A relação SALA melhorou, mas ainda guarda duas informações sobre o bloco:</p>
@@ -394,7 +394,7 @@
         <div class="normalization-grid">
           <article class="normalization-card"><span>1FN</span><h3>Olhe para os valores</h3><p>Existe algum atributo armazenando vários valores em uma única ocorrência?</p></article>
           <article class="normalization-card"><span>2FN</span><h3>Olhe para a chave composta</h3><p>Algum atributo não chave depende apenas de uma parte da chave?</p></article>
-          <article class="normalization-card"><span>3FN</span><h3>Olhe para atributos não chave</h3><p>Algum atributo não chave determina outro atributo não chave?</p></article>
+          <article class="normalization-card"><span>3FN</span><h3>Olhe para o caminho da dependência</h3><p>Algum atributo é determinado por outro atributo que não é chave?</p></article>
         </div>
 
         <div class="axis-note"><b>i</b><div><strong>Normalização e MER não são a mesma técnica.</strong> A normalização organiza os atributos presentes nas relações. Ela não recria automaticamente todas as decisões semânticas do modelo conceitual. Por isso, <code>FAIXA_AGENDA</code>, que surgiu de uma regra específica de disponibilidade na Aula 05, não aparece na tabela ruim que usamos aqui. Da mesma forma, podemos preservar <code>id_reserva</code> como identificador da reserva porque essa decisão já fazia parte do modelo conceitual anterior.</div></div>
