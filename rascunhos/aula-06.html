@@ -361,11 +361,12 @@
         </article>
 
         <article class="stage">
-          <div class="stage-head"><span class="stage-number">3</span><div><small>Terceira Forma Normal</small><h3>3FN · ainda existe um atributo não chave determinando outro</h3></div></div>
+          <div class="stage-head"><span class="stage-number">3</span><div><small>Terceira Forma Normal</small><h3>3FN · cada informação deve depender diretamente da chave</h3></div></div>
           <div class="soft-callout">
             <h3>Conceito · Terceira Forma Normal</h3>
-            <p>Uma relação está na <strong>Terceira Forma Normal (3FN)</strong> quando já está em 2FN e não mantém dependências transitivas problemáticas entre atributos não chave. De forma prática, um atributo não chave não deve depender da chave por meio de outro atributo não chave; fatos sobre outro objeto do domínio devem ser representados em sua própria relação.</p>
+            <p>A <strong>3FN</strong> entra depois da 2FN. Ela verifica se um atributo que não faz parte da chave depende de outro atributo que também não faz parte da chave. Quando isso acontece, temos uma dependência indireta: a chave determina um atributo, e esse atributo determina outro. Esse segundo fato provavelmente deve ficar em outra relação.</p>
           </div>
+          <p>Use uma pergunta simples: <strong>este atributo depende diretamente da chave ou depende de outro atributo?</strong></p>
           <p>A relação SALA melhorou, mas ainda guarda duas informações sobre o bloco:</p>
           <div class="dependency">id_sala → id_bloco → nome_bloco</div>
           <p><code>nome_bloco</code> não é determinado diretamente pela identidade da sala. Primeiro descobrimos qual é o bloco da sala; depois <code>id_bloco</code> determina <code>nome_bloco</code>. Essa é uma <strong>dependência transitiva</strong>.</p>
