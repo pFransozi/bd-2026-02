@@ -238,8 +238,14 @@
         </div>
 
         <div class="soft-callout">
-          <h3>Antes de decorar qualquer forma normal, observe a tabela</h3>
-          <p>Marina aparece mais de uma vez. Os dados da Sala Ipê também aparecem repetidos. Alguns usuários possuem dois telefones dentro da mesma célula. O nome do bloco reaparece sempre que uma sala daquele bloco participa de uma reserva. Esses sinais indicam que fatos diferentes foram misturados.</p>
+          <h3>O que já conseguimos identificar?</h3>
+          <p>Sem introduzir nenhum conceito novo, essa estrutura já apresenta problemas que apareceram nas aulas anteriores:</p>
+          <ul class="compact-list">
+            <li><strong>Redundância problemática:</strong> dados de USUÁRIO, SALA e BLOCO são repetidos sempre que uma nova reserva é registrada.</li>
+            <li><strong>Atributo multivalorado mal representado:</strong> <code>telefones</code> armazena mais de um valor na mesma célula, enquanto na modelagem já havíamos separado esse tipo de atributo.</li>
+            <li><strong>Fatos diferentes misturados:</strong> uma única linha reúne dados do usuário, da sala, do bloco e da própria ocorrência de reserva.</li>
+            <li><strong>Anomalia de atualização:</strong> alterar o nome ou a capacidade de uma sala, por exemplo, exigiria modificar várias linhas; se uma delas permanecesse com o valor antigo, teríamos versões conflitantes do mesmo fato.</li>
+          </ul>
         </div>
       </div>
     </section>
