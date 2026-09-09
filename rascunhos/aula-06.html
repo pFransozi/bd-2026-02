@@ -22,9 +22,11 @@
     .bridge-card span,.normalization-card span{display:inline-grid;place-items:center;min-width:2rem;height:2rem;padding:0 .55rem;border-radius:999px;background:var(--accent-soft,#eaf2ff);font-weight:800;margin-bottom:.8rem}
     .bridge-card h3,.normalization-card h3,.exercise-card h3{margin:.1rem 0 .55rem}
     .bridge-card p,.normalization-card p,.exercise-card p{margin:.35rem 0}
-    .path-strip{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin:1.25rem 0 0}
-    .path-strip span{padding:.55rem .8rem;border:1px solid var(--border,#d9e0ea);border-radius:999px;background:var(--surface,#fff);font-weight:700}
-    .path-strip b{opacity:.55}
+    .path-highlight{margin:1.75rem 0 2.1rem;padding:1.35rem 1.25rem 1.5rem;border:1px solid rgba(95,130,255,.24);border-radius:22px;background:linear-gradient(135deg,rgba(95,130,255,.12),rgba(98,217,239,.08));box-shadow:0 16px 34px rgba(0,0,0,.09)}
+    .path-highlight-label{margin:0 0 1rem;font-size:.8rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:var(--text-soft,#4b5563)}
+    .path-strip{display:flex;align-items:center;justify-content:center;gap:.75rem;flex-wrap:wrap;margin:0}
+    .path-strip span{padding:.85rem 1.15rem;border:1px solid rgba(95,130,255,.22);border-radius:999px;background:var(--surface,#fff);font-weight:800;font-size:1.02rem;box-shadow:0 8px 18px rgba(0,0,0,.06)}
+    .path-strip b{font-size:1.3rem;font-weight:900;color:#5f82ff;opacity:1}
     .schema-box{border:1px solid var(--border,#d9e0ea);border-radius:18px;background:var(--surface,#fff);overflow:hidden;margin:1.25rem 0}
     .schema-box header{padding:.9rem 1rem;background:var(--surface-soft,#f6f8fb);border-bottom:1px solid var(--border,#d9e0ea);display:flex;gap:.7rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
     .schema-box header strong{font-size:1.05rem}
@@ -58,7 +60,7 @@
     .question-list li::before{content:counter(q);position:absolute;left:1rem;top:.85rem;display:grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--accent-soft,#eaf2ff);font-weight:800}
     .soft-callout{padding:1rem 1.1rem;border-radius:16px;background:var(--surface-soft,#f6f8fb);margin:1rem 0}
     .soft-callout h3{margin:.1rem 0 .35rem}
-    @media (max-width:900px){.bridge-grid,.normalization-grid,.exercise-grid{grid-template-columns:1fr}.before-after{grid-template-columns:1fr}.before-after .arrow{transform:rotate(90deg);justify-self:center}}
+    @media (max-width:900px){.bridge-grid,.normalization-grid,.exercise-grid{grid-template-columns:1fr}.before-after{grid-template-columns:1fr}.before-after .arrow{transform:rotate(90deg);justify-self:center}.path-highlight{padding:1.1rem}.path-strip b{transform:rotate(90deg)}}
   </style>
 </head>
 <body class="lesson-page arch-page modeling-page mapping-page">
@@ -133,11 +135,14 @@
         <div class="section-heading">
           <p class="eyebrow">Retomada · MER, DER e modelo relacional</p>
           <h2 id="retomada-title">Antes de normalizar, recupere o caminho que nos trouxe até aqui</h2>
-          <p>Vamos recuperar esse percurso com o mesmo exemplo usado nas Aulas 04 e 05: <strong>reserva de salas de estudo</strong>. Assim, a normalização começa sobre uma estrutura cujo domínio, regras e decisões de modelagem já conhecemos.</p>
+          <p>Antes de avançar, revise o percurso que estamos seguindo desde a compreensão do domínio até a implementação. Vamos retomá-lo com o mesmo exemplo usado nas Aulas 04 e 05: <strong>reserva de salas de estudo</strong>.</p>
         </div>
 
-        <div class="path-strip" aria-label="Percurso do projeto de banco de dados">
-          <span>Domínio e requisitos</span><b>→</b><span>MER</span><b>→</b><span>DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>SQL / SGBD</span>
+        <div class="path-highlight">
+          <p class="path-highlight-label">Fluxo que estamos seguindo na disciplina</p>
+          <div class="path-strip" aria-label="Percurso do projeto de banco de dados">
+            <span>Domínio e requisitos</span><b>→</b><span>MER</span><b>→</b><span>DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>SQL / SGBD</span>
+          </div>
         </div>
 
         <div class="bridge-grid">
