@@ -320,10 +320,21 @@
           <p><code>id_sala → nome_sala</code> significa que, ao conhecer o identificador de uma sala, sabemos qual nome está associado a ela. A seta não indica a ordem das colunas nem um fluxo de execução: ela representa uma regra sobre o significado dos dados.</p>
         </div>
 
-        <div class="normalization-grid">
-          <article class="normalization-card"><span>✓</span><h3>Dependência válida</h3><p><code>id_sala → capacidade</code>. Uma sala identificada possui uma capacidade definida.</p></article>
-          <article class="normalization-card"><span>×</span><h3>O inverso não é garantido</h3><p><code>capacidade → id_sala</code> não funciona: várias salas podem ter capacidade 6.</p></article>
-          <article class="normalization-card"><span>!</span><h3>A amostra não é suficiente</h3><p>Uma coincidência nas dez linhas não cria uma dependência. A relação precisa ser sustentada pela regra do domínio.</p></article>
+        <div class="section-heading" style="margin-top:2rem">
+          <p class="eyebrow">Validando uma dependência funcional</p>
+          <h2>Como saber se a seta que escrevemos faz sentido?</h2>
+          <p>Depois de identificar uma possível dependência, precisamos testar sua direção e confirmar se ela é sustentada pelas regras do domínio.</p>
+        </div>
+
+        <div class="discovery-steps">
+          <div class="discovery-step"><b>1</b><div><strong>Teste a direção da dependência.</strong><p><code>id_sala → capacidade</code> faz sentido porque uma sala identificada possui uma capacidade definida. Para o mesmo <code>id_sala</code>, esperamos sempre a mesma capacidade.</p></div></div>
+          <div class="discovery-step"><b>2</b><div><strong>Teste o caminho inverso.</strong><p><code>capacidade → id_sala</code> não funciona: várias salas podem ter capacidade 6. Conhecer a capacidade não permite determinar qual sala é.</p></div></div>
+          <div class="discovery-step"><b>3</b><div><strong>Confirme pela regra do domínio.</strong><p>Mesmo que uma combinação pareça funcionar nas dez linhas da amostra, isso não basta. A dependência precisa continuar verdadeira para qualquer ocorrência válida daquele domínio.</p></div></div>
+        </div>
+
+        <div class="rule-panel">
+          <h3>Dados ajudam a perceber; o domínio confirma</h3>
+          <p>Os registros da tabela ajudam a enxergar padrões e levantar hipóteses de dependência. A confirmação, porém, vem do significado dos atributos e das regras do domínio. Uma coincidência na amostra não cria uma dependência funcional.</p>
         </div>
 
         <article class="stage">
