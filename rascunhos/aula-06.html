@@ -545,27 +545,80 @@ CREATE TABLE sala (
         <div class="section-heading">
           <p class="eyebrow">Prática guiada</p>
           <h2 id="pratica-title">Repita o percurso em outro domínio</h2>
-          <p>Agora a equipe deverá aplicar a mesma sequência: observar a estrutura, identificar dependências e justificar cada decomposição antes de escrever SQL.</p>
+          <p>Agora você vai aplicar o mesmo raciocínio em um <strong>registro acadêmico simplificado</strong>. A ideia não é começar dividindo tabelas: primeiro entenda o domínio, observe os registros, identifique o que se repete e só então use 1FN, dependências funcionais, 2FN e 3FN para justificar cada decisão.</p>
         </div>
 
-        <div class="schema-box"><header><strong>Registro acadêmico simplificado</strong><span>chave proposta: (ra, cod_disciplina, semestre)</span></header><div class="schema-content">
-          <div class="schema-line">MATRICULA_DISCIPLINA(<span class="pk">ra</span>, <span class="pk">cod_disciplina</span>, <span class="pk">semestre</span>, nome_aluno, nome_disciplina, id_professor, nome_professor, nota)</div>
-        </div></div>
+        <div class="soft-callout">
+          <h3>Cenário do exercício</h3>
+          <p>Uma instituição registra as matrículas de estudantes em disciplinas a cada semestre. Para este exercício, considere as seguintes regras:</p>
+          <ul class="compact-list">
+            <li>Cada <strong>aluno</strong> possui um <code>ra</code> único e um nome.</li>
+            <li>Cada <strong>disciplina</strong> possui um código único e um nome.</li>
+            <li>Neste cenário simplificado, cada disciplina possui um <strong>professor responsável</strong>. O professor possui <code>id_professor</code> e nome.</li>
+            <li>Um aluno pode cursar várias disciplinas e uma disciplina pode possuir vários alunos.</li>
+            <li>O mesmo aluno pode cursar a mesma disciplina em semestres diferentes.</li>
+            <li>A <strong>nota</strong> descreve a matrícula daquele aluno naquela disciplina e naquele semestre.</li>
+          </ul>
+        </div>
 
-        <ol class="question-list">
-          <li>Quais informações parecem descrever o <strong>aluno</strong>, a <strong>disciplina</strong>, o <strong>professor</strong> e a própria <strong>matrícula</strong>?</li>
-          <li>Verifique primeiro se existe algum problema de 1FN.</li>
-          <li>Escreva as dependências funcionais que podem ser justificadas pelas regras do cenário.</li>
-          <li>A relação está em 2FN? Verifique se algum atributo depende apenas de parte da chave <code>(ra, cod_disciplina, semestre)</code>.</li>
-          <li>Depois da decomposição para 2FN, procure uma possível dependência transitiva envolvendo professor.</li>
-          <li>Desenhe o conjunto final de relações em 3FN, marcando PKs e FKs.</li>
-          <li>Somente depois disso, escreva os comandos <code>CREATE TABLE</code> correspondentes no PostgreSQL.</li>
-        </ol>
+        <div class="schema-box">
+          <header><strong>Estrutura recebida pela equipe</strong><span>chave proposta: (ra, cod_disciplina, semestre)</span></header>
+          <div class="schema-content">
+            <div class="schema-line">MATRICULA_DISCIPLINA(<span class="pk">ra</span>, <span class="pk">cod_disciplina</span>, <span class="pk">semestre</span>, nome_aluno, nome_disciplina, id_professor, nome_professor, nota)</div>
+          </div>
+        </div>
+
+        <div class="section-heading" style="margin-top:2.2rem">
+          <p class="eyebrow">Registros de exemplo</p>
+          <h2>Observe a tabela antes de alterar sua estrutura</h2>
+          <p>Os registros abaixo são suficientes para levantar hipóteses, mas lembre-se: as dependências funcionais devem ser confirmadas pelas <strong>regras do cenário</strong>, e não apenas pela coincidência dos valores apresentados.</p>
+        </div>
+
+        <div class="mini-table-wrap">
+          <table class="mini-table" style="min-width:1120px">
+            <thead><tr><th>ra</th><th>nome_aluno</th><th>cod_disciplina</th><th>nome_disciplina</th><th>semestre</th><th>id_professor</th><th>nome_professor</th><th>nota</th></tr></thead>
+            <tbody>
+              <tr><td>2026001</td><td>Ana Souza</td><td>BD101</td><td>Banco de Dados</td><td>2026.2</td><td>31</td><td>Mauro Silveira</td><td>8,5</td></tr>
+              <tr><td>2026002</td><td>Bruno Lima</td><td>BD101</td><td>Banco de Dados</td><td>2026.2</td><td>31</td><td>Mauro Silveira</td><td>7,0</td></tr>
+              <tr><td>2026003</td><td>Carla Nunes</td><td>ES201</td><td>Engenharia de Software</td><td>2026.2</td><td>44</td><td>Renata Alves</td><td>9,0</td></tr>
+              <tr><td>2026001</td><td>Ana Souza</td><td>ES201</td><td>Engenharia de Software</td><td>2026.2</td><td>44</td><td>Renata Alves</td><td>8,0</td></tr>
+              <tr><td>2026004</td><td>Diego Reis</td><td>AL101</td><td>Algoritmos</td><td>2026.2</td><td>52</td><td>Lucas Prado</td><td>6,5</td></tr>
+              <tr><td>2026002</td><td>Bruno Lima</td><td>PR101</td><td>Programação</td><td>2026.2</td><td>52</td><td>Lucas Prado</td><td>7,5</td></tr>
+              <tr><td>2026003</td><td>Carla Nunes</td><td>BD101</td><td>Banco de Dados</td><td>2026.2</td><td>31</td><td>Mauro Silveira</td><td>9,2</td></tr>
+              <tr><td>2026001</td><td>Ana Souza</td><td>BD101</td><td>Banco de Dados</td><td>2027.1</td><td>31</td><td>Mauro Silveira</td><td>9,0</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="rule-panel">
+          <h3>Não tente resolver tudo de uma vez</h3>
+          <p>Siga a mesma progressão da aula. Em cada etapa, registre <strong>o problema encontrado, a regra usada para justificá-lo e a transformação realizada</strong>. O objetivo não é apenas chegar às tabelas finais, mas conseguir explicar por que cada separação foi necessária.</p>
+        </div>
+
+        <div class="discovery-steps">
+          <div class="discovery-step"><b>1</b><div><strong>Entenda o que cada atributo representa.</strong><p>Separe, inicialmente apenas no papel, quais informações parecem descrever o aluno, a disciplina, o professor e a própria matrícula. Não crie novas relações ainda.</p></div></div>
+          <div class="discovery-step"><b>2</b><div><strong>Verifique a 1FN.</strong><p>Analise as células da tabela. Há algum atributo armazenando listas ou vários valores em uma única célula? Se não houver, registre que a estrutura já atende à 1FN e explique por quê.</p></div></div>
+          <div class="discovery-step"><b>3</b><div><strong>Descubra quem determina quem.</strong><p>Compare identificadores que se repetem. Quando o mesmo <code>ra</code> aparece, o que permanece igual? E quando se repetem <code>cod_disciplina</code> e <code>id_professor</code>? Escreva as dependências funcionais que as regras do cenário permitem justificar.</p></div></div>
+          <div class="discovery-step"><b>4</b><div><strong>Teste a 2FN.</strong><p>A chave proposta é <code>(ra, cod_disciplina, semestre)</code>. Pergunte para cada atributo: ele precisa da chave inteira para ser determinado ou depende apenas de uma parte dela? Separe os fatos que dependem apenas de <code>ra</code> ou de <code>cod_disciplina</code>.</p></div></div>
+          <div class="discovery-step"><b>5</b><div><strong>Teste a 3FN.</strong><p>Depois da etapa anterior, observe a relação que contém os dados da disciplina e do professor. Pergunte se <code>nome_professor</code> depende diretamente da chave dessa relação ou se é determinado por <code>id_professor</code>.</p></div></div>
+          <div class="discovery-step"><b>6</b><div><strong>Monte o esquema final.</strong><p>Desenhe as relações resultantes, marque PKs e FKs e faça uma leitura de volta: ainda conseguimos representar quem é o aluno, qual disciplina cursou, em qual semestre, com qual professor responsável e qual foi sua nota?</p></div></div>
+          <div class="discovery-step"><b>7</b><div><strong>Só então escreva o SQL.</strong><p>Depois de validar o esquema em 3FN, transforme as relações em comandos <code>CREATE TABLE</code> no PostgreSQL. Use os exemplos anteriores da aula como referência para tipos, PK, FK e <code>NOT NULL</code>.</p></div></div>
+        </div>
+
+        <div class="soft-callout">
+          <h3>Pistas para orientar a análise</h3>
+          <ul class="compact-list">
+            <li>O nome de Ana muda quando ela aparece em outra disciplina ou outro semestre?</li>
+            <li>O nome de Banco de Dados muda quando outro aluno cursa a disciplina?</li>
+            <li>O mesmo <code>id_professor</code> pode aparecer em disciplinas diferentes mantendo o mesmo nome?</li>
+            <li>A nota pode ser determinada apenas pelo aluno? Apenas pela disciplina? Ou precisamos saber também o semestre?</li>
+          </ul>
+        </div>
 
         <div class="exercise-grid">
-          <article class="exercise-card"><h3>Entrega mínima</h3><p>Dependências funcionais + esquema em 3FN + comandos <code>CREATE TABLE</code>.</p></article>
-          <article class="exercise-card"><h3>Critério de qualidade</h3><p>Não basta chegar às mesmas tabelas: cada decomposição deve ser justificada pela dependência ou pelo problema estrutural que motivou a mudança.</p></article>
-          <article class="exercise-card"><h3>Teste final</h3><p>Leia o resultado de volta e verifique se as regras importantes do domínio continuam representadas.</p></article>
+          <article class="exercise-card"><h3>Entrega mínima</h3><p>Diagnóstico da 1FN, dependências funcionais, justificativa da 2FN e 3FN, esquema final com PK/FK e comandos <code>CREATE TABLE</code>.</p></article>
+          <article class="exercise-card"><h3>Critério de qualidade</h3><p>Cada nova relação deve vir acompanhada da explicação do fato que ela representa e da dependência ou problema estrutural que motivou sua criação.</p></article>
+          <article class="exercise-card"><h3>Teste final</h3><p>Use os registros de exemplo para imaginar como os dados seriam distribuídos entre as relações finais e verifique se nenhuma informação importante foi perdida.</p></article>
         </div>
       </div>
     </section>
