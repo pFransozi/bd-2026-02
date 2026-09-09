@@ -338,12 +338,13 @@
         </div>
 
         <article class="stage">
-          <div class="stage-head"><span class="stage-number">2</span><div><small>Segunda Forma Normal</small><h3>2FN · agora pergunte se cada atributo depende da chave inteira</h3></div></div>
+          <div class="stage-head"><span class="stage-number">2</span><div><small>Segunda Forma Normal</small><h3>2FN · cada informação deve depender da chave inteira</h3></div></div>
           <div class="soft-callout">
             <h3>Conceito · Segunda Forma Normal</h3>
-            <p>Uma relação está na <strong>Segunda Forma Normal (2FN)</strong> quando já está em 1FN e seus atributos não chave não dependem apenas de uma parte de uma chave candidata composta. Em outras palavras, quando usamos uma chave composta para identificar uma ocorrência, os atributos que descrevem essa ocorrência devem depender da chave inteira, e não apenas de um de seus componentes.</p>
+            <p>A <strong>2FN</strong> é importante quando uma relação possui uma <strong>chave composta</strong>. Nesse caso, os demais atributos devem depender da chave inteira. Se um atributo pode ser determinado usando apenas uma parte da chave, isso indica que ele provavelmente descreve outro fato e deve ser separado em outra relação.</p>
           </div>
           <p>Para este exercício, considere que a combinação <code>(id_usuario, id_sala, data, hora_inicio)</code> identifica cada ocorrência da relação bruta. Essa é uma chave composta.</p>
+          <p>Use uma pergunta simples: <strong>este atributo precisa da chave inteira para ser determinado?</strong></p>
           <p>Agora observe as dependências que acabamos de descobrir:</p>
           <ul class="compact-list">
             <li><code>id_usuario → nome_usuario</code>: o nome depende apenas de <code>id_usuario</code>, que é parte da chave composta.</li>
