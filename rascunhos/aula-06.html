@@ -255,11 +255,26 @@
         <div class="section-heading">
           <p class="eyebrow">Normalização progressiva</p>
           <h2 id="normalizacao-title">Vamos corrigir um problema de cada vez</h2>
-          <p>Não começaremos pelas definições mais abstratas. Primeiro identificaremos um problema visível nos dados; depois aprenderemos o conceito necessário para avançar à próxima etapa.</p>
+          <p>Até aqui reconhecemos os problemas por observação. Agora precisamos de um procedimento mais sistemático para analisar uma relação e decidir quando separar informações que foram misturadas.</p>
+        </div>
+
+        <div class="rule-panel">
+          <h3>O que é normalização?</h3>
+          <p><strong>Normalização</strong> é um processo de análise e organização de relações. Usamos as chaves e as dependências entre os atributos para verificar se fatos diferentes foram colocados na mesma relação e, quando necessário, decompor essa relação em estruturas menores e mais coerentes. O objetivo é reduzir redundâncias problemáticas e evitar anomalias de inserção, atualização e exclusão sem perder as conexões necessárias entre os dados.</p>
+        </div>
+
+        <div class="normalization-grid">
+          <article class="normalization-card"><span>1</span><h3>As formas normais são critérios</h3><p>Cada forma normal verifica um tipo de problema. Elas são aplicadas de maneira progressiva: primeiro 1FN, depois 2FN e então 3FN.</p></article>
+          <article class="normalization-card"><span>2</span><h3>Não é dividir por dividir</h3><p>Uma relação só deve ser separada quando a estrutura dos valores ou as dependências entre atributos mostram que fatos diferentes estão misturados.</p></article>
+          <article class="normalization-card"><span>3</span><h3>O significado continua guiando</h3><p>As dependências não surgem apenas da amostra de dados. Elas precisam ser justificadas pelas regras do domínio que estamos modelando.</p></article>
         </div>
 
         <article class="stage">
           <div class="stage-head"><span class="stage-number">1</span><div><small>Primeira Forma Normal</small><h3>1FN · primeiro resolva os valores múltiplos em uma mesma célula</h3></div></div>
+          <div class="soft-callout">
+            <h3>Conceito · Primeira Forma Normal</h3>
+            <p>Uma relação está na <strong>Primeira Forma Normal (1FN)</strong> quando cada atributo de cada tupla contém um único valor do seu domínio, sem listas ou grupos de valores armazenados dentro da mesma célula. A 1FN concentra-se, portanto, na estrutura dos valores registrados.</p>
+          </div>
           <p>O problema mais imediato está em <code>telefones</code>. Valores como <code>4198765-1223; 4199112-8080</code> colocam dois telefones dentro de um único atributo.</p>
           <div class="before-after">
             <div class="schema-box"><header><strong>Antes</strong></header><div class="schema-content"><div class="schema-line">telefones = “4198765-1223; 4199112-8080”</div></div></div>
@@ -313,6 +328,10 @@
 
         <article class="stage">
           <div class="stage-head"><span class="stage-number">2</span><div><small>Segunda Forma Normal</small><h3>2FN · agora pergunte se cada atributo depende da chave inteira</h3></div></div>
+          <div class="soft-callout">
+            <h3>Conceito · Segunda Forma Normal</h3>
+            <p>Uma relação está na <strong>Segunda Forma Normal (2FN)</strong> quando já está em 1FN e seus atributos não chave não dependem apenas de uma parte de uma chave candidata composta. Em outras palavras, quando usamos uma chave composta para identificar uma ocorrência, os atributos que descrevem essa ocorrência devem depender da chave inteira, e não apenas de um de seus componentes.</p>
+          </div>
           <p>Para este exercício, considere que a combinação <code>(id_usuario, id_sala, data, hora_inicio)</code> identifica cada ocorrência da relação bruta. Essa é uma chave composta.</p>
           <p>Agora observe as dependências que acabamos de descobrir:</p>
           <ul class="compact-list">
@@ -331,6 +350,10 @@
 
         <article class="stage">
           <div class="stage-head"><span class="stage-number">3</span><div><small>Terceira Forma Normal</small><h3>3FN · ainda existe um atributo não chave determinando outro</h3></div></div>
+          <div class="soft-callout">
+            <h3>Conceito · Terceira Forma Normal</h3>
+            <p>Uma relação está na <strong>Terceira Forma Normal (3FN)</strong> quando já está em 2FN e não mantém dependências transitivas problemáticas entre atributos não chave. De forma prática, um atributo não chave não deve depender da chave por meio de outro atributo não chave; fatos sobre outro objeto do domínio devem ser representados em sua própria relação.</p>
+          </div>
           <p>A relação SALA melhorou, mas ainda guarda duas informações sobre o bloco:</p>
           <div class="dependency">id_sala → id_bloco → nome_bloco</div>
           <p><code>nome_bloco</code> não é determinado diretamente pela identidade da sala. Primeiro descobrimos qual é o bloco da sala; depois <code>id_bloco</code> determina <code>nome_bloco</code>. Essa é uma <strong>dependência transitiva</strong>.</p>
