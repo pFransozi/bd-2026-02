@@ -449,10 +449,46 @@
         <div class="section-heading">
           <p class="eyebrow">Primeira implementação</p>
           <h2 id="sql-title">Agora o esquema vira DDL no PostgreSQL</h2>
-          <p><strong>SQL é uma linguagem; PostgreSQL é o SGBD.</strong> Nesta aula usamos um subconjunto de SQL voltado à definição da estrutura — DDL — para materializar as relações que acabamos de organizar.</p>
+          <p>Até aqui trabalhamos com requisitos, modelos e relações escritas de forma conceitual. Agora daremos o primeiro passo para <strong>criar essas estruturas de verdade em um SGBD</strong>. Para isso, precisamos transformar decisões como “USUÁRIO possui uma chave”, “SALA possui capacidade” e “RESERVA referencia USUÁRIO e SALA” em comandos que o sistema consiga executar.</p>
         </div>
 
-        <div class="concept-note"><strong>DDL</strong><div><strong>Data Definition Language</strong><p>É a parte da SQL usada para definir estruturas. O comando central de hoje será <code>CREATE TABLE</code>, com tipos de dados, <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code> e <code>NOT NULL</code>.</p></div></div>
+        <div class="soft-callout">
+          <h3>Antes do código: o que é SQL?</h3>
+          <p><strong>SQL</strong> é a linguagem utilizada para trabalhar com bancos de dados relacionais. Por meio dela podemos criar estruturas, inserir e alterar dados, consultar informações e definir diferentes regras do banco.</p>
+          <p><strong>PostgreSQL</strong>, por outro lado, é o <strong>SGBD</strong> que receberá e executará esses comandos. Portanto, não são a mesma coisa: escrevemos comandos em SQL e o PostgreSQL interpreta esses comandos para criar e manipular o banco de dados.</p>
+        </div>
+
+        <div class="normalization-grid">
+          <article class="normalization-card"><span>SQL</span><h3>A linguagem</h3><p>É a forma de expressar para o SGBD o que queremos fazer com a estrutura e com os dados.</p></article>
+          <article class="normalization-card"><span>SGBD</span><h3>PostgreSQL</h3><p>É o software que administra o banco, executa os comandos SQL e mantém os dados armazenados.</p></article>
+          <article class="normalization-card"><span>Hoje</span><h3>Definir a estrutura</h3><p>Nesta primeira implementação, nosso foco será criar tabelas, identificar suas chaves e preservar os relacionamentos.</p></article>
+        </div>
+
+        <div class="section-heading" style="margin-top:2.5rem">
+          <p class="eyebrow">Uma parte da SQL · DDL</p>
+          <h2>Primeiro vamos criar a estrutura do banco</h2>
+          <p>A SQL possui comandos com finalidades diferentes. Neste momento ainda não estamos interessados em cadastrar reservas ou consultar dados. Primeiro precisamos dizer ao PostgreSQL <strong>quais tabelas existirão, quais atributos elas possuem e quais regras estruturais devem ser respeitadas</strong>.</p>
+        </div>
+
+        <div class="concept-note"><strong>DDL</strong><div><strong>Data Definition Language · Linguagem de Definição de Dados</strong><p>DDL é o conjunto de comandos SQL usado para <strong>definir a estrutura</strong> do banco de dados. Nesta aula, o principal comando será <code>CREATE TABLE</code>, que cria uma tabela e descreve suas colunas, tipos de dados, chaves e restrições.</p></div></div>
+
+        <div class="soft-callout">
+          <h3>Como ler um <code>CREATE TABLE</code>?</h3>
+          <p>Não é necessário decorar a sintaxe de uma vez. Leia o comando linha por linha e procure responder:</p>
+          <ul class="compact-list">
+            <li><strong>Qual tabela está sendo criada?</strong> <code>CREATE TABLE usuario</code> indica o nome da nova tabela.</li>
+            <li><strong>Quais atributos ela possui?</strong> Cada linha dentro dos parênteses descreve uma coluna.</li>
+            <li><strong>Que tipo de valor cada atributo recebe?</strong> <code>INTEGER</code>, <code>VARCHAR</code>, <code>DATE</code> e <code>TIME</code> são exemplos de tipos de dados.</li>
+            <li><strong>Como cada ocorrência é identificada?</strong> <code>PRIMARY KEY</code> marca a chave primária.</li>
+            <li><strong>Como uma tabela se conecta a outra?</strong> <code>FOREIGN KEY</code> e <code>REFERENCES</code> representam a chave estrangeira e a relação referenciada.</li>
+            <li><strong>O valor pode ficar vazio?</strong> <code>NOT NULL</code> indica que aquele atributo precisa receber um valor.</li>
+          </ul>
+        </div>
+
+        <div class="rule-panel">
+          <h3>Do modelo para o código</h3>
+          <p>Os comandos abaixo não criam novas decisões de projeto. Eles apenas <strong>materializam em SQL</strong> aquilo que já definimos no modelo: entidades viram tabelas, atributos viram colunas, identificadores viram chaves primárias e referências entre relações viram chaves estrangeiras.</p>
+        </div>
 
         <div class="sql-block"><span class="sql-label">1 · usuário e seus telefones</span><pre><code>CREATE TABLE usuario (
     id_usuario INTEGER PRIMARY KEY,
