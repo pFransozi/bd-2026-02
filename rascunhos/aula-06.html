@@ -75,7 +75,6 @@
         <span class="sr-only">Abrir menu</span><span></span><span></span><span></span>
       </button>
       <nav aria-label="Navegação principal" class="main-nav" id="menu-principal">
-        <a href="#competencias">Competências</a>
         <a href="#retomada">Retomada</a>
         <a href="#dependencias">Dependências</a>
         <a href="#normalizacao">Normalização</a>
@@ -105,68 +104,25 @@
 
     <section class="section-pad section-soft" aria-labelledby="visao-title">
       <div class="container">
-        <div class="section-heading">
-          <p class="eyebrow">Visão da aula</p>
-          <h2 id="visao-title">Hoje vamos validar antes de implementar</h2>
-          <p>O objetivo não é decorar nomes de formas normais. A normalização será tratada como uma ferramenta de revisão do projeto: observamos quais fatos cada atributo representa, identificamos dependências e reorganizamos as relações quando necessário.</p>
-        </div>
+        <div class="section-heading"><p class="eyebrow">Visão da aula</p><h2 id="visao-title">O que vamos explorar</h2></div>
         <div class="lesson-overview-grid">
           <article class="overview-card">
             <span class="overview-icon">OBJ</span>
             <h3>Objetivos de aprendizagem</h3>
             <ul class="check-list">
-              <li>Retomar o papel do MER, do DER e do mapeamento para o modelo relacional.</li>
-              <li>Interpretar dependências funcionais simples a partir das regras do domínio.</li>
-              <li>Reconhecer situações que violam 1FN, 2FN e 3FN.</li>
-              <li>Decompor relações preservando o significado dos dados.</li>
-              <li>Implementar uma primeira versão do esquema com <code>CREATE TABLE</code>, PK, FK e <code>NOT NULL</code>.</li>
+              <li>Retomar MER, DER e mapeamento para o modelo relacional.</li>
+              <li>Interpretar dependências funcionais.</li>
+              <li>Reconhecer e aplicar 1FN, 2FN e 3FN.</li>
+              <li>Implementar relações com <code>CREATE TABLE</code>, PK, FK e <code>NOT NULL</code>.</li>
             </ul>
           </article>
           <article class="overview-card competency-card">
-            <span class="overview-icon">FOCO</span>
-            <h3>O que muda nesta aula</h3>
-            <p>Até aqui a pergunta principal era <strong>“o que precisa ser representado?”</strong>. Agora acrescentamos outra:</p>
-            <div class="soft-callout"><strong>“A estrutura escolhida representa esses fatos sem redundâncias e dependências problemáticas?”</strong></div>
-            <p>Somente depois dessa verificação começamos a escrever a estrutura em SQL.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-pad" id="competencias" aria-labelledby="competencias-title">
-      <div class="container">
-        <div class="section-heading">
-          <p class="eyebrow">Competências e habilidades</p>
-          <h2 id="competencias-title">O que esta aula desenvolve no percurso da disciplina</h2>
-          <p>A normalização e a implementação inicial mobilizam competências de construção de software, análise tecnológica, comunicação técnica e aplicação de boas práticas de desenvolvimento.</p>
-        </div>
-
-        <div class="lesson-overview-grid">
-          <article class="overview-card competency-card">
-            <span class="overview-icon">C2</span>
-            <h3>Construção, evolução e avaliação de software</h3>
-            <div class="skill-line"><strong>H6</strong><span>Aplicar procedimentos de normalização e implementação para construir estruturas de dados consistentes.</span></div>
-            <div class="skill-line"><strong>H8</strong><span>Interpretar como decisões de organização dos dados afetam a manutenção e a evolução do banco.</span></div>
-          </article>
-
-          <article class="overview-card competency-card">
-            <span class="overview-icon">C3</span>
-            <h3>Análise e seleção de tecnologias</h3>
-            <div class="skill-line"><strong>H9</strong><span>Identificar necessidades de estrutura, chaves, referências e restrições para atender às regras do domínio.</span></div>
-            <div class="skill-line"><strong>H10</strong><span>Analisar recursos da tecnologia de banco de dados utilizados na definição e implementação do esquema.</span></div>
-          </article>
-
-          <article class="overview-card competency-card">
-            <span class="overview-icon">C10</span>
-            <h3>Comunicação técnica em Engenharia de Software</h3>
-            <div class="skill-line"><strong>H34</strong><span>Justificar, com linguagem técnica clara, as transformações realizadas durante a normalização e o mapeamento para SQL.</span></div>
-          </article>
-
-          <article class="overview-card competency-card">
-            <span class="overview-icon">C11</span>
-            <h3>Princípios, padrões e boas práticas</h3>
-            <div class="skill-line"><strong>H36</strong><span>Aplicar boas práticas de organização e definição de estruturas relacionais.</span></div>
-            <div class="skill-line"><strong>H38</strong><span>Implementar relações, chaves e restrições estruturais coerentes com o projeto do banco de dados.</span></div>
+            <span class="overview-icon">C/H</span>
+            <h3>Competências mobilizadas</h3>
+            <div class="skill-line"><strong>C2</strong><span>Normalizar e implementar estruturas que favoreçam consistência e manutenção.</span></div>
+            <div class="skill-line"><strong>C3</strong><span>Identificar necessidades de estrutura e recursos da tecnologia de banco de dados.</span></div>
+            <div class="skill-line"><strong>C10</strong><span>Justificar transformações utilizando linguagem técnica clara.</span></div>
+            <div class="skill-line"><strong>C11</strong><span>Aplicar boas práticas na construção de esquemas relacionais.</span></div>
           </article>
         </div>
       </div>
