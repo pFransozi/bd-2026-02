@@ -37,7 +37,7 @@
     .dependency-list{display:grid;gap:.65rem;margin:1rem 0}
     .dependency{padding:.75rem .9rem;border-left:4px solid currentColor;background:var(--surface-soft,#f6f8fb);border-radius:0 12px 12px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
     .mini-table-wrap{overflow-x:auto;margin:1.2rem 0;border:1px solid var(--border,#d9e0ea);border-radius:16px}
-    table.mini-table{width:100%;border-collapse:collapse;min-width:760px;background:var(--surface,#fff)}
+    table.mini-table{width:100%;border-collapse:collapse;min-width:1040px;background:var(--surface,#fff)}
     .mini-table th,.mini-table td{padding:.75rem .85rem;border-bottom:1px solid var(--border,#d9e0ea);text-align:left;vertical-align:top}
     .mini-table th{background:var(--surface-soft,#f6f8fb);font-size:.9rem}
     .mini-table tr:last-child td{border-bottom:0}
@@ -60,6 +60,10 @@
     .question-list li::before{content:counter(q);position:absolute;left:1rem;top:.85rem;display:grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--accent-soft,#eaf2ff);font-weight:800}
     .soft-callout{padding:1rem 1.1rem;border-radius:16px;background:var(--surface-soft,#f6f8fb);margin:1rem 0}
     .soft-callout h3{margin:.1rem 0 .35rem}
+    .discovery-steps{display:grid;gap:.8rem;margin:1rem 0}
+    .discovery-step{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start;padding:1rem;border:1px solid var(--border,#d9e0ea);border-radius:15px;background:var(--surface,#fff)}
+    .discovery-step b{display:grid;place-items:center;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--accent-soft,#eaf2ff)}
+    .discovery-step p{margin:.15rem 0}
     @media (max-width:900px){.bridge-grid,.normalization-grid,.exercise-grid{grid-template-columns:1fr}.before-after{grid-template-columns:1fr}.before-after .arrow{transform:rotate(90deg);justify-self:center}.path-highlight{padding:1.1rem}.path-strip b{transform:rotate(90deg)}}
   </style>
 </head>
@@ -78,7 +82,7 @@
       </button>
       <nav aria-label="Navegação principal" class="main-nav" id="menu-principal">
         <a href="#retomada">Retomada</a>
-        <a href="#dependencias">Dependências</a>
+        <a href="#problema">Problema</a>
         <a href="#normalizacao">Normalização</a>
         <a href="#sql">SQL</a>
         <a href="#pratica">Prática</a>
@@ -95,7 +99,7 @@
         <div>
           <p class="eyebrow">Aula 06 · rascunho</p>
           <h1>Do modelo relacional a uma estrutura consistente</h1>
-          <p class="lesson-hero-lead">Nas últimas aulas saímos dos requisitos, construímos o MER/DER e transformamos o modelo conceitual em relações. Agora vamos verificar se essas relações estão bem organizadas, corrigir redundâncias por normalização e dar o primeiro passo para implementá-las em SQL.</p>
+          <p class="lesson-hero-lead">Nas últimas aulas saímos dos requisitos, construímos o MER/DER e transformamos o modelo conceitual em relações. Agora vamos verificar por que a estrutura construída está bem organizada, observar o que acontece quando misturamos esses fatos novamente e usar a normalização para reconstruir um esquema coerente.</p>
         </div>
         <aside class="guiding-question">
           <span>Pergunta-guia</span>
@@ -113,8 +117,8 @@
             <h3>Objetivos de aprendizagem</h3>
             <ul class="check-list">
               <li>Retomar MER, DER e mapeamento para o modelo relacional.</li>
-              <li>Interpretar dependências funcionais.</li>
-              <li>Reconhecer e aplicar 1FN, 2FN e 3FN.</li>
+              <li>Reconhecer e aplicar 1FN, 2FN e 3FN de forma progressiva.</li>
+              <li>Interpretar dependências funcionais a partir dos dados e das regras do domínio.</li>
               <li>Implementar relações com <code>CREATE TABLE</code>, PK, FK e <code>NOT NULL</code>.</li>
             </ul>
           </article>
@@ -166,15 +170,6 @@
           </article>
         </div>
 
-        <div class="schema-box">
-          <header><strong>Resultado que já conhecemos da Aula 05</strong><span>esquema relacional simplificado</span></header>
-          <div class="schema-content">
-            <div class="schema-line">USUARIO(<span class="pk">id_usuario</span>, nome, ...)</div>
-            <div class="schema-line">SALA(<span class="pk">id_sala</span>, nome, capacidade)</div>
-            <div class="schema-line">RESERVA(<span class="pk">id_reserva</span>, <span class="fk">id_usuario</span>, <span class="fk">id_sala</span>, data, hora_inicio, situacao)</div>
-          </div>
-        </div>
-
         <div class="section-heading" style="margin-top:2.5rem">
           <p class="eyebrow">Revisão rápida do mapeamento</p>
           <h2>Onde as regras do DER aparecem no esquema relacional?</h2>
@@ -187,60 +182,64 @@
       </div>
     </section>
 
-    <section class="section-pad section-soft" aria-labelledby="problema-title">
+    <section class="section-pad section-soft" aria-labelledby="modelo-bom-title">
       <div class="container">
         <div class="section-heading">
-          <p class="eyebrow">Problema da aula · Biblioteca Universitária</p>
-          <h2 id="problema-title">Uma tabela pode armazenar tudo e ainda assim ser uma má estrutura</h2>
-          <p>Vamos manter o domínio já conhecido da biblioteca, mas imaginar que alguém decidiu registrar os empréstimos em uma estrutura única. A tabela parece prática no início, porém mistura fatos sobre aluno, livro, editora e empréstimo.</p>
+          <p class="eyebrow">Ponto de chegada da Aula 05</p>
+          <h2 id="modelo-bom-title">O modelo relacional que construímos já está bem organizado</h2>
+          <p>Ao final do exercício iniciado na Aula 04, não terminamos com uma única tabela contendo tudo. As decisões de modelagem e de mapeamento já separaram fatos diferentes em relações diferentes.</p>
+        </div>
+
+        <div class="schema-grid full-schema-grid">
+          <article class="schema-card"><header><span>Entidade</span><h3>USUARIO</h3></header><div class="schema-field"><span class="key-badge pk">PK</span><code>id_usuario</code></div><div class="schema-field"><span class="key-placeholder"></span><code>nome</code></div><div class="schema-field"><span class="key-placeholder"></span><code>email</code></div></article>
+          <article class="schema-card"><header><span>Multivalorado</span><h3>TELEFONE_USUARIO</h3></header><div class="schema-field"><span class="key-badge pkfk">PK/FK</span><code>id_usuario</code></div><div class="schema-field"><span class="key-badge pk">PK</span><code>telefone</code></div></article>
+          <article class="schema-card"><header><span>Entidade</span><h3>SALA</h3></header><div class="schema-field"><span class="key-badge pk">PK</span><code>id_sala</code></div><div class="schema-field"><span class="key-placeholder"></span><code>nome</code></div><div class="schema-field"><span class="key-placeholder"></span><code>capacidade</code></div></article>
+          <article class="schema-card"><header><span>Entidade fraca</span><h3>FAIXA_AGENDA</h3></header><div class="schema-field"><span class="key-badge pkfk">PK/FK</span><code>id_sala</code></div><div class="schema-field"><span class="key-badge pk">PK</span><code>data</code></div><div class="schema-field"><span class="key-badge pk">PK</span><code>hora_inicio</code></div><div class="schema-field"><span class="key-placeholder"></span><code>situacao</code></div></article>
+          <article class="schema-card reservation-schema"><header><span>Entidade associativa</span><h3>RESERVA</h3></header><div class="schema-field"><span class="key-badge pk">PK</span><code>id_reserva</code></div><div class="schema-field"><span class="key-badge fk">FK</span><code>id_usuario</code></div><div class="schema-field"><span class="key-badge fk">FK</span><code>id_sala</code></div><div class="schema-field"><span class="key-placeholder"></span><code>data</code></div><div class="schema-field"><span class="key-placeholder"></span><code>hora_inicio</code></div><div class="schema-field"><span class="key-placeholder"></span><code>situacao</code></div></article>
+        </div>
+
+        <div class="normalization-grid">
+          <article class="normalization-card"><span>1</span><h3>Um fato por relação</h3><p>Dados do usuário ficam em USUARIO; dados da sala ficam em SALA; dados de cada ocorrência ficam em RESERVA.</p></article>
+          <article class="normalization-card"><span>2</span><h3>Multivalorado separado</h3><p>Os telefones não aparecem como uma lista dentro de USUARIO. Cada telefone ocupa uma ocorrência em <code>TELEFONE_USUARIO</code>.</p></article>
+          <article class="normalization-card"><span>3</span><h3>Referências no lugar de repetição</h3><p>RESERVA usa FKs para apontar para USUARIO e SALA em vez de repetir nome, capacidade e outros dados a cada nova reserva.</p></article>
+        </div>
+
+        <div class="rule-panel">
+          <h3>Então precisamos normalizar esse modelo?</h3>
+          <p>Não há, nesse esquema, um problema evidente que exija uma nova decomposição. As decisões tomadas no MER/DER e no mapeamento já produziram uma estrutura coerente. Nesta aula, a normalização será usada para <strong>entender formalmente por que essas separações são boas</strong> e para corrigir uma versão propositalmente mal organizada do mesmo domínio.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-pad" id="problema" aria-labelledby="problema-title">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Problema da aula · Reserva de salas</p>
+          <h2 id="problema-title">E se tivéssemos colocado quase tudo em uma única tabela?</h2>
+          <p>Agora vamos desfazer, de propósito, várias decisões corretas do modelo anterior. Imagine que o sistema registre usuário, telefones, sala e reserva em uma única estrutura. Para exercitar também a 3FN, acrescentaremos uma regra simples ao cenário: <strong>cada sala pertence a um bloco do prédio</strong>.</p>
         </div>
 
         <div class="mini-table-wrap">
           <table class="mini-table">
-            <thead><tr><th>matricula</th><th>nome_aluno</th><th>data_emprestimo</th><th>livros</th><th>titulos</th><th>editora</th><th>data_prevista</th></tr></thead>
+            <thead><tr><th>id_usuario</th><th>nome_usuario</th><th>telefones</th><th>id_sala</th><th>nome_sala</th><th>capacidade</th><th>id_bloco</th><th>nome_bloco</th><th>data</th><th>hora_inicio</th><th>situacao</th></tr></thead>
             <tbody>
-              <tr><td>2026001</td><td>Ana Lima</td><td>2026-09-11</td><td>9780001; 9780002</td><td>Banco de Dados; Algoritmos</td><td>Pearson; Novatec</td><td>2026-09-18</td></tr>
-              <tr><td>2026002</td><td>Bruno Reis</td><td>2026-09-11</td><td>9780003</td><td>Engenharia de Software</td><td>Bookman</td><td>2026-09-18</td></tr>
-              <tr><td>2026001</td><td>Ana Lima</td><td>2026-09-15</td><td>9780003</td><td>Engenharia de Software</td><td>Bookman</td><td>2026-09-22</td></tr>
-              <tr><td>2026003</td><td>Carla Mendes</td><td>2026-09-16</td><td>9780001</td><td>Banco de Dados</td><td>Pearson</td><td>2026-09-23</td></tr>
-              <tr><td>2026004</td><td>Diego Alves</td><td>2026-09-16</td><td>9780004</td><td>Sistemas Operacionais</td><td>LTC</td><td>2026-09-23</td></tr>
-              <tr><td>2026002</td><td>Bruno Reis</td><td>2026-09-18</td><td>9780001</td><td>Banco de Dados</td><td>Pearson</td><td>2026-09-25</td></tr>
-              <tr><td>2026005</td><td>Eva Martins</td><td>2026-09-18</td><td>9780002</td><td>Algoritmos</td><td>Novatec</td><td>2026-09-25</td></tr>
+              <tr><td>17</td><td>Marina Lopes</td><td>4198765-1223; 4199112-8080</td><td>204</td><td>Sala Ipê</td><td>6</td><td>2</td><td>Bloco B</td><td>2026-09-11</td><td>18:30</td><td>ativa</td></tr>
+              <tr><td>42</td><td>Gustavo Neri</td><td>4198432-7710</td><td>118</td><td>Sala Araucária</td><td>8</td><td>1</td><td>Bloco A</td><td>2026-09-11</td><td>20:00</td><td>ativa</td></tr>
+              <tr><td>8</td><td>Larissa Moura</td><td>4199554-3901; 4198821-4460</td><td>305</td><td>Sala Horizonte</td><td>4</td><td>3</td><td>Bloco C</td><td>2026-09-12</td><td>09:00</td><td>cancelada</td></tr>
+              <tr><td>17</td><td>Marina Lopes</td><td>4198765-1223; 4199112-8080</td><td>118</td><td>Sala Araucária</td><td>8</td><td>1</td><td>Bloco A</td><td>2026-09-12</td><td>14:30</td><td>ativa</td></tr>
+              <tr><td>63</td><td>Rafael Dias</td><td>4198201-6654</td><td>204</td><td>Sala Ipê</td><td>6</td><td>2</td><td>Bloco B</td><td>2026-09-14</td><td>19:00</td><td>concluída</td></tr>
+              <tr><td>29</td><td>Beatriz Farias</td><td>4199341-2278; 4198700-1155</td><td>412</td><td>Sala Cedro</td><td>10</td><td>2</td><td>Bloco B</td><td>2026-09-15</td><td>16:00</td><td>ativa</td></tr>
+              <tr><td>42</td><td>Gustavo Neri</td><td>4198432-7710</td><td>305</td><td>Sala Horizonte</td><td>4</td><td>3</td><td>Bloco C</td><td>2026-09-15</td><td>18:00</td><td>cancelada</td></tr>
+              <tr><td>51</td><td>Henrique Prado</td><td>4198990-7342</td><td>118</td><td>Sala Araucária</td><td>8</td><td>1</td><td>Bloco A</td><td>2026-09-16</td><td>10:30</td><td>ativa</td></tr>
+              <tr><td>8</td><td>Larissa Moura</td><td>4199554-3901; 4198821-4460</td><td>412</td><td>Sala Cedro</td><td>10</td><td>2</td><td>Bloco B</td><td>2026-09-17</td><td>13:00</td><td>concluída</td></tr>
+              <tr><td>74</td><td>Camila Torres</td><td>4198128-9033; 4199771-5012</td><td>204</td><td>Sala Ipê</td><td>6</td><td>2</td><td>Bloco B</td><td>2026-09-18</td><td>17:30</td><td>ativa</td></tr>
             </tbody>
           </table>
         </div>
 
-        <div class="concept-note"><strong aria-hidden="true"></strong><div><strong>Qual é o problema mais visível?</strong><p>Na primeira linha, os campos <code>livros</code>, <code>titulos</code> e <code>editora</code> armazenam vários valores em uma mesma célula. Assim, uma única linha passa a representar vários livros, e a correspondência entre ISBN, título e editora depende da posição de cada valor nas listas. Essa estrutura dificulta consultas, validações e alterações dos dados.</p></div></div>
-        <div class="rule-panel"><h3>Primeira pista para a normalização</h3><p>Esse é o primeiro problema que a <strong>1FN</strong> nos ajuda a corrigir: cada atributo deve representar um único valor por ocorrência.</p></div>
-      </div>
-    </section>
-
-    <section class="section-pad" id="dependencias" aria-labelledby="dependencias-title">
-      <div class="container">
-        <div class="section-heading">
-          <p class="eyebrow">Conceito-chave</p>
-          <h2 id="dependencias-title">Dependência funcional: descobrir qual fato determina outro</h2>
-          <p>Normalizar exige observar as regras do domínio, não apenas o formato da tabela. Dizemos que <strong>X determina Y</strong> quando, para um mesmo valor de X, deve existir um único valor correspondente de Y.</p>
-        </div>
-
-        <div class="schema-box">
-          <header><strong>Depois de separar um livro por linha</strong><span>chave proposta: (matricula, isbn, data_emprestimo)</span></header>
-          <div class="schema-content">
-            <div class="schema-line">EMPRESTIMO_BRUTO(<span class="pk">matricula</span>, <span class="pk">isbn</span>, <span class="pk">data_emprestimo</span>, nome_aluno, curso, titulo, id_editora, nome_editora, data_prevista)</div>
-          </div>
-        </div>
-
-        <p>A partir das regras da biblioteca, conseguimos escrever algumas dependências:</p>
-        <div class="dependency-list">
-          <div class="dependency">matricula → nome_aluno, curso</div>
-          <div class="dependency">isbn → titulo, id_editora</div>
-          <div class="dependency">id_editora → nome_editora</div>
-          <div class="dependency">(matricula, isbn, data_emprestimo) → data_prevista</div>
-        </div>
-
-        <div class="rule-panel">
-          <h3>Leia as setas como regras do domínio</h3>
-          <p><code>isbn → titulo</code> não significa que “o ISBN aparece antes do título”. Significa que um ISBN identifica um livro específico e, portanto, determina qual título está associado a ele. A dependência vem do significado dos dados.</p>
+        <div class="soft-callout">
+          <h3>Antes de decorar qualquer forma normal, observe a tabela</h3>
+          <p>Marina aparece mais de uma vez. Os dados da Sala Ipê também aparecem repetidos. Alguns usuários possuem dois telefones dentro da mesma célula. O nome do bloco reaparece sempre que uma sala daquele bloco participa de uma reserva. Esses sinais indicam que fatos diferentes foram misturados.</p>
         </div>
       </div>
     </section>
@@ -249,56 +248,114 @@
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow">Normalização progressiva</p>
-          <h2 id="normalizacao-title">1FN → 2FN → 3FN com o mesmo exemplo</h2>
-          <p>Vamos corrigir a estrutura em etapas. Cada forma normal verifica um tipo de problema. A ideia é decompor relações apenas quando as dependências mostram que fatos diferentes estão sendo misturados.</p>
+          <h2 id="normalizacao-title">Vamos corrigir um problema de cada vez</h2>
+          <p>Não começaremos pelas definições mais abstratas. Primeiro identificaremos um problema visível nos dados; depois aprenderemos o conceito necessário para avançar à próxima etapa.</p>
         </div>
 
         <article class="stage">
-          <div class="stage-head"><span class="stage-number">1</span><div><small>Primeira Forma Normal</small><h3>1FN · uma célula deve representar um único valor do atributo</h3></div></div>
-          <p>Na tabela inicial, <code>livros</code> e <code>titulos</code> continham listas. O primeiro ajuste é registrar uma ocorrência de livro por linha.</p>
+          <div class="stage-head"><span class="stage-number">1</span><div><small>Primeira Forma Normal</small><h3>1FN · primeiro resolva os valores múltiplos em uma mesma célula</h3></div></div>
+          <p>O problema mais imediato está em <code>telefones</code>. Valores como <code>4198765-1223; 4199112-8080</code> colocam dois telefones dentro de um único atributo.</p>
           <div class="before-after">
-            <div class="schema-box"><header><strong>Antes</strong></header><div class="schema-content"><div class="schema-line">livros = “9780001; 9780002”</div></div></div>
+            <div class="schema-box"><header><strong>Antes</strong></header><div class="schema-content"><div class="schema-line">telefones = “4198765-1223; 4199112-8080”</div></div></div>
             <div class="arrow">→</div>
-            <div class="schema-box"><header><strong>Depois</strong></header><div class="schema-content"><div class="schema-line">linha 1: isbn = 9780001</div><div class="schema-line">linha 2: isbn = 9780002</div></div></div>
+            <div class="schema-box"><header><strong>Depois</strong></header><div class="schema-content"><div class="schema-line">TELEFONE_USUARIO(id_usuario, telefone)</div><div class="schema-line">17, 4198765-1223</div><div class="schema-line">17, 4199112-8080</div></div></div>
           </div>
-          <p><strong>Resultado:</strong> a relação passa a ter valores atômicos, mas ainda contém redundâncias.</p>
+          <p>Ao separar os telefones, cada ocorrência passa a conter um único valor de telefone. A tabela principal continua com redundâncias, mas eliminamos o primeiro problema estrutural.</p>
+          <div class="schema-box"><header><strong>Relação principal após retirar a lista de telefones</strong><span>estrutura ainda propositalmente redundante</span></header><div class="schema-content"><div class="schema-line">RESERVA_BRUTA(id_usuario, nome_usuario, id_sala, nome_sala, capacidade, id_bloco, nome_bloco, data, hora_inicio, situacao)</div></div></div>
         </article>
 
-        <article class="stage">
-          <div class="stage-head"><span class="stage-number">2</span><div><small>Segunda Forma Normal</small><h3>2FN · atributos não chave não devem depender apenas de parte da chave composta</h3></div></div>
-          <p>Nossa chave é composta por <code>(matricula, isbn, data_emprestimo)</code>. Entretanto, vários atributos dependem apenas de uma parte dela:</p>
-          <ul class="compact-list">
-            <li><code>matricula → nome_aluno, curso</code></li>
-            <li><code>isbn → titulo, id_editora, nome_editora</code></li>
-          </ul>
-          <p>Esses fatos não pertencem ao empréstimo. Eles descrevem o aluno e o livro. Portanto, separamos as relações.</p>
-          <div class="schema-box"><header><strong>Esquema após a 2FN</strong></header><div class="schema-content">
-            <div class="schema-line">ALUNO(<span class="pk">matricula</span>, nome_aluno, curso)</div>
-            <div class="schema-line">LIVRO(<span class="pk">isbn</span>, titulo, id_editora, nome_editora)</div>
-            <div class="schema-line">EMPRESTIMO(<span class="pk fk">matricula</span>, <span class="pk fk">isbn</span>, <span class="pk">data_emprestimo</span>, data_prevista)</div>
-          </div></div>
-          <p><strong>Ganho:</strong> alterar o nome de um aluno ou o título de um livro deixa de exigir mudanças em todas as linhas de empréstimo.</p>
-        </article>
+        <div id="dependencias" class="section-heading" style="margin-top:2.8rem">
+          <p class="eyebrow">Antes da 2FN · descubra quem determina quem</p>
+          <h2>As repetições começam a revelar dependências</h2>
+          <p>Depois da 1FN, ainda vemos informações repetidas. Em vez de começar pela notação, vamos olhar para os dados e perguntar o que permanece igual quando um identificador se repete.</p>
+        </div>
 
-        <article class="stage">
-          <div class="stage-head"><span class="stage-number">3</span><div><small>Terceira Forma Normal</small><h3>3FN · um atributo não chave não deve determinar outro atributo não chave</h3></div></div>
-          <p>Na relação LIVRO, ainda existe uma dependência transitiva:</p>
-          <div class="dependency">isbn → id_editora → nome_editora</div>
-          <p>O nome da editora não é um fato diretamente sobre o ISBN; ele é um fato sobre a editora identificada por <code>id_editora</code>.</p>
-          <div class="schema-box"><header><strong>Esquema após a 3FN</strong></header><div class="schema-content">
-            <div class="schema-line">ALUNO(<span class="pk">matricula</span>, nome_aluno, curso)</div>
-            <div class="schema-line">EDITORA(<span class="pk">id_editora</span>, nome_editora)</div>
-            <div class="schema-line">LIVRO(<span class="pk">isbn</span>, titulo, <span class="fk">id_editora</span>)</div>
-            <div class="schema-line">EMPRESTIMO(<span class="pk fk">matricula</span>, <span class="pk fk">isbn</span>, <span class="pk">data_emprestimo</span>, data_prevista)</div>
-          </div></div>
-          <p><strong>Resultado:</strong> cada relação passa a concentrar fatos sobre um único tipo de objeto ou ocorrência do domínio.</p>
-        </article>
+        <div class="mini-table-wrap">
+          <table class="mini-table" style="min-width:760px">
+            <thead><tr><th>id_usuario</th><th>nome_usuario</th><th>id_sala</th><th>nome_sala</th><th>capacidade</th><th>id_bloco</th><th>nome_bloco</th></tr></thead>
+            <tbody>
+              <tr><td>17</td><td>Marina Lopes</td><td>204</td><td>Sala Ipê</td><td>6</td><td>2</td><td>Bloco B</td></tr>
+              <tr><td>17</td><td>Marina Lopes</td><td>118</td><td>Sala Araucária</td><td>8</td><td>1</td><td>Bloco A</td></tr>
+              <tr><td>63</td><td>Rafael Dias</td><td>204</td><td>Sala Ipê</td><td>6</td><td>2</td><td>Bloco B</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="discovery-steps">
+          <div class="discovery-step"><b>1</b><div><strong>Observe o usuário 17.</strong><p>Sempre que <code>id_usuario = 17</code>, o nome é Marina Lopes. Conhecendo o identificador do usuário, conseguimos determinar seu nome.</p></div></div>
+          <div class="discovery-step"><b>2</b><div><strong>Observe a sala 204.</strong><p>Sempre que <code>id_sala = 204</code>, aparecem Sala Ipê, capacidade 6 e bloco 2. O identificador da sala determina esses dados.</p></div></div>
+          <div class="discovery-step"><b>3</b><div><strong>Agora dê nome à ideia.</strong><p>Quando um conjunto de atributos determina unicamente outro conjunto de atributos, dizemos que existe uma <strong>dependência funcional</strong>.</p></div></div>
+        </div>
+
+        <div class="dependency-list">
+          <div class="dependency">id_usuario → nome_usuario</div>
+          <div class="dependency">id_sala → nome_sala, capacidade, id_bloco</div>
+          <div class="dependency">id_bloco → nome_bloco</div>
+          <div class="dependency">(id_usuario, id_sala, data, hora_inicio) → situacao</div>
+        </div>
+
+        <div class="rule-panel">
+          <h3>Leia a seta como “determina”</h3>
+          <p><code>id_sala → nome_sala</code> significa que, ao conhecer o identificador de uma sala, sabemos qual nome está associado a ela. A seta não indica a ordem das colunas nem um fluxo de execução: ela representa uma regra sobre o significado dos dados.</p>
+        </div>
 
         <div class="normalization-grid">
-          <article class="normalization-card"><span>1FN</span><h3>Olhe para os valores</h3><p>Há listas, grupos repetidos ou atributos que carregam vários valores em uma mesma célula?</p></article>
+          <article class="normalization-card"><span>✓</span><h3>Dependência válida</h3><p><code>id_sala → capacidade</code>. Uma sala identificada possui uma capacidade definida.</p></article>
+          <article class="normalization-card"><span>×</span><h3>O inverso não é garantido</h3><p><code>capacidade → id_sala</code> não funciona: várias salas podem ter capacidade 6.</p></article>
+          <article class="normalization-card"><span>!</span><h3>A amostra não é suficiente</h3><p>Uma coincidência nas dez linhas não cria uma dependência. A relação precisa ser sustentada pela regra do domínio.</p></article>
+        </div>
+
+        <article class="stage">
+          <div class="stage-head"><span class="stage-number">2</span><div><small>Segunda Forma Normal</small><h3>2FN · agora pergunte se cada atributo depende da chave inteira</h3></div></div>
+          <p>Para este exercício, considere que a combinação <code>(id_usuario, id_sala, data, hora_inicio)</code> identifica cada ocorrência da relação bruta. Essa é uma chave composta.</p>
+          <p>Agora observe as dependências que acabamos de descobrir:</p>
+          <ul class="compact-list">
+            <li><code>id_usuario → nome_usuario</code>: o nome depende apenas de <code>id_usuario</code>, que é parte da chave composta.</li>
+            <li><code>id_sala → nome_sala, capacidade, id_bloco, nome_bloco</code>: os dados da sala dependem apenas de <code>id_sala</code>, outra parte da chave.</li>
+          </ul>
+          <p>Esses atributos não descrevem a ocorrência completa da reserva. Eles descrevem USUÁRIO ou SALA. Por isso, devem sair da relação de reserva.</p>
+          <div class="schema-box"><header><strong>Esquema após remover as dependências parciais</strong><span>2FN</span></header><div class="schema-content">
+            <div class="schema-line">USUARIO(<span class="pk">id_usuario</span>, nome_usuario)</div>
+            <div class="schema-line">TELEFONE_USUARIO(<span class="pk fk">id_usuario</span>, <span class="pk">telefone</span>)</div>
+            <div class="schema-line">SALA(<span class="pk">id_sala</span>, nome_sala, capacidade, id_bloco, nome_bloco)</div>
+            <div class="schema-line">RESERVA(<span class="pk fk">id_usuario</span>, <span class="pk fk">id_sala</span>, <span class="pk">data</span>, <span class="pk">hora_inicio</span>, situacao)</div>
+          </div></div>
+          <p><strong>Ganho:</strong> o nome de Marina deixa de ser repetido em cada reserva, e os dados da Sala Ipê deixam de ser copiados sempre que ela é utilizada.</p>
+        </article>
+
+        <article class="stage">
+          <div class="stage-head"><span class="stage-number">3</span><div><small>Terceira Forma Normal</small><h3>3FN · ainda existe um atributo não chave determinando outro</h3></div></div>
+          <p>A relação SALA melhorou, mas ainda guarda duas informações sobre o bloco:</p>
+          <div class="dependency">id_sala → id_bloco → nome_bloco</div>
+          <p><code>nome_bloco</code> não é determinado diretamente pela identidade da sala. Primeiro descobrimos qual é o bloco da sala; depois <code>id_bloco</code> determina <code>nome_bloco</code>. Essa é uma <strong>dependência transitiva</strong>.</p>
+          <div class="before-after">
+            <div class="schema-box"><header><strong>Antes</strong></header><div class="schema-content"><div class="schema-line">SALA(id_sala, nome_sala, capacidade, id_bloco, nome_bloco)</div></div></div>
+            <div class="arrow">→</div>
+            <div class="schema-box"><header><strong>Depois</strong></header><div class="schema-content"><div class="schema-line">BLOCO(id_bloco, nome_bloco)</div><div class="schema-line">SALA(id_sala, nome_sala, capacidade, id_bloco FK)</div></div></div>
+          </div>
+
+          <div class="schema-box"><header><strong>Esquema resultante em 3FN</strong></header><div class="schema-content">
+            <div class="schema-line">USUARIO(<span class="pk">id_usuario</span>, nome_usuario)</div>
+            <div class="schema-line">TELEFONE_USUARIO(<span class="pk fk">id_usuario</span>, <span class="pk">telefone</span>)</div>
+            <div class="schema-line">BLOCO(<span class="pk">id_bloco</span>, nome_bloco)</div>
+            <div class="schema-line">SALA(<span class="pk">id_sala</span>, nome_sala, capacidade, <span class="fk">id_bloco</span>)</div>
+            <div class="schema-line">RESERVA(<span class="pk fk">id_usuario</span>, <span class="pk fk">id_sala</span>, <span class="pk">data</span>, <span class="pk">hora_inicio</span>, situacao)</div>
+          </div></div>
+        </article>
+
+        <div class="section-heading" style="margin-top:2.8rem">
+          <p class="eyebrow">Fechando o percurso</p>
+          <h2>Voltamos às mesmas separações fundamentais da Aula 05</h2>
+          <p>A normalização nos levou novamente a separar USUÁRIO, TELEFONE_USUARIO, SALA e RESERVA. BLOCO apareceu porque adicionamos uma nova regra ao cenário para observar a 3FN.</p>
+        </div>
+
+        <div class="normalization-grid">
+          <article class="normalization-card"><span>1FN</span><h3>Olhe para os valores</h3><p>Existe algum atributo armazenando vários valores em uma única ocorrência?</p></article>
           <article class="normalization-card"><span>2FN</span><h3>Olhe para a chave composta</h3><p>Algum atributo não chave depende apenas de uma parte da chave?</p></article>
           <article class="normalization-card"><span>3FN</span><h3>Olhe para atributos não chave</h3><p>Algum atributo não chave determina outro atributo não chave?</p></article>
         </div>
+
+        <div class="axis-note"><b>i</b><div><strong>Normalização e MER não são a mesma técnica.</strong> A normalização organiza os atributos presentes nas relações. Ela não recria automaticamente todas as decisões semânticas do modelo conceitual. Por isso, <code>FAIXA_AGENDA</code>, que surgiu de uma regra específica de disponibilidade na Aula 05, não aparece na tabela ruim que usamos aqui. Da mesma forma, podemos preservar <code>id_reserva</code> como identificador da reserva porque essa decisão já fazia parte do modelo conceitual anterior.</div></div>
       </div>
     </section>
 
@@ -307,46 +364,57 @@
         <div class="section-heading">
           <p class="eyebrow">Primeira implementação</p>
           <h2 id="sql-title">Agora o esquema vira DDL no PostgreSQL</h2>
-          <p><strong>SQL é uma linguagem; PostgreSQL é o SGBD.</strong> Nesta aula usamos um subconjunto de SQL voltado à definição da estrutura — DDL — para criar as relações que acabamos de validar.</p>
+          <p><strong>SQL é uma linguagem; PostgreSQL é o SGBD.</strong> Nesta aula usamos um subconjunto de SQL voltado à definição da estrutura — DDL — para materializar as relações que acabamos de organizar.</p>
         </div>
 
         <div class="concept-note"><strong>DDL</strong><div><strong>Data Definition Language</strong><p>É a parte da SQL usada para definir estruturas. O comando central de hoje será <code>CREATE TABLE</code>, com tipos de dados, <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code> e <code>NOT NULL</code>.</p></div></div>
 
-        <div class="sql-block"><span class="sql-label">1 · relações independentes</span><pre><code>CREATE TABLE aluno (
-    matricula VARCHAR(20) PRIMARY KEY,
-    nome_aluno VARCHAR(120) NOT NULL,
-    curso VARCHAR(120) NOT NULL
+        <div class="sql-block"><span class="sql-label">1 · usuário e seus telefones</span><pre><code>CREATE TABLE usuario (
+    id_usuario INTEGER PRIMARY KEY,
+    nome VARCHAR(120) NOT NULL
 );
 
-CREATE TABLE editora (
-    id_editora INTEGER PRIMARY KEY,
-    nome_editora VARCHAR(120) NOT NULL
+CREATE TABLE telefone_usuario (
+    id_usuario INTEGER NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+
+    PRIMARY KEY (id_usuario, telefone),
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario)
 );</code></pre></div>
 
-        <div class="sql-block"><span class="sql-label">2 · livro referencia editora</span><pre><code>CREATE TABLE livro (
-    isbn VARCHAR(13) PRIMARY KEY,
-    titulo VARCHAR(200) NOT NULL,
-    id_editora INTEGER NOT NULL,
-    FOREIGN KEY (id_editora)
-        REFERENCES editora(id_editora)
+        <div class="sql-block"><span class="sql-label">2 · bloco e sala</span><pre><code>CREATE TABLE bloco (
+    id_bloco INTEGER PRIMARY KEY,
+    nome_bloco VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE sala (
+    id_sala INTEGER PRIMARY KEY,
+    nome VARCHAR(80) NOT NULL,
+    capacidade INTEGER NOT NULL,
+    id_bloco INTEGER NOT NULL,
+
+    FOREIGN KEY (id_bloco)
+        REFERENCES bloco(id_bloco)
 );</code></pre></div>
 
-        <div class="sql-block"><span class="sql-label">3 · empréstimo conecta aluno e livro</span><pre><code>CREATE TABLE emprestimo (
-    matricula VARCHAR(20) NOT NULL,
-    isbn VARCHAR(13) NOT NULL,
-    data_emprestimo DATE NOT NULL,
-    data_prevista DATE NOT NULL,
+        <div class="sql-block"><span class="sql-label">3 · reserva conecta usuário e sala</span><pre><code>CREATE TABLE reserva (
+    id_reserva INTEGER PRIMARY KEY,
+    id_usuario INTEGER NOT NULL,
+    id_sala INTEGER NOT NULL,
+    data DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    situacao VARCHAR(20) NOT NULL,
 
-    PRIMARY KEY (matricula, isbn, data_emprestimo),
-    FOREIGN KEY (matricula)
-        REFERENCES aluno(matricula),
-    FOREIGN KEY (isbn)
-        REFERENCES livro(isbn)
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_sala)
+        REFERENCES sala(id_sala)
 );</code></pre></div>
 
         <div class="rule-panel">
-          <h3>Leia o SQL de volta como lemos o DER</h3>
-          <p>A PK de <code>aluno</code> diz como cada aluno é identificado. A FK de <code>livro</code> preserva a ligação com EDITORA. As duas FKs de <code>emprestimo</code> mostram quais entidades participam do fato registrado. O código não deve surgir do nada: cada linha importante precisa poder ser justificada pelo modelo e pelas regras do domínio.</p>
+          <h3>Por que <code>id_reserva</code> reaparece aqui?</h3>
+          <p>Na tabela bruta usamos uma chave composta para enxergar dependências parciais e compreender a 2FN. No modelo conceitual das aulas anteriores, porém, cada RESERVA já possuía <code>id_reserva</code> como identificador. A implementação pode preservar essa decisão sem desfazer a normalização: USUÁRIO, SALA, BLOCO e TELEFONE_USUARIO continuam separados, e RESERVA continua referenciando as demais relações por FKs.</p>
         </div>
       </div>
     </section>
@@ -355,8 +423,8 @@ CREATE TABLE editora (
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow">Prática guiada</p>
-          <h2 id="pratica-title">Antes de escrever SQL, diagnostique a estrutura</h2>
-          <p>O exercício abaixo retoma o mesmo raciocínio em outro domínio. O código não está pronto: primeiro a equipe precisa descobrir as dependências e decidir como decompor a relação.</p>
+          <h2 id="pratica-title">Repita o percurso em outro domínio</h2>
+          <p>Agora a equipe deverá aplicar a mesma sequência: observar a estrutura, identificar dependências e justificar cada decomposição antes de escrever SQL.</p>
         </div>
 
         <div class="schema-box"><header><strong>Registro acadêmico simplificado</strong><span>chave proposta: (ra, cod_disciplina, semestre)</span></header><div class="schema-content">
@@ -364,19 +432,19 @@ CREATE TABLE editora (
         </div></div>
 
         <ol class="question-list">
-          <li>Quais atributos descrevem o <strong>aluno</strong>, quais descrevem a <strong>disciplina</strong>, quais descrevem o <strong>professor</strong> e qual atributo descreve a <strong>matrícula do aluno na disciplina</strong>?</li>
-          <li>Escreva pelo menos quatro dependências funcionais que podem ser inferidas a partir dessas regras.</li>
-          <li>A relação está em 2FN? Verifique se algum atributo depende apenas de <code>ra</code> ou apenas de <code>cod_disciplina</code>.</li>
-          <li>Depois da decomposição para 2FN, procure uma dependência transitiva envolvendo <code>id_professor</code> e <code>nome_professor</code>.</li>
+          <li>Quais informações parecem descrever o <strong>aluno</strong>, a <strong>disciplina</strong>, o <strong>professor</strong> e a própria <strong>matrícula</strong>?</li>
+          <li>Verifique primeiro se existe algum problema de 1FN.</li>
+          <li>Escreva as dependências funcionais que podem ser justificadas pelas regras do cenário.</li>
+          <li>A relação está em 2FN? Verifique se algum atributo depende apenas de parte da chave <code>(ra, cod_disciplina, semestre)</code>.</li>
+          <li>Depois da decomposição para 2FN, procure uma possível dependência transitiva envolvendo professor.</li>
           <li>Desenhe o conjunto final de relações em 3FN, marcando PKs e FKs.</li>
           <li>Somente depois disso, escreva os comandos <code>CREATE TABLE</code> correspondentes no PostgreSQL.</li>
-          <li>Leia o resultado de volta: o esquema ainda permite identificar qual aluno cursou qual disciplina, em qual semestre e com qual nota?</li>
         </ol>
 
         <div class="exercise-grid">
           <article class="exercise-card"><h3>Entrega mínima</h3><p>Dependências funcionais + esquema em 3FN + comandos <code>CREATE TABLE</code>.</p></article>
-          <article class="exercise-card"><h3>Critério de qualidade</h3><p>Não basta chegar às mesmas tabelas: cada decomposição deve ser justificada pela dependência que motivou a mudança.</p></article>
-          <article class="exercise-card"><h3>Teste final</h3><p>Use uma leitura de volta para verificar se nenhuma regra importante do domínio foi perdida.</p></article>
+          <article class="exercise-card"><h3>Critério de qualidade</h3><p>Não basta chegar às mesmas tabelas: cada decomposição deve ser justificada pela dependência ou pelo problema estrutural que motivou a mudança.</p></article>
+          <article class="exercise-card"><h3>Teste final</h3><p>Leia o resultado de volta e verifique se as regras importantes do domínio continuam representadas.</p></article>
         </div>
       </div>
     </section>
@@ -385,25 +453,26 @@ CREATE TABLE editora (
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow">Síntese</p>
-          <h2 id="sintese-title">Modelar, mapear, validar e só então implementar</h2>
-          <p>A normalização não substitui o MER. Ela entra depois como uma verificação da qualidade das relações produzidas. O modelo conceitual continua sendo a referência para interpretar o significado dos dados e conferir se a decomposição preserva as regras do domínio.</p>
+          <h2 id="sintese-title">Modelar, observar, normalizar e só então implementar</h2>
+          <p>O exercício mostrou dois caminhos complementares. O MER/DER organiza o domínio a partir do significado e das regras do problema. A normalização analisa as relações resultantes e verifica se atributos diferentes foram misturados de maneira inadequada.</p>
         </div>
 
         <div class="synthesis-path aula05-synthesis">
           <div class="synthesis-step">Requisitos</div>
           <div class="synthesis-step">MER / DER</div>
           <div class="synthesis-step">Mapeamento relacional</div>
+          <div class="synthesis-step">1FN</div>
           <div class="synthesis-step">Dependências funcionais</div>
-          <div class="synthesis-step">1FN · 2FN · 3FN</div>
+          <div class="synthesis-step">2FN · 3FN</div>
           <div class="synthesis-step">DDL no PostgreSQL</div>
         </div>
 
         <div class="lesson-takeaways">
-          <article><strong>1</strong><p><strong>O MER continua sendo a referência semântica.</strong> É nele que registramos os conceitos e regras do domínio antes de pensar na tecnologia.</p></article>
-          <article><strong>2</strong><p><strong>Dependência funcional é uma regra sobre o significado dos atributos.</strong> Ela ajuda a reconhecer quais fatos estão misturados em uma mesma relação.</p></article>
-          <article><strong>3</strong><p><strong>1FN, 2FN e 3FN atacam problemas diferentes.</strong> Valores não atômicos, dependências parciais e dependências transitivas exigem diagnósticos distintos.</p></article>
-          <article><strong>4</strong><p><strong>Decompor não é quebrar por quebrar.</strong> Cada nova relação deve representar melhor um conjunto de fatos e preservar as conexões necessárias.</p></article>
-          <article><strong>5</strong><p><strong>O SQL materializa decisões anteriores.</strong> PKs, FKs e restrições estruturais devem poder ser justificadas a partir do modelo e da normalização.</p></article>
+          <article><strong>1</strong><p><strong>Um bom modelo conceitual já evita muitos problemas.</strong> O esquema produzido nas Aulas 04 e 05 chegou bem organizado porque fatos diferentes foram separados desde o início.</p></article>
+          <article><strong>2</strong><p><strong>A 1FN começa pelo problema mais visível.</strong> Um atributo não deve armazenar uma lista de valores que precisam ser interpretados internamente.</p></article>
+          <article><strong>3</strong><p><strong>Dependência funcional é uma regra do domínio.</strong> Ela descreve quando um atributo ou conjunto de atributos determina outro.</p></article>
+          <article><strong>4</strong><p><strong>2FN e 3FN usam essas dependências para diagnosticar problemas diferentes.</strong> A 2FN procura dependências parciais; a 3FN procura dependências transitivas.</p></article>
+          <article><strong>5</strong><p><strong>O SQL materializa decisões anteriores.</strong> PKs, FKs e relações separadas devem poder ser justificadas a partir do modelo e da normalização.</p></article>
         </div>
       </div>
     </section>
