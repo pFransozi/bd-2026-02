@@ -388,7 +388,50 @@
         <div class="section-heading" style="margin-top:2.8rem">
           <p class="eyebrow">Fechando o percurso</p>
           <h2>Voltamos às mesmas separações fundamentais da Aula 05</h2>
-          <p>A normalização nos levou novamente a separar USUÁRIO, TELEFONE_USUARIO, SALA e RESERVA. BLOCO apareceu porque adicionamos uma nova regra ao cenário para observar a 3FN.</p>
+          <p>A normalização nos levou novamente a separar fatos sobre USUÁRIO, SALA, RESERVA e BLOCO. Agora podemos reler esse resultado como um modelo conceitual e comparar com o caminho que já havíamos construído nas Aulas 04 e 05.</p>
+        </div>
+
+        <div class="schema-box">
+          <header><strong>MER reconstruído a partir do resultado da normalização</strong><span>leitura conceitual</span></header>
+          <div class="schema-content">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:1rem;align-items:center;margin-bottom:1rem">
+              <article class="schema-card"><header><span>Entidade</span><h3>BLOCO</h3></header><div class="schema-field"><span class="key-placeholder"></span><code>id_bloco</code></div><div class="schema-field"><span class="key-placeholder"></span><code>nome_bloco</code></div></article>
+              <div style="text-align:center;font-weight:800;white-space:nowrap"><span style="display:block;font-size:.8rem;opacity:.7">1</span>contém →<span style="display:block;font-size:.8rem;opacity:.7">N</span></div>
+              <article class="schema-card"><header><span>Entidade</span><h3>SALA</h3></header><div class="schema-field"><span class="key-placeholder"></span><code>id_sala</code></div><div class="schema-field"><span class="key-placeholder"></span><code>nome_sala</code></div><div class="schema-field"><span class="key-placeholder"></span><code>capacidade</code></div></article>
+            </div>
+
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:1rem;align-items:center">
+              <article class="schema-card"><header><span>Entidade</span><h3>USUÁRIO</h3></header><div class="schema-field"><span class="key-placeholder"></span><code>id_usuario</code></div><div class="schema-field"><span class="key-placeholder"></span><code>nome</code></div><div class="schema-field"><span class="key-placeholder"></span><code>{telefone}</code></div></article>
+              <div style="text-align:center;font-weight:800;white-space:nowrap"><span style="display:block;font-size:.8rem;opacity:.7">1</span>realiza →<span style="display:block;font-size:.8rem;opacity:.7">N</span></div>
+              <article class="schema-card reservation-schema"><header><span>Entidade associativa</span><h3>RESERVA</h3></header><div class="schema-field"><span class="key-placeholder"></span><code>id_reserva</code></div><div class="schema-field"><span class="key-placeholder"></span><code>data</code></div><div class="schema-field"><span class="key-placeholder"></span><code>hora_inicio</code></div><div class="schema-field"><span class="key-placeholder"></span><code>situacao</code></div></article>
+            </div>
+
+            <div class="mapping-equation" style="margin-top:1rem"><code>SALA 1 ─ participa de ─ N RESERVA</code></div>
+          </div>
+        </div>
+
+        <div class="schema-box">
+          <header><strong>Versão textual do modelo conceitual</strong><span>mesmas decisões, agora escritas</span></header>
+          <div class="schema-content">
+            <div class="schema-line">USUARIO(id_usuario, nome, {telefone})</div>
+            <div class="schema-line">BLOCO(id_bloco, nome_bloco)</div>
+            <div class="schema-line">SALA(id_sala, nome_sala, capacidade)</div>
+            <div class="schema-line">RESERVA(id_reserva, data, hora_inicio, situacao)</div>
+            <br />
+            <div class="schema-line">BLOCO 1:N SALA</div>
+            <div class="schema-line">USUARIO 1:N RESERVA</div>
+            <div class="schema-line">SALA 1:N RESERVA</div>
+          </div>
+        </div>
+
+        <div class="soft-callout">
+          <h3>O que recuperamos conceitualmente?</h3>
+          <ul class="compact-list">
+            <li><strong>USUÁRIO</strong> possui telefone como atributo multivalorado.</li>
+            <li><strong>RESERVA</strong> representa a ocorrência do agendamento.</li>
+            <li>Cada <strong>RESERVA</strong> está associada a um único <strong>USUÁRIO</strong> e a uma única <strong>SALA</strong>.</li>
+            <li>Cada <strong>SALA</strong> pertence a um <strong>BLOCO</strong>, e um bloco pode reunir várias salas.</li>
+          </ul>
         </div>
 
         <div class="normalization-grid">
