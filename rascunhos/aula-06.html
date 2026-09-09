@@ -137,7 +137,7 @@
         <div class="section-heading">
           <p class="eyebrow">Retomada · MER, DER e modelo relacional</p>
           <h2 id="retomada-title">Antes de normalizar, recupere o caminho que nos trouxe até aqui</h2>
-          <p>O banco não começa em uma tabela. Ele começa com a compreensão do domínio. O MER organiza os conceitos e as regras que queremos representar; o DER torna esse modelo conceitual visível; o mapeamento transforma essas decisões em relações, chaves e referências.</p>
+          <p>Vamos recuperar esse percurso com o mesmo exemplo usado nas Aulas 04 e 05: <strong>reserva de salas de estudo</strong>. Assim, a normalização começa sobre uma estrutura cujo domínio, regras e decisões de modelagem já conhecemos.</p>
         </div>
 
         <div class="path-strip" aria-label="Percurso do projeto de banco de dados">
@@ -147,37 +147,46 @@
         <div class="bridge-grid">
           <article class="bridge-card">
             <span>1</span>
-            <h3>MER: compreender a realidade</h3>
-            <p>Identificamos os conceitos do domínio, seus atributos, identificadores, relacionamentos e regras de cardinalidade.</p>
-            <p><strong>Exemplo:</strong> USUÁRIO realiza EMPRÉSTIMO; LIVRO possui EXEMPLAR; LIVRO relaciona-se com AUTOR.</p>
+            <h3>MER: compreender o domínio</h3>
+            <p>O cenário informava que um espaço de estudos cadastra <strong>USUÁRIOS</strong> e <strong>SALAS</strong>. Um usuário pode reservar uma sala para determinada data e horário; cada ocorrência envolve exatamente um usuário e exatamente uma sala.</p>
+            <p>Também identificamos que data, horário inicial e situação descrevem a própria ocorrência da reserva.</p>
           </article>
           <article class="bridge-card">
             <span>2</span>
             <h3>DER: representar as decisões</h3>
-            <p>O diagrama permite ler o modelo: quais entidades existem, como se conectam, quais atributos pertencem a cada uma e quais restrições precisam ser preservadas.</p>
-            <p><strong>O desenho não é o objetivo final:</strong> ele documenta uma interpretação do domínio.</p>
+            <p>Primeiro reconhecemos USUÁRIO e SALA como entidades. O relacionamento direto entre elas era N:N ao longo do tempo.</p>
+            <p>Como cada reserva precisava ser distinguida, manter dados próprios e permanecer no histórico, <strong>RESERVA</strong> passou a ser representada como entidade associativa entre USUÁRIO e SALA.</p>
           </article>
           <article class="bridge-card">
             <span>3</span>
-            <h3>Modelo relacional: mudar a forma</h3>
-            <p>Entidades tornam-se relações; identificadores orientam PKs; relacionamentos 1:N aparecem por FKs; N:N normalmente exige uma relação própria.</p>
-            <p><strong>A regra do domínio deve continuar reconhecível.</strong></p>
+            <h3>Modelo relacional: transformar o desenho em relações</h3>
+            <p>Na Aula 05, USUÁRIO, SALA e RESERVA passaram a ser relações. RESERVA ficou no lado N dos dois relacionamentos e recebeu as referências para o usuário e para a sala.</p>
+            <p>Data, horário inicial e situação permaneceram em RESERVA porque descrevem cada ocorrência desse fato.</p>
           </article>
         </div>
 
+        <div class="schema-box">
+          <header><strong>Resultado que já conhecemos da Aula 05</strong><span>esquema relacional simplificado</span></header>
+          <div class="schema-content">
+            <div class="schema-line">USUARIO(<span class="pk">id_usuario</span>, nome, ...)</div>
+            <div class="schema-line">SALA(<span class="pk">id_sala</span>, nome, capacidade)</div>
+            <div class="schema-line">RESERVA(<span class="pk">id_reserva</span>, <span class="fk">id_usuario</span>, <span class="fk">id_sala</span>, data, hora_inicio, situacao)</div>
+          </div>
+        </div>
+
         <div class="rule-panel">
-          <h3>Retome a leitura de volta da Aula 05</h3>
-          <p>Depois do mapeamento, devemos conseguir olhar para as relações e reconstruir as regras expressas no DER. A normalização acrescenta uma segunda verificação: além de preservar as regras, queremos evitar que um mesmo fato fique repetido em vários lugares e gere anomalias de inserção, atualização ou exclusão.</p>
+          <h3>Faça novamente a leitura de volta</h3>
+          <p>Olhando apenas para esse esquema, ainda conseguimos recuperar as regras principais do DER: cada RESERVA referencia um único USUÁRIO e uma única SALA; um usuário pode aparecer em várias reservas; uma sala pode aparecer em várias reservas; e data, horário e situação pertencem à ocorrência da reserva. Isso mostra que o mapeamento preservou o significado do modelo conceitual.</p>
         </div>
 
         <div class="section-heading" style="margin-top:2.5rem">
           <p class="eyebrow">Revisão rápida do mapeamento</p>
-          <h2>Onde cada relacionamento apareceu?</h2>
+          <h2>Onde as regras do DER aparecem no esquema relacional?</h2>
         </div>
         <div class="normalization-grid">
-          <article class="normalization-card"><span>1:1</span><h3>Uma FK com restrição de unicidade</h3><p>A decisão sobre o lado que recebe a referência depende do significado e da participação no relacionamento.</p></article>
-          <article class="normalization-card"><span>1:N</span><h3>A chave do lado 1 vai para o lado N</h3><p>A FK representa a associação de cada ocorrência do lado N com a ocorrência correspondente do lado 1.</p></article>
-          <article class="normalization-card"><span>N:N</span><h3>Surge uma relação associativa</h3><p>As chaves das entidades participantes aparecem na nova relação, junto com atributos que pertencem ao relacionamento.</p></article>
+          <article class="normalization-card"><span>USUÁRIO</span><h3>1:N com RESERVA</h3><p><code>RESERVA.id_usuario</code> é FK. Muitas reservas podem apontar para o mesmo usuário, mas cada reserva guarda apenas uma referência de usuário.</p></article>
+          <article class="normalization-card"><span>SALA</span><h3>1:N com RESERVA</h3><p><code>RESERVA.id_sala</code> é FK. Uma sala pode participar de várias reservas ao longo do tempo, enquanto cada reserva usa uma única sala.</p></article>
+          <article class="normalization-card"><span>RESERVA</span><h3>O fato ganhou estrutura própria</h3><p><code>data</code>, <code>hora_inicio</code> e <code>situacao</code> permanecem na relação porque variam de uma ocorrência de reserva para outra.</p></article>
         </div>
       </div>
     </section>
