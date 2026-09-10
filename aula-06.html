@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script src="theme-init.js"></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Aula 06 de Banco de Dados: retomada do MER, normalização e primeira implementação em SQL." />
@@ -63,8 +64,10 @@
     .discovery-step p{margin:.15rem 0}
     @media (max-width:900px){.bridge-grid,.normalization-grid,.exercise-grid{grid-template-columns:1fr}.before-after{grid-template-columns:1fr}.before-after .arrow{transform:rotate(90deg);justify-self:center}.path-highlight{padding:1.1rem}.path-strip b{transform:rotate(90deg)}}
   </style>
+<link rel="stylesheet" href="site-standard.css">
+<script defer src="site-standard.js"></script>
 </head>
-<body class="lesson-page arch-page modeling-page mapping-page">
+<body class="lesson-page arch-page modeling-page mapping-page layout-standard">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
 
   <header class="site-header" id="inicio">
@@ -89,7 +92,8 @@
     </div>
   </header>
 
-  <main id="conteudo">
+  <div class="standard-shell standard-page-grid">
+<main id="conteudo">
     <section class="lesson-hero section-pad">
       <div class="container lesson-hero-grid">
         <div>
@@ -666,6 +670,8 @@ CREATE TABLE sala (
       </div>
     </section>
   </main>
+<aside class="standard-toc" aria-label="Índice desta página"><div class="standard-toc-head"><span class="standard-toc-label">Nesta página</span></div><nav></nav></aside>
+</div>
 
   <footer class="site-footer">
     <div class="container footer-grid">
