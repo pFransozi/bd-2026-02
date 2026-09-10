@@ -14,7 +14,8 @@ const applyTheme = (theme) => {
 };
 
 const savedTheme = localStorage.getItem('banco-dados-theme');
-applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+applyTheme(savedTheme ? (savedTheme === 'dark' ? 'dark' : 'light') : (prefersDark ? 'dark' : 'light'));
 
 themeToggle?.addEventListener('click', () => {
   const nextTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
