@@ -13,13 +13,13 @@ const applyTheme = (theme) => {
   }
 };
 
-const savedTheme = localStorage.getItem('banco-dados-theme');
+const savedTheme = localStorage.getItem('theme');
 const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-applyTheme(savedTheme ? (savedTheme === 'dark' ? 'dark' : 'light') : (prefersDark ? 'dark' : 'light'));
+applyTheme(savedTheme === 'dark' || (savedTheme !== 'light' && prefersDark) ? 'dark' : 'light');
 
 themeToggle?.addEventListener('click', () => {
   const nextTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
-  localStorage.setItem('banco-dados-theme', nextTheme);
+  localStorage.setItem('theme', nextTheme);
   applyTheme(nextTheme);
 });
 
