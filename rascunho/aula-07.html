@@ -94,7 +94,7 @@
     </div></section>
 
     <section class="dml-section section-pad" id="ambiente"><div class="container">
-      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">0 · Preparando o ambiente</p><h2>Antes de usar DML, o banco precisa existir</h2><p>O notebook executa Python. Para acessar um banco usamos um driver; nesta aula, o módulo <code>sqlite3</code>. Abrir a conexão cria o arquivo do banco, mas <strong>não cria automaticamente as tabelas</strong>. Por isso vamos preparar a conexão e carregar a estrutura antes do primeiro <code>INSERT</code>.</p></div>
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">0 · Preparando o ambiente</p><h2>Antes de manipular os dados, precisamos preparar a estrutura do banco</h2><p>O notebook executa Python. Para acessar um banco usamos um driver; nesta aula, o módulo <code>sqlite3</code>. Abrir a conexão cria o arquivo do banco, mas <strong>não cria automaticamente as tabelas</strong>. Por isso vamos preparar a conexão e carregar a estrutura antes do primeiro <code>INSERT</code>.</p></div>
 
       <div class="path-strip"><span>Notebook / Python</span><b>→</b><span>sqlite3</span><b>→</b><span>arquivo .db</span><b>→</b><span>tabelas</span><b>→</b><span>DML</span></div>
 
@@ -426,10 +426,6 @@ WHERE id_usuario = 100;
     <section class="dml-section section-pad" id="sintese"><div class="container">
       <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">6 · Síntese</p><h2>Hoje o banco deixou de ser apenas estrutura</h2><p>Preparamos o ambiente, garantimos que as tabelas existissem, inserimos dados, consultamos o estado do banco, alteramos e excluímos ocorrências e observamos restrições funcionando na prática.</p></div>
       <div class="path-strip"><span>Conexão</span><b>→</b><span>Estrutura</span><b>→</b><span>INSERT</span><b>→</b><span>SELECT</span><b>→</b><span>UPDATE</span><b>→</b><span>DELETE</span><b>→</b><span>Integridade</span></div>
-      <div class="two-grid">
-        <article class="card"><h3>Base construída hoje</h3><p>O estudante já consegue fazer o ciclo básico de manipulação: inserir, localizar, alterar, remover e interpretar erros de integridade.</p></article>
-        <article class="card"><h3>Próxima aula</h3><p>Vamos aprofundar as consultas: seleção de colunas, filtros combinados, operadores, ordenação, padrões de texto e junções entre tabelas.</p></article>
-      </div>
     </div></section>
   </main>
   </div>
