@@ -57,13 +57,52 @@ const enhanceAula04Draft = () => {
   }
 };
 
+const fixAula07PracticeCards = () => {
+  if (!window.location.pathname.endsWith('/rascunho/aula-07.html')) return;
+  if (document.getElementById('aula07-practice-card-fix')) return;
+
+  const style = document.createElement('style');
+  style.id = 'aula07-practice-card-fix';
+  style.textContent = `
+    body.teaching-page.lesson-dml article.practice-card {
+      padding-left: 5.4rem !important;
+    }
+
+    body.teaching-page.lesson-dml article.practice-card > h3 {
+      min-height: 2.4rem;
+      display: flex;
+      align-items: center;
+      margin-top: 0;
+    }
+
+    body.teaching-page.lesson-dml article.practice-card > .n {
+      left: 1.25rem;
+      top: 1.25rem;
+    }
+
+    @media (max-width: 680px) {
+      body.teaching-page.lesson-dml article.practice-card {
+        padding-left: 1.25rem !important;
+        padding-top: 4.8rem !important;
+      }
+
+      body.teaching-page.lesson-dml article.practice-card > h3 {
+        min-height: 0;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+};
+
 enhanceAula04Draft();
+fixAula07PracticeCards();
 
 const coreScript = document.createElement('script');
 coreScript.src = new URL('script-core.js', document.currentScript?.src || window.location.href).href;
 coreScript.onload = () => {
   enhanceReorganizationSection();
   enhanceAula04Draft();
+  fixAula07PracticeCards();
 };
 coreScript.onerror = () => console.error('Não foi possível carregar o script principal da página.');
 document.head.appendChild(coreScript);
