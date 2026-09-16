@@ -3,14 +3,14 @@
     <div class="section-heading">
       <p class="eyebrow">Laboratório de modelagem</p>
       <h2 id="laboratorio-title">Transforme as decisões em um DER e depois aplique o processo a outro domínio</h2>
-      <p>A ferramenta entra somente neste momento porque o desenho precisa representar decisões já discutidas. Primeiro concluiremos o exemplo de reserva de salas. Em seguida, a equipe construirá um modelo novo, com relações diferentes.</p>
+      <p>A ferramenta entra somente neste momento porque o desenho precisa representar decisões já discutidas. Primeiro concluiremos o exemplo de reserva de salas. Em seguida, a equipe construirá um modelo novo, com relacionamentos diferentes.</p>
     </div>
 
     <div class="diagram-tool-panel">
       <div>
         <span>Ferramenta da atividade</span>
         <h3>diagrams.net</h3>
-        <p>Use uma notação simples e consistente: entidades em caixas, atributos dentro delas, identificadores destacados, relacionamentos nomeados e cardinalidades mínimas e máximas próximas às extremidades.</p>
+        <p>Nesta disciplina adotaremos uma <strong>notação didática simplificada</strong>: entidades em caixas, atributos dentro delas, identificadores destacados, relacionamentos nomeados e cardinalidades no formato <code>mínimo..máximo</code> próximas às extremidades. Atributos multivalorados serão marcados explicitamente, como <code>telefone {1..N}</code>. Essa é a convenção usada na aula, não a única notação possível para um DER.</p>
       </div>
       <a class="button button-primary" href="https://app.diagrams.net/" rel="noopener noreferrer" target="_blank">Abrir diagrams.net →</a>
     </div>
@@ -18,10 +18,10 @@
     <div class="learning-sequence">
       <article class="learning-block theory-block">
         <div class="diagram-panel" style="margin:0;">
-          <h3>Exemplo visual · Reserva de sala</h3>
-          <svg aria-label="Exemplo visual do DER de reserva de salas para reproduzir no diagrams.net" role="img" viewBox="0 0 1200 520">
+          <h3>Exemplo visual · DER preliminar de reserva de sala</h3>
+          <svg aria-label="Exemplo visual do DER preliminar de reserva de salas para reproduzir no diagrams.net" role="img" viewBox="0 0 1200 520">
             <title>Exemplo visual de reserva de sala</title>
-            <desc>USUÁRIO realiza RESERVA e RESERVA utiliza SALA. Um usuário e uma sala podem participar de zero a muitas reservas, enquanto cada reserva exige exatamente um usuário e exatamente uma sala.</desc>
+            <desc>USUÁRIO realiza RESERVA e RESERVA utiliza SALA. Um usuário e uma sala podem participar de zero a muitas reservas, enquanto cada reserva exige exatamente um usuário e exatamente uma sala. Telefone é um atributo multivalorado de USUÁRIO.</desc>
 
             <rect x="55" y="95" width="285" height="320" rx="18" fill="currentColor" fill-opacity="0.025" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
             <rect x="55" y="95" width="285" height="72" rx="18" fill="#5f82ff" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
@@ -30,7 +30,7 @@
             <text x="82" y="212" font-size="19" fill="currentColor">identificador</text>
             <text x="82" y="250" font-size="19" fill="currentColor">nome</text>
             <text x="82" y="288" font-size="19" fill="currentColor">data_nascimento</text>
-            <text x="82" y="326" font-size="19" fill="currentColor">telefone</text>
+            <text x="82" y="326" font-size="19" fill="currentColor">telefone {1..N}</text>
             <line x1="82" y1="218" x2="190" y2="218" stroke="#5f82ff" stroke-width="2"/>
 
             <rect x="458" y="65" width="285" height="380" rx="18" fill="currentColor" fill-opacity="0.025" stroke="currentColor" stroke-opacity="0.62" stroke-width="2"/>
@@ -66,10 +66,10 @@
       </article>
 
       <article class="learning-block guided-block">
-        <div class="learning-block-head"><span>G</span><div><small>Conclusão do exemplo guiado</small><h3>Construa o DER de reserva de salas com o professor</h3></div></div>
+        <div class="learning-block-head"><span>G</span><div><small>Conclusão do exemplo guiado</small><h3>Construa o DER preliminar de reserva de salas com o professor</h3></div></div>
         <p>Agora o diagrama reúne decisões que foram aparecendo ao longo da aula:</p>
         <ol class="practice-steps">
-          <li>Crie <strong>USUÁRIO</strong> e <strong>SALA</strong> com os identificadores fornecidos pelo cenário e seus atributos.</li>
+          <li>Crie <strong>USUÁRIO</strong> e <strong>SALA</strong> com os identificadores fornecidos pelo cenário e seus atributos; em USUÁRIO, represente <code>telefone {1..N}</code> para deixar explícito que o atributo é multivalorado.</li>
           <li>Crie <strong>RESERVA</strong> para representar cada ocorrência do fato de reservar.</li>
           <li>Inclua em RESERVA <strong>data</strong>, <strong>horário inicial</strong> e <strong>situação</strong>.</li>
           <li>Ligue USUÁRIO a RESERVA pelo relacionamento <strong>realiza</strong>: USUÁRIO participa de <code>0..N</code> reservas e cada RESERVA exige <code>1..1</code> usuário.</li>
@@ -82,6 +82,11 @@
           <strong>Observe o percurso completo.</strong>
           <p>RESERVA não apareceu porque decidimos previamente que toda ação vira entidade. Ela surgiu porque o relacionamento N:N possuía ocorrências que precisavam ser distinguidas e informações próprias que precisavam ser preservadas.</p>
         </div>
+
+        <div class="comparison-panel">
+          <h3>Por que ainda chamamos este DER de preliminar?</h3>
+          <p>A estrutura principal já foi modelada, mas a regra que identifica uma RESERVA permanece em aberto. Enquanto essa regra não for validada com o domínio, o diagrama representa uma solução conceitual ainda incompleta.</p>
+        </div>
       </article>
     </div>
   </div>
@@ -92,7 +97,7 @@
     <div class="section-heading">
       <p class="eyebrow">Agora é com a equipe</p>
       <h2 id="pratica-title">Construa o DER de uma biblioteca universitária</h2>
-      <p>O novo domínio combina relações 1:N e N:N e também precisa preservar o histórico dos empréstimos ao longo do tempo. A tarefa é aplicar o <strong>processo de análise</strong> trabalhado na aula a esse cenário.</p>
+      <p>O novo domínio combina relacionamentos 1:N e N:N e também precisa preservar o histórico dos empréstimos ao longo do tempo. A tarefa é aplicar o <strong>processo de análise</strong> trabalhado na aula a esse cenário.</p>
     </div>
 
     <article class="scenario-panel embedded-scenario">
