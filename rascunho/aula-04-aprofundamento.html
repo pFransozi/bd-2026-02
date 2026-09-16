@@ -273,8 +273,88 @@ atributo do relacionamento: preço_negociado</code><p>O preço negociado pode va
 
     <section class="study-section" id="cardinalidade">
       <div class="container">
-        <div class="study-heading"><p class="study-kicker">5 · Cardinalidade e participação</p><h2>Mínimo e máximo respondem a perguntas diferentes</h2><p>A cardinalidade expressa quantas ocorrências podem ou devem participar de um relacionamento.</p></div>
-        <div class="study-grid"><article class="study-prose"><h3>Máximo</h3><p>Pergunte: uma ocorrência pode se relacionar com no máximo uma ocorrência do outro lado ou com várias?</p><h3>Mínimo</h3><p>Pergunte: a participação é obrigatória ou a ocorrência pode existir sem participar do relacionamento?</p><div class="example-box"><strong>Usuário e reserva</strong><code>USUÁRIO 0..N ← realiza → 1..1 RESERVA</code><p>Um usuário pode existir sem reservas e pode realizar várias. Cada reserva precisa estar ligada a exatamente um usuário.</p></div><h3>Leia nos dois sentidos</h3><p>Transforme a cardinalidade em duas frases. Se alguma delas não corresponder à regra do domínio, a cardinalidade ou o requisito precisa ser revisto.</p></article><aside class="study-stack"><div class="study-callout teal"><strong>Cardinalidade não é fotografia dos dados</strong><p>Uma sala estar sem reservas hoje não significa que sua cardinalidade máxima seja zero. Cardinalidade expressa possibilidades e obrigações do domínio.</p></div><div class="study-callout"><strong>0..N reúne duas informações</strong><p><strong>0</strong> expressa opcionalidade. <strong>N</strong> expressa possibilidade de múltiplas participações.</p></div></aside></div>
+        <div class="study-heading">
+          <p class="study-kicker">5 · Cardinalidade e participação</p>
+          <h2>Cardinalidade responde duas perguntas: a participação é obrigatória e quantas ocorrências podem participar?</h2>
+          <p>Depois de identificar um relacionamento, precisamos transformá-lo em uma regra mais precisa. Para cada lado do relacionamento, perguntamos <strong>qual é o mínimo</strong> e <strong>qual é o máximo</strong> de participações permitidas.</p>
+        </div>
+        <div class="study-grid">
+          <article class="study-prose">
+            <h3>Comece por uma ocorrência, não pelo desenho inteiro</h3>
+            <p>Considere o relacionamento entre <strong>USUÁRIO</strong> e <strong>RESERVA</strong>. Em vez de tentar decidir a cardinalidade de uma vez, escolha uma ocorrência de cada lado e faça perguntas concretas.</p>
+            <div class="example-box"><strong>Exemplo</strong><code>USUÁRIO 0..N — realiza — 1..1 RESERVA</code><p>Essa notação reúne duas informações em cada lado: o primeiro valor é o <strong>mínimo</strong>; o segundo é o <strong>máximo</strong>.</p></div>
+
+            <h3>Primeira pergunta: a participação é obrigatória?</h3>
+            <p>Essa pergunta determina a <strong>cardinalidade mínima</strong>.</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Mínimo 0</h4><p>A ocorrência pode existir sem participar do relacionamento. A participação é <strong>opcional</strong> ou <strong>parcial</strong>.</p></article>
+              <article class="mini-card"><h4>Mínimo 1</h4><p>A ocorrência precisa participar pelo menos uma vez. A participação é <strong>obrigatória</strong> ou <strong>total</strong>.</p></article>
+            </div>
+            <p>No exemplo, um usuário pode ser cadastrado e nunca realizar uma reserva. Por isso, para USUÁRIO, o mínimo é <strong>0</strong>. Já uma ocorrência de RESERVA só faz sentido se estiver ligada a um usuário; nesse relacionamento, seu mínimo é <strong>1</strong>.</p>
+
+            <h3>Segunda pergunta: qual é o maior número de participações permitido?</h3>
+            <p>Essa pergunta determina a <strong>cardinalidade máxima</strong>.</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Máximo 1</h4><p>Uma ocorrência pode participar, no máximo, de uma ocorrência correspondente.</p></article>
+              <article class="mini-card"><h4>Máximo N</h4><p>Uma ocorrência pode participar de várias ocorrências correspondentes.</p></article>
+            </div>
+            <p>Um usuário pode realizar várias reservas ao longo do tempo, então seu máximo é <strong>N</strong>. Cada reserva, considerando esse relacionamento, pertence a exatamente um usuário, então o máximo do lado de RESERVA é <strong>1</strong>.</p>
+
+            <h3>Junte mínimo e máximo para formar a regra completa</h3>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>0..1</h4><p>Pode não participar; se participar, participa no máximo uma vez.</p></article>
+              <article class="mini-card"><h4>1..1</h4><p>Precisa participar e participa exatamente uma vez.</p></article>
+              <article class="mini-card"><h4>0..N</h4><p>Pode não participar ou participar várias vezes.</p></article>
+              <article class="mini-card"><h4>1..N</h4><p>Precisa participar pelo menos uma vez e pode participar várias vezes.</p></article>
+            </div>
+
+            <h3>Leia cada lado como uma frase</h3>
+            <p>Uma cardinalidade fica mais fácil de validar quando deixa de ser apenas um par de símbolos e volta para a linguagem do domínio.</p>
+            <div class="example-box"><strong>Leitura do exemplo</strong><code>USUÁRIO 0..N — realiza — 1..1 RESERVA
+
+Um USUÁRIO pode realizar zero, uma ou várias RESERVAS.
+Cada RESERVA deve estar associada a exatamente um USUÁRIO.</code><p>Se alguma dessas frases não corresponder ao requisito, a cardinalidade precisa ser revista.</p></div>
+
+            <h3>1:1, 1:N e N:N observam principalmente o máximo</h3>
+            <p>Quando usamos as formas <strong>1:1</strong>, <strong>1:N</strong> e <strong>N:N</strong>, estamos resumindo a cardinalidade máxima dos dois lados.</p>
+            <div class="study-table-wrap"><table class="study-table"><thead><tr><th>Forma</th><th>Como ler</th><th>O que ela ainda não informa sozinha</th></tr></thead><tbody>
+              <tr><td><strong>1:1</strong></td><td>O máximo é 1 nos dois lados.</td><td>Se a participação é opcional ou obrigatória.</td></tr>
+              <tr><td><strong>1:N</strong></td><td>Um lado tem máximo 1 e o outro pode ter várias participações.</td><td>Os mínimos de cada lado.</td></tr>
+              <tr><td><strong>N:N</strong></td><td>Os dois lados podem participar várias vezes.</td><td>Se alguma participação é obrigatória.</td></tr>
+            </tbody></table></div>
+            <p>Por isso, dizer apenas “é 1:N” não descreve toda a regra. Para um modelo mais preciso, precisamos também saber se cada participação começa em <strong>0</strong> ou em <strong>1</strong>.</p>
+
+            <h3>Cardinalidade não descreve a quantidade de dados que existe hoje</h3>
+            <p>Suponha que hoje a Sala 201 ainda não possua nenhuma reserva. Isso não significa que sua cardinalidade máxima seja zero. A cardinalidade descreve <strong>o que o domínio permite ou exige</strong>, e não a quantidade de registros existentes em determinado momento.</p>
+            <div class="example-box"><strong>Estado atual ≠ regra</strong><code>Hoje: Sala 201 possui 0 reservas.
+Regra: uma sala pode receber várias reservas ao longo do tempo.</code><p>Os dados atuais mudam; a cardinalidade representa uma regra estrutural do domínio.</p></div>
+
+            <h3>Use casos extremos para testar a cardinalidade</h3>
+            <p>Depois de escolher os valores, tente situações que pressionem a regra:</p>
+            <ol>
+              <li><strong>zero:</strong> essa ocorrência pode existir sem participar?</li>
+              <li><strong>uma:</strong> uma única participação é válida?</li>
+              <li><strong>duas ou mais:</strong> o domínio permite repetir a participação?</li>
+            </ol>
+            <p>Essas três perguntas costumam revelar rapidamente se o mínimo ou o máximo foi escolhido por hábito, e não pelo requisito.</p>
+
+            <h3>Um roteiro para definir cardinalidade e participação</h3>
+            <ol>
+              <li>escolha um relacionamento já identificado;</li>
+              <li>selecione uma ocorrência de um dos lados;</li>
+              <li>pergunte se ela pode existir sem participar — isso define o mínimo;</li>
+              <li>pergunte de quantas ocorrências do outro lado ela pode participar — isso define o máximo;</li>
+              <li>repita as duas perguntas para o outro lado;</li>
+              <li>transforme os valores em frases completas;</li>
+              <li>valide as frases com o requisito e com casos extremos.</li>
+            </ol>
+          </article>
+          <aside class="study-stack">
+            <div class="study-callout teal"><strong>Mínimo fala de obrigatoriedade</strong><p><strong>0</strong> significa que a participação é opcional. <strong>1</strong> significa que a participação é obrigatória.</p></div>
+            <div class="study-callout"><strong>Máximo fala de quantidade</strong><p><strong>1</strong> limita a uma participação. <strong>N</strong> permite múltiplas participações.</p></div>
+            <div class="study-callout violet"><strong>Pergunta-chave</strong><p>“Para uma única ocorrência deste lado, quantas ocorrências do outro lado são permitidas — e pelo menos uma é obrigatória?”</p></div>
+          </aside>
+        </div>
       </div>
     </section>
 
