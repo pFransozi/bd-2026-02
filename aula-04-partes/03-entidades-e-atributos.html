@@ -83,13 +83,13 @@
         <h4>Depois de distribuir, podemos classificar</h4>
         <ol class="practice-steps">
           <li><strong>identificador</strong> já foi informado pelo requisito tanto para USUÁRIO quanto para SALA e pode ser usado para distinguir suas ocorrências.</li>
-          <li><strong>telefone</strong> é multivalorado porque o cenário admite um ou mais valores por usuário.</li>
+          <li><strong>telefone</strong> é multivalorado porque o cenário admite um ou mais valores por usuário. No DER desta aula, vamos marcar isso explicitamente como <code>telefone {1..N}</code> para não tratá-lo visualmente como um atributo monovalorado.</li>
           <li><strong>data_nascimento</strong> é armazenada; <strong>idade</strong> poderia ser derivada e, portanto, não precisa necessariamente ser armazenada.</li>
           <li><strong>capacidade</strong> é simples e monovalorada no recorte atual.</li>
         </ol>
 
         <div class="identifier-grid">
-          <article class="identifier-card"><span>Usuário</span><strong>identificador</strong><p>O próprio cenário informa que cada usuário possui um identificador.</p><div class="identifier-example">USUÁRIO(<u>identificador</u>, nome, data_nascimento, telefone)</div></article>
+          <article class="identifier-card"><span>Usuário</span><strong>identificador</strong><p>O próprio cenário informa que cada usuário possui um identificador.</p><div class="identifier-example">USUÁRIO(<u>identificador</u>, nome, data_nascimento, telefone {1..N})</div></article>
           <article class="identifier-card"><span>Sala</span><strong>identificador</strong><p>O cenário também informa um identificador para cada sala.</p><div class="identifier-example">SALA(<u>identificador</u>, nome, capacidade)</div></article>
         </div>
 
