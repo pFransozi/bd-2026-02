@@ -1,0 +1,12 @@
+---
+layout: null
+---
+{% capture material %}{% include aula-04-aprofundamento-source.html %}{% endcapture %}
+{{ material
+  | replace: 'Rascunho do material de aprofundamento', 'Material de aprofundamento'
+  | replace: 'Rascunho · Aula 04 · Material de aprofundamento', 'Aula 04 · Material de aprofundamento'
+  | replace: '../styles.css', 'styles.css'
+  | replace: '../script-core.js', 'script-core.js'
+  | replace: '../index.html', 'index.html'
+  | replace: '../aula-04.html', 'aula-04.html'
+}}
