@@ -36,8 +36,8 @@
     @media(max-width:900px){.dml-hero-grid,.overview-grid,.two-grid,.prediction{grid-template-columns:1fr}}
     @media(max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc,.three-grid{grid-template-columns:1fr}.dml-section{padding:4rem 0;scroll-margin-top:90px}.practice-card{padding-left:1.1rem;padding-top:4rem}}
   </style>
-  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=9"></script>
-  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=13">
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
 </head>
 <body class="teaching-page teaching-lesson lesson-dml">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -54,28 +54,28 @@
     </div>
   </header>
 
-  <main id="conteudo">
-    <section class="dml-hero">
-      <div class="container dml-hero-grid">
+  <div class="standard-shell standard-page-grid">\n  <main id="conteudo">
+    <section class="dml-hero lesson-hero section-pad">
+      <div class="container dml-hero-grid lesson-hero-grid">
         <div>
-          <p class="dml-kicker">Rascunho · Aula 07</p>
+          <p class="dml-kicker eyebrow">Rascunho · Aula 07</p>
           <h1>Manipulação de dados e integridade</h1>
-          <p class="dml-lead">Na aula anterior o esquema virou tabelas, chaves e relacionamentos. Agora vamos colocar dados nessas estruturas e observar o que acontece quando uma operação respeita — ou viola — as regras que definimos.</p>
+          <p class="dml-lead lesson-hero-lead">Na aula anterior o esquema virou tabelas, chaves e relacionamentos. Agora vamos colocar dados nessas estruturas e observar o que acontece quando uma operação respeita — ou viola — as regras que definimos.</p>
           <div class="dml-meta"><span>INSERT</span><span>UPDATE</span><span>DELETE</span><span>PK e FK</span><span>CHECK</span><span>DEFAULT</span><span>UNIQUE</span></div>
         </div>
-        <aside class="guiding-card"><strong>Pergunta-guia</strong><blockquote>Criar tabelas é suficiente para garantir que os dados armazenados estejam corretos?</blockquote></aside>
+        <aside class="guiding-card guiding-question"><strong>Pergunta-guia</strong><blockquote>Criar tabelas é suficiente para garantir que os dados armazenados estejam corretos?</blockquote></aside>
       </div>
     </section>
 
-    <div class="dml-toc-shell"><nav class="container dml-toc" aria-label="Sumário da aula"><a href="#visao">Visão</a><a href="#retomada">Retomada</a><a href="#insert">INSERT</a><a href="#regras">Integridade</a><a href="#update">UPDATE</a><a href="#delete">DELETE</a><a href="#pratica">Prática</a><a href="#sintese">Síntese</a></nav></div>
+    <div class="dml-toc-shell standard-toc"><nav class="container dml-toc" aria-label="Sumário da aula"><a href="#visao">Visão</a><a href="#retomada">Retomada</a><a href="#insert">INSERT</a><a href="#regras">Integridade</a><a href="#update">UPDATE</a><a href="#delete">DELETE</a><a href="#pratica">Prática</a><a href="#sintese">Síntese</a></nav></div>
 
-    <section class="dml-section alt" id="visao"><div class="container">
-      <div class="dml-heading">
-        <p class="dml-kicker">Visão da aula</p>
+    <section class="dml-section section-pad section-soft alt" id="visao"><div class="container">
+      <div class="dml-heading section-heading">
+        <p class="dml-kicker eyebrow">Visão da aula</p>
         <h2>O que vamos desenvolver</h2>
         <p>Depois de construir e normalizar o esquema, vamos passar a manipular dados reais. A ideia é compreender os comandos de DML e, ao mesmo tempo, observar como as restrições do banco preservam as regras que surgiram durante a modelagem.</p>
       </div>
-      <div class="overview-grid">
+      <div class="overview-grid lesson-overview-grid">
         <article class="card">
           <span class="overview-icon">OBJ</span>
           <h3>Objetivos de aprendizagem</h3>
@@ -100,9 +100,9 @@
       </div>
     </div></section>
 
-    <section class="dml-section" id="retomada"><div class="container">
-      <div class="dml-heading">
-        <p class="dml-kicker">1 · Retomada</p>
+    <section class="dml-section section-pad" id="retomada"><div class="container">
+      <div class="dml-heading section-heading">
+        <p class="dml-kicker eyebrow">1 · Retomada</p>
         <h2>Antes de manipular dados, recupere o que já está pronto</h2>
         <p>Na Aula 06 chegamos a um ponto importante: o domínio já foi interpretado, o modelo foi transformado em relações, a estrutura foi normalizada e as tabelas foram criadas. Portanto, nesta aula não vamos começar um novo banco. Vamos continuar trabalhando sobre aquilo que já construímos.</p>
       </div>
@@ -136,8 +136,8 @@ nome = 'Marina Lopes'</code></pre></div>
 
       <div class="callout"><strong>Não confunda tabela com registro</strong><p><strong>USUARIO</strong> é a estrutura que representa o tipo de informação. Marina Lopes é uma ocorrência que poderá ocupar uma linha dessa tabela. Essa distinção será importante para entender o que os comandos de DML realmente modificam.</p></div>
 
-      <div class="dml-heading" style="margin-top:2.6rem">
-        <p class="dml-kicker">Leia novamente o esquema</p>
+      <div class="dml-heading section-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker eyebrow">Leia novamente o esquema</p>
         <h2>Que regras já estão esperando pelos dados?</h2>
         <p>Antes do primeiro <code>INSERT</code>, vale observar que as tabelas não estão vazias de significado. Mesmo sem registros, elas já possuem regras que vão decidir quais operações podem ou não ser aceitas.</p>
       </div>
@@ -148,8 +148,8 @@ nome = 'Marina Lopes'</code></pre></div>
         <article class="card"><h3>RESERVA</h3><p>Cada reserva referencia um usuário e uma sala e registra uma ocorrência em determinada data e horário.</p><p><strong>Pergunta:</strong> podemos reservar uma sala para um usuário inexistente?</p></article>
       </div>
 
-      <div class="dml-heading" style="margin-top:2.6rem">
-        <p class="dml-kicker">A virada desta aula</p>
+      <div class="dml-heading section-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker eyebrow">A virada desta aula</p>
         <h2>Da definição da estrutura para as operações sobre os dados</h2>
         <p>Até agora perguntávamos principalmente <strong>“como o banco deve ser organizado?”</strong>. A partir daqui a pergunta muda: <strong>“o que acontece quando tentamos inserir, alterar ou excluir uma ocorrência?”</strong></p>
       </div>
@@ -162,8 +162,8 @@ nome = 'Marina Lopes'</code></pre></div>
 
       <div class="callout ok"><strong>O banco passa a responder às nossas tentativas</strong><p>Quando uma operação for aceita, observaremos a mudança produzida. Quando for rejeitada, usaremos a mensagem de erro para identificar qual regra da estrutura foi violada.</p></div>
 
-      <div class="dml-heading" style="margin-top:2.6rem">
-        <p class="dml-kicker">Antes dos testes</p>
+      <div class="dml-heading section-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker eyebrow">Antes dos testes</p>
         <h2>Ative a verificação das chaves estrangeiras na conexão</h2>
         <p>Os próximos exemplos dependem da verificação das referências entre as tabelas. Execute o comando abaixo antes de iniciar os testes.</p>
       </div>
@@ -171,8 +171,8 @@ nome = 'Marina Lopes'</code></pre></div>
       <div class="callout"><strong>O que isso muda?</strong><p>A partir daqui, uma sala não poderá apontar para um bloco inexistente e uma reserva não poderá apontar para usuário ou sala inexistentes. Se a conexão do notebook for recriada, execute essa preparação novamente antes dos testes.</p></div>
     </div></section>
 
-    <section class="dml-section alt" id="insert"><div class="container">
-      <div class="dml-heading"><p class="dml-kicker">2 · INSERT</p><h2>O banco começa a ganhar ocorrências</h2><p>Vamos cadastrar primeiro as ocorrências independentes e depois aquelas que dependem de referências já existentes.</p></div>
+    <section class="dml-section section-pad section-soft alt" id="insert"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">2 · INSERT</p><h2>O banco começa a ganhar ocorrências</h2><p>Vamos cadastrar primeiro as ocorrências independentes e depois aquelas que dependem de referências já existentes.</p></div>
       <div class="sql-block"><span class="sql-label">Inserindo blocos</span><pre><code>INSERT INTO bloco (id_bloco, nome_bloco)
 VALUES
     (1, 'Bloco A'),
@@ -194,8 +194,8 @@ VALUES (500, 'Sala Teste', 5, 99);</code></pre></div>
       <div class="callout warn"><strong>Antes de executar</strong><p>O comando está sintaticamente correto. Mesmo assim, deve ser rejeitado porque a referência para o bloco 99 não corresponde a nenhuma ocorrência existente.</p></div>
     </div></section>
 
-    <section class="dml-section" id="regras"><div class="container">
-      <div class="dml-heading"><p class="dml-kicker">3 · Integridade e restrições</p><h2>O banco não aceita qualquer valor apenas porque a sintaxe está correta</h2><p>Agora vamos observar diferentes tipos de restrição e relacioná-los às regras do domínio.</p></div>
+    <section class="dml-section section-pad" id="regras"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">3 · Integridade e restrições</p><h2>O banco não aceita qualquer valor apenas porque a sintaxe está correta</h2><p>Agora vamos observar diferentes tipos de restrição e relacioná-los às regras do domínio.</p></div>
 
       <div class="constraint-table-wrap"><table class="constraint-table"><thead><tr><th>Restrição</th><th>Pergunta que ela responde</th><th>Exemplo no domínio</th></tr></thead><tbody>
         <tr><td><code>PRIMARY KEY</code></td><td>Como identificar unicamente esta ocorrência?</td><td>Duas ocorrências de USUARIO não podem compartilhar o mesmo <code>id_usuario</code>.</td></tr>
@@ -249,8 +249,8 @@ VALUES (
       <div class="callout ok"><strong>O valor não foi omitido do banco</strong><p>Como a coluna possui <code>DEFAULT 'ativa'</code>, a situação recebe esse valor quando ele não é informado no <code>INSERT</code>.</p></div>
     </div></section>
 
-    <section class="dml-section alt" id="update"><div class="container">
-      <div class="dml-heading"><p class="dml-kicker">4 · UPDATE</p><h2>Dados existentes também mudam</h2><p>Alterar dados é simples; o cuidado está em determinar exatamente quais ocorrências devem ser afetadas.</p></div>
+    <section class="dml-section section-pad section-soft alt" id="update"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">4 · UPDATE</p><h2>Dados existentes também mudam</h2><p>Alterar dados é simples; o cuidado está em determinar exatamente quais ocorrências devem ser afetadas.</p></div>
       <div class="sql-block"><span class="sql-label">Cancelando uma reserva específica</span><pre><code>UPDATE reserva
 SET situacao = 'cancelada'
 WHERE id_reserva = 2;</code></pre></div>
@@ -263,14 +263,14 @@ FROM reserva
 WHERE id_reserva = 2;</code></pre></div>
     </div></section>
 
-    <section class="dml-section" id="delete"><div class="container">
-      <div class="dml-heading"><p class="dml-kicker">5 · DELETE e integridade referencial</p><h2>Excluir um registro pode afetar dados relacionados</h2><p>O <code>DELETE</code> também precisa ser delimitado e analisado à luz das relações existentes no modelo.</p></div>
+    <section class="dml-section section-pad" id="delete"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">5 · DELETE e integridade referencial</p><h2>Excluir um registro pode afetar dados relacionados</h2><p>O <code>DELETE</code> também precisa ser delimitado e analisado à luz das relações existentes no modelo.</p></div>
       <div class="sql-block"><span class="sql-label">Exclusão delimitada</span><pre><code>DELETE FROM reserva
 WHERE id_reserva = 2;</code></pre></div>
       <div class="sql-block"><span class="sql-label">Exclusão sem filtro</span><pre><code>DELETE FROM reserva;</code></pre></div>
       <div class="callout warn"><strong>Sem WHERE</strong><p>O comando remove todas as linhas da tabela. Novamente, o problema não é sintático: é o alcance da operação.</p></div>
 
-      <div class="dml-heading" style="margin-top:2.5rem"><p class="dml-kicker">ON DELETE</p><h2>O que deve acontecer quando o registro referenciado desaparece?</h2><p>A resposta depende da regra do domínio. A política deve ser decidida no relacionamento e declarada na própria chave estrangeira.</p></div>
+      <div class="dml-heading section-heading" style="margin-top:2.5rem"><p class="dml-kicker eyebrow">ON DELETE</p><h2>O que deve acontecer quando o registro referenciado desaparece?</h2><p>A resposta depende da regra do domínio. A política deve ser decidida no relacionamento e declarada na própria chave estrangeira.</p></div>
       <div class="three-grid">
         <article class="card"><h3>RESTRICT / NO ACTION</h3><p>Impede a exclusão enquanto existirem registros dependentes. É adequado quando o histórico precisa permanecer associado.</p></article>
         <article class="card"><h3>CASCADE</h3><p>Ao remover o registro referenciado, remove também os registros dependentes. Pode fazer sentido para dados que só existem em função do registro-pai.</p></article>
@@ -282,8 +282,8 @@ WHERE id_reserva = 2;</code></pre></div>
       <div class="callout"><strong>CASCADE não é uma opção automática</strong><p>Apagar os telefones de um usuário removido pode ser coerente. Apagar todo o histórico de reservas desse usuário pode não ser. A escolha precisa representar o significado do relacionamento.</p></div>
     </div></section>
 
-    <section class="dml-section alt" id="pratica"><div class="container">
-      <div class="dml-heading"><p class="dml-kicker">6 · Prática guiada</p><h2>Primeiro preveja. Depois execute.</h2><p>Antes de cada comando, registre se a operação deve ser aceita ou rejeitada, qual regra está envolvida e qual mudança você espera observar.</p></div>
+    <section class="dml-section section-pad section-soft alt" id="pratica"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">6 · Prática guiada</p><h2>Primeiro preveja. Depois execute.</h2><p>Antes de cada comando, registre se a operação deve ser aceita ou rejeitada, qual regra está envolvida e qual mudança você espera observar.</p></div>
       <div class="practice-list">
         <article class="practice-card"><span class="n">1</span><h3>Novo usuário</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
 VALUES (100, 'João Martins');</code></pre></div><div class="prediction"><span>Será aceito?</span><span>Que regra observar?</span><span>Qual mudança ocorrerá?</span></div></article>
@@ -311,8 +311,8 @@ WHERE id_reserva = 50;</code></pre></div><div class="prediction"><span>Quantas l
       </ol><p>Ao final, provoque intencionalmente três erros: uma PK duplicada, uma FK para registro inexistente e uma situação inválida. Para cada um, explique qual regra foi violada.</p></div>
     </div></section>
 
-    <section class="dml-section" id="sintese"><div class="container">
-      <div class="dml-heading"><p class="dml-kicker">7 · Síntese</p><h2>Estrutura, dados e regras agora aparecem juntos</h2><p>A modelagem definiu o significado. A DDL transformou esse significado em estrutura. A DML mostrou o comportamento do banco diante de operações válidas e inválidas.</p></div>
+    <section class="dml-section section-pad" id="sintese"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">7 · Síntese</p><h2>Estrutura, dados e regras agora aparecem juntos</h2><p>A modelagem definiu o significado. A DDL transformou esse significado em estrutura. A DML mostrou o comportamento do banco diante de operações válidas e inválidas.</p></div>
       <div class="path-strip"><span>Requisitos</span><b>→</b><span>DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>DDL</span><b>→</b><span>Restrições</span><b>→</b><span>DML</span><b>→</b><span>Dados consistentes</span></div>
       <div class="two-grid">
         <article class="card"><h3>O que conseguimos fazer</h3><p>Inserir, alterar e excluir dados; interpretar erros; reconhecer integridade de entidade, domínio e referencial; e perceber que uma operação correta depende das regras do domínio.</p></article>
