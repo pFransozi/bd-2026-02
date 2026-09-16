@@ -59,6 +59,9 @@ const enhanceAula04Draft = () => {
 
 const fixAula07PracticeCards = () => {
   if (!window.location.pathname.endsWith('/rascunho/aula-07.html')) return;
+
+  document.querySelectorAll('#pratica .prediction').forEach((prediction) => prediction.remove());
+
   if (document.getElementById('aula07-practice-card-fix')) return;
 
   const style = document.createElement('style');
