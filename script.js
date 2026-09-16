@@ -59,9 +59,6 @@ const enhanceAula04Draft = () => {
 
 const fixAula07PracticeCards = () => {
   if (!window.location.pathname.endsWith('/rascunho/aula-07.html')) return;
-
-  document.querySelectorAll('#pratica .prediction').forEach((prediction) => prediction.remove());
-
   if (document.getElementById('aula07-practice-card-fix')) return;
 
   const style = document.createElement('style');
@@ -81,6 +78,10 @@ const fixAula07PracticeCards = () => {
     body.teaching-page.lesson-dml article.practice-card > .n {
       left: 1.25rem;
       top: 1.25rem;
+    }
+
+    body.teaching-page.lesson-dml article.practice-card > .prediction {
+      display: none !important;
     }
 
     @media (max-width: 680px) {
