@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0f172a">
   <title>Aula 04, Material de aprofundamento | Banco de Dados</title>
   <link rel="stylesheet" href="../styles.css">
-  <script defer src="../script-core.js?v=20260916-2"></script>
+  <script defer src="../script-core.js?v=20260916-3"></script>
   <style>
     .study-page{background:var(--bg);color:var(--text)}
     .study-hero{padding:6rem 0 5rem;background:radial-gradient(circle at 86% 18%,rgba(49,94,251,.16),transparent 27rem),radial-gradient(circle at 8% 78%,rgba(22,165,163,.11),transparent 24rem),var(--bg)}
@@ -106,47 +106,100 @@
               <article class="mini-card"><h4>Conexões</h4><p>Que fatos ligam os elementos? Ex.: um usuário <strong>reserva</strong> uma sala.</p></article>
               <article class="mini-card"><h4>Regras</h4><p>O que é permitido ou obrigatório? Ex.: cada reserva envolve exatamente um usuário e uma sala.</p></article>
             </div>
-
             <h3>Depois, interprete o significado</h3>
-            <p>Encontrar uma palavra no texto ainda não determina como ela será representada. A palavra <strong>sala</strong> tende a virar entidade porque precisamos distinguir salas diferentes. Já <strong>capacidade</strong> descreve uma sala e tende a ser atributo. O verbo <strong>reservar</strong> revela um fato entre elementos, mas ainda precisamos analisar se basta representá-lo como relacionamento ou se cada ocorrência da reserva precisa ser distinguida.</p>
-
+            <p>Encontrar uma palavra no texto ainda não determina como ela será representada. <strong>Sala</strong> tende a virar entidade porque precisamos distinguir salas diferentes. <strong>Capacidade</strong> descreve uma sala e tende a ser atributo. <strong>Reservar</strong> revela um fato entre elementos, mas ainda precisamos analisar como esse fato deve aparecer no modelo.</p>
             <h3>Separe fato, hipótese e dúvida</h3>
-            <p>Esse é um passo importante porque nem toda informação necessária aparece pronta no enunciado.</p>
-            <div class="mini-grid three">
-              <article class="mini-card"><h4>Fato informado</h4><p>Está explicitamente no requisito e pode ser representado no modelo.</p></article>
-              <article class="mini-card"><h4>Hipótese</h4><p>Parece plausível, mas foi inferida por quem está modelando e ainda precisa ser confirmada.</p></article>
-              <article class="mini-card"><h4>Dúvida</h4><p>É uma informação que falta e precisa ser perguntada antes de fechar a decisão.</p></article>
-            </div>
-
+            <div class="mini-grid three"><article class="mini-card"><h4>Fato informado</h4><p>Está explícito no requisito e pode ser representado.</p></article><article class="mini-card"><h4>Hipótese</h4><p>Parece plausível, mas ainda precisa de confirmação.</p></article><article class="mini-card"><h4>Dúvida</h4><p>É uma informação ausente que precisa ser perguntada.</p></article></div>
             <h3>Quando falta uma regra, transforme a lacuna em uma pergunta</h3>
-            <p>Suponha que o cenário diga que uma reserva possui data, horário e situação, mas não explique como duas reservas são distinguidas. Em vez de inventar imediatamente um <code>reserva_id</code>, organize o raciocínio:</p>
-            <ol>
-              <li><strong>registre o que já sabemos:</strong> cada reserva envolve exatamente um usuário e uma sala;</li>
-              <li><strong>identifique o que está faltando:</strong> qual regra diferencia uma reserva de outra?</li>
-              <li><strong>formule perguntas para o domínio:</strong> o mesmo usuário pode reservar a mesma sala duas vezes no mesmo dia? Pode haver duas reservas no mesmo horário?</li>
-              <li><strong>marque a decisão como pendente:</strong> não transforme uma suposição em regra antes da validação;</li>
-              <li><strong>atualize o modelo</strong> quando a resposta estiver confirmada.</li>
-            </ol>
-
+            <ol><li>registre o que já sabemos;</li><li>identifique o que está faltando;</li><li>formule perguntas para o domínio;</li><li>marque a decisão como pendente;</li><li>atualize o modelo após a validação.</li></ol>
             <div class="example-box"><strong>O que o requisito permite afirmar</strong><code>Cada reserva envolve exatamente um usuário e exatamente uma sala.</code><p>Essa obrigatoriedade pode ser representada porque está explícita.</p></div>
             <div class="example-box"><strong>O que ainda precisa ser confirmado</strong><code>“Duas reservas da mesma sala nunca podem ter o mesmo horário.”</code><p>Essa regra pode fazer sentido, mas não deve aparecer como fato se o requisito não a informou.</p></div>
-
             <h3>O objetivo é fazer perguntas cada vez melhores</h3>
-            <p>Um bom modelo conceitual não é aquele que parece completo o mais rápido possível. É aquele que deixa claro <strong>o que foi confirmado</strong>, <strong>o que foi assumido</strong> e <strong>o que ainda precisa ser perguntado</strong>. Assim, o DER passa a funcionar também como instrumento de comunicação com quem conhece o domínio.</p>
+            <p>Um bom modelo conceitual deixa claro <strong>o que foi confirmado</strong>, <strong>o que foi assumido</strong> e <strong>o que ainda precisa ser perguntado</strong>.</p>
           </article>
-          <aside class="study-stack">
-            <div class="study-callout violet"><strong>Uma regra prática</strong><p>Se você não consegue apontar qual trecho do requisito sustenta uma decisão, trate-a como hipótese ou dúvida até validá-la.</p></div>
-            <div class="study-callout"><strong>Validação com o domínio</strong><p>O modelo deve permitir que outra pessoa leia cada entidade, relacionamento e cardinalidade e diga: “sim, essa regra corresponde ao problema real”.</p></div>
-            <div class="study-callout teal"><strong>Pergunta-chave</strong><p>“O que eu sei porque o requisito informou e o que estou supondo porque parece fazer sentido?”</p></div>
-          </aside>
+          <aside class="study-stack"><div class="study-callout violet"><strong>Uma regra prática</strong><p>Se você não consegue apontar qual trecho do requisito sustenta uma decisão, trate-a como hipótese ou dúvida até validá-la.</p></div><div class="study-callout"><strong>Validação com o domínio</strong><p>Outra pessoa deve conseguir ler a decisão e confirmar que ela corresponde ao problema real.</p></div><div class="study-callout teal"><strong>Pergunta-chave</strong><p>“O que eu sei porque o requisito informou e o que estou supondo porque parece fazer sentido?”</p></div></aside>
         </div>
       </div>
     </section>
 
     <section class="study-section" id="entidades">
       <div class="container">
-        <div class="study-heading"><p class="study-kicker">3 · Entidades, ocorrências e atributos</p><h2>Entidade é um tipo; ocorrência é um indivíduo desse tipo</h2><p>Essa distinção ajuda a entender identificadores e atributos sem confundir o desenho com os dados que futuramente serão armazenados.</p></div>
-        <div class="study-grid"><article class="study-prose"><h3>Tipo de entidade e ocorrência</h3><p><strong>USUÁRIO</strong> representa um tipo de objeto do domínio. Ana, Bruno e Carla são possíveis ocorrências desse tipo. O DER descreve a estrutura comum às ocorrências; ele não é uma lista de registros.</p><div class="example-box"><strong>Tipo</strong><code>USUÁRIO(identificador, nome, data_nascimento, telefone)</code><p>Uma futura ocorrência poderia possuir identificador 42 e nome Ana, mas esses valores não pertencem ao DER.</p></div><h3>O identificador expressa identidade</h3><p>Um identificador permite distinguir cada ocorrência das demais. Ele pode ser um único atributo ou uma combinação de atributos. A escolha de uma chave substituta gerada pelo SGBD pertence a uma discussão posterior.</p><h3>Atributos podem ter estruturas diferentes</h3><div class="study-table-wrap"><table class="study-table"><thead><tr><th>Dimensão</th><th>Tipo</th><th>Significado</th><th>Exemplo</th></tr></thead><tbody><tr><td>Estrutura</td><td>Simples</td><td>Tratado como unidade.</td><td>capacidade</td></tr><tr><td>Estrutura</td><td>Composto</td><td>Pode ser decomposto em partes relevantes.</td><td>endereço → CEP, cidade, logradouro</td></tr><tr><td>Quantidade</td><td>Monovalorado</td><td>Um valor por ocorrência.</td><td>data_nascimento</td></tr><tr><td>Quantidade</td><td>Multivalorado</td><td>Mais de um valor por ocorrência.</td><td>telefone {1..N}</td></tr><tr><td>Origem</td><td>Armazenado</td><td>Registrado como fato básico.</td><td>data_nascimento</td></tr><tr><td>Origem</td><td>Derivado</td><td>Obtido de outros valores.</td><td>idade</td></tr></tbody></table></div></article><aside class="study-stack"><div class="study-callout teal"><strong>Multivalorado</strong><p>Dizer que telefone é multivalorado significa que um usuário pode possuir vários telefones. A forma de implementar isso no modelo relacional será decidida depois.</p></div><div class="study-callout"><strong>Atributo ou entidade?</strong><p>Uma propriedade tende a exigir entidade própria quando precisa de identidade, atributos próprios ou relacionamentos independentes.</p></div></aside></div>
+        <div class="study-heading">
+          <p class="study-kicker">3 · Entidades, ocorrências e atributos</p>
+          <h2>Entidades organizam os elementos do domínio; ocorrências representam casos concretos; atributos descrevem cada ocorrência</h2>
+          <p>Nesta etapa, o objetivo é responder três perguntas: <strong>o que precisa existir no modelo?</strong>, <strong>quais ocorrências precisamos distinguir?</strong> e <strong>o que precisamos saber sobre cada uma delas?</strong></p>
+        </div>
+        <div class="study-grid">
+          <article class="study-prose">
+            <h3>Comece por um caso concreto</h3>
+            <p>Imagine que o sistema tenha cadastrado a usuária Ana. No banco futuro poderíamos ter valores como identificador <code>42</code>, nome <code>Ana</code> e data de nascimento <code>15/03/2002</code>. Esses valores pertencem a <strong>uma ocorrência específica</strong>. O DER, por outro lado, descreve a estrutura comum a todos os usuários.</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Tipo de entidade</h4><p><strong>USUÁRIO</strong> representa o conjunto de pessoas que o sistema precisa reconhecer.</p></article>
+              <article class="mini-card"><h4>Ocorrência</h4><p><strong>Ana</strong>, <strong>Bruno</strong> ou <strong>Carla</strong> são exemplos concretos de USUÁRIO.</p></article>
+            </div>
+
+            <h3>Como decidir se algo deve ser entidade?</h3>
+            <p>Em vez de transformar todo substantivo em uma caixa, faça três perguntas:</p>
+            <ol>
+              <li><strong>Existem ocorrências diferentes que precisam ser distinguidas?</strong> Por exemplo, vários usuários ou várias salas.</li>
+              <li><strong>Precisamos guardar informações próprias sobre cada ocorrência?</strong> Como nome, capacidade ou data de nascimento.</li>
+              <li><strong>Esse elemento participa de relacionamentos com outros elementos do domínio?</strong> Como USUÁRIO participando de uma reserva.</li>
+            </ol>
+            <div class="example-box"><strong>Aplicando o teste</strong><code>USUÁRIO → sim: existem vários, possuem dados próprios e participam de reservas.
+SALA → sim: existem várias, possuem dados próprios e participam de reservas.
+CAPACIDADE → não: apenas descreve uma SALA.</code><p>O teste não é uma fórmula automática, mas ajuda a justificar a decisão.</p></div>
+
+            <h3>Atributo responde: “o que sabemos sobre essa ocorrência?”</h3>
+            <p>Depois de reconhecer uma entidade, observamos quais informações descrevem suas ocorrências. Em USUÁRIO, por exemplo, identificador, nome, data de nascimento e telefone são características que ajudam a descrever cada pessoa cadastrada.</p>
+            <div class="example-box"><strong>Estrutura conceitual</strong><code>USUÁRIO(identificador, nome, data_nascimento, telefone)</code><p>Aqui estamos mostrando <strong>quais características existem</strong>. Ainda não estamos definindo colunas SQL nem tipos físicos.</p></div>
+
+            <h3>Identificador responde: “qual ocorrência é esta?”</h3>
+            <p>Nem todo atributo identifica. O nome <strong>Ana</strong>, por exemplo, pode aparecer em mais de um usuário. Um identificador deve permitir distinguir uma ocorrência das demais sem ambiguidade.</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Descreve</h4><p><strong>nome</strong> informa uma característica da pessoa.</p></article>
+              <article class="mini-card"><h4>Identifica</h4><p><strong>identificador</strong> permite apontar exatamente qual usuário está sendo tratado.</p></article>
+            </div>
+            <p>Se o requisito não informa como algo é identificado, registre essa dúvida. Criar automaticamente um <code>id</code> é uma decisão de implementação e não resolve, por si só, a regra conceitual de identidade.</p>
+
+            <h3>Os atributos podem ser classificados por critérios diferentes</h3>
+            <p>Essas classificações não competem entre si. Elas respondem a perguntas diferentes sobre o mesmo atributo.</p>
+            <div class="study-table-wrap"><table class="study-table"><thead><tr><th>Pergunta</th><th>Classificação</th><th>O que significa</th><th>Exemplo</th></tr></thead><tbody>
+              <tr><td>Ele pode ser dividido?</td><td><strong>Simples</strong></td><td>É tratado como uma unidade no modelo.</td><td>capacidade</td></tr>
+              <tr><td>Ele pode ser dividido?</td><td><strong>Composto</strong></td><td>Possui partes que também interessam ao domínio.</td><td>endereço → CEP, cidade, logradouro</td></tr>
+              <tr><td>Quantos valores pode ter?</td><td><strong>Monovalorado</strong></td><td>Uma ocorrência possui um valor.</td><td>data_nascimento</td></tr>
+              <tr><td>Quantos valores pode ter?</td><td><strong>Multivalorado</strong></td><td>Uma ocorrência pode possuir vários valores.</td><td>telefone {1..N}</td></tr>
+              <tr><td>De onde vem?</td><td><strong>Armazenado</strong></td><td>É registrado diretamente.</td><td>data_nascimento</td></tr>
+              <tr><td>De onde vem?</td><td><strong>Derivado</strong></td><td>Pode ser obtido a partir de outros valores.</td><td>idade</td></tr>
+            </tbody></table></div>
+
+            <h3>Um mesmo atributo pode receber várias classificações</h3>
+            <div class="example-box"><strong>Exemplos</strong><code>data_nascimento → simples + monovalorado + armazenado
+telefone → simples + multivalorado + armazenado
+idade → simples + monovalorado + derivado</code><p>As categorias pertencem a eixos diferentes. Por isso, não escolhemos apenas uma classificação para cada atributo.</p></div>
+
+            <h3>Atributo ou entidade? Use o teste de independência</h3>
+            <p>Quando houver dúvida, pergunte se aquele elemento precisa existir e ser reconhecido por conta própria.</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>CAPACIDADE</h4><p>Não precisa de identidade nem possui informações próprias. Continua como atributo de SALA.</p></article>
+              <article class="mini-card"><h4>RESERVA</h4><p>Possui ocorrências próprias, dados próprios e histórico. Mais adiante veremos por que ela precisa aparecer como algo próprio no modelo.</p></article>
+            </div>
+
+            <h3>Um roteiro para repetir em outros problemas</h3>
+            <ol>
+              <li>localize um conceito relevante no requisito;</li>
+              <li>pergunte se existem ocorrências distintas desse conceito;</li>
+              <li>verifique quais informações pertencem a cada ocorrência;</li>
+              <li>identifique como cada ocorrência pode ser distinguida;</li>
+              <li>classifique atributos especiais quando isso ajudar a compreender a estrutura;</li>
+              <li>registre qualquer decisão que ainda dependa de validação.</li>
+            </ol>
+          </article>
+          <aside class="study-stack">
+            <div class="study-callout"><strong>Evite uma confusão comum</strong><p><strong>USUÁRIO</strong> é a entidade; <strong>Ana</strong> é uma ocorrência; <strong>nome</strong> é um atributo; <strong>“Ana”</strong> é um valor desse atributo em uma ocorrência específica.</p></div>
+            <div class="study-callout teal"><strong>Multivalorado</strong><p>Dizer que telefone é multivalorado significa apenas que um usuário pode possuir vários telefones. A forma de implementar isso será decidida no modelo relacional.</p></div>
+            <div class="study-callout violet"><strong>Pergunta-chave</strong><p>“Se eu tivesse vinte exemplos desse elemento, o que diferenciaria um do outro e quais informações eu precisaria guardar sobre cada um?”</p></div>
+          </aside>
+        </div>
       </div>
     </section>
 
