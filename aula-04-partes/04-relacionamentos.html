@@ -2,7 +2,7 @@
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Passo 4 · das conexões aos relacionamentos</p>
-      <h2 id="relacionamentos-title">Transforme as conexões encontradas no texto em relações entre entidades</h2>
+      <h2 id="relacionamentos-title">Transforme as conexões encontradas no texto em relacionamentos entre entidades</h2>
       <p>No Passo 1 identificamos que <strong>“um usuário reserva uma sala”</strong> é uma conexão importante do domínio. Depois reconhecemos USUÁRIO e SALA como entidades e distribuímos suas características. Agora voltamos àquela conexão para representá-la como um relacionamento.</p>
     </div>
 
@@ -157,7 +157,7 @@
 
         <h4>1. Começamos com o relacionamento direto</h4>
         <div class="participation-line"><div class="participation-node"><strong>USUÁRIO</strong><span>0..N</span></div><div class="participation-connector">reserva</div><div class="participation-node"><strong>SALA</strong><span>0..N</span></div></div>
-        <p>Esse modelo já informa que usuários podem reservar salas e que uma sala pode aparecer em diferentes reservas ao longo do tempo.</p>
+        <p>Esse modelo informa apenas que USUÁRIO e SALA podem estar associados pelo fato de reservar. Ele ainda <strong>não distingue diferentes ocorrências</strong> entre o mesmo usuário e a mesma sala ao longo do tempo.</p>
 
         <h4>2. Depois observamos os dados da ocorrência</h4>
         <div class="comparison-panel">
@@ -230,13 +230,18 @@
 
     <div class="concept-grid">
       <article class="concept-card"><span>Binário</span><strong>USUÁRIO reserva SALA</strong><p>Duas entidades participam do fato. Foi a estrutura inicial utilizada no nosso exemplo.</p><div class="entity-example">USUÁRIO ↔ SALA</div></article>
-      <article class="concept-card"><span>Recursivo</span><strong>FUNCIONÁRIO supervisiona FUNCIONÁRIO</strong><p>O mesmo tipo de entidade participa em papéis diferentes. Um funcionário pode atuar como supervisor e outro como supervisionado.</p><div class="entity-example">papéis: supervisor / subordinado</div></article>
-      <article class="concept-card"><span>Ternário</span><strong>FORNECEDOR fornece PEÇA para PROJETO</strong><p>O fato depende dos três participantes ao mesmo tempo. Uma quantidade fornecida, por exemplo, pode descrever exatamente essa combinação.</p><div class="entity-example">FORNECEDOR + PEÇA + PROJETO</div></article>
+      <article class="concept-card"><span>Recursivo</span><strong>FUNCIONÁRIO supervisiona FUNCIONÁRIO</strong><p>O mesmo tipo de entidade participa em papéis diferentes. Em um exemplo de regra, um supervisor pode supervisionar <code>0..N</code> funcionários e cada subordinado pode ter <code>0..1</code> supervisor.</p><div class="entity-example">papéis: supervisor / subordinado</div></article>
+      <article class="concept-card"><span>Ternário</span><strong>FORNECEDOR fornece PEÇA para PROJETO</strong><p>O fato depende dos três participantes ao mesmo tempo. Uma quantidade fornecida, por exemplo, descreve a combinação específica de fornecedor, peça e projeto.</p><div class="entity-example">FORNECEDOR + PEÇA + PROJETO</div></article>
+    </div>
+
+    <div class="rule-panel">
+      <h3>Um relacionamento ternário não deve ser reduzido automaticamente a três binários</h3>
+      <p>Se a regra de negócio depende da combinação simultânea dos três participantes, separar o fato em pares pode perder informação. Antes de decompor, verifique se os relacionamentos binários preservam exatamente a mesma semântica do requisito.</p>
     </div>
 
     <div class="activity-note diagram-ready-note">
-      <strong>Agora já existem decisões suficientes para construir o DER principal.</strong>
-      <p>Entidades, atributos, relacionamentos, cardinalidades, participação e o tratamento de RESERVA como entidade associativa já foram analisados. O identificador de RESERVA permanece registrado como uma questão a validar, em vez de ser inventado silenciosamente.</p>
+      <strong>Agora já existem decisões suficientes para construir o DER preliminar principal.</strong>
+      <p>Entidades, atributos, relacionamentos, cardinalidades, participação e o tratamento de RESERVA como entidade associativa já foram analisados. O identificador de RESERVA permanece registrado como uma questão a validar; por isso, o exemplo ainda é um modelo preliminar, e não uma especificação conceitual completamente validada.</p>
     </div>
   </div>
 </section>
