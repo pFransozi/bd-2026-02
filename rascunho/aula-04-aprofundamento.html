@@ -205,8 +205,69 @@ idade → simples + monovalorado + derivado</code><p>As categorias pertencem a e
 
     <section class="study-section alt" id="relacionamentos">
       <div class="container">
-        <div class="study-heading"><p class="study-kicker">4 · Relacionamentos</p><h2>Relacionamentos preservam fatos do domínio</h2><p>Quando duas ou mais entidades participam de um fato que precisa ser lembrado, esse fato pode ser representado por um relacionamento.</p></div>
-        <div class="study-grid"><article class="study-prose"><h3>Tipo de relacionamento e ocorrência</h3><p>Quando dizemos <strong>USUÁRIO reserva SALA</strong>, descrevemos um tipo de relacionamento. Uma ocorrência concreta poderia ser “Ana reserva Sala 201 às 10h”. Outra ocorrência pode envolver as mesmas entidades em outro momento.</p><div class="relation-map"><div class="relation-node">USUÁRIO</div><div class="relation-edge"><strong>reserva</strong>fato do domínio</div><div class="relation-node">SALA</div></div><h3>O relacionamento pode possuir atributos</h3><p>Algumas informações pertencem ao próprio fato. Um preço negociado entre FORNECEDOR e PRODUTO, por exemplo, pode depender daquela combinação específica.</p><h3>Relacionamento e relação não são sinônimos</h3><p>No Modelo ER usamos <strong>relacionamento</strong> para o fato que associa entidades. No modelo relacional, <strong>relação</strong> é o termo formal associado à estrutura tabular.</p></article><aside class="study-stack"><div class="study-callout"><strong>Leia como frase</strong><p>Uma boa forma de verificar o relacionamento é transformá-lo novamente em linguagem natural e conferir se a frase descreve corretamente o domínio.</p></div><div class="study-callout violet"><strong>Mesmo par, ocorrências diferentes</strong><p>O mesmo usuário e a mesma sala podem participar de várias reservas diferentes. Se o sistema precisa distingui-las, apenas o par USUÁRIO–SALA não é suficiente.</p></div></aside></div>
+        <div class="study-heading">
+          <p class="study-kicker">4 · Relacionamentos</p>
+          <h2>Relacionamentos representam fatos que conectam entidades</h2>
+          <p>Depois de identificar as entidades, a próxima pergunta é: <strong>o que acontece entre elas?</strong> O relacionamento registra um fato do domínio que envolve duas ou mais ocorrências.</p>
+        </div>
+        <div class="study-grid">
+          <article class="study-prose">
+            <h3>Comece pela frase do domínio</h3>
+            <p>No cenário de reserva de salas, temos duas entidades importantes: <strong>USUÁRIO</strong> e <strong>SALA</strong>. Saber que elas existem ainda não explica o que acontece entre elas. O requisito acrescenta um fato:</p>
+            <div class="example-box"><strong>Fato do domínio</strong><code>Um usuário reserva uma sala.</code><p>O verbo ajuda a tornar explícita a conexão. No DER, esse fato pode ser representado inicialmente pelo relacionamento <strong>reserva</strong>.</p></div>
+            <div class="relation-map"><div class="relation-node">USUÁRIO</div><div class="relation-edge"><strong>reserva</strong>fato que conecta</div><div class="relation-node">SALA</div></div>
+
+            <h3>Dê nome ao fato, não à linha do desenho</h3>
+            <p>O relacionamento deve expressar <strong>qual fato existe entre os participantes</strong>. Por isso, nomes como <em>realiza</em>, <em>utiliza</em>, <em>supervisiona</em> ou <em>fornece</em> costumam ser mais informativos do que nomes genéricos como “ligação” ou “associação”.</p>
+            <p>O nome não é escolhido apenas para o diagrama ficar legível. Ele precisa permitir que alguém transforme o desenho novamente em uma frase que faça sentido no domínio.</p>
+
+            <h3>Tipo de relacionamento e ocorrência não são a mesma coisa</h3>
+            <p>Assim como uma entidade possui ocorrências, um relacionamento também pode ser observado em casos concretos.</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Tipo de relacionamento</h4><p><strong>USUÁRIO reserva SALA</strong> descreve o tipo de fato que pode ocorrer.</p></article>
+              <article class="mini-card"><h4>Ocorrência do relacionamento</h4><p><strong>Ana reserva a Sala 201</strong> é um caso concreto desse fato.</p></article>
+            </div>
+            <p>Essa distinção será importante mais adiante, porque o sistema pode precisar registrar <strong>várias ocorrências diferentes</strong> de um mesmo tipo de relacionamento.</p>
+
+            <h3>Leia o relacionamento nos dois sentidos</h3>
+            <p>Uma forma simples de testar se o relacionamento está bem definido é transformá-lo em frases nos dois sentidos:</p>
+            <div class="example-box"><strong>Leitura</strong><code>USUÁRIO reserva SALA.
+SALA é reservada por USUÁRIO.</code><p>Se uma das leituras parecer estranha ou afirmar algo diferente do requisito, o relacionamento precisa ser revisto.</p></div>
+
+            <h3>Algumas informações pertencem ao próprio relacionamento</h3>
+            <p>Nem toda informação descreve apenas uma das entidades participantes. Em alguns casos, um valor só faz sentido para <strong>a combinação entre elas</strong>.</p>
+            <div class="example-box"><strong>Exemplo</strong><code>FORNECEDOR fornece PRODUTO
+atributo do relacionamento: preço_negociado</code><p>O preço negociado pode variar conforme a combinação fornecedor–produto. Nesse caso, ele descreve o fato de fornecimento, não apenas o fornecedor nem apenas o produto.</p></div>
+            <p>Uma pergunta útil é: <strong>“esse valor continuaria fazendo sentido se eu olhasse apenas para uma das entidades?”</strong> Se a resposta for não, ele pode pertencer ao relacionamento.</p>
+
+            <h3>O mesmo par pode participar de fatos diferentes</h3>
+            <p>Considere Ana reservando a Sala 201 às 10h e novamente às 15h. O par de participantes é o mesmo, mas os fatos são diferentes.</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Ocorrência A</h4><p>Ana · Sala 201 · 10h</p></article>
+              <article class="mini-card"><h4>Ocorrência B</h4><p>Ana · Sala 201 · 15h</p></article>
+            </div>
+            <p>Quando isso acontece, surge uma pergunta importante: <strong>o relacionamento simples consegue distinguir tudo o que o sistema precisa registrar?</strong> Ainda não precisamos resolver essa questão aqui; ela será retomada na seção sobre fatos que ganham identidade.</p>
+
+            <h3>Relacionamento e relação são conceitos diferentes</h3>
+            <p>No Modelo Entidade-Relacionamento, <strong>relacionamento</strong> representa um fato que conecta entidades. No modelo relacional, <strong>relação</strong> é o termo formal usado para a estrutura tabular. Manter os termos separados evita misturar o modelo conceitual com o modelo lógico.</p>
+
+            <h3>Um roteiro para identificar relacionamentos</h3>
+            <ol>
+              <li>identifique as entidades que participam do cenário;</li>
+              <li>pergunte <strong>o que acontece entre elas</strong>;</li>
+              <li>escreva esse fato como uma frase curta;</li>
+              <li>dê ao relacionamento um nome que preserve o significado da frase;</li>
+              <li>verifique se existem informações que pertencem ao próprio fato;</li>
+              <li>teste a leitura nos dois sentidos;</li>
+              <li>registre dúvidas sobre repetição, obrigatoriedade ou quantidade para analisar nas etapas seguintes.</li>
+            </ol>
+          </article>
+          <aside class="study-stack">
+            <div class="study-callout"><strong>A linha não é o relacionamento</strong><p>A linha é apenas parte da notação gráfica. O relacionamento é o <strong>fato do domínio</strong> que aquela ligação representa.</p></div>
+            <div class="study-callout teal"><strong>Pergunta-chave</strong><p>“Se eu apagar a linha e tiver de explicar a conexão em uma frase, qual fato preciso dizer?”</p></div>
+            <div class="study-callout violet"><strong>Prepare a próxima etapa</strong><p>Depois de descobrir <strong>qual fato conecta as entidades</strong>, a próxima pergunta é <strong>quantas ocorrências podem ou devem participar dele</strong>. É aí que entram cardinalidade e participação.</p></div>
+          </aside>
+        </div>
       </div>
     </section>
 
