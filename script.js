@@ -38,8 +38,20 @@ const enhanceReorganizationSection = () => {
   }
 };
 
+const enhanceAula04Draft = () => {
+  if (!window.location.pathname.endsWith('/rascunho/aula-04-aprofundamento.html')) return;
+
+  const heading = document.querySelector('#requisitos .study-heading h2');
+  if (heading) {
+    heading.textContent = 'O DER resulta da análise dos requisitos, das regras do domínio e das relações que precisam ser representadas';
+  }
+};
+
 const coreScript = document.createElement('script');
 coreScript.src = 'script-core.js';
-coreScript.onload = enhanceReorganizationSection;
+coreScript.onload = () => {
+  enhanceReorganizationSection();
+  enhanceAula04Draft();
+};
 coreScript.onerror = () => console.error('Não foi possível carregar o script principal da página.');
 document.head.appendChild(coreScript);
