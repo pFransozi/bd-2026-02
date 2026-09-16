@@ -356,7 +356,7 @@ FROM reserva
 WHERE id_reserva = 1;
 """)</code></pre></div>
 
-      <div class="callout warn"><strong>Analise, mas não execute agora</strong><p><code>UPDATE reserva SET situacao = 'cancelada';</code> não possui <code>WHERE</code>. O comando é válido e pode alterar <strong>todas</strong> as reservas.</p></div>
+      <div class="callout warn"><strong>Analise, mas não execute agora</strong><p><code>UPDATE reserva SET situacao = 'cancelada';</code> não possui <code>WHERE</code>. O comando é válido e pode alterar <span style="white-space:nowrap"><strong>todas</strong> as reservas</span>.</p></div>
 
       <div class="dml-heading section-heading" style="margin-top:2.4rem"><p class="dml-kicker eyebrow">DELETE</p><h2>Excluir também exige saber exatamente o que será atingido</h2><p>Antes de apagar uma ocorrência, localize-a com a mesma condição.</p></div>
       <div class="sql-block"><span class="sql-label">1 · localize</span><pre><code>consultar("""
@@ -411,16 +411,6 @@ DELETE FROM usuario
 WHERE id_usuario = 100;
 """)</code></pre></div><div class="prediction"><span>Existe reserva associada?</span><span>O DELETE será aceito?</span><span>Qual regra explica?</span></div></article>
       </div>
-
-      <div class="challenge-box" style="margin-top:2rem"><h3>Desafio em dupla · uma pequena história no banco</h3><p>Sem receber os comandos prontos, representem esta sequência:</p><ol>
-        <li>Cadastrem Camila como usuária.</li>
-        <li>Cadastrem dois telefones para ela.</li>
-        <li>Cadastrem a Sala Pinheiro, capacidade 8, no Bloco B.</li>
-        <li>Registrem uma reserva da Sala Pinheiro para 30/09/2026 às 19:00.</li>
-        <li>Consultem a reserva para confirmar os dados.</li>
-        <li>Cancelem a reserva e confirmem a alteração.</li>
-        <li>Escolham um registro que possa ser removido e façam <code>SELECT → DELETE → SELECT</code>.</li>
-      </ol><p>Ao final, provoquem intencionalmente um erro de PK, um de FK e um de <code>CHECK</code>. Para cada erro, expliquem qual regra do banco impediu a operação.</p></div>
     </div></section>
 
     <section class="dml-section section-pad" id="sintese"><div class="container">
