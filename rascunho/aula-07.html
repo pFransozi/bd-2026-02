@@ -101,16 +101,74 @@
     </div></section>
 
     <section class="dml-section" id="retomada"><div class="container">
-      <div class="dml-heading"><p class="dml-kicker">1 · Retomada</p><h2>Onde terminamos na Aula 06?</h2><p>O percurso já passou por requisitos, MER, DER, modelo relacional, normalização e criação das tabelas.</p></div>
-      <div class="path-strip"><span>Domínio</span><b>→</b><span>MER / DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>CREATE TABLE</span><b>→</b><span>Dados</span></div>
-      <div class="three-grid">
-        <article class="card"><h3>USUARIO</h3><p><code>id_usuario</code> identifica cada usuário; <code>nome</code> é obrigatório.</p></article>
-        <article class="card"><h3>SALA</h3><p><code>id_sala</code> identifica a sala; cada sala referencia um bloco.</p></article>
-        <article class="card"><h3>RESERVA</h3><p><code>id_reserva</code> identifica a ocorrência e conecta um usuário a uma sala em data e horário determinados.</p></article>
+      <div class="dml-heading">
+        <p class="dml-kicker">1 · Retomada</p>
+        <h2>Antes de manipular dados, recupere o que já está pronto</h2>
+        <p>Na Aula 06 chegamos a um ponto importante: o domínio já foi interpretado, o modelo foi transformado em relações, a estrutura foi normalizada e as tabelas foram criadas. Portanto, nesta aula não vamos começar um novo banco. Vamos continuar trabalhando sobre aquilo que já construímos.</p>
       </div>
-      <div class="callout ok"><strong>Estrutura e dados são coisas diferentes</strong><p><code>CREATE TABLE</code> define como os dados podem existir. Nesta aula, <code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> vão manipular ocorrências concretas.</p></div>
-      <div class="sql-block"><span class="sql-label">Preparação técnica da conexão</span><pre><code>PRAGMA foreign_keys = ON;</code></pre></div>
-      <div class="callout"><strong>Por que executar isso no início?</strong><p>Para que as chaves estrangeiras sejam efetivamente verificadas durante os testes da aula. Assim, uma referência para um usuário, sala ou bloco inexistente será rejeitada.</p></div>
+
+      <div class="path-strip"><span>Domínio e requisitos</span><b>→</b><span>MER / DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>CREATE TABLE</span><b>→</b><span>Manipulação dos dados</span></div>
+
+      <div class="three-grid">
+        <article class="card"><h3>1. O domínio disse o que existe</h3><p>Identificamos usuários, salas, reservas, blocos e as regras que conectam essas informações.</p></article>
+        <article class="card"><h3>2. O modelo organizou essas informações</h3><p>Entidades e relacionamentos foram transformados em relações com chaves primárias, chaves estrangeiras e atributos bem definidos.</p></article>
+        <article class="card"><h3>3. A DDL criou a estrutura</h3><p>Com <code>CREATE TABLE</code>, aquilo que estava no modelo passou a existir como estrutura no banco de dados.</p></article>
+      </div>
+
+      <div class="callout ok"><strong>Até aqui criamos estrutura, não ocorrências</strong><p>Uma tabela pode existir perfeitamente sem possuir nenhuma linha. A definição diz quais colunas existem e quais regras devem ser respeitadas; os registros concretos ainda precisam ser inseridos.</p></div>
+
+      <div class="two-grid">
+        <article class="card">
+          <h3>Estrutura</h3>
+          <p>Define quais dados podem existir.</p>
+          <div class="sql-block"><span class="sql-label">Exemplo de estrutura</span><pre><code>USUARIO(
+    id_usuario PRIMARY KEY,
+    nome NOT NULL
+)</code></pre></div>
+        </article>
+        <article class="card">
+          <h3>Ocorrência</h3>
+          <p>É um caso concreto armazenado nessa estrutura.</p>
+          <div class="sql-block"><span class="sql-label">Exemplo de ocorrência</span><pre><code>id_usuario = 17
+nome = 'Marina Lopes'</code></pre></div>
+        </article>
+      </div>
+
+      <div class="callout"><strong>Não confunda tabela com registro</strong><p><strong>USUARIO</strong> é a estrutura que representa o tipo de informação. Marina Lopes é uma ocorrência que poderá ocupar uma linha dessa tabela. Essa distinção será importante para entender o que os comandos de DML realmente modificam.</p></div>
+
+      <div class="dml-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker">Leia novamente o esquema</p>
+        <h2>Que regras já estão esperando pelos dados?</h2>
+        <p>Antes do primeiro <code>INSERT</code>, vale observar que as tabelas não estão vazias de significado. Mesmo sem registros, elas já possuem regras que vão decidir quais operações podem ou não ser aceitas.</p>
+      </div>
+
+      <div class="three-grid">
+        <article class="card"><h3>USUARIO</h3><p><code>id_usuario</code> identifica uma ocorrência de forma única. O nome é obrigatório.</p><p><strong>Pergunta:</strong> o que acontecerá se tentarmos usar o mesmo identificador duas vezes?</p></article>
+        <article class="card"><h3>SALA</h3><p>Cada sala possui identidade própria e referencia um bloco existente.</p><p><strong>Pergunta:</strong> podemos cadastrar uma sala apontando para um bloco que ainda não existe?</p></article>
+        <article class="card"><h3>RESERVA</h3><p>Cada reserva referencia um usuário e uma sala e registra uma ocorrência em determinada data e horário.</p><p><strong>Pergunta:</strong> podemos reservar uma sala para um usuário inexistente?</p></article>
+      </div>
+
+      <div class="dml-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker">A virada desta aula</p>
+        <h2>Da definição da estrutura para as operações sobre os dados</h2>
+        <p>Até agora perguntávamos principalmente <strong>“como o banco deve ser organizado?”</strong>. A partir daqui a pergunta muda: <strong>“o que acontece quando tentamos inserir, alterar ou excluir uma ocorrência?”</strong></p>
+      </div>
+
+      <div class="three-grid">
+        <article class="card"><h3><code>INSERT</code></h3><p>Cria novas ocorrências nas tabelas.</p></article>
+        <article class="card"><h3><code>UPDATE</code></h3><p>Altera valores de ocorrências que já existem.</p></article>
+        <article class="card"><h3><code>DELETE</code></h3><p>Remove ocorrências, desde que as regras do banco permitam.</p></article>
+      </div>
+
+      <div class="callout ok"><strong>O banco passa a responder às nossas tentativas</strong><p>Quando uma operação for aceita, observaremos a mudança produzida. Quando for rejeitada, usaremos a mensagem de erro para identificar qual regra da estrutura foi violada.</p></div>
+
+      <div class="dml-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker">Antes dos testes</p>
+        <h2>Ative a verificação das chaves estrangeiras na conexão</h2>
+        <p>Os próximos exemplos dependem da verificação das referências entre as tabelas. Execute o comando abaixo antes de iniciar os testes.</p>
+      </div>
+      <div class="sql-block"><span class="sql-label">Preparação da conexão</span><pre><code>PRAGMA foreign_keys = ON;</code></pre></div>
+      <div class="callout"><strong>O que isso muda?</strong><p>A partir daqui, uma sala não poderá apontar para um bloco inexistente e uma reserva não poderá apontar para usuário ou sala inexistentes. Se a conexão do notebook for recriada, execute essa preparação novamente antes dos testes.</p></div>
     </div></section>
 
     <section class="dml-section alt" id="insert"><div class="container">
