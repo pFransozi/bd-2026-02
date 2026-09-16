@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Aula 07 de Banco de Dados: preparação do ambiente no Google Colab e prática de DML com INSERT, SELECT, UPDATE, DELETE e regras de integridade em SQLite.">
+  <meta name="theme-color" content="#0f172a">
+  <title>Aula 07 · Manipulação de dados e integridade | Banco de Dados</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+  <style>
+    .lesson-dml{background:var(--bg);color:var(--text)}
+    .dml-hero{padding:5.6rem 0 4.4rem;background:radial-gradient(circle at 88% 15%,rgba(49,94,251,.15),transparent 28rem),radial-gradient(circle at 10% 85%,rgba(22,165,163,.10),transparent 24rem),var(--bg)}
+    .dml-hero-grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(280px,.72fr);gap:3rem;align-items:end}
+    .dml-kicker{margin:0 0 .7rem;color:var(--primary);font-size:.78rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+    .dml-hero h1{margin:0;max-width:980px;font-size:clamp(3rem,6vw,5.7rem);line-height:.96;letter-spacing:-.055em}
+    .dml-lead{max-width:880px;margin:1.45rem 0 0;color:var(--muted);font-size:clamp(1.12rem,2vw,1.35rem)}
+    .dml-meta{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.25rem}.dml-meta span{padding:.38rem .72rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-size:.82rem}
+    .guiding-card,.card,.practice-card{padding:1.25rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+    .guiding-card strong{display:block;margin-bottom:.55rem;color:var(--primary)}.guiding-card blockquote{margin:0;font-size:1.18rem;line-height:1.45;font-weight:800}
+    .dml-toc-shell{position:sticky;top:76px;z-index:60;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(14px)}
+    .dml-toc{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.5rem;padding:.82rem 0}.dml-toc a{padding:.68rem .5rem;border:1px solid var(--line);border-radius:12px;text-align:center;text-decoration:none;color:var(--muted);background:var(--surface);font-size:.73rem;font-weight:850;line-height:1.2}
+    .dml-section{padding:5rem 0;scroll-margin-top:150px}.dml-section.alt{background:var(--surface-soft)}
+    .dml-heading{max-width:1000px;margin-bottom:2rem}.dml-heading h2{margin:0;font-size:clamp(2.1rem,4vw,3.5rem);line-height:1.04;letter-spacing:-.045em}.dml-heading>p:last-child{margin:1rem 0 0;color:var(--muted);font-size:1.04rem}
+    .overview-grid,.two-grid,.three-grid,.four-grid{display:grid;gap:1rem}.overview-grid,.two-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.three-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.four-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card h3,.practice-card h3{margin:.05rem 0 .55rem}.card p,.card li,.practice-card p{color:var(--muted)}.card ul{padding-left:1.2rem;margin:.65rem 0 0}
+    .skill-line{display:grid;grid-template-columns:auto 1fr;gap:.65rem;align-items:start;padding:.7rem 0;border-bottom:1px solid var(--line)}.skill-line:last-child{border-bottom:0}.skill-line strong{min-width:3rem;color:var(--primary)}.skill-line span{color:var(--muted)}
+    .path-strip{display:flex;align-items:center;justify-content:center;gap:.65rem;flex-wrap:wrap;margin:1.3rem 0;padding:1.2rem;border:1px solid var(--line);border-radius:18px;background:var(--surface)}.path-strip span{padding:.72rem .9rem;border-radius:999px;background:color-mix(in srgb,var(--primary) 8%,var(--surface));font-size:.87rem;font-weight:850}.path-strip b{color:var(--primary)}
+    body.teaching-page.lesson-dml .sql-block{margin:1rem 0;overflow:hidden;border:1px solid var(--ensino-line);border-radius:var(--ensino-radius-sm);background:var(--ensino-code-bg);color:var(--ensino-code-text);box-shadow:none}
+    body.teaching-page.lesson-dml .sql-label{display:block;padding:.55rem .85rem;border-bottom:1px solid var(--ensino-line);background:var(--ensino-surface);color:var(--ensino-muted);font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+    body.teaching-page.lesson-dml .sql-block pre{margin:0;padding:1rem 1.05rem;border:0;border-radius:0;background:transparent;color:var(--ensino-code-text);box-shadow:none;font-size:.9rem;line-height:1.65;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+    body.teaching-page.lesson-dml .sql-block code{background:transparent;color:inherit;font-family:inherit}
+    .callout{padding:1.05rem 1.15rem;margin:1.2rem 0;border-left:4px solid var(--primary);border-radius:0 16px 16px 0;background:color-mix(in srgb,var(--primary) 8%,var(--surface))}.callout>strong{display:block;margin-bottom:.35rem;color:var(--primary)}.callout p{margin:0;color:var(--muted)}.callout.warn{border-left-color:#d97706;background:color-mix(in srgb,#d97706 8%,var(--surface))}.callout.warn>strong{color:#d97706}.callout.ok{border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--surface))}.callout.ok>strong{color:var(--accent)}
+    .constraint-table-wrap{overflow-x:auto;margin:1.25rem 0;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.constraint-table{width:100%;border-collapse:collapse;min-width:760px}.constraint-table th,.constraint-table td{padding:.82rem .9rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.constraint-table th{background:color-mix(in srgb,var(--primary) 9%,var(--surface));font-size:.8rem}.constraint-table td{color:var(--muted);font-size:.9rem}.constraint-table tr:last-child td{border-bottom:0}
+    .practice-list{display:grid;gap:1rem}.practice-card{position:relative;padding-left:5.4rem!important}.practice-card .n{position:absolute;left:1.25rem;top:1.25rem;display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:12px;background:var(--primary);color:#fff;font-weight:900}.practice-card>h3{min-height:2.4rem;display:flex;align-items:center;margin-top:0}
+    @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}.three-grid,.four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:900px){.dml-hero-grid,.overview-grid,.two-grid{grid-template-columns:1fr}}
+    @media(max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc,.three-grid,.four-grid{grid-template-columns:1fr}.dml-section{padding:4rem 0;scroll-margin-top:90px}.practice-card{padding-left:1.25rem!important;padding-top:4.8rem!important}.practice-card>h3{min-height:0}}
+  </style>
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+</head>
+<body class="teaching-page teaching-lesson lesson-dml">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+        <a href="index.html">Página principal</a><a href="aula-06.html">Aula 06</a><a href="#pratica">Prática</a>
+        <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="standard-shell standard-page-grid">
+  <main id="conteudo">
+    <section class="dml-hero lesson-hero section-pad">
+      <div class="container dml-hero-grid lesson-hero-grid">
+        <div>
+          <p class="dml-kicker eyebrow">Aula 07</p>
+          <h1>Manipulação de dados e integridade</h1>
+          <p class="dml-lead lesson-hero-lead">Na aula anterior organizamos e implementamos a estrutura do banco. Agora vamos usar essa estrutura: inserir dados, conferir o que foi gravado, alterar ocorrências e testar o que acontece quando uma operação viola alguma regra.</p>
+          <div class="dml-meta"><span>SQLite</span><span>INSERT</span><span>SELECT</span><span>UPDATE</span><span>DELETE</span><span>Integridade</span></div>
+        </div>
+        <aside class="guiding-card guiding-question"><strong>Pergunta-guia</strong><blockquote>Como inserir, consultar, alterar e excluir dados sem violar as regras do banco?</blockquote></aside>
+      </div>
+    </section>
+
+    <div class="dml-toc-shell standard-toc"><nav class="container dml-toc" aria-label="Sumário da aula"><a href="#visao">Visão</a><a href="#ambiente">Ambiente</a><a href="#retomada">Retomada</a><a href="#insert">INSERT</a><a href="#integridade">Integridade</a><a href="#alterar">UPDATE/DELETE</a><a href="#pratica">Prática</a><a href="#sintese">Síntese</a></nav></div>
+
+    <section class="dml-section section-pad section-soft alt" id="visao"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">Visão da aula</p><h2>O que vamos desenvolver</h2><p>A aula será prática. Vamos preparar um banco conhecido, executar operações sobre ele e usar os próprios resultados — inclusive os erros — para compreender DML e integridade.</p></div>
+      <div class="overview-grid lesson-overview-grid">
+        <article class="card"><span class="overview-icon">OBJ</span><h3>Objetivos de aprendizagem</h3><ul>
+          <li>Preparar uma conexão com um banco SQLite em ambiente de notebook.</li>
+          <li>Inserir dados com <code>INSERT</code> e conferi-los com <code>SELECT</code>.</li>
+          <li>Localizar registros com <code>WHERE</code> antes de modificá-los.</li>
+          <li>Alterar dados com <code>UPDATE</code> e remover dados com <code>DELETE</code>.</li>
+          <li>Interpretar violações de PK, FK, <code>NOT NULL</code>, <code>CHECK</code> e <code>UNIQUE</code>.</li>
+          <li>Observar o efeito de <code>DEFAULT</code> e da integridade referencial.</li>
+        </ul></article>
+        <article class="card competency-card"><span class="overview-icon">C/H</span><h3>Competências e habilidades mobilizadas</h3>
+          <div class="skill-line"><strong>C2</strong><span><strong>H6 e H8:</strong> aplicar procedimentos de manipulação que preservem a consistência dos dados e compreender como essas decisões afetam a manutenção do sistema.</span></div>
+          <div class="skill-line"><strong>C3</strong><span><strong>H9:</strong> identificar requisitos e regras de integridade que precisam ser garantidos pela estrutura do banco.</span></div>
+          <div class="skill-line"><strong>C10</strong><span><strong>H34:</strong> explicar comandos, resultados e mensagens de erro com linguagem técnica adequada.</span></div>
+          <div class="skill-line"><strong>C11</strong><span><strong>H36 e H38:</strong> aplicar boas práticas na manipulação consistente dos dados.</span></div>
+        </article>
+      </div>
+    </div></section>
+
+    <section class="dml-section section-pad" id="ambiente"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">0 · Preparando o ambiente</p><h2>Antes de manipular os dados, precisamos preparar a estrutura do banco</h2><p>O notebook executa Python. Para acessar um banco usamos um driver; nesta aula, o módulo <code>sqlite3</code>. Abrir a conexão cria o arquivo do banco, mas <strong>não cria automaticamente as tabelas</strong>. Por isso vamos preparar a conexão e carregar a estrutura antes do primeiro <code>INSERT</code>.</p></div>
+
+      <div class="path-strip"><span>Notebook / Python</span><b>→</b><span>sqlite3</span><b>→</b><span>arquivo .db</span><b>→</b><span>tabelas</span><b>→</b><span>DML</span></div>
+
+      <div class="three-grid">
+        <article class="card"><h3>Python</h3><p>Executa as células do notebook.</p></article>
+        <article class="card"><h3><code>sqlite3</code></h3><p>É o driver/conector que permite ao Python enviar SQL ao SQLite.</p></article>
+        <article class="card"><h3>SQLite</h3><p>Armazena o banco em um arquivo e executa os comandos SQL enviados pelo notebook.</p></article>
+      </div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Célula 1</p><h2>Abra a conexão e ative as chaves estrangeiras</h2><p>Execute esta célula no início da aula.</p></div>
+      <div class="sql-block"><span class="sql-label">Python · conexão</span><pre><code>import sqlite3
+
+conexao = sqlite3.connect("reserva_salas.db")
+cursor = conexao.cursor()
+
+cursor.execute("PRAGMA foreign_keys = ON;")
+
+print("Conexão aberta.")</code></pre></div>
+
+      <div class="callout"><strong>Importante</strong><p><code>sqlite3.connect(...)</code> cria o arquivo se ele não existir. Nesse momento o arquivo ainda pode estar vazio: nenhuma tabela foi criada apenas por abrir a conexão.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Célula 2 · preparação do laboratório</p><h2>Crie a estrutura que vamos usar durante a prática</h2><p>O conteúdo de hoje não é reaprender <code>CREATE TABLE</code>. A célula abaixo apenas reconstrói, de uma vez, o esquema que já conhecemos e acrescenta algumas restrições que serão testadas durante a aula. Execute a célula inteira antes de começar os <code>INSERT</code>s.</p></div>
+
+      <div class="sql-block"><span class="sql-label">Python · criando as tabelas do laboratório</span><pre><code>cursor.executescript("""
+DROP TABLE IF EXISTS reserva;
+DROP TABLE IF EXISTS telefone_usuario;
+DROP TABLE IF EXISTS sala;
+DROP TABLE IF EXISTS usuario;
+DROP TABLE IF EXISTS bloco;
+
+CREATE TABLE usuario (
+    id_usuario INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL
+);
+
+CREATE TABLE telefone_usuario (
+    id_usuario INTEGER NOT NULL,
+    telefone TEXT NOT NULL,
+    PRIMARY KEY (id_usuario, telefone),
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE bloco (
+    id_bloco INTEGER PRIMARY KEY,
+    nome_bloco TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE sala (
+    id_sala INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    capacidade INTEGER NOT NULL CHECK (capacidade > 0),
+    id_bloco INTEGER NOT NULL,
+    FOREIGN KEY (id_bloco)
+        REFERENCES bloco(id_bloco)
+        ON DELETE RESTRICT
+);
+
+CREATE TABLE reserva (
+    id_reserva INTEGER PRIMARY KEY,
+    id_usuario INTEGER NOT NULL,
+    id_sala INTEGER NOT NULL,
+    data TEXT NOT NULL,
+    hora_inicio TEXT NOT NULL,
+    situacao TEXT NOT NULL DEFAULT 'ativa'
+        CHECK (situacao IN ('ativa', 'cancelada', 'concluida')),
+
+    UNIQUE (id_sala, data, hora_inicio),
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario)
+        ON DELETE RESTRICT,
+    FOREIGN KEY (id_sala)
+        REFERENCES sala(id_sala)
+        ON DELETE RESTRICT
+);
+""")
+
+conexao.commit()
+print("Estrutura criada.")</code></pre></div>
+
+      <div class="callout warn"><strong>Ao executar novamente, os dados anteriores serão apagados</strong><p>Os comandos <code>DROP TABLE IF EXISTS</code> servem para deixar todos os estudantes no mesmo ponto de partida. Use esta célula para reiniciar o laboratório quando necessário.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Célula 3</p><h2>Confirme que as tabelas realmente existem</h2><p>Antes de inserir qualquer dado, vamos verificar o catálogo interno do SQLite.</p></div>
+      <div class="sql-block"><span class="sql-label">Python · conferindo a estrutura</span><pre><code>cursor.execute("""
+SELECT name
+FROM sqlite_master
+WHERE type = 'table'
+ORDER BY name;
+""")
+
+for tabela in cursor.fetchall():
+    print(tabela[0])</code></pre></div>
+      <div class="callout ok"><strong>Resultado esperado</strong><p>Devem aparecer <code>bloco</code>, <code>reserva</code>, <code>sala</code>, <code>telefone_usuario</code> e <code>usuario</code>. Só depois dessa conferência começaremos o DML.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Uma ajuda para os testes</p><h2>Vamos criar duas funções pequenas</h2><p>Elas não substituem o SQL. Apenas evitam repetir o código Python de conexão a cada exemplo e mantêm a aula focada nos comandos do banco.</p></div>
+      <div class="sql-block"><span class="sql-label">Python · executar e consultar</span><pre><code>def executar(sql):
+    try:
+        cursor.execute(sql)
+        conexao.commit()
+        print("✓ Operação executada")
+    except sqlite3.Error as erro:
+        conexao.rollback()
+        print("✗ Erro:", erro)
+
+
+def consultar(sql):
+    cursor.execute(sql)
+    colunas = [descricao[0] for descricao in cursor.description]
+    linhas = cursor.fetchall()
+    print(colunas)
+    for linha in linhas:
+        print(linha)</code></pre></div>
+    </div></section>
+
+    <section class="dml-section section-pad section-soft alt" id="retomada"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">1 · Retomada</p><h2>A estrutura já está pronta. Agora vamos usar o banco.</h2><p>Nas aulas anteriores percorremos o caminho do domínio até as tabelas. Hoje não vamos redesenhar nem normalizar novamente: vamos observar como as decisões do modelo aparecem quando os dados começam a entrar.</p></div>
+      <div class="path-strip"><span>Domínio</span><b>→</b><span>DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>Estrutura</span><b>→</b><span>Dados</span></div>
+
+      <div class="three-grid">
+        <article class="card"><h3>USUARIO</h3><p>Cada usuário possui um identificador único e um nome obrigatório.</p></article>
+        <article class="card"><h3>SALA</h3><p>Cada sala pertence a um bloco e possui uma capacidade válida.</p></article>
+        <article class="card"><h3>RESERVA</h3><p>Cada reserva aponta para um usuário e uma sala em determinada data e horário.</p></article>
+      </div>
+
+      <div class="callout ok"><strong>A pergunta muda</strong><p>Antes perguntávamos “como organizar o banco?”. A partir daqui vamos perguntar: <strong>“essa operação deve ser aceita?”</strong> e <strong>“como confirmamos o que aconteceu?”</strong></p></div>
+
+      <div class="four-grid">
+        <article class="card"><h3><code>INSERT</code></h3><p>Insere uma nova ocorrência.</p></article>
+        <article class="card"><h3><code>SELECT</code></h3><p>Mostra e localiza os dados armazenados.</p></article>
+        <article class="card"><h3><code>UPDATE</code></h3><p>Altera ocorrências existentes.</p></article>
+        <article class="card"><h3><code>DELETE</code></h3><p>Remove ocorrências quando as regras permitem.</p></article>
+      </div>
+    </div></section>
+
+    <section class="dml-section section-pad" id="insert"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">2 · INSERT + SELECT</p><h2>Insira um pouco. Confira logo depois.</h2><p>Vamos povoar o banco na ordem das dependências. Após cada inserção, use <code>SELECT</code> para verificar o resultado.</p></div>
+
+      <div class="sql-block"><span class="sql-label">1 · blocos</span><pre><code>executar("""
+INSERT INTO bloco (id_bloco, nome_bloco)
+VALUES
+    (1, 'Bloco A'),
+    (2, 'Bloco B'),
+    (3, 'Bloco C');
+""")
+
+consultar("SELECT * FROM bloco;")</code></pre></div>
+
+      <div class="sql-block"><span class="sql-label">2 · usuários</span><pre><code>executar("""
+INSERT INTO usuario (id_usuario, nome)
+VALUES
+    (17, 'Marina Lopes'),
+    (42, 'Gustavo Neri'),
+    (8, 'Larissa Moura');
+""")
+
+consultar("SELECT * FROM usuario;")</code></pre></div>
+
+      <div class="sql-block"><span class="sql-label">3 · telefones</span><pre><code>executar("""
+INSERT INTO telefone_usuario (id_usuario, telefone)
+VALUES
+    (17, '41987651223'),
+    (17, '41991128080'),
+    (42, '41984327710');
+""")
+
+consultar("SELECT * FROM telefone_usuario;")</code></pre></div>
+
+      <div class="sql-block"><span class="sql-label">4 · salas</span><pre><code>executar("""
+INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+VALUES
+    (204, 'Sala Ipê', 6, 2),
+    (118, 'Sala Araucária', 8, 1),
+    (305, 'Sala Horizonte', 4, 3);
+""")
+
+consultar("SELECT * FROM sala;")</code></pre></div>
+
+      <div class="callout"><strong>Por que essa ordem?</strong><p><code>SALA</code> depende de <code>BLOCO</code>; <code>TELEFONE_USUARIO</code> depende de <code>USUARIO</code>; <code>RESERVA</code> dependerá de <code>USUARIO</code> e <code>SALA</code>. A ordem dos <code>INSERT</code>s acompanha as FKs.</p></div>
+
+      <div class="sql-block"><span class="sql-label">5 · primeira reserva</span><pre><code>executar("""
+INSERT INTO reserva (
+    id_reserva, id_usuario, id_sala, data, hora_inicio
+)
+VALUES (
+    1, 17, 204, '2026-09-18', '18:30'
+);
+""")
+
+consultar("SELECT * FROM reserva;")</code></pre></div>
+
+      <div class="callout ok"><strong>Observe a coluna <code>situacao</code></strong><p>Ela não apareceu no <code>INSERT</code>, mas a consulta deve mostrar <code>ativa</code>. A estrutura aplicou o valor definido como <code>DEFAULT</code>.</p></div>
+    </div></section>
+
+    <section class="dml-section section-pad section-soft alt" id="integridade"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">3 · Laboratório de integridade</p><h2>Preveja antes de executar</h2><p>Agora vamos provocar erros de propósito. Em cada teste, responda primeiro: <strong>vai funcionar?</strong> Depois execute e interprete a mensagem retornada.</p></div>
+
+      <div class="constraint-table-wrap"><table class="constraint-table"><thead><tr><th>Regra</th><th>O que protege</th><th>Teste desta aula</th></tr></thead><tbody>
+        <tr><td><code>PRIMARY KEY</code></td><td>Identidade única</td><td>Repetir <code>id_usuario</code></td></tr>
+        <tr><td><code>FOREIGN KEY</code></td><td>Referências válidas</td><td>Usar bloco ou usuário inexistente</td></tr>
+        <tr><td><code>NOT NULL</code></td><td>Dados obrigatórios</td><td>Inserir nome nulo</td></tr>
+        <tr><td><code>CHECK</code></td><td>Valores válidos</td><td>Capacidade negativa ou situação inválida</td></tr>
+        <tr><td><code>UNIQUE</code></td><td>Combinações que não podem repetir</td><td>Duas reservas da mesma sala no mesmo horário</td></tr>
+      </tbody></table></div>
+
+      <div class="practice-list">
+        <article class="practice-card"><span class="n">1</span><h3>PK duplicada</h3><div class="sql-block"><pre><code>executar("""
+INSERT INTO usuario (id_usuario, nome)
+VALUES (17, 'Outra pessoa');
+""")</code></pre></div></article>
+
+        <article class="practice-card"><span class="n">2</span><h3>FK para bloco inexistente</h3><div class="sql-block"><pre><code>executar("""
+INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+VALUES (500, 'Sala Teste', 5, 99);
+""")</code></pre></div></article>
+
+        <article class="practice-card"><span class="n">3</span><h3>CHECK de capacidade</h3><div class="sql-block"><pre><code>executar("""
+INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+VALUES (501, 'Sala Impossível', -3, 1);
+""")</code></pre></div></article>
+
+        <article class="practice-card"><span class="n">4</span><h3>Situação inválida</h3><div class="sql-block"><pre><code>executar("""
+INSERT INTO reserva (
+    id_reserva, id_usuario, id_sala, data, hora_inicio, situacao
+)
+VALUES (
+    2, 42, 118, '2026-09-19', '19:00', 'aguardando'
+);
+""")</code></pre></div></article>
+
+        <article class="practice-card"><span class="n">5</span><h3>Reserva repetida no mesmo horário</h3><div class="sql-block"><pre><code>executar("""
+INSERT INTO reserva (
+    id_reserva, id_usuario, id_sala, data, hora_inicio
+)
+VALUES (
+    3, 42, 204, '2026-09-18', '18:30'
+);
+""")</code></pre></div></article>
+      </div>
+    </div></section>
+
+    <section class="dml-section section-pad" id="alterar"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">4 · UPDATE e DELETE</p><h2>Primeiro localize. Depois modifique.</h2><p>Para alterar ou excluir com segurança, vamos adotar uma rotina simples: <strong>SELECT → conferir → UPDATE/DELETE → SELECT novamente</strong>.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.4rem"><p class="dml-kicker eyebrow">UPDATE</p><h2>Cancele a reserva que criamos</h2></div>
+      <div class="sql-block"><span class="sql-label">1 · localize</span><pre><code>consultar("""
+SELECT *
+FROM reserva
+WHERE id_reserva = 1;
+""")</code></pre></div>
+      <div class="sql-block"><span class="sql-label">2 · altere</span><pre><code>executar("""
+UPDATE reserva
+SET situacao = 'cancelada'
+WHERE id_reserva = 1;
+""")</code></pre></div>
+      <div class="sql-block"><span class="sql-label">3 · confira</span><pre><code>consultar("""
+SELECT *
+FROM reserva
+WHERE id_reserva = 1;
+""")</code></pre></div>
+
+      <div class="callout warn"><strong>Analise, mas não execute agora</strong><p><code>UPDATE reserva SET situacao = 'cancelada';</code> não possui <code>WHERE</code>. O comando é válido e pode alterar <span style="white-space:nowrap"><strong>todas</strong> as reservas</span>.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.4rem"><p class="dml-kicker eyebrow">DELETE</p><h2>Excluir também exige saber exatamente o que será atingido</h2><p>Antes de apagar uma ocorrência, localize-a com a mesma condição.</p></div>
+      <div class="sql-block"><span class="sql-label">1 · localize</span><pre><code>consultar("""
+SELECT *
+FROM telefone_usuario
+WHERE id_usuario = 42;
+""")</code></pre></div>
+      <div class="sql-block"><span class="sql-label">2 · exclua um telefone</span><pre><code>executar("""
+DELETE FROM telefone_usuario
+WHERE id_usuario = 42
+  AND telefone = '41984327710';
+""")</code></pre></div>
+      <div class="sql-block"><span class="sql-label">3 · confira</span><pre><code>consultar("SELECT * FROM telefone_usuario;")</code></pre></div>
+
+      <div class="callout"><strong>E se tentarmos excluir um registro referenciado?</strong><p>A reserva de id 1 continua ligada ao usuário 17 e à sala 204. Tente prever o que acontecerá se executarmos <code>DELETE FROM usuario WHERE id_usuario = 17;</code>. A FK da reserva está configurada com <code>ON DELETE RESTRICT</code>, portanto a operação deve ser rejeitada enquanto a reserva existir.</p></div>
+    </div></section>
+
+    <section class="dml-section section-pad section-soft alt" id="pratica"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">5 · Prática guiada</p><h2>Preveja → execute → observe → explique</h2><p>Continuamos no mesmo sistema de reserva de salas. Cada etapa deve ser executada no notebook e conferida antes de avançar.</p></div>
+
+      <div class="practice-list">
+        <article class="practice-card"><span class="n">1</span><h3>Cadastre um novo usuário</h3><div class="sql-block"><pre><code>executar("""
+INSERT INTO usuario (id_usuario, nome)
+VALUES (100, 'João Martins');
+""")
+
+consultar("SELECT * FROM usuario WHERE id_usuario = 100;")</code></pre></div></article>
+
+        <article class="practice-card"><span class="n">2</span><h3>Crie uma reserva para esse usuário</h3><div class="sql-block"><pre><code>executar("""
+INSERT INTO reserva (
+    id_reserva, id_usuario, id_sala, data, hora_inicio
+)
+VALUES (
+    50, 100, 118, '2026-09-25', '19:00'
+);
+""")
+
+consultar("SELECT * FROM reserva WHERE id_reserva = 50;")</code></pre></div></article>
+
+        <article class="practice-card"><span class="n">3</span><h3>Cancele a reserva</h3><div class="sql-block"><pre><code>consultar("SELECT * FROM reserva WHERE id_reserva = 50;")
+
+executar("""
+UPDATE reserva
+SET situacao = 'cancelada'
+WHERE id_reserva = 50;
+""")
+
+consultar("SELECT * FROM reserva WHERE id_reserva = 50;")</code></pre></div></article>
+
+        <article class="practice-card"><span class="n">4</span><h3>Tente excluir João</h3><div class="sql-block"><pre><code>executar("""
+DELETE FROM usuario
+WHERE id_usuario = 100;
+""")</code></pre></div></article>
+      </div>
+    </div></section>
+
+    <section class="dml-section section-pad" id="sintese"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">6 · Síntese</p><h2>Hoje o banco deixou de ser apenas estrutura</h2><p>Preparamos o ambiente, garantimos que as tabelas existissem, inserimos dados, consultamos o estado do banco, alteramos e excluímos ocorrências e observamos restrições funcionando na prática.</p></div>
+      <div class="path-strip"><span>Conexão</span><b>→</b><span>Estrutura</span><b>→</b><span>INSERT</span><b>→</b><span>SELECT</span><b>→</b><span>UPDATE</span><b>→</b><span>DELETE</span><b>→</b><span>Integridade</span></div>
+    </div></section>
+  </main>
+  </div>
+
+  <footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Prof. Philipe Fransozi</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+</body>
+</html>
