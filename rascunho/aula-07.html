@@ -3,107 +3,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Rascunho da Aula 07 de Banco de Dados: manipulação de dados com INSERT, UPDATE e DELETE, restrições de integridade e comportamento de chaves no PostgreSQL.">
+  <meta name="description" content="Rascunho da Aula 07 de Banco de Dados: manipulação de dados com INSERT, UPDATE e DELETE, restrições de integridade e comportamento de chaves.">
   <meta name="theme-color" content="#0f172a">
   <title>Aula 07 · Manipulação de dados e integridade | Banco de Dados</title>
   <link rel="stylesheet" href="../styles.css">
   <script defer src="../script.js"></script>
   <style>
-    .lesson-dml { background: var(--bg); color: var(--text); }
-    .lesson-dml .site-header { background: color-mix(in srgb, var(--bg) 94%, transparent); }
-    .draft-banner { padding:.58rem 1rem; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--primary) 10%,var(--surface)); text-align:center; font-size:.82rem; font-weight:850; color:var(--muted); }
-    .dml-hero { padding:5.8rem 0 4.7rem; background:radial-gradient(circle at 90% 18%,rgba(49,94,251,.16),transparent 29rem),radial-gradient(circle at 7% 86%,rgba(22,165,163,.10),transparent 25rem),var(--bg); }
-    .dml-hero-grid { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(280px,.72fr); gap:3rem; align-items:end; }
-    .dml-kicker { margin:0 0 .7rem; color:var(--primary); font-size:.78rem; font-weight:900; letter-spacing:.11em; text-transform:uppercase; }
-    .dml-hero h1 { margin:0; max-width:980px; font-size:clamp(3rem,6vw,5.75rem); line-height:.96; letter-spacing:-.055em; }
-    .dml-lead { max-width:880px; margin:1.45rem 0 0; color:var(--muted); font-size:clamp(1.12rem,2vw,1.36rem); }
-    .dml-meta { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:1.25rem; }
-    .dml-meta span { padding:.38rem .72rem; border:1px solid var(--line); border-radius:999px; background:var(--surface); color:var(--muted); font-size:.82rem; }
-    .guiding-card { padding:1.45rem; border:1px solid var(--line); border-radius:20px; background:var(--surface); box-shadow:var(--shadow); }
-    .guiding-card strong { display:block; margin-bottom:.55rem; color:var(--primary); }
-    .guiding-card blockquote { margin:0; font-size:1.2rem; line-height:1.45; font-weight:800; }
-    .dml-toc-shell { position:sticky; top:76px; z-index:60; border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--bg) 94%,transparent); backdrop-filter:blur(14px); }
-    .dml-toc { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:.5rem; padding:.82rem 0; }
-    .dml-toc a { padding:.7rem .5rem; border:1px solid var(--line); border-radius:12px; text-align:center; text-decoration:none; color:var(--muted); background:var(--surface); font-size:.73rem; font-weight:850; line-height:1.2; }
-    .dml-toc a:hover { color:var(--primary); border-color:var(--primary); }
-    .dml-section { padding:5.1rem 0; scroll-margin-top:150px; }
-    .dml-section.alt { background:var(--surface-soft); }
-    .dml-heading { max-width:1000px; margin-bottom:2rem; }
-    .dml-heading h2 { margin:0; font-size:clamp(2.1rem,4vw,3.55rem); line-height:1.04; letter-spacing:-.045em; }
-    .dml-heading > p:last-child { margin:1rem 0 0; color:var(--muted); font-size:1.04rem; }
-    .dml-grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(290px,.8fr); gap:2rem; align-items:start; }
-    .dml-prose h3 { margin:2rem 0 .72rem; font-size:1.48rem; }
-    .dml-prose h3:first-child { margin-top:0; }
-    .dml-prose p,.dml-prose li { color:var(--muted); }
-    .dml-prose p { margin:.15rem 0 1rem; }
-    .dml-prose ul,.dml-prose ol { padding-left:1.3rem; }
-    .dml-prose li + li { margin-top:.42rem; }
-    .overview-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
-    .overview-card,.mini-card,.rule-card,.practice-card { padding:1.2rem; border:1px solid var(--line); border-radius:17px; background:var(--surface); }
-    .overview-card h3,.mini-card h3,.rule-card h3,.practice-card h3 { margin:.05rem 0 .55rem; }
-    .overview-card p,.mini-card p,.rule-card p,.practice-card p { margin:0; color:var(--muted); }
-    .overview-card ul { margin:.75rem 0 0; padding-left:1.15rem; color:var(--muted); }
-    .overview-card li + li { margin-top:.4rem; }
-    .path-strip { display:flex; align-items:center; justify-content:center; gap:.65rem; flex-wrap:wrap; margin:1.3rem 0; padding:1.2rem; border:1px solid var(--line); border-radius:18px; background:var(--surface); }
-    .path-strip span { padding:.72rem .9rem; border-radius:999px; background:color-mix(in srgb,var(--primary) 8%,var(--surface)); font-size:.87rem; font-weight:850; }
-    .path-strip b { color:var(--primary); font-size:1.15rem; }
-    .schema-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin:1.35rem 0; }
-    .schema-card { border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--surface); }
-    .schema-card header { padding:.8rem .95rem; background:color-mix(in srgb,var(--primary) 8%,var(--surface)); border-bottom:1px solid var(--line); }
-    .schema-card header small { display:block; color:var(--muted); font-size:.72rem; text-transform:uppercase; font-weight:850; letter-spacing:.08em; }
-    .schema-card header strong { display:block; margin-top:.15rem; }
-    .schema-fields { padding:.8rem .95rem; display:grid; gap:.4rem; }
-    .schema-field { display:flex; align-items:center; gap:.55rem; color:var(--muted); font-size:.88rem; }
-    .badge { display:inline-grid; place-items:center; min-width:2.35rem; height:1.45rem; padding:0 .38rem; border-radius:999px; font-size:.66rem; font-weight:900; background:color-mix(in srgb,var(--primary) 13%,var(--surface)); color:var(--primary); }
-    .badge.fk { background:color-mix(in srgb,var(--accent) 13%,var(--surface)); color:var(--accent); }
-    .mini-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin:1.25rem 0; }
-    .callout { padding:1.1rem 1.2rem; margin:1.2rem 0; border-left:4px solid var(--primary); border-radius:0 16px 16px 0; background:color-mix(in srgb,var(--primary) 8%,var(--surface)); }
-    .callout strong { display:block; margin-bottom:.35rem; color:var(--primary); }
-    .callout p { margin:0; color:var(--muted); }
-    .callout.warn { border-left-color:#d97706; background:color-mix(in srgb,#d97706 8%,var(--surface)); }
-    .callout.warn strong { color:#d97706; }
-    .callout.ok { border-left-color:var(--accent); background:color-mix(in srgb,var(--accent) 9%,var(--surface)); }
-    .callout.ok strong { color:var(--accent); }
-    .sql-block { margin:1.1rem 0; border-radius:15px; overflow:auto; background:#0b1220; color:#f8fafc; box-shadow:0 10px 28px rgba(0,0,0,.12); }
-    .sql-label { display:block; padding:.58rem .9rem; background:#111827; color:#cbd5e1; font-size:.72rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; }
-    .sql-block pre { margin:0; padding:1rem 1.05rem; font-size:.9rem; line-height:1.65; }
-    .sql-block code { color:inherit; }
-    .read-code { display:grid; gap:.55rem; margin:1rem 0; }
-    .read-line { display:grid; grid-template-columns:minmax(180px,.55fr) 1fr; gap:.8rem; align-items:start; padding:.8rem .9rem; border:1px solid var(--line); border-radius:13px; background:var(--surface); }
-    .read-line code { font-weight:800; color:var(--primary); overflow-wrap:anywhere; }
-    .read-line span { color:var(--muted); font-size:.9rem; }
-    .question { margin:1.15rem 0; padding:1rem 1.1rem; border:1px solid var(--line); border-radius:15px; background:var(--surface); }
-    .question strong { display:block; margin-bottom:.35rem; }
-    .question p { margin:0; color:var(--muted); }
-    .constraint-table-wrap { overflow-x:auto; margin:1.25rem 0; border:1px solid var(--line); border-radius:16px; background:var(--surface); }
-    .constraint-table { width:100%; border-collapse:collapse; min-width:760px; }
-    .constraint-table th,.constraint-table td { padding:.82rem .9rem; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
-    .constraint-table th { background:color-mix(in srgb,var(--primary) 9%,var(--surface)); font-size:.8rem; }
-    .constraint-table td { color:var(--muted); font-size:.9rem; }
-    .constraint-table tr:last-child td { border-bottom:0; }
-    .flow { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.65rem; margin:1.25rem 0; }
-    .flow span { position:relative; padding:.95rem .7rem; border:1px solid var(--line); border-radius:14px; background:var(--surface); text-align:center; font-size:.81rem; font-weight:850; }
-    .flow span:not(:last-child)::after { content:'→'; position:absolute; right:-.58rem; top:50%; transform:translateY(-50%); color:var(--primary); }
-    .decision-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin:1.2rem 0; }
-    .decision-card { padding:1.15rem; border:1px solid var(--line); border-radius:16px; background:var(--surface); }
-    .decision-card code { display:block; margin:.35rem 0 .55rem; color:var(--primary); font-weight:900; }
-    .decision-card p { margin:0; color:var(--muted); font-size:.9rem; }
-    .practice-list { display:grid; gap:1rem; margin:1.2rem 0; }
-    .practice-card { position:relative; padding-left:4.15rem; }
-    .practice-card .n { position:absolute; left:1rem; top:1rem; display:grid; place-items:center; width:2.25rem; height:2.25rem; border-radius:12px; background:var(--primary); color:#fff; font-weight:900; }
-    .prediction { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; margin:.9rem 0 0; }
-    .prediction span { padding:.7rem .8rem; border-radius:12px; background:var(--surface-soft); color:var(--muted); font-size:.84rem; }
-    .challenge-box { padding:1.3rem; border:1px solid var(--line); border-radius:18px; background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 8%,var(--surface)),color-mix(in srgb,var(--accent) 7%,var(--surface))); }
-    .challenge-box h3 { margin:.1rem 0 .55rem; }
-    .challenge-box p { color:var(--muted); }
-    .challenge-box ol { margin-bottom:0; color:var(--muted); }
-    .end-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-    .end-card { padding:1.2rem; border:1px solid var(--line); border-radius:17px; background:var(--surface); }
-    .end-card h3 { margin:.05rem 0 .55rem; }
-    .end-card p { margin:0; color:var(--muted); }
-    @media (max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}.schema-grid,.mini-grid,.decision-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(3,minmax(0,1fr))}.flow span::after{display:none}}
-    @media (max-width:900px){.dml-hero-grid,.dml-grid{grid-template-columns:1fr}.overview-grid,.prediction,.end-grid{grid-template-columns:1fr}}
-    @media (max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc{grid-template-columns:repeat(2,minmax(0,1fr))}.dml-section{padding:4rem 0;scroll-margin-top:90px}.schema-grid,.mini-grid,.decision-grid,.flow{grid-template-columns:1fr}.read-line{grid-template-columns:1fr}.practice-card{padding-left:1.1rem;padding-top:4rem}.practice-card .n{top:1rem}}
+    .lesson-dml{background:var(--bg);color:var(--text)}
+    .draft-banner{padding:.58rem 1rem;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--primary) 10%,var(--surface));text-align:center;font-size:.82rem;font-weight:850;color:var(--muted)}
+    .dml-hero{padding:5.6rem 0 4.4rem;background:radial-gradient(circle at 88% 15%,rgba(49,94,251,.15),transparent 28rem),radial-gradient(circle at 10% 85%,rgba(22,165,163,.10),transparent 24rem),var(--bg)}
+    .dml-hero-grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(280px,.72fr);gap:3rem;align-items:end}
+    .dml-kicker{margin:0 0 .7rem;color:var(--primary);font-size:.78rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+    .dml-hero h1{margin:0;max-width:980px;font-size:clamp(3rem,6vw,5.7rem);line-height:.96;letter-spacing:-.055em}
+    .dml-lead{max-width:880px;margin:1.45rem 0 0;color:var(--muted);font-size:clamp(1.12rem,2vw,1.35rem)}
+    .dml-meta{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.25rem}.dml-meta span{padding:.38rem .72rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-size:.82rem}
+    .guiding-card,.card,.practice-card{padding:1.25rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+    .guiding-card strong{display:block;margin-bottom:.55rem;color:var(--primary)}.guiding-card blockquote{margin:0;font-size:1.18rem;line-height:1.45;font-weight:800}
+    .dml-toc-shell{position:sticky;top:76px;z-index:60;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(14px)}
+    .dml-toc{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.5rem;padding:.82rem 0}.dml-toc a{padding:.68rem .5rem;border:1px solid var(--line);border-radius:12px;text-align:center;text-decoration:none;color:var(--muted);background:var(--surface);font-size:.73rem;font-weight:850;line-height:1.2}
+    .dml-section{padding:5rem 0;scroll-margin-top:150px}.dml-section.alt{background:var(--surface-soft)}
+    .dml-heading{max-width:1000px;margin-bottom:2rem}.dml-heading h2{margin:0;font-size:clamp(2.1rem,4vw,3.5rem);line-height:1.04;letter-spacing:-.045em}.dml-heading>p:last-child{margin:1rem 0 0;color:var(--muted);font-size:1.04rem}
+    .overview-grid,.two-grid,.three-grid{display:grid;gap:1rem}.overview-grid,.two-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.three-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card h3,.practice-card h3{margin:.05rem 0 .55rem}.card p,.card li,.practice-card p{color:var(--muted)}.card ul{padding-left:1.2rem;margin:.65rem 0 0}
+    .path-strip{display:flex;align-items:center;justify-content:center;gap:.65rem;flex-wrap:wrap;margin:1.3rem 0;padding:1.2rem;border:1px solid var(--line);border-radius:18px;background:var(--surface)}.path-strip span{padding:.72rem .9rem;border-radius:999px;background:color-mix(in srgb,var(--primary) 8%,var(--surface));font-size:.87rem;font-weight:850}.path-strip b{color:var(--primary)}
+    .sql-block{margin:1.1rem 0;border-radius:15px;overflow:auto;background:#0b1220;color:#f8fafc;box-shadow:0 10px 28px rgba(0,0,0,.12)}.sql-label{display:block;padding:.58rem .9rem;background:#111827;color:#cbd5e1;font-size:.72rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.sql-block pre{margin:0;padding:1rem 1.05rem;font-size:.9rem;line-height:1.65}.sql-block code{color:inherit}
+    .callout{padding:1.05rem 1.15rem;margin:1.2rem 0;border-left:4px solid var(--primary);border-radius:0 16px 16px 0;background:color-mix(in srgb,var(--primary) 8%,var(--surface))}.callout strong{display:block;margin-bottom:.35rem;color:var(--primary)}.callout p{margin:0;color:var(--muted)}.callout.warn{border-left-color:#d97706;background:color-mix(in srgb,#d97706 8%,var(--surface))}.callout.warn strong{color:#d97706}.callout.ok{border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--surface))}.callout.ok strong{color:var(--accent)}
+    .constraint-table-wrap{overflow-x:auto;margin:1.25rem 0;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.constraint-table{width:100%;border-collapse:collapse;min-width:760px}.constraint-table th,.constraint-table td{padding:.82rem .9rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.constraint-table th{background:color-mix(in srgb,var(--primary) 9%,var(--surface);font-size:.8rem)}.constraint-table td{color:var(--muted);font-size:.9rem}.constraint-table tr:last-child td{border-bottom:0}
+    .practice-list{display:grid;gap:1rem}.practice-card{position:relative;padding-left:4.1rem}.practice-card .n{position:absolute;left:1rem;top:1rem;display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:12px;background:var(--primary);color:#fff;font-weight:900}.prediction{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin-top:.85rem}.prediction span{padding:.7rem .8rem;border-radius:12px;background:var(--surface-soft);color:var(--muted);font-size:.84rem}
+    .challenge-box{padding:1.3rem;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 8%,var(--surface)),color-mix(in srgb,var(--accent) 7%,var(--surface)))}.challenge-box p,.challenge-box li{color:var(--muted)}
+    @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}.three-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:900px){.dml-hero-grid,.overview-grid,.two-grid,.prediction{grid-template-columns:1fr}}
+    @media(max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc,.three-grid{grid-template-columns:1fr}.dml-section{padding:4rem 0;scroll-margin-top:90px}.practice-card{padding-left:1.1rem;padding-top:4rem}}
   </style>
   <script src="https://pfransozi.github.io/assets/js/ensino.js?v=6"></script>
   <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=6">
@@ -114,12 +44,10 @@
 
   <header class="site-header" id="inicio">
     <div class="container nav-wrap">
-      <a class="brand" href="../index.html" aria-label="Banco de Dados, página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <a class="brand" href="../index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
       <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
       <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
-        <a href="../index.html">Página principal</a>
-        <a href="../aula-06.html">Aula 06</a>
-        <a href="#pratica">Prática</a>
+        <a href="../index.html">Página principal</a><a href="../aula-06.html">Aula 06</a><a href="#pratica">Prática</a>
         <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
       </nav>
     </div>
@@ -129,370 +57,185 @@
     <section class="dml-hero">
       <div class="container dml-hero-grid">
         <div>
-          <p class="dml-kicker">Aula 07 · Manipulação de dados e integridade</p>
-          <h1>Agora o banco começa a receber dados</h1>
-          <p class="dml-lead">Na Aula 06 transformamos o modelo normalizado em tabelas do PostgreSQL. Nesta aula vamos inserir, alterar e excluir dados e observar o que acontece quando uma operação tenta violar as regras que construímos desde a modelagem.</p>
-          <div class="dml-meta"><span>INSERT</span><span>UPDATE</span><span>DELETE</span><span>PRIMARY KEY</span><span>FOREIGN KEY</span><span>CHECK</span><span>UNIQUE</span><span>DEFAULT</span></div>
+          <p class="dml-kicker">Rascunho · Aula 07</p>
+          <h1>Manipulação de dados e integridade</h1>
+          <p class="dml-lead">Na aula anterior o esquema virou tabelas, chaves e relacionamentos. Agora vamos colocar dados nessas estruturas e observar o que acontece quando uma operação respeita — ou viola — as regras que definimos.</p>
+          <div class="dml-meta"><span>INSERT</span><span>UPDATE</span><span>DELETE</span><span>PK e FK</span><span>CHECK</span><span>DEFAULT</span><span>UNIQUE</span></div>
         </div>
-        <aside class="guiding-card">
-          <strong>Pergunta-guia</strong>
-          <blockquote>Criar as tabelas é suficiente para garantir que os dados armazenados estejam corretos?</blockquote>
-        </aside>
+        <aside class="guiding-card"><strong>Pergunta-guia</strong><blockquote>Criar tabelas é suficiente para garantir que os dados armazenados estejam corretos?</blockquote></aside>
       </div>
     </section>
 
-    <section class="dml-section alt" aria-labelledby="visao-title">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">Visão da aula</p><h2 id="visao-title">O que vamos desenvolver</h2><p>O foco não será decorar comandos. Vamos executar operações, prever seus efeitos e interpretar por que o PostgreSQL aceita ou rejeita cada tentativa.</p></div>
-        <div class="overview-grid">
-          <article class="overview-card"><h3>Objetivos de aprendizagem</h3><ul><li>Inserir registros com <code>INSERT</code>.</li><li>Alterar registros com <code>UPDATE</code> e delimitar mudanças com <code>WHERE</code>.</li><li>Excluir registros com <code>DELETE</code> e analisar referências existentes.</li><li>Interpretar violações de PK, FK e <code>NOT NULL</code>.</li><li>Aplicar e interpretar <code>CHECK</code>, <code>DEFAULT</code> e <code>UNIQUE</code>.</li><li>Distinguir integridade de entidade, domínio e referencial.</li></ul></article>
-          <article class="overview-card"><h3>Competências mobilizadas</h3><ul><li><strong>C2 · H6/H8:</strong> aplicar procedimentos de manipulação que preservem consistência.</li><li><strong>C3 · H9:</strong> identificar regras do domínio que precisam ser garantidas pela estrutura.</li><li><strong>C10 · H34:</strong> explicar comandos, resultados e mensagens de erro com linguagem técnica.</li><li><strong>C11 · H36/H38:</strong> aplicar boas práticas na manutenção dos dados.</li></ul></article>
-        </div>
+    <div class="dml-toc-shell"><nav class="container dml-toc" aria-label="Sumário da aula"><a href="#visao">Visão</a><a href="#retomada">Retomada</a><a href="#insert">INSERT</a><a href="#regras">Integridade</a><a href="#update">UPDATE</a><a href="#delete">DELETE</a><a href="#pratica">Prática</a><a href="#sintese">Síntese</a></nav></div>
+
+    <section class="dml-section" id="visao"><div class="container">
+      <div class="dml-heading"><p class="dml-kicker">Visão da aula</p><h2>Do esquema vazio para dados consistentes</h2></div>
+      <div class="overview-grid">
+        <article class="card"><h3>Objetivos de aprendizagem</h3><ul><li>Inserir registros com <code>INSERT</code>.</li><li>Alterar e excluir registros com <code>UPDATE</code>, <code>DELETE</code> e <code>WHERE</code>.</li><li>Interpretar violações de PK, FK e <code>NOT NULL</code>.</li><li>Compreender <code>CHECK</code>, <code>DEFAULT</code> e <code>UNIQUE</code>.</li><li>Analisar os efeitos de regras de exclusão referencial.</li></ul></article>
+        <article class="card"><h3>Ideia central</h3><p>O foco não será decorar comandos. Em cada operação vamos perguntar: <strong>o banco deveria aceitar isso?</strong> Se não aceitar, qual regra do domínio está sendo preservada?</p></article>
       </div>
-    </section>
+    </div></section>
 
-    <div class="dml-toc-shell">
-      <nav class="container dml-toc" aria-label="Sumário da aula">
-        <a href="#retomada">Retomada</a><a href="#dml">DDL × DML</a><a href="#insert">INSERT</a><a href="#integridade">Integridade</a><a href="#restricoes">Restrições</a><a href="#update">UPDATE</a><a href="#delete">DELETE</a><a href="#pratica">Prática</a>
-      </nav>
-    </div>
-
-    <section class="dml-section" id="retomada">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">1 · Retomada</p><h2>Da compreensão do domínio até as tabelas reais</h2><p>Antes de manipular dados, recupere o caminho construído nas aulas anteriores. A estrutura que existe no PostgreSQL não surgiu do nada: ela materializa decisões tomadas no MER, no DER, no mapeamento relacional e na normalização.</p></div>
-        <div class="path-strip" aria-label="Percurso do projeto de banco de dados"><span>Domínio e requisitos</span><b>→</b><span>MER / DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>DDL no PostgreSQL</span><b>→</b><span>Dados</span></div>
-
-        <div class="schema-grid">
-          <article class="schema-card"><header><small>Entidade</small><strong>USUARIO</strong></header><div class="schema-fields"><div class="schema-field"><span class="badge">PK</span><code>id_usuario</code></div><div class="schema-field"><span></span><code>nome</code></div></div></article>
-          <article class="schema-card"><header><small>Multivalorado</small><strong>TELEFONE_USUARIO</strong></header><div class="schema-fields"><div class="schema-field"><span class="badge">PK</span><code>id_usuario</code></div><div class="schema-field"><span class="badge">PK</span><code>telefone</code></div><div class="schema-field"><span class="badge fk">FK</span><code>id_usuario → usuario</code></div></div></article>
-          <article class="schema-card"><header><small>Entidade</small><strong>BLOCO</strong></header><div class="schema-fields"><div class="schema-field"><span class="badge">PK</span><code>id_bloco</code></div><div class="schema-field"><span></span><code>nome_bloco</code></div></div></article>
-          <article class="schema-card"><header><small>Entidade</small><strong>SALA</strong></header><div class="schema-fields"><div class="schema-field"><span class="badge">PK</span><code>id_sala</code></div><div class="schema-field"><span></span><code>nome</code></div><div class="schema-field"><span></span><code>capacidade</code></div><div class="schema-field"><span class="badge fk">FK</span><code>id_bloco → bloco</code></div></div></article>
-          <article class="schema-card"><header><small>Entidade associativa</small><strong>RESERVA</strong></header><div class="schema-fields"><div class="schema-field"><span class="badge">PK</span><code>id_reserva</code></div><div class="schema-field"><span class="badge fk">FK</span><code>id_usuario → usuario</code></div><div class="schema-field"><span class="badge fk">FK</span><code>id_sala → sala</code></div><div class="schema-field"><span></span><code>data · hora_inicio · situacao</code></div></div></article>
-        </div>
-
-        <div class="callout ok"><strong>Ponto de partida</strong><p>Temos estrutura, chaves e relacionamentos. Ainda falta uma parte essencial: registrar ocorrências concretas do domínio e verificar se o banco realmente protege as regras que declaramos.</p></div>
+    <section class="dml-section alt" id="retomada"><div class="container">
+      <div class="dml-heading"><p class="dml-kicker">1 · Retomada</p><h2>Onde terminamos na Aula 06?</h2><p>O percurso já passou por requisitos, MER, DER, modelo relacional, normalização e criação das tabelas.</p></div>
+      <div class="path-strip"><span>Domínio</span><b>→</b><span>MER / DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>CREATE TABLE</span><b>→</b><span>Dados</span></div>
+      <div class="three-grid">
+        <article class="card"><h3>USUARIO</h3><p><code>id_usuario</code> identifica cada usuário; <code>nome</code> é obrigatório.</p></article>
+        <article class="card"><h3>SALA</h3><p><code>id_sala</code> identifica a sala; cada sala referencia um bloco.</p></article>
+        <article class="card"><h3>RESERVA</h3><p><code>id_reserva</code> identifica a ocorrência e conecta um usuário a uma sala em data e horário determinados.</p></article>
       </div>
-    </section>
+      <div class="callout ok"><strong>Estrutura e dados são coisas diferentes</strong><p><code>CREATE TABLE</code> define como os dados podem existir. Nesta aula, <code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> vão manipular ocorrências concretas.</p></div>
+      <div class="sql-block"><span class="sql-label">Preparação técnica da conexão</span><pre><code>PRAGMA foreign_keys = ON;</code></pre></div>
+      <div class="callout"><strong>Por que executar isso no início?</strong><p>Para que as chaves estrangeiras sejam efetivamente verificadas durante os testes da aula. Assim, uma referência para um usuário, sala ou bloco inexistente será rejeitada.</p></div>
+    </div></section>
 
-    <section class="dml-section alt" id="dml">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">2 · Estrutura e dados</p><h2>DDL define a estrutura; DML modifica os dados</h2><p>Na Aula 06 o foco esteve em <code>CREATE TABLE</code>. Agora passamos da definição da estrutura para a manipulação das ocorrências armazenadas nela.</p></div>
-        <div class="mini-grid">
-          <article class="mini-card"><h3>INSERT</h3><p>Adiciona uma nova ocorrência a uma tabela.</p></article>
-          <article class="mini-card"><h3>UPDATE</h3><p>Altera valores de ocorrências já armazenadas.</p></article>
-          <article class="mini-card"><h3>DELETE</h3><p>Remove ocorrências da tabela.</p></article>
-        </div>
-        <div class="flow"><span>CREATE TABLE</span><span>estrutura criada</span><span>INSERT</span><span>UPDATE / DELETE</span><span>dados mantidos</span></div>
-        <div class="callout"><strong>Uma diferença conceitual</strong><p><code>CREATE TABLE usuario</code> define como um usuário pode ser representado. <code>INSERT INTO usuario ...</code> registra um usuário concreto.</p></div>
-      </div>
-    </section>
-
-    <section class="dml-section" id="insert">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">3 · INSERT</p><h2>Comece pelas tabelas que não dependem de outras</h2><p>A ordem das inserções não é um detalhe administrativo. Quando uma tabela possui chave estrangeira, o registro referenciado precisa existir antes.</p></div>
-        <div class="dml-grid">
-          <article class="dml-prose">
-            <h3>Primeiros blocos</h3>
-            <div class="sql-block"><span class="sql-label">Inserção simples</span><pre><code>INSERT INTO bloco (id_bloco, nome_bloco)
-VALUES (1, 'Bloco A');</code></pre></div>
-            <div class="sql-block"><span class="sql-label">Vários registros</span><pre><code>INSERT INTO bloco (id_bloco, nome_bloco)
+    <section class="dml-section" id="insert"><div class="container">
+      <div class="dml-heading"><p class="dml-kicker">2 · INSERT</p><h2>O banco começa a ganhar ocorrências</h2><p>Vamos cadastrar primeiro as ocorrências independentes e depois aquelas que dependem de referências já existentes.</p></div>
+      <div class="sql-block"><span class="sql-label">Inserindo blocos</span><pre><code>INSERT INTO bloco (id_bloco, nome_bloco)
 VALUES
+    (1, 'Bloco A'),
     (2, 'Bloco B'),
-    (3, 'Bloco C'),
-    (4, 'Bloco D');</code></pre></div>
-            <div class="read-code"><div class="read-line"><code>INSERT INTO bloco</code><span>indica em qual tabela queremos inserir uma ocorrência.</span></div><div class="read-line"><code>(id_bloco, nome_bloco)</code><span>indica quais colunas receberão valores.</span></div><div class="read-line"><code>VALUES (...)</code><span>contém os valores que serão armazenados.</span></div></div>
-
-            <h3>Depois, uma sala</h3>
-            <div class="sql-block"><span class="sql-label">Sala vinculada a um bloco existente</span><pre><code>INSERT INTO sala (
-    id_sala,
-    nome,
-    capacidade,
-    id_bloco
-)
-VALUES (
-    204,
-    'Sala Ipê',
-    6,
-    2
-);</code></pre></div>
-            <p>A sala pode ser inserida porque <code>id_bloco = 2</code> já existe na tabela <code>bloco</code>.</p>
-
-            <h3>Usuários e telefones</h3>
-            <div class="sql-block"><span class="sql-label">Usuários</span><pre><code>INSERT INTO usuario (id_usuario, nome)
+    (3, 'Bloco C');</code></pre></div>
+      <div class="sql-block"><span class="sql-label">Inserindo usuários</span><pre><code>INSERT INTO usuario (id_usuario, nome)
 VALUES
     (17, 'Marina Lopes'),
     (42, 'Gustavo Neri'),
     (8, 'Larissa Moura');</code></pre></div>
-            <div class="sql-block"><span class="sql-label">Telefones</span><pre><code>INSERT INTO telefone_usuario (id_usuario, telefone)
+      <div class="sql-block"><span class="sql-label">Inserindo salas</span><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
 VALUES
-    (17, '41987651223'),
-    (17, '41991128080'),
-    (42, '41984327710'),
-    (8, '41995543901');</code></pre></div>
-            <p>A decisão da modelagem aparece agora nos dados: os dois telefones de Marina não estão armazenados como uma lista dentro de uma célula. Cada telefone é uma ocorrência própria ligada ao usuário.</p>
-          </article>
-          <aside>
-            <div class="callout"><strong>Regra prática</strong><p>Insira primeiro as ocorrências independentes; depois, as ocorrências que dependem delas por chave estrangeira.</p></div>
-            <div class="question"><strong>Antes de executar</strong><p>Se uma sala aponta para <code>id_bloco = 99</code> e esse bloco não existe, o comando deveria ser aceito?</p></div>
-            <div class="sql-block"><span class="sql-label">Teste propositalmente inválido</span><pre><code>INSERT INTO sala (
-    id_sala, nome,
-    capacidade, id_bloco
+    (204, 'Sala Ipê', 6, 2),
+    (118, 'Sala Araucária', 8, 1),
+    (305, 'Sala Horizonte', 4, 3);</code></pre></div>
+      <div class="callout"><strong>A ordem importa</strong><p>Uma sala referencia um bloco. Uma reserva referencia usuário e sala. Portanto, primeiro precisamos criar as ocorrências que serão referenciadas.</p></div>
+      <div class="sql-block"><span class="sql-label">Teste propositalmente inválido</span><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+VALUES (500, 'Sala Teste', 4, 99);</code></pre></div>
+      <div class="callout warn"><strong>Antes de executar</strong><p>O bloco 99 existe? Se não existe, a inserção deve ser rejeitada pela integridade referencial.</p></div>
+    </div></section>
+
+    <section class="dml-section alt" id="regras"><div class="container">
+      <div class="dml-heading"><p class="dml-kicker">3 · Integridade</p><h2>As regras do modelo aparecem durante a manipulação</h2><p>As restrições deixam de ser apenas conceitos do diagrama e passam a atuar sobre cada operação.</p></div>
+      <div class="constraint-table-wrap"><table class="constraint-table"><thead><tr><th>Restrição</th><th>Pergunta que responde</th><th>Exemplo</th></tr></thead><tbody>
+        <tr><td><code>PRIMARY KEY</code></td><td>Como identificar unicamente esta ocorrência?</td><td>Dois usuários não podem possuir o mesmo <code>id_usuario</code>.</td></tr>
+        <tr><td><code>FOREIGN KEY</code></td><td>A referência aponta para algo que existe?</td><td>Uma reserva não pode apontar para uma sala inexistente.</td></tr>
+        <tr><td><code>NOT NULL</code></td><td>Este dado pode ficar ausente?</td><td>Uma sala precisa ter nome e capacidade.</td></tr>
+        <tr><td><code>CHECK</code></td><td>O valor satisfaz uma regra?</td><td>A capacidade deve ser maior que zero.</td></tr>
+        <tr><td><code>DEFAULT</code></td><td>Que valor usar quando nenhum for informado?</td><td>Uma nova reserva pode começar como <code>ativa</code>.</td></tr>
+        <tr><td><code>UNIQUE</code></td><td>Esta combinação pode se repetir?</td><td>Evitar duas reservas para a mesma sala no mesmo horário.</td></tr>
+      </tbody></table></div>
+
+      <div class="dml-heading" style="margin-top:2.4rem"><p class="dml-kicker">Esquema usado nos testes</p><h2>As regras adicionais entram na definição das tabelas</h2><p>Para esta aula, o notebook pode preparar as tabelas já com as restrições que queremos observar.</p></div>
+      <div class="sql-block"><span class="sql-label">Sala com regra de domínio</span><pre><code>CREATE TABLE sala (
+    id_sala INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    capacidade INTEGER NOT NULL CHECK (capacidade > 0),
+    id_bloco INTEGER NOT NULL,
+    FOREIGN KEY (id_bloco) REFERENCES bloco(id_bloco)
+);</code></pre></div>
+      <div class="sql-block"><span class="sql-label">Reserva com CHECK, DEFAULT e UNIQUE</span><pre><code>CREATE TABLE reserva (
+    id_reserva INTEGER PRIMARY KEY,
+    id_usuario INTEGER NOT NULL,
+    id_sala INTEGER NOT NULL,
+    data TEXT NOT NULL,
+    hora_inicio TEXT NOT NULL,
+    situacao TEXT NOT NULL DEFAULT 'ativa'
+        CHECK (situacao IN ('ativa', 'cancelada', 'concluida')),
+
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_sala) REFERENCES sala(id_sala),
+    UNIQUE (id_sala, data, hora_inicio)
+);</code></pre></div>
+      <div class="callout ok"><strong>Compatibilidade do exemplo</strong><p>As novas regras são definidas diretamente no <code>CREATE TABLE</code>. Assim, não dependemos de comandos de alteração de estrutura que não são necessários para esta aula.</p></div>
+
+      <div class="two-grid">
+        <article class="card"><h3>PK duplicada</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
+VALUES (17, 'Outra pessoa');</code></pre></div><p>Deve falhar porque 17 já identifica Marina Lopes.</p></article>
+        <article class="card"><h3>NOT NULL</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
+VALUES (90, NULL);</code></pre></div><p>Deve falhar porque o nome foi definido como obrigatório.</p></article>
+        <article class="card"><h3>CHECK</h3><div class="sql-block"><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+VALUES (700, 'Sala Azul', -5, 1);</code></pre></div><p>A sintaxe está correta, mas o valor viola a regra <code>capacidade &gt; 0</code>.</p></article>
+        <article class="card"><h3>DEFAULT</h3><div class="sql-block"><pre><code>INSERT INTO reserva (
+    id_reserva, id_usuario, id_sala, data, hora_inicio
 )
-VALUES (
-    305,
-    'Sala Horizonte',
-    4,
-    99
-);</code></pre></div>
-          </aside>
-        </div>
+VALUES (1, 17, 204, '2026-09-20', '18:30');</code></pre></div><p>Como <code>situacao</code> não foi informada, o valor padrão será <code>ativa</code>.</p></article>
       </div>
-    </section>
+    </div></section>
 
-    <section class="dml-section alt" id="integridade">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">4 · Aprender com as recusas do SGBD</p><h2>Uma mensagem de erro também explica uma regra do banco</h2><p>Em vez de tratar um erro apenas como “o comando não funcionou”, pergunte qual regra impediu a operação e por que essa regra existe.</p></div>
-        <div class="decision-grid">
-          <article class="decision-card"><h3>Integridade de entidade</h3><code>PRIMARY KEY</code><p>Garante que cada ocorrência possa ser identificada de forma única.</p></article>
-          <article class="decision-card"><h3>Integridade referencial</h3><code>FOREIGN KEY</code><p>Garante que uma referência a outra tabela aponte para uma ocorrência existente.</p></article>
-          <article class="decision-card"><h3>Integridade de domínio</h3><code>tipo · NOT NULL · CHECK</code><p>Limita os valores de acordo com características e regras do domínio.</p></article>
-        </div>
-
-        <div class="dml-grid">
-          <article class="dml-prose">
-            <h3>Teste A · chave estrangeira inválida</h3>
-            <div class="sql-block"><span class="sql-label">Usuário inexistente</span><pre><code>INSERT INTO telefone_usuario (id_usuario, telefone)
-VALUES (999, '41999999999');</code></pre></div>
-            <p>O comando referencia <code>usuario.id_usuario = 999</code>. Se esse usuário não existe, a chave estrangeira impede que o telefone fique “solto” no banco.</p>
-
-            <h3>Teste B · chave primária duplicada</h3>
-            <div class="sql-block"><span class="sql-label">Identificador já utilizado</span><pre><code>INSERT INTO usuario (id_usuario, nome)
-VALUES (17, 'Outra pessoa');</code></pre></div>
-            <p><code>id_usuario = 17</code> já identifica Marina Lopes. Uma segunda ocorrência com a mesma PK impediria que o banco distinguisse unicamente os usuários.</p>
-
-            <h3>Teste C · valor obrigatório ausente</h3>
-            <div class="sql-block"><span class="sql-label">Violação de NOT NULL</span><pre><code>INSERT INTO usuario (id_usuario, nome)
-VALUES (90, NULL);</code></pre></div>
-            <p>A coluna foi definida como <code>nome VARCHAR(120) NOT NULL</code>. Portanto, o próprio banco impede a criação de uma ocorrência sem nome.</p>
-          </article>
-          <aside>
-            <div class="callout ok"><strong>Leia o erro como diagnóstico</strong><p>Uma violação de restrição informa que o SGBD está cumprindo uma decisão estrutural. O problema não é necessariamente a sintaxe do SQL; pode ser o dado proposto.</p></div>
-            <div class="question"><strong>Pergunta útil</strong><p>O comando está sintaticamente incorreto ou os valores não satisfazem as regras declaradas para a tabela?</p></div>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <section class="dml-section" id="restricoes">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">5 · Regras além de PK e FK</p><h2>CHECK, DEFAULT e UNIQUE tornam regras do domínio executáveis</h2><p>Nem toda regra é uma chave. O PostgreSQL também pode verificar condições, preencher valores padrão e impedir repetições que o domínio considera inválidas.</p></div>
-
-        <h3>CHECK · um valor precisa satisfazer uma condição</h3>
-        <div class="sql-block"><span class="sql-label">Capacidade precisa ser positiva</span><pre><code>ALTER TABLE sala
-ADD CONSTRAINT chk_sala_capacidade
-CHECK (capacidade &gt; 0);</code></pre></div>
-        <div class="sql-block"><span class="sql-label">Teste inválido</span><pre><code>INSERT INTO sala (
-    id_sala, nome,
-    capacidade, id_bloco
-)
-VALUES (
-    500,
-    'Sala Teste',
-    -5,
-    1
-);</code></pre></div>
-        <div class="callout"><strong>Sintaxe correta não significa dado válido</strong><p>O comando pode estar escrito corretamente e ainda assim ser rejeitado porque <code>-5</code> viola uma regra definida para o domínio da capacidade.</p></div>
-
-        <h3>CHECK · situações permitidas para uma reserva</h3>
-        <div class="sql-block"><span class="sql-label">Conjunto permitido</span><pre><code>ALTER TABLE reserva
-ADD CONSTRAINT chk_reserva_situacao
-CHECK (
-    situacao IN (
-        'ativa',
-        'cancelada',
-        'concluida'
-    )
-);</code></pre></div>
-
-        <h3>DEFAULT · o valor utilizado quando nada é informado</h3>
-        <div class="sql-block"><span class="sql-label">Situação inicial padrão</span><pre><code>ALTER TABLE reserva
-ALTER COLUMN situacao
-SET DEFAULT 'ativa';</code></pre></div>
-        <div class="sql-block"><span class="sql-label">Omitindo a situação</span><pre><code>INSERT INTO reserva (
-    id_reserva,
-    id_usuario,
-    id_sala,
-    data,
-    hora_inicio
-)
-VALUES (
-    2,
-    42,
-    204,
-    '2026-09-19',
-    '14:00'
-);</code></pre></div>
-        <div class="callout ok"><strong>DEFAULT não significa “campo opcional”</strong><p>Significa que, quando o comando não fornece explicitamente um valor, o SGBD pode utilizar o valor padrão definido para aquela coluna.</p></div>
-
-        <h3>UNIQUE · uma combinação não pode se repetir</h3>
-        <div class="sql-block"><span class="sql-label">Exemplo didático de unicidade de horário</span><pre><code>ALTER TABLE reserva
-ADD CONSTRAINT uq_reserva_horario
-UNIQUE (id_sala, data, hora_inicio);</code></pre></div>
-        <p>Com essa regra, dois registros não podem utilizar a mesma sala, data e horário.</p>
-        <div class="callout warn"><strong>Atenção à regra real do domínio</strong><p>Esse <code>UNIQUE</code> só é adequado se o domínio realmente proibir uma segunda ocorrência para aquele horário. Se uma reserva cancelada liberar o horário e o sistema mantiver o cancelamento como histórico, uma restrição simples sobre sala, data e hora pode ser insuficiente. A restrição deve representar a regra real, não apenas parecer conveniente.</p></div>
-
-        <div class="constraint-table-wrap"><table class="constraint-table"><thead><tr><th>Restrição</th><th>Pergunta que ela responde</th><th>Exemplo nesta aula</th></tr></thead><tbody><tr><td><code>PRIMARY KEY</code></td><td>Como identifico unicamente esta ocorrência?</td><td><code>reserva.id_reserva</code></td></tr><tr><td><code>FOREIGN KEY</code></td><td>A referência aponta para algo que existe?</td><td><code>reserva.id_usuario → usuario.id_usuario</code></td></tr><tr><td><code>NOT NULL</code></td><td>Este dado pode ficar ausente?</td><td><code>usuario.nome</code></td></tr><tr><td><code>CHECK</code></td><td>Este valor satisfaz uma condição?</td><td><code>capacidade &gt; 0</code></td></tr><tr><td><code>DEFAULT</code></td><td>Qual valor usar quando nenhum for informado?</td><td><code>situacao = 'ativa'</code></td></tr><tr><td><code>UNIQUE</code></td><td>Este valor ou combinação pode se repetir?</td><td>sala + data + hora</td></tr></tbody></table></div>
-      </div>
-    </section>
-
-    <section class="dml-section alt" id="update">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">6 · UPDATE</p><h2>Os dados mudam — e o WHERE define o alcance da mudança</h2><p>Uma reserva que estava ativa pode ser cancelada. O comando <code>UPDATE</code> altera ocorrências existentes; a cláusula <code>WHERE</code> determina quais ocorrências serão afetadas.</p></div>
-        <div class="dml-grid">
-          <article class="dml-prose">
-            <div class="sql-block"><span class="sql-label">Alteração delimitada</span><pre><code>UPDATE reserva
+    <section class="dml-section" id="update"><div class="container">
+      <div class="dml-heading"><p class="dml-kicker">4 · UPDATE</p><h2>Dados mudam — e o WHERE delimita o alcance</h2></div>
+      <div class="sql-block"><span class="sql-label">Cancelar uma reserva específica</span><pre><code>UPDATE reserva
 SET situacao = 'cancelada'
-WHERE id_reserva = 10;</code></pre></div>
-            <div class="read-code"><div class="read-line"><code>UPDATE reserva</code><span>indica a tabela que será modificada.</span></div><div class="read-line"><code>SET situacao = 'cancelada'</code><span>define o novo valor.</span></div><div class="read-line"><code>WHERE id_reserva = 10</code><span>limita a operação à reserva desejada.</span></div></div>
-
-            <h3>Agora remova o WHERE mentalmente</h3>
-            <div class="sql-block"><span class="sql-label">Comando válido, efeito perigoso</span><pre><code>UPDATE reserva
+WHERE id_reserva = 1;</code></pre></div>
+      <div class="sql-block"><span class="sql-label">O perigo</span><pre><code>UPDATE reserva
 SET situacao = 'cancelada';</code></pre></div>
-            <p>Esse comando não é um erro de sintaxe. Ele faz exatamente o que foi escrito: altera <strong>todas</strong> as linhas da tabela.</p>
-
-            <h3>Uma rotina segura</h3>
-            <p>Antes de um <code>UPDATE</code> importante, verifique com uma consulta quais linhas satisfazem a condição:</p>
-            <div class="sql-block"><span class="sql-label">Conferência antes da alteração</span><pre><code>SELECT *
+      <div class="callout warn"><strong>Isso não é um erro de SQL</strong><p>Sem <code>WHERE</code>, todas as linhas da tabela são atualizadas. O comando pode estar sintaticamente perfeito e ainda assim produzir um resultado indesejado.</p></div>
+      <div class="callout ok"><strong>Rotina segura</strong><p>Antes de um <code>UPDATE</code>, teste o mesmo filtro com <code>SELECT</code>. Se o filtro retorna exatamente as linhas desejadas, ele pode ser reaproveitado no comando de alteração.</p></div>
+      <div class="sql-block"><span class="sql-label">Conferindo antes de alterar</span><pre><code>SELECT *
 FROM reserva
-WHERE id_reserva = 10;</code></pre></div>
-            <p>Nesta aula o <code>SELECT</code> aparece apenas como ferramenta de conferência. As consultas serão aprofundadas na próxima aula.</p>
-          </article>
-          <aside>
-            <div class="callout warn"><strong>UPDATE sem WHERE</strong><p>O perigo está justamente no fato de o comando ser válido. O SGBD não sabe que você pretendia alterar apenas uma linha.</p></div>
-            <div class="question"><strong>Antes de executar</strong><p>Quantas linhas serão afetadas pela condição utilizada?</p></div>
-          </aside>
-        </div>
-      </div>
-    </section>
+WHERE id_reserva = 1;</code></pre></div>
+    </div></section>
 
-    <section class="dml-section" id="delete">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">7 · DELETE e integridade referencial</p><h2>Excluir uma linha pode afetar outras partes do modelo</h2><p>Quando uma ocorrência é referenciada por outra tabela, apagar não é uma decisão local. Precisamos decidir o que deve acontecer com as dependências.</p></div>
-        <div class="dml-grid">
-          <article class="dml-prose">
-            <div class="sql-block"><span class="sql-label">Exclusão delimitada</span><pre><code>DELETE FROM reserva
-WHERE id_reserva = 10;</code></pre></div>
-            <div class="sql-block"><span class="sql-label">Sem WHERE</span><pre><code>DELETE FROM reserva;</code></pre></div>
-            <p>Assim como no <code>UPDATE</code>, a ausência de <code>WHERE</code> significa que todas as ocorrências são alvo da operação.</p>
+    <section class="dml-section alt" id="delete"><div class="container">
+      <div class="dml-heading"><p class="dml-kicker">5 · DELETE</p><h2>Excluir também exige critério</h2></div>
+      <div class="sql-block"><span class="sql-label">Exclusão específica</span><pre><code>DELETE FROM reserva
+WHERE id_reserva = 1;</code></pre></div>
+      <div class="sql-block"><span class="sql-label">Sem filtro</span><pre><code>DELETE FROM reserva;</code></pre></div>
+      <div class="callout warn"><strong>Qual é a consequência?</strong><p>Sem <code>WHERE</code>, todas as reservas são removidas.</p></div>
 
-            <h3>O que acontece se o usuário ainda possuir reservas?</h3>
-            <div class="sql-block"><span class="sql-label">Teste de integridade referencial</span><pre><code>DELETE FROM usuario
+      <h3>E quando outra tabela depende do registro?</h3>
+      <div class="sql-block"><span class="sql-label">Usuário ainda referenciado</span><pre><code>DELETE FROM usuario
 WHERE id_usuario = 17;</code></pre></div>
-            <p>Se houver uma reserva que referencia o usuário 17, a chave estrangeira impede que a referência fique apontando para uma ocorrência inexistente, salvo se uma política de exclusão tiver sido explicitamente definida.</p>
-
-            <h3>Políticas possíveis de ON DELETE</h3>
-            <div class="decision-grid"><article class="decision-card"><h3>RESTRICT / NO ACTION</h3><code>não excluir</code><p>Impede a remoção enquanto existirem registros dependentes.</p></article><article class="decision-card"><h3>CASCADE</h3><code>excluir dependentes</code><p>Remove também as ocorrências que referenciam a ocorrência apagada.</p></article><article class="decision-card"><h3>SET NULL</h3><code>FK = NULL</code><p>Mantém os registros dependentes, mas remove a referência, desde que a coluna aceite <code>NULL</code>.</p></article></div>
-
-            <div class="sql-block"><span class="sql-label">Exemplo de definição com CASCADE</span><pre><code>FOREIGN KEY (id_usuario)
-    REFERENCES usuario(id_usuario)
-    ON DELETE CASCADE</code></pre></div>
-          </article>
-          <aside>
-            <div class="callout"><strong>Não existe uma política universal</strong><p><code>ON DELETE CASCADE</code> não é uma “melhoria automática”. A escolha precisa representar o significado do relacionamento.</p></div>
-            <div class="question"><strong>Compare dois casos</strong><p>Apagar os telefones quando um usuário é removido pode fazer sentido. Mas apagar automaticamente todo o histórico de reservas desse usuário representa corretamente o domínio?</p></div>
-          </aside>
-        </div>
+      <p>Se existirem reservas que apontam para esse usuário, a exclusão deve respeitar a política definida na chave estrangeira.</p>
+      <div class="three-grid">
+        <article class="card"><h3>RESTRICT / NO ACTION</h3><p>Impede a exclusão enquanto houver registros dependentes.</p></article>
+        <article class="card"><h3>CASCADE</h3><p>Exclui também os registros dependentes.</p></article>
+        <article class="card"><h3>SET NULL</h3><p>Substitui a referência por <code>NULL</code>, desde que a coluna permita valor nulo.</p></article>
       </div>
-    </section>
+      <div class="sql-block"><span class="sql-label">Exemplo de definição com CASCADE</span><pre><code>CREATE TABLE telefone_usuario (
+    id_usuario INTEGER NOT NULL,
+    telefone TEXT NOT NULL,
+    PRIMARY KEY (id_usuario, telefone),
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario)
+        ON DELETE CASCADE
+);</code></pre></div>
+      <div class="callout"><strong>A política de exclusão é uma regra do domínio</strong><p>Apagar os telefones junto com o usuário pode fazer sentido. Apagar todo o histórico de reservas do mesmo usuário talvez não faça. A escolha não deve ser automática.</p></div>
+    </div></section>
 
-    <section class="dml-section alt" id="pratica">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">8 · Prática guiada</p><h2>Primeiro faça uma previsão. Só depois execute.</h2><p>Para cada comando, registre três respostas: ele será aceito ou rejeitado? Qual regra explica o resultado? Se for aceito, qual mudança acontecerá no banco?</p></div>
-        <div class="prediction"><span><strong>1.</strong> Aceito ou rejeitado?</span><span><strong>2.</strong> Qual regra atua?</span><span><strong>3.</strong> Qual efeito ocorre?</span></div>
-
-        <div class="practice-list">
-          <article class="practice-card"><span class="n">A</span><h3>Cadastrar um novo usuário</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
-VALUES (100, 'João Martins');</code></pre></div><p>Preveja o resultado antes da execução.</p></article>
-          <article class="practice-card"><span class="n">B</span><h3>Reutilizar a mesma chave</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
-VALUES (100, 'Maria Lima');</code></pre></div><p>Qual restrição deve impedir essa operação?</p></article>
-          <article class="practice-card"><span class="n">C</span><h3>Referenciar um bloco inexistente</h3><div class="sql-block"><pre><code>INSERT INTO sala (
-    id_sala, nome,
-    capacidade, id_bloco
+    <section class="dml-section" id="pratica"><div class="container">
+      <div class="dml-heading"><p class="dml-kicker">6 · Prática guiada</p><h2>Primeiro preveja. Depois execute.</h2><p>Para cada situação, registre se o comando deve ser aceito ou rejeitado, qual regra está envolvida e qual resultado é esperado.</p></div>
+      <div class="practice-list">
+        <article class="practice-card"><span class="n">1</span><h3>Usuário válido</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
+VALUES (100, 'João Martins');</code></pre></div><div class="prediction"><span>Aceita ou rejeita?</span><span>Qual regra?</span><span>Qual mudança?</span></div></article>
+        <article class="practice-card"><span class="n">2</span><h3>PK repetida</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
+VALUES (100, 'Maria Lima');</code></pre></div><div class="prediction"><span>Aceita ou rejeita?</span><span>Qual regra?</span><span>Por quê?</span></div></article>
+        <article class="practice-card"><span class="n">3</span><h3>FK inexistente</h3><div class="sql-block"><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+VALUES (701, 'Sala Verde', 10, 999);</code></pre></div><div class="prediction"><span>Aceita ou rejeita?</span><span>Qual regra?</span><span>O que falta?</span></div></article>
+        <article class="practice-card"><span class="n">4</span><h3>Valor fora do domínio</h3><div class="sql-block"><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+VALUES (702, 'Sala Vermelha', -4, 1);</code></pre></div><div class="prediction"><span>Aceita ou rejeita?</span><span>Qual regra?</span><span>O SQL está sintaticamente correto?</span></div></article>
+        <article class="practice-card"><span class="n">5</span><h3>Reserva válida</h3><div class="sql-block"><pre><code>INSERT INTO reserva (
+    id_reserva, id_usuario, id_sala, data, hora_inicio
 )
-VALUES (
-    700,
-    'Sala Azul',
-    10,
-    999
-);</code></pre></div><p>O problema está na sintaxe ou nos dados?</p></article>
-          <article class="practice-card"><span class="n">D</span><h3>Violar a capacidade permitida</h3><div class="sql-block"><pre><code>INSERT INTO sala (
-    id_sala, nome,
-    capacidade, id_bloco
-)
-VALUES (
-    701,
-    'Sala Verde',
-    -4,
-    1
-);</code></pre></div><p>Qual <code>CHECK</code> deve atuar?</p></article>
-          <article class="practice-card"><span class="n">E</span><h3>Criar uma reserva válida</h3><div class="sql-block"><pre><code>INSERT INTO reserva (
-    id_reserva,
-    id_usuario,
-    id_sala,
-    data,
-    hora_inicio,
-    situacao
-)
-VALUES (
-    50,
-    100,
-    204,
-    '2026-09-25',
-    '19:00',
-    'ativa'
-);</code></pre></div><p>Quais registros precisam existir antes?</p></article>
-          <article class="practice-card"><span class="n">F</span><h3>Cancelar apenas uma reserva</h3><div class="sql-block"><pre><code>UPDATE reserva
-SET situacao = 'cancelada'
-WHERE id_reserva = 50;</code></pre></div><p>Qual linha deve ser afetada?</p></article>
-          <article class="practice-card"><span class="n">G</span><h3>Remover o filtro</h3><div class="sql-block"><pre><code>UPDATE reserva
-SET situacao = 'cancelada';</code></pre></div><p><strong>Não execute imediatamente.</strong> Quantas linhas seriam alteradas?</p></article>
-          <article class="practice-card"><span class="n">H</span><h3>Tentar remover o usuário</h3><div class="sql-block"><pre><code>DELETE FROM usuario
-WHERE id_usuario = 100;</code></pre></div><p>Se existir uma reserva associada, o que a FK deve fazer no esquema atual?</p></article>
-        </div>
-
-        <div class="challenge-box">
-          <p class="dml-kicker">Prática em dupla</p>
-          <h3>Construa uma pequena história no banco</h3>
-          <p>Represente a seguinte situação sem receber os comandos prontos:</p>
-          <p><strong>Camila foi cadastrada como usuária. Ela possui dois telefones. Uma nova sala chamada Sala Pinheiro, com capacidade para oito pessoas, foi cadastrada no Bloco B. Camila realizou uma reserva dessa sala para 30/09/2026 às 19h. Posteriormente, a reserva foi cancelada.</strong></p>
-          <ol><li>Cadastre Camila.</li><li>Cadastre seus dois telefones.</li><li>Cadastre a sala.</li><li>Registre a reserva.</li><li>Altere a situação da reserva para cancelada.</li></ol>
-        </div>
-
-        <div class="callout warn"><strong>Depois que funcionar, provoque três erros de propósito</strong><p>Tente reutilizar a chave de Camila, criar uma reserva para uma sala inexistente e inserir uma situação não permitida. Em cada caso, registre a mensagem do PostgreSQL e a regra que ela representa.</p></div>
+VALUES (50, 100, 204, '2026-09-25', '19:00');</code></pre></div><div class="prediction"><span>Qual será a situação?</span><span>Quais FKs são verificadas?</span><span>Qual UNIQUE é verificado?</span></div></article>
+        <article class="practice-card"><span class="n">6</span><h3>UPDATE sem filtro</h3><div class="sql-block"><pre><code>UPDATE reserva
+SET situacao = 'cancelada';</code></pre></div><div class="prediction"><span>Quantas linhas?</span><span>É erro de sintaxe?</span><span>Deve executar?</span></div></article>
       </div>
-    </section>
 
-    <section class="dml-section" id="sintese">
-      <div class="container">
-        <div class="dml-heading"><p class="dml-kicker">Síntese</p><h2>O banco não armazena apenas valores: ele também protege regras</h2><p>Ao final desta aula, a estrutura criada anteriormente passa a receber dados reais, e as restrições deixam de ser apenas definições do modelo para se tornarem comportamentos observáveis do SGBD.</p></div>
-        <div class="flow"><span>Estrutura</span><span>INSERT</span><span>Restrições</span><span>UPDATE / DELETE</span><span>Dados consistentes</span></div>
-        <div class="end-grid">
-          <article class="end-card"><h3>O que consolidamos</h3><p><code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> modificam dados; PK, FK, <code>NOT NULL</code>, <code>CHECK</code>, <code>DEFAULT</code> e <code>UNIQUE</code> limitam quais estados do banco são aceitáveis.</p></article>
-          <article class="end-card"><h3>Próxima pergunta</h3><p>Depois de armazenar e manter dados, precisamos transformá-los em informação: quais reservas estão ativas, quais salas estão ocupadas e quem reservou cada sala?</p></article>
-        </div>
-        <div class="sql-block"><span class="sql-label">Ponte para a próxima aula</span><pre><code>SELECT ...
+      <div class="challenge-box" style="margin-top:2rem"><h3>Desafio em dupla · uma pequena história no banco</h3><p>Represente a situação abaixo usando comandos SQL.</p><p><strong>Camila foi cadastrada como usuária. Ela possui dois telefones. Uma nova sala chamada Sala Pinheiro, com capacidade para oito pessoas, foi cadastrada no Bloco B. Camila realizou uma reserva dessa sala para 30/09/2026 às 19h. Posteriormente, a reserva foi cancelada.</strong></p><ol><li>Cadastre Camila.</li><li>Cadastre seus dois telefones.</li><li>Cadastre a sala.</li><li>Registre a reserva.</li><li>Altere a reserva para cancelada.</li><li>Depois provoque, intencionalmente, uma violação de PK, uma de FK e uma de <code>CHECK</code>. Para cada uma, explique a mensagem recebida.</li></ol></div>
+    </div></section>
+
+    <section class="dml-section alt" id="sintese"><div class="container">
+      <div class="dml-heading"><p class="dml-kicker">7 · Síntese</p><h2>O banco agora tem estrutura, dados e regras atuando juntas</h2></div>
+      <div class="path-strip"><span>Requisitos</span><b>→</b><span>DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>DDL</span><b>→</b><span>Restrições</span><b>→</b><span>DML</span><b>→</b><span>Dados consistentes</span></div>
+      <div class="two-grid">
+        <article class="card"><h3>O que desenvolvemos</h3><p>Inserir, alterar e excluir não são operações isoladas. Cada comando é submetido às regras que representam identidade, domínio e relacionamentos.</p></article>
+        <article class="card"><h3>Próximo passo</h3><p>Agora que o banco possui dados, surge uma nova necessidade: recuperá-los. Quais reservas estão ativas? Quem reservou cada sala? A próxima etapa será trabalhar com <code>SELECT</code>, filtros, ordenação e junções.</p></article>
+      </div>
+      <div class="sql-block"><span class="sql-label">Ponte para a próxima aula</span><pre><code>SELECT ...
 FROM ...
-WHERE ...</code></pre></div>
-        <div class="callout ok"><strong>Próximo passo</strong><p>Consultas SQL: <code>SELECT</code>, filtros, ordenação e combinação de tabelas relacionadas.</p></div>
-      </div>
-    </section>
+WHERE ...;</code></pre></div>
+    </div></section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div><strong>Banco de Dados</strong><p>Engenharia de Software · UniSENAI PR</p></div>
-      <div><a href="#inicio">Voltar ao topo ↑</a></div>
-    </div>
-  </footer>
+  <footer class="site-footer"><div class="container"><p>Banco de Dados · Engenharia de Software · Rascunho da Aula 07</p></div></footer>
 </body>
 </html>
