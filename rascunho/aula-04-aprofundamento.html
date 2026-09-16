@@ -441,8 +441,80 @@ Existe algum número de reserva definido pelo negócio?</code><p>Se o requisito 
 
     <section class="study-section" id="grau">
       <div class="container">
-        <div class="study-heading"><p class="study-kicker">7 · Grau e papéis</p><h2>Relacionamentos binários, recursivos e ternários representam estruturas diferentes</h2><p>O grau indica quantos tipos de entidade participam do fato. Em relacionamentos recursivos, os papéis ajudam a distinguir as participações.</p></div>
-        <article class="study-prose"><h3>Relacionamento recursivo</h3><p>Em <strong>FUNCIONÁRIO supervisiona FUNCIONÁRIO</strong>, o mesmo tipo de entidade aparece em dois papéis: supervisor e subordinado.</p><div class="relation-map"><div class="relation-node">FUNCIONÁRIO<br><small>supervisor</small></div><div class="relation-edge"><strong>supervisiona</strong>0..N / 0..1</div><div class="relation-node">FUNCIONÁRIO<br><small>subordinado</small></div></div><h3>Relacionamento ternário</h3><p>Em <strong>FORNECEDOR fornece PEÇA para PROJETO</strong>, a informação pode depender da combinação dos três participantes ao mesmo tempo. Saber os três relacionamentos aos pares nem sempre é suficiente para reconstruir o fato original.</p><div class="study-callout"><strong>Por que três binários podem perder informação?</strong><p>Saber que um fornecedor fornece uma peça, que a peça é usada em um projeto e que o fornecedor atende ao projeto não garante que aquele fornecedor tenha fornecido aquela peça para aquele projeto.</p></div></article>
+        <div class="study-heading">
+          <p class="study-kicker">7 · Grau e papéis</p>
+          <h2>Grau indica quantos tipos de entidade participam do fato; papéis explicam como cada participante atua</h2>
+          <p>Depois de reconhecer o relacionamento, precisamos observar sua estrutura. Alguns fatos envolvem dois tipos de entidade; outros envolvem o mesmo tipo mais de uma vez; outros só fazem sentido quando três participantes são considerados ao mesmo tempo.</p>
+        </div>
+        <div class="study-grid">
+          <article class="study-prose">
+            <h3>Comece pela pergunta: quantos tipos de entidade participam deste fato?</h3>
+            <p>O <strong>grau</strong> de um relacionamento é determinado pela quantidade de <strong>tipos de entidade</strong> que participam do fato. Não contamos quantos registros existem nem quantas pessoas aparecem em um exemplo concreto.</p>
+            <div class="study-table-wrap"><table class="study-table"><thead><tr><th>Estrutura</th><th>Participantes</th><th>Exemplo</th><th>Ideia principal</th></tr></thead><tbody>
+              <tr><td><strong>Binário</strong></td><td>2 tipos de entidade</td><td>USUÁRIO reserva SALA</td><td>O fato conecta dois tipos diferentes.</td></tr>
+              <tr><td><strong>Recursivo</strong></td><td>O mesmo tipo participa em mais de um papel</td><td>FUNCIONÁRIO supervisiona FUNCIONÁRIO</td><td>Precisamos distinguir os papéis exercidos pelas ocorrências.</td></tr>
+              <tr><td><strong>Ternário</strong></td><td>3 tipos de entidade</td><td>FORNECEDOR fornece PEÇA para PROJETO</td><td>O fato depende da combinação dos três participantes.</td></tr>
+            </tbody></table></div>
+
+            <h3>O caso binário é o mais direto</h3>
+            <p>No relacionamento <strong>USUÁRIO reserva SALA</strong>, participam dois tipos de entidade: USUÁRIO e SALA. Por isso, o relacionamento é binário.</p>
+            <div class="relation-map"><div class="relation-node">USUÁRIO</div><div class="relation-edge"><strong>reserva</strong>relacionamento binário</div><div class="relation-node">SALA</div></div>
+            <p>O importante é perceber que o grau é uma característica do <strong>tipo de relacionamento</strong>. Ana e Sala 201 são apenas ocorrências concretas dos tipos participantes.</p>
+
+            <h3>No relacionamento recursivo, o mesmo tipo aparece em papéis diferentes</h3>
+            <p>Considere a regra: <strong>um funcionário pode supervisionar outros funcionários</strong>. Não temos dois tipos de entidade diferentes. Temos o mesmo tipo, FUNCIONÁRIO, participando duas vezes do mesmo fato.</p>
+            <div class="relation-map"><div class="relation-node">FUNCIONÁRIO<br><small>papel: supervisor</small></div><div class="relation-edge"><strong>supervisiona</strong>relacionamento recursivo</div><div class="relation-node">FUNCIONÁRIO<br><small>papel: subordinado</small></div></div>
+            <p>Sem os papéis, a leitura ficaria ambígua: quem supervisiona e quem é supervisionado? Os nomes <strong>supervisor</strong> e <strong>subordinado</strong> deixam explícita a função exercida por cada participação.</p>
+
+            <h3>Os papéis também ajudam a interpretar a cardinalidade</h3>
+            <p>Suponha que a regra do domínio seja:</p>
+            <div class="example-box"><strong>Regra</strong><code>Um supervisor pode supervisionar zero ou vários funcionários.
+Um subordinado pode ter, no máximo, um supervisor.</code><p>Nesse caso, as cardinalidades precisam ser lidas considerando os papéis, e não apenas o nome da entidade FUNCIONÁRIO.</p></div>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Papel: supervisor</h4><p>Uma ocorrência de FUNCIONÁRIO pode supervisionar <strong>0..N</strong> subordinados.</p></article>
+              <article class="mini-card"><h4>Papel: subordinado</h4><p>Uma ocorrência de FUNCIONÁRIO pode estar ligada a <strong>0..1</strong> supervisor, se essa for a regra validada.</p></article>
+            </div>
+
+            <h3>No relacionamento ternário, os três participantes formam um único fato</h3>
+            <p>Agora considere:</p>
+            <div class="example-box"><strong>Fato do domínio</strong><code>Um FORNECEDOR fornece uma PEÇA para um PROJETO.</code><p>A informação relevante não é apenas quem fornece, qual peça existe ou qual projeto é atendido. Precisamos saber <strong>qual fornecedor forneceu qual peça para qual projeto</strong>.</p></div>
+            <div class="mini-grid three">
+              <article class="mini-card"><h4>FORNECEDOR</h4><p>Empresa A</p></article>
+              <article class="mini-card"><h4>PEÇA</h4><p>Peça X</p></article>
+              <article class="mini-card"><h4>PROJETO</h4><p>Projeto P1</p></article>
+            </div>
+            <p>A ocorrência completa do fato é a combinação <strong>Empresa A + Peça X + Projeto P1</strong>. Retirar um dos participantes muda o significado da informação que estamos tentando registrar.</p>
+
+            <h3>Três relacionamentos binários não significam automaticamente o mesmo que um ternário</h3>
+            <p>É tentador decompor o fato em três relações aos pares:</p>
+            <div class="mini-grid three">
+              <article class="mini-card"><h4>FORNECEDOR — PEÇA</h4><p>Empresa A fornece Peça X.</p></article>
+              <article class="mini-card"><h4>PEÇA — PROJETO</h4><p>Peça X é usada no Projeto P1.</p></article>
+              <article class="mini-card"><h4>FORNECEDOR — PROJETO</h4><p>Empresa A atende ao Projeto P1.</p></article>
+            </div>
+            <p>Essas três frases <strong>não garantem</strong> que a Empresa A tenha fornecido a Peça X especificamente para o Projeto P1. Elas apenas informam três associações separadas.</p>
+            <div class="study-callout"><strong>O que se perde?</strong><p>Perde-se a ligação entre os três participantes na <strong>mesma ocorrência do fato</strong>. As relações binárias podem permitir combinações que nunca foram afirmadas pelo relacionamento ternário.</p></div>
+
+            <h3>Quando uma decomposição pode ser feita?</h3>
+            <p>Um relacionamento ternário só deve ser substituído por relacionamentos binários quando as regras do domínio garantem que a decomposição preserva exatamente a mesma informação. Essa equivalência não deve ser presumida apenas porque o desenho binário parece mais simples.</p>
+
+            <h3>Um teste prático para escolher a estrutura</h3>
+            <ol>
+              <li>escreva o fato como uma frase completa;</li>
+              <li>identifique quais tipos de entidade participam dessa mesma frase;</li>
+              <li>se o mesmo tipo aparecer mais de uma vez, nomeie os papéis;</li>
+              <li>se três tipos participarem, teste se o fato ainda pode ser reconstruído corretamente usando apenas pares;</li>
+              <li>crie um exemplo concreto com ocorrências reais ou fictícias;</li>
+              <li>verifique se alguma decomposição permite combinações que o requisito nunca afirmou;</li>
+              <li>mantenha a estrutura que preserva melhor o significado do domínio.</li>
+            </ol>
+          </article>
+          <aside class="study-stack">
+            <div class="study-callout teal"><strong>Grau conta tipos de entidade</strong><p>Não conte registros nem pessoas do exemplo. Pergunte quantos <strong>tipos de entidade</strong> participam do mesmo fato.</p></div>
+            <div class="study-callout violet"><strong>Papéis retiram a ambiguidade</strong><p>Quando o mesmo tipo participa mais de uma vez, os papéis explicam <strong>quem faz o quê</strong> dentro do relacionamento.</p></div>
+            <div class="study-callout"><strong>Pergunta-chave para ternários</strong><p>“Se eu separar este fato em pares, ainda consigo saber exatamente qual combinação dos três participantes ocorreu?”</p></div>
+          </aside>
+        </div>
       </div>
     </section>
 
