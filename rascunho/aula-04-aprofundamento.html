@@ -360,8 +360,82 @@ Regra: uma sala pode receber várias reservas ao longo do tempo.</code><p>Os dad
 
     <section class="study-section alt" id="fatos">
       <div class="container">
-        <div class="study-heading"><p class="study-kicker">6 · Fatos que ganham identidade</p><h2>Por que RESERVA precisa aparecer como algo próprio?</h2><p>A necessidade não surge apenas porque existe um N:N, mas porque cada ocorrência da reserva precisa ser distinguida e preservada.</p></div>
-        <div class="study-grid"><article class="study-prose"><h3>Comece pelo relacionamento simples</h3><div class="relation-map"><div class="relation-node">USUÁRIO</div><div class="relation-edge"><strong>reserva</strong>N:N</div><div class="relation-node">SALA</div></div><p>Esse relacionamento mostra que usuários podem se associar a salas, mas ainda não distingue diferentes ocorrências envolvendo o mesmo par.</p><h3>O tempo torna as ocorrências visíveis</h3><p>Se Ana reserva a Sala 201 às 10h e novamente às 15h, temos duas reservas diferentes. Uma pode estar ativa e a outra cancelada.</p><div class="example-box"><strong>Ocorrência A</strong><code>Ana · Sala 201 · 10h · ativa</code></div><div class="example-box"><strong>Ocorrência B</strong><code>Ana · Sala 201 · 15h · cancelada</code></div><h3>RESERVA passa a representar cada fato individual</h3><p>Quando cada ocorrência precisa ser distinguida, descrita e mantida no histórico, faz sentido representar RESERVA como entidade associativa.</p><div class="concept-flow"><span>USUÁRIO</span><span>realiza</span><span>RESERVA</span><span>utiliza</span><span>SALA</span></div></article><aside class="study-stack"><div class="study-callout violet"><strong>Entidade associativa ≠ tabela intermediária</strong><p>A entidade associativa nasce de uma decisão semântica no modelo conceitual. A tabela intermediária é uma consequência posterior do mapeamento relacional.</p></div><div class="study-callout"><strong>Critério central</strong><p>Pergunte se basta saber <em>quem está relacionado com quem</em> ou se é necessário saber <em>qual ocorrência aconteceu</em>.</p></div></aside></div>
+        <div class="study-heading">
+          <p class="study-kicker">6 · Fatos que ganham identidade</p>
+          <h2>Quando um fato precisa ser distinguido, ele pode ganhar identidade própria no modelo</h2>
+          <p>Nem todo relacionamento precisa virar uma entidade. Essa transformação faz sentido quando o sistema precisa reconhecer <strong>cada ocorrência do fato</strong>, guardar informações próprias sobre ela e acompanhar seu histórico.</p>
+        </div>
+        <div class="study-grid">
+          <article class="study-prose">
+            <h3>Comece pelo relacionamento mais simples</h3>
+            <p>No início, o requisito pode ser resumido assim:</p>
+            <div class="relation-map"><div class="relation-node">USUÁRIO</div><div class="relation-edge"><strong>reserva</strong>N:N</div><div class="relation-node">SALA</div></div>
+            <p>Esse desenho responde <strong>quem pode se relacionar com quem</strong>: usuários podem reservar salas e salas podem ser reservadas por usuários. Para alguns problemas, isso já seria suficiente.</p>
+
+            <h3>Agora pergunte: o sistema precisa distinguir cada ocorrência desse fato?</h3>
+            <p>Considere a mesma usuária reservando a mesma sala em dois horários diferentes:</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Reserva A</h4><p>Ana · Sala 201 · 10h · ativa</p></article>
+              <article class="mini-card"><h4>Reserva B</h4><p>Ana · Sala 201 · 15h · cancelada</p></article>
+            </div>
+            <p>O par <strong>Ana + Sala 201</strong> é o mesmo nas duas situações. Mesmo assim, estamos diante de <strong>dois fatos diferentes</strong>. Cada um ocorreu em um horário, pode ter uma situação diferente e pode sofrer ações diferentes.</p>
+
+            <h3>O problema aparece quando queremos falar de uma ocorrência específica</h3>
+            <p>Imagine as seguintes necessidades:</p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Cancelar</h4><p>Cancelar apenas a reserva das 15h, mantendo a das 10h.</p></article>
+              <article class="mini-card"><h4>Consultar</h4><p>Saber quando uma reserva aconteceu e qual é sua situação atual.</p></article>
+              <article class="mini-card"><h4>Histórico</h4><p>Preservar reservas antigas mesmo quando o mesmo usuário volta a usar a mesma sala.</p></article>
+              <article class="mini-card"><h4>Referenciar</h4><p>Permitir que outro fato do sistema se refira a uma reserva específica.</p></article>
+            </div>
+            <p>Nesse ponto, já não basta saber apenas que <strong>USUÁRIO está relacionado com SALA</strong>. Precisamos saber <strong>qual reserva</strong> está sendo tratada.</p>
+
+            <h3>É aí que o fato pode ser representado como entidade associativa</h3>
+            <p>Quando cada ocorrência do relacionamento precisa ser distinguida, descrita ou acompanhada ao longo do tempo, podemos representar esse fato como uma entidade própria. No nosso exemplo, surge <strong>RESERVA</strong>.</p>
+            <div class="concept-flow"><span>USUÁRIO</span><span>realiza</span><span>RESERVA</span><span>utiliza</span><span>SALA</span></div>
+            <p>Agora cada ocorrência de RESERVA representa <strong>um fato específico</strong> entre um usuário e uma sala.</p>
+            <div class="example-box"><strong>Leitura do novo modelo</strong><code>Um USUÁRIO pode realizar várias RESERVAS.
+Cada RESERVA pertence a exatamente um USUÁRIO.
+Uma SALA pode aparecer em várias RESERVAS.
+Cada RESERVA utiliza exatamente uma SALA.</code><p>O relacionamento original foi reorganizado para que cada ocorrência possa ser tratada individualmente.</p></div>
+
+            <h3>Os dados que descrevem o fato passam a acompanhar RESERVA</h3>
+            <p>Data, horário e situação não descrevem o usuário nem a sala isoladamente. Eles descrevem <strong>aquela ocorrência da reserva</strong>.</p>
+            <div class="example-box"><strong>Estrutura conceitual</strong><code>RESERVA(data, horario, situacao)</code><p>Esses atributos ajudam a distinguir e descrever as ocorrências do fato. A regra de identificação definitiva ainda depende dos requisitos.</p></div>
+
+            <h3>Entidade associativa não é sinônimo de “tabela intermediária”</h3>
+            <p>A decisão de representar RESERVA como entidade acontece ainda no <strong>modelo conceitual</strong>. Ela surge porque o domínio exige tratar cada reserva como algo individual. A tabela que poderá aparecer mais tarde no modelo relacional é uma consequência da etapa de mapeamento, não a justificativa para criar a entidade.</p>
+
+            <h3>Nem todo relacionamento com atributo precisa virar entidade</h3>
+            <p>Um relacionamento pode possuir atributos e continuar sendo representado como relacionamento. O ponto decisivo aqui é outro: <strong>precisamos reconhecer diferentes ocorrências do mesmo fato como objetos distintos no domínio?</strong></p>
+            <div class="mini-grid">
+              <article class="mini-card"><h4>Relacionamento pode bastar</h4><p>O sistema só precisa registrar a associação entre as entidades e não precisa distinguir várias ocorrências do mesmo par.</p></article>
+              <article class="mini-card"><h4>Entidade associativa ajuda</h4><p>O sistema precisa distinguir ocorrências, guardar histórico, estado próprio ou permitir que outros fatos se refiram a uma ocorrência específica.</p></article>
+            </div>
+
+            <h3>A identidade ainda precisa ser validada</h3>
+            <p>Transformar RESERVA em entidade não significa que devemos inventar automaticamente um <code>reserva_id</code>. Ainda precisamos descobrir <strong>qual regra do domínio distingue uma reserva das demais</strong>.</p>
+            <div class="example-box"><strong>Perguntas que continuam abertas</strong><code>Data + horário + sala identificam uma reserva?
+O mesmo usuário pode reservar a mesma sala no mesmo horário?
+Existe algum número de reserva definido pelo negócio?</code><p>Se o requisito não responde, essas questões devem permanecer explícitas até a validação.</p></div>
+
+            <h3>Um teste prático para decidir</h3>
+            <ol>
+              <li>comece pelo relacionamento simples;</li>
+              <li>crie dois exemplos envolvendo as mesmas entidades;</li>
+              <li>pergunte se esses exemplos podem representar fatos diferentes;</li>
+              <li>verifique se cada fato precisa de dados ou estado próprios;</li>
+              <li>pergunte se o sistema precisa consultar, alterar ou referenciar uma ocorrência específica;</li>
+              <li>se a resposta for sim, considere representar o fato como entidade associativa;</li>
+              <li>depois, valide como suas ocorrências são identificadas.</li>
+            </ol>
+          </article>
+          <aside class="study-stack">
+            <div class="study-callout violet"><strong>Critério central</strong><p>Pergunte: <strong>“basta saber quem está relacionado com quem ou preciso saber qual ocorrência aconteceu?”</strong></p></div>
+            <div class="study-callout"><strong>O N:N não é a justificativa completa</strong><p>Um N:N pode motivar a análise, mas RESERVA aparece como entidade porque suas ocorrências precisam ser distinguidas e tratadas individualmente.</p></div>
+            <div class="study-callout teal"><strong>Ponte para o modelo relacional</strong><p>Só depois decidiremos como essa estrutura conceitual será transformada em relações, chaves primárias e chaves estrangeiras.</p></div>
+          </aside>
+        </div>
       </div>
     </section>
 
