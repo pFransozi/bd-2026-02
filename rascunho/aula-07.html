@@ -20,7 +20,7 @@
     .guiding-card,.card,.practice-card{padding:1.25rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
     .guiding-card strong{display:block;margin-bottom:.55rem;color:var(--primary)}.guiding-card blockquote{margin:0;font-size:1.18rem;line-height:1.45;font-weight:800}
     .dml-toc-shell{position:sticky;top:76px;z-index:60;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(14px)}
-    .dml-toc{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.5rem;padding:.82rem 0}.dml-toc a{padding:.68rem .5rem;border:1px solid var(--line);border-radius:12px;text-align:center;text-decoration:none;color:var(--muted);background:var(--surface);font-size:.73rem;font-weight:850;line-height:1.2}
+    .dml-toc{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:.5rem;padding:.82rem 0}.dml-toc a{padding:.68rem .5rem;border:1px solid var(--line);border-radius:12px;text-align:center;text-decoration:none;color:var(--muted);background:var(--surface);font-size:.73rem;font-weight:850;line-height:1.2}
     .dml-section{padding:5rem 0;scroll-margin-top:150px}.dml-section.alt{background:var(--surface-soft)}
     .dml-heading{max-width:1000px;margin-bottom:2rem}.dml-heading h2{margin:0;font-size:clamp(2.1rem,4vw,3.5rem);line-height:1.04;letter-spacing:-.045em}.dml-heading>p:last-child{margin:1rem 0 0;color:var(--muted);font-size:1.04rem}
     .overview-grid,.two-grid,.three-grid{display:grid;gap:1rem}.overview-grid,.two-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.three-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -32,7 +32,7 @@
     .constraint-table-wrap{overflow-x:auto;margin:1.25rem 0;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.constraint-table{width:100%;border-collapse:collapse;min-width:760px}.constraint-table th,.constraint-table td{padding:.82rem .9rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.constraint-table th{background:color-mix(in srgb,var(--primary) 9%,var(--surface));font-size:.8rem}.constraint-table td{color:var(--muted);font-size:.9rem}.constraint-table tr:last-child td{border-bottom:0}
     .practice-list{display:grid;gap:1rem}.practice-card{position:relative;padding-left:4.1rem}.practice-card .n{position:absolute;left:1rem;top:1rem;display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:12px;background:var(--primary);color:#fff;font-weight:900}.prediction{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin-top:.85rem}.prediction span{padding:.7rem .8rem;border-radius:12px;background:var(--surface-soft);color:var(--muted);font-size:.84rem}
     .challenge-box{padding:1.3rem;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 8%,var(--surface)),color-mix(in srgb,var(--accent) 7%,var(--surface)))}.challenge-box p,.challenge-box li{color:var(--muted)}
-    @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}.three-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(5,minmax(0,1fr))}.three-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:900px){.dml-hero-grid,.overview-grid,.two-grid,.prediction{grid-template-columns:1fr}}
     @media(max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc,.three-grid{grid-template-columns:1fr}.dml-section{padding:4rem 0;scroll-margin-top:90px}.practice-card{padding-left:1.1rem;padding-top:4rem}}
   </style>
@@ -62,13 +62,13 @@
           <p class="dml-kicker eyebrow">Rascunho · Aula 07</p>
           <h1>Manipulação de dados e integridade</h1>
           <p class="dml-lead lesson-hero-lead">Na aula anterior o esquema virou tabelas, chaves e relacionamentos. Agora vamos colocar dados nessas estruturas e observar o que acontece quando uma operação respeita — ou viola — as regras que definimos.</p>
-          <div class="dml-meta"><span>INSERT</span><span>UPDATE</span><span>DELETE</span><span>PK e FK</span><span>CHECK</span><span>DEFAULT</span><span>UNIQUE</span></div>
+          <div class="dml-meta"><span>INSERT</span><span>SELECT</span><span>UPDATE</span><span>DELETE</span><span>PK e FK</span><span>CHECK</span><span>DEFAULT</span><span>UNIQUE</span></div>
         </div>
         <aside class="guiding-card guiding-question"><strong>Pergunta-guia</strong><blockquote>Criar tabelas é suficiente para garantir que os dados armazenados estejam corretos?</blockquote></aside>
       </div>
     </section>
 
-    <div class="dml-toc-shell standard-toc"><nav class="container dml-toc" aria-label="Sumário da aula"><a href="#visao">Visão</a><a href="#retomada">Retomada</a><a href="#insert">INSERT</a><a href="#regras">Integridade</a><a href="#update">UPDATE</a><a href="#delete">DELETE</a><a href="#pratica">Prática</a><a href="#sintese">Síntese</a></nav></div>
+    <div class="dml-toc-shell standard-toc"><nav class="container dml-toc" aria-label="Sumário da aula"><a href="#visao">Visão</a><a href="#ambiente">Ambiente</a><a href="#retomada">Retomada</a><a href="#insert">INSERT</a><a href="#regras">Integridade</a><a href="#update">UPDATE</a><a href="#delete">DELETE</a><a href="#pratica">Prática</a><a href="#sintese">Síntese</a></nav></div>
 
     <section class="dml-section section-pad section-soft alt" id="visao"><div class="container">
       <div class="dml-heading section-heading">
@@ -82,6 +82,7 @@
           <h3>Objetivos de aprendizagem</h3>
           <ul>
             <li>Inserir um ou vários registros utilizando <code>INSERT</code>.</li>
+            <li>Consultar registros com <code>SELECT</code> e aplicar filtros simples com <code>WHERE</code>.</li>
             <li>Alterar dados existentes com <code>UPDATE</code> e delimitar a operação com <code>WHERE</code>.</li>
             <li>Excluir registros com <code>DELETE</code> e analisar os riscos de exclusões sem critério.</li>
             <li>Interpretar violações de <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code> e <code>NOT NULL</code>.</li>
@@ -101,103 +102,147 @@
       </div>
     </div></section>
 
-    <section class="dml-section section-pad" id="retomada"><div class="container">
+    <section class="dml-section section-pad" id="ambiente"><div class="container">
+      <div class="dml-heading section-heading">
+        <p class="dml-kicker eyebrow">0 · Preparando o ambiente</p>
+        <h2>Como o notebook conversa com o banco de dados?</h2>
+        <p>Antes de começar os comandos da aula, precisamos montar a conexão. O notebook executa Python, mas os comandos que queremos enviar ao banco são SQL. Entre esses dois lados existe um componente de conexão: o <strong>driver</strong> ou <strong>conector</strong>.</p>
+      </div>
+
+      <div class="path-strip"><span>Notebook / Python</span><b>→</b><span>driver do banco</span><b>→</b><span>banco de dados</span><b>→</b><span>resultado</span></div>
+
+      <div class="three-grid">
+        <article class="card"><h3>Python</h3><p>É a linguagem que estamos usando no notebook para abrir a conexão, enviar comandos e receber os resultados.</p></article>
+        <article class="card"><h3>Driver</h3><p>É a biblioteca que faz a comunicação entre o código Python e o mecanismo de banco de dados. Cada tecnologia possui drivers próprios.</p></article>
+        <article class="card"><h3>Banco</h3><p>Recebe o SQL, executa a operação e devolve um resultado ou uma mensagem de erro.</p></article>
+      </div>
+
+      <div class="callout ok"><strong>No nosso ambiente, o driver já está disponível</strong><p>Usaremos o módulo <code>sqlite3</code>, que já acompanha o Python. Por isso não precisamos instalar nenhum pacote adicional no Google Colab para começar.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker eyebrow">Primeira célula do notebook</p>
+        <h2>Crie o arquivo do banco e abra uma conexão</h2>
+        <p>Se o arquivo ainda não existir, ele será criado quando a conexão for aberta. A conexão permanecerá disponível enquanto a sessão do notebook estiver ativa.</p>
+      </div>
+
+      <div class="sql-block"><span class="sql-label">Python · conexão com o banco</span><pre><code>import sqlite3
+
+conexao = sqlite3.connect("reserva_salas.db")
+cursor = conexao.cursor()
+
+print("Banco conectado com sucesso!")</code></pre></div>
+
+      <div class="two-grid">
+        <article class="card"><h3><code>conexao</code></h3><p>Representa a sessão aberta com o arquivo do banco. É por meio dela que confirmamos alterações e encerramos o acesso ao banco.</p></article>
+        <article class="card"><h3><code>cursor</code></h3><p>É o objeto usado para enviar comandos SQL e recuperar os resultados produzidos por esses comandos.</p></article>
+      </div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker eyebrow">Chaves estrangeiras</p>
+        <h2>Ative a verificação das referências</h2>
+        <p>Para os testes desta aula, queremos que referências inválidas sejam realmente rejeitadas. Faça essa configuração logo depois de abrir a conexão.</p>
+      </div>
+
+      <div class="sql-block"><span class="sql-label">Python · ativando as FKs</span><pre><code>cursor.execute("PRAGMA foreign_keys = ON;")
+
+cursor.execute("PRAGMA foreign_keys;")
+print(cursor.fetchone())</code></pre></div>
+
+      <div class="callout"><strong>Resultado esperado</strong><p>Se aparecer <code>(1,)</code>, a verificação de chaves estrangeiras está ativa nessa conexão. Se a conexão for recriada, essa configuração precisa ser executada novamente.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.6rem">
+        <p class="dml-kicker eyebrow">Como enviaremos SQL</p>
+        <h2>O SQL vai dentro das células Python</h2>
+        <p>Na página da aula mostraremos os comandos em SQL puro para destacar a linguagem. No notebook, o driver recebe esses comandos por meio do cursor.</p>
+      </div>
+
+      <div class="sql-block"><span class="sql-label">Exemplo de execução</span><pre><code>cursor.execute("""
+INSERT INTO usuario (id_usuario, nome)
+VALUES (17, 'Marina Lopes');
+""")
+
+conexao.commit()</code></pre></div>
+
+      <div class="two-grid">
+        <article class="card"><h3><code>cursor.execute(...)</code></h3><p>Envia um comando SQL para o banco.</p></article>
+        <article class="card"><h3><code>conexao.commit()</code></h3><p>Confirma alterações feitas por comandos como <code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code>.</p></article>
+      </div>
+
+      <div class="callout warn"><strong>O arquivo do banco fica no ambiente da sessão</strong><p>Se a sessão do Colab for encerrada ou reiniciada, os arquivos locais podem desaparecer. Para a aula isso é suficiente; se quisermos preservar o banco depois, podemos salvar o arquivo em outro local.</p></div>
+    </div></section>
+
+    <section class="dml-section section-pad section-soft alt" id="retomada"><div class="container">
       <div class="dml-heading section-heading">
         <p class="dml-kicker eyebrow">1 · Retomada</p>
         <h2>Antes de manipular dados, recupere o que já está pronto</h2>
         <p>Na Aula 06 chegamos a um ponto importante: o domínio já foi interpretado, o modelo foi transformado em relações, a estrutura foi normalizada e as tabelas foram criadas. Portanto, nesta aula não vamos começar um novo banco. Vamos continuar trabalhando sobre aquilo que já construímos.</p>
       </div>
 
-      <div class="path-strip"><span>Domínio e requisitos</span><b>→</b><span>MER / DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>CREATE TABLE</span><b>→</b><span>Manipulação dos dados</span></div>
+      <div class="path-strip"><span>Domínio e requisitos</span><b>→</b><span>MER / DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>Estrutura pronta</span><b>→</b><span>Manipulação dos dados</span></div>
 
       <div class="three-grid">
         <article class="card"><h3>1. O domínio disse o que existe</h3><p>Identificamos usuários, salas, reservas, blocos e as regras que conectam essas informações.</p></article>
         <article class="card"><h3>2. O modelo organizou essas informações</h3><p>Entidades e relacionamentos foram transformados em relações com chaves primárias, chaves estrangeiras e atributos bem definidos.</p></article>
-        <article class="card"><h3>3. A DDL criou a estrutura</h3><p>Com <code>CREATE TABLE</code>, aquilo que estava no modelo passou a existir como estrutura no banco de dados.</p></article>
+        <article class="card"><h3>3. A estrutura já está pronta</h3><p>As tabelas existem e possuem regras. Agora a pergunta deixa de ser “como criar?” e passa a ser “o que acontece quando manipulamos os dados?”.</p></article>
       </div>
 
       <div class="callout ok"><strong>Até aqui criamos estrutura, não ocorrências</strong><p>Uma tabela pode existir perfeitamente sem possuir nenhuma linha. A definição diz quais colunas existem e quais regras devem ser respeitadas; os registros concretos ainda precisam ser inseridos.</p></div>
 
       <div class="two-grid">
-        <article class="card">
-          <h3>Estrutura</h3>
-          <p>Define quais dados podem existir.</p>
-          <div class="sql-block"><span class="sql-label">Exemplo de estrutura</span><pre><code>USUARIO(
+        <article class="card"><h3>Estrutura</h3><p>Define quais dados podem existir.</p><div class="sql-block"><span class="sql-label">Exemplo de estrutura</span><pre><code>USUARIO(
     id_usuario PRIMARY KEY,
     nome NOT NULL
-)</code></pre></div>
-        </article>
-        <article class="card">
-          <h3>Ocorrência</h3>
-          <p>É um caso concreto armazenado nessa estrutura.</p>
-          <div class="sql-block"><span class="sql-label">Exemplo de ocorrência</span><pre><code>id_usuario = 17
-nome = 'Marina Lopes'</code></pre></div>
-        </article>
+)</code></pre></div></article>
+        <article class="card"><h3>Ocorrência</h3><p>É um caso concreto armazenado nessa estrutura.</p><div class="sql-block"><span class="sql-label">Exemplo de ocorrência</span><pre><code>id_usuario = 17
+nome = 'Marina Lopes'</code></pre></div></article>
       </div>
 
       <div class="callout"><strong>Não confunda tabela com registro</strong><p><strong>USUARIO</strong> é a estrutura que representa o tipo de informação. Marina Lopes é uma ocorrência que poderá ocupar uma linha dessa tabela. Essa distinção será importante para entender o que os comandos de DML realmente modificam.</p></div>
 
-      <div class="dml-heading section-heading" style="margin-top:2.6rem">
-        <p class="dml-kicker eyebrow">Leia novamente o esquema</p>
-        <h2>Que regras já estão esperando pelos dados?</h2>
-        <p>Antes do primeiro <code>INSERT</code>, vale observar que as tabelas não estão vazias de significado. Mesmo sem registros, elas já possuem regras que vão decidir quais operações podem ou não ser aceitas.</p>
-      </div>
-
+      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Leia novamente o esquema</p><h2>Que regras já estão esperando pelos dados?</h2><p>Antes do primeiro <code>INSERT</code>, vale observar que as tabelas não estão vazias de significado. Mesmo sem registros, elas já possuem regras que vão decidir quais operações podem ou não ser aceitas.</p></div>
       <div class="three-grid">
         <article class="card"><h3>USUARIO</h3><p><code>id_usuario</code> identifica uma ocorrência de forma única. O nome é obrigatório.</p><p><strong>Pergunta:</strong> o que acontecerá se tentarmos usar o mesmo identificador duas vezes?</p></article>
         <article class="card"><h3>SALA</h3><p>Cada sala possui identidade própria e referencia um bloco existente.</p><p><strong>Pergunta:</strong> podemos cadastrar uma sala apontando para um bloco que ainda não existe?</p></article>
         <article class="card"><h3>RESERVA</h3><p>Cada reserva referencia um usuário e uma sala e registra uma ocorrência em determinada data e horário.</p><p><strong>Pergunta:</strong> podemos reservar uma sala para um usuário inexistente?</p></article>
       </div>
 
-      <div class="dml-heading section-heading" style="margin-top:2.6rem">
-        <p class="dml-kicker eyebrow">A virada desta aula</p>
-        <h2>Da definição da estrutura para as operações sobre os dados</h2>
-        <p>Até agora perguntávamos principalmente <strong>“como o banco deve ser organizado?”</strong>. A partir daqui a pergunta muda: <strong>“o que acontece quando tentamos inserir, alterar ou excluir uma ocorrência?”</strong></p>
-      </div>
-
+      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">A virada desta aula</p><h2>Da definição da estrutura para as operações sobre os dados</h2><p>Até agora perguntávamos principalmente <strong>“como o banco deve ser organizado?”</strong>. A partir daqui a pergunta muda: <strong>“o que acontece quando tentamos inserir, consultar, alterar ou excluir uma ocorrência?”</strong></p></div>
       <div class="three-grid">
         <article class="card"><h3><code>INSERT</code></h3><p>Cria novas ocorrências nas tabelas.</p></article>
-        <article class="card"><h3><code>UPDATE</code></h3><p>Altera valores de ocorrências que já existem.</p></article>
-        <article class="card"><h3><code>DELETE</code></h3><p>Remove ocorrências, desde que as regras do banco permitam.</p></article>
+        <article class="card"><h3><code>SELECT</code></h3><p>Permite verificar quais ocorrências estão armazenadas e localizar aquelas que queremos manipular.</p></article>
+        <article class="card"><h3><code>UPDATE</code> e <code>DELETE</code></h3><p>Alteram ou removem ocorrências, sempre com atenção ao alcance da operação e às regras do banco.</p></article>
       </div>
-
       <div class="callout ok"><strong>O banco passa a responder às nossas tentativas</strong><p>Quando uma operação for aceita, observaremos a mudança produzida. Quando for rejeitada, usaremos a mensagem de erro para identificar qual regra da estrutura foi violada.</p></div>
-
-      <div class="dml-heading section-heading" style="margin-top:2.6rem">
-        <p class="dml-kicker eyebrow">Antes dos testes</p>
-        <h2>Ative a verificação das chaves estrangeiras na conexão</h2>
-        <p>Os próximos exemplos dependem da verificação das referências entre as tabelas. Execute o comando abaixo antes de iniciar os testes.</p>
-      </div>
-      <div class="sql-block"><span class="sql-label">Preparação da conexão</span><pre><code>PRAGMA foreign_keys = ON;</code></pre></div>
-      <div class="callout"><strong>O que isso muda?</strong><p>A partir daqui, uma sala não poderá apontar para um bloco inexistente e uma reserva não poderá apontar para usuário ou sala inexistentes. Se a conexão do notebook for recriada, execute essa preparação novamente antes dos testes.</p></div>
     </div></section>
 
-    <section class="dml-section section-pad section-soft alt" id="insert"><div class="container">
-      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">2 · INSERT</p><h2>O banco começa a ganhar ocorrências</h2><p>Vamos cadastrar primeiro as ocorrências independentes e depois aquelas que dependem de referências já existentes.</p></div>
+    <section class="dml-section section-pad" id="insert"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">2 · INSERT e SELECT</p><h2>O banco começa a ganhar ocorrências</h2><p>Vamos cadastrar primeiro as ocorrências independentes e, logo depois de cada etapa, consultar o banco para verificar o que realmente foi armazenado.</p></div>
       <div class="sql-block"><span class="sql-label">Inserindo blocos</span><pre><code>INSERT INTO bloco (id_bloco, nome_bloco)
 VALUES
     (1, 'Bloco A'),
     (2, 'Bloco B'),
     (3, 'Bloco C');</code></pre></div>
+      <div class="sql-block"><span class="sql-label">Conferindo os blocos</span><pre><code>SELECT * FROM bloco;</code></pre></div>
       <div class="sql-block"><span class="sql-label">Inserindo usuários</span><pre><code>INSERT INTO usuario (id_usuario, nome)
 VALUES
     (17, 'Marina Lopes'),
     (42, 'Gustavo Neri'),
     (8, 'Larissa Moura');</code></pre></div>
+      <div class="sql-block"><span class="sql-label">Conferindo os usuários</span><pre><code>SELECT * FROM usuario;</code></pre></div>
       <div class="sql-block"><span class="sql-label">Inserindo salas</span><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
 VALUES
     (204, 'Sala Ipê', 6, 2),
     (118, 'Sala Araucária', 8, 1),
     (305, 'Sala Horizonte', 4, 3);</code></pre></div>
+      <div class="sql-block"><span class="sql-label">Conferindo as salas</span><pre><code>SELECT * FROM sala;</code></pre></div>
       <div class="callout"><strong>A ordem pode importar</strong><p>Se uma sala referencia um bloco, esse bloco precisa existir antes que a sala seja inserida. A chave estrangeira transforma uma decisão de modelagem em uma regra observável durante a manipulação dos dados.</p></div>
       <div class="sql-block"><span class="sql-label">Teste proposital · bloco inexistente</span><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
 VALUES (500, 'Sala Teste', 5, 99);</code></pre></div>
       <div class="callout warn"><strong>Antes de executar</strong><p>O comando está sintaticamente correto. Mesmo assim, deve ser rejeitado porque a referência para o bloco 99 não corresponde a nenhuma ocorrência existente.</p></div>
     </div></section>
 
-    <section class="dml-section section-pad" id="regras"><div class="container">
+    <section class="dml-section section-pad section-soft alt" id="regras"><div class="container">
       <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">3 · Integridade e restrições</p><h2>O banco não aceita qualquer valor apenas porque a sintaxe está correta</h2><p>Agora vamos observar diferentes tipos de restrição e relacioná-los às regras do domínio.</p></div>
-
       <div class="constraint-table-wrap"><table class="constraint-table"><thead><tr><th>Restrição</th><th>Pergunta que ela responde</th><th>Exemplo no domínio</th></tr></thead><tbody>
         <tr><td><code>PRIMARY KEY</code></td><td>Como identificar unicamente esta ocorrência?</td><td>Duas ocorrências de USUARIO não podem compartilhar o mesmo <code>id_usuario</code>.</td></tr>
         <tr><td><code>FOREIGN KEY</code></td><td>A referência aponta para uma ocorrência existente?</td><td>Uma RESERVA não pode apontar para um usuário inexistente.</td></tr>
@@ -206,99 +251,94 @@ VALUES (500, 'Sala Teste', 5, 99);</code></pre></div>
         <tr><td><code>DEFAULT</code></td><td>Que valor utilizar quando nenhum for informado?</td><td>Uma nova reserva pode começar como <code>ativa</code>.</td></tr>
         <tr><td><code>UNIQUE</code></td><td>Este valor ou combinação pode aparecer novamente?</td><td>A mesma sala não pode ser reservada duas vezes na mesma data e horário.</td></tr>
       </tbody></table></div>
-
       <div class="two-grid">
         <article class="card"><h3>Integridade de entidade</h3><p>Garante que cada ocorrência possa ser identificada. A chave primária é o mecanismo central desse controle.</p></article>
         <article class="card"><h3>Integridade referencial</h3><p>Garante que uma referência existente em uma tabela aponte para uma ocorrência válida em outra tabela.</p></article>
         <article class="card"><h3>Integridade de domínio</h3><p>Garante que os valores respeitem regras associadas aos atributos, como obrigatoriedade, faixa permitida ou conjunto de valores possíveis.</p></article>
         <article class="card"><h3>Mensagem de erro como evidência</h3><p>Quando uma operação é rejeitada, o objetivo é descobrir qual regra foi violada e por que essa regra existe.</p></article>
       </div>
-
-      <div class="sql-block"><span class="sql-label">Estrutura de referência para os testes</span><pre><code>CREATE TABLE reserva (
-    id_reserva INTEGER PRIMARY KEY,
-    id_usuario INTEGER NOT NULL,
-    id_sala INTEGER NOT NULL,
-    data TEXT NOT NULL,
-    hora_inicio TEXT NOT NULL,
-    situacao TEXT NOT NULL DEFAULT 'ativa'
-        CHECK (situacao IN ('ativa', 'cancelada', 'concluida')),
-
-    UNIQUE (id_sala, data, hora_inicio),
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
-    FOREIGN KEY (id_sala) REFERENCES sala(id_sala)
-);</code></pre></div>
-
+      <div class="callout"><strong>As regras já fazem parte do banco usado no exercício</strong><p>Não vamos reconstruir as tabelas nesta aula. Vamos observar <code>CHECK</code>, <code>DEFAULT</code>, <code>UNIQUE</code>, PKs e FKs pelo comportamento das operações.</p></div>
       <div class="sql-block"><span class="sql-label">Teste · chave primária duplicada</span><pre><code>INSERT INTO usuario (id_usuario, nome)
 VALUES (17, 'Outra pessoa');</code></pre></div>
-
       <div class="sql-block"><span class="sql-label">Teste · valor obrigatório ausente</span><pre><code>INSERT INTO usuario (id_usuario, nome)
 VALUES (90, NULL);</code></pre></div>
-
       <div class="sql-block"><span class="sql-label">Teste · valor que viola CHECK</span><pre><code>INSERT INTO reserva (
     id_reserva, id_usuario, id_sala, data, hora_inicio, situacao
 )
 VALUES (
     1, 17, 204, '2026-09-18', '18:30', 'aguardando'
 );</code></pre></div>
-
       <div class="sql-block"><span class="sql-label">DEFAULT em ação</span><pre><code>INSERT INTO reserva (
     id_reserva, id_usuario, id_sala, data, hora_inicio
 )
 VALUES (
     2, 42, 204, '2026-09-19', '14:00'
 );</code></pre></div>
+      <div class="sql-block"><span class="sql-label">Confira o valor assumido</span><pre><code>SELECT *
+FROM reserva
+WHERE id_reserva = 2;</code></pre></div>
       <div class="callout ok"><strong>O valor não foi omitido do banco</strong><p>Como a coluna possui <code>DEFAULT 'ativa'</code>, a situação recebe esse valor quando ele não é informado no <code>INSERT</code>.</p></div>
     </div></section>
 
-    <section class="dml-section section-pad section-soft alt" id="update"><div class="container">
-      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">4 · UPDATE</p><h2>Dados existentes também mudam</h2><p>Alterar dados é simples; o cuidado está em determinar exatamente quais ocorrências devem ser afetadas.</p></div>
-      <div class="sql-block"><span class="sql-label">Cancelando uma reserva específica</span><pre><code>UPDATE reserva
+    <section class="dml-section section-pad" id="update"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">4 · UPDATE</p><h2>Primeiro localize. Depois altere.</h2><p>Antes de modificar uma ocorrência, use o mesmo filtro em um <code>SELECT</code>. Assim podemos confirmar exatamente qual linha será atingida.</p></div>
+      <div class="sql-block"><span class="sql-label">1 · Localize</span><pre><code>SELECT *
+FROM reserva
+WHERE id_reserva = 2;</code></pre></div>
+      <div class="sql-block"><span class="sql-label">2 · Altere</span><pre><code>UPDATE reserva
 SET situacao = 'cancelada'
+WHERE id_reserva = 2;</code></pre></div>
+      <div class="sql-block"><span class="sql-label">3 · Confira</span><pre><code>SELECT *
+FROM reserva
 WHERE id_reserva = 2;</code></pre></div>
       <div class="sql-block"><span class="sql-label">Sem WHERE</span><pre><code>UPDATE reserva
 SET situacao = 'cancelada';</code></pre></div>
       <div class="callout warn"><strong>Não é um erro de SQL</strong><p>Sem <code>WHERE</code>, todas as linhas da tabela podem ser alteradas. O comando pode estar correto sintaticamente e, ainda assim, produzir um resultado muito diferente do pretendido.</p></div>
-      <div class="callout"><strong>Rotina segura</strong><p>Antes de executar um <code>UPDATE</code>, use um <code>SELECT</code> com o mesmo <code>WHERE</code> para verificar quais linhas serão atingidas. A consulta será aprofundada na próxima aula.</p></div>
-      <div class="sql-block"><span class="sql-label">Verificação antes da alteração</span><pre><code>SELECT *
-FROM reserva
-WHERE id_reserva = 2;</code></pre></div>
     </div></section>
 
-    <section class="dml-section section-pad" id="delete"><div class="container">
-      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">5 · DELETE e integridade referencial</p><h2>Excluir um registro pode afetar dados relacionados</h2><p>O <code>DELETE</code> também precisa ser delimitado e analisado à luz das relações existentes no modelo.</p></div>
-      <div class="sql-block"><span class="sql-label">Exclusão delimitada</span><pre><code>DELETE FROM reserva
+    <section class="dml-section section-pad section-soft alt" id="delete"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">5 · DELETE e integridade referencial</p><h2>Localize, exclua e verifique</h2><p>O mesmo procedimento usado no <code>UPDATE</code> vale para exclusões: primeiro confirme a ocorrência, depois execute a operação e, por fim, verifique o resultado.</p></div>
+      <div class="sql-block"><span class="sql-label">1 · Localize</span><pre><code>SELECT *
+FROM reserva
+WHERE id_reserva = 2;</code></pre></div>
+      <div class="sql-block"><span class="sql-label">2 · Exclua</span><pre><code>DELETE FROM reserva
+WHERE id_reserva = 2;</code></pre></div>
+      <div class="sql-block"><span class="sql-label">3 · Verifique</span><pre><code>SELECT *
+FROM reserva
 WHERE id_reserva = 2;</code></pre></div>
       <div class="sql-block"><span class="sql-label">Exclusão sem filtro</span><pre><code>DELETE FROM reserva;</code></pre></div>
       <div class="callout warn"><strong>Sem WHERE</strong><p>O comando remove todas as linhas da tabela. Novamente, o problema não é sintático: é o alcance da operação.</p></div>
-
-      <div class="dml-heading section-heading" style="margin-top:2.5rem"><p class="dml-kicker eyebrow">ON DELETE</p><h2>O que deve acontecer quando o registro referenciado desaparece?</h2><p>A resposta depende da regra do domínio. A política deve ser decidida no relacionamento e declarada na própria chave estrangeira.</p></div>
+      <div class="dml-heading section-heading" style="margin-top:2.5rem"><p class="dml-kicker eyebrow">ON DELETE</p><h2>O que deve acontecer quando o registro referenciado desaparece?</h2><p>A resposta depende da regra do domínio. A política deve ser decidida no relacionamento.</p></div>
       <div class="three-grid">
-        <article class="card"><h3>RESTRICT / NO ACTION</h3><p>Impede a exclusão enquanto existirem registros dependentes. É adequado quando o histórico precisa permanecer associado.</p></article>
-        <article class="card"><h3>CASCADE</h3><p>Ao remover o registro referenciado, remove também os registros dependentes. Pode fazer sentido para dados que só existem em função do registro-pai.</p></article>
-        <article class="card"><h3>SET NULL</h3><p>A referência passa a ser <code>NULL</code>, desde que a coluna aceite ausência de valor. Útil quando o dependente pode permanecer sem aquela associação.</p></article>
+        <article class="card"><h3>RESTRICT / NO ACTION</h3><p>Impede a exclusão enquanto existirem registros dependentes.</p></article>
+        <article class="card"><h3>CASCADE</h3><p>Ao remover o registro referenciado, remove também os registros dependentes.</p></article>
+        <article class="card"><h3>SET NULL</h3><p>A referência passa a ser <code>NULL</code>, desde que a coluna aceite ausência de valor.</p></article>
       </div>
-      <div class="sql-block"><span class="sql-label">Exemplo de política definida na FK</span><pre><code>FOREIGN KEY (id_usuario)
-    REFERENCES usuario(id_usuario)
-    ON DELETE CASCADE</code></pre></div>
       <div class="callout"><strong>CASCADE não é uma opção automática</strong><p>Apagar os telefones de um usuário removido pode ser coerente. Apagar todo o histórico de reservas desse usuário pode não ser. A escolha precisa representar o significado do relacionamento.</p></div>
     </div></section>
 
-    <section class="dml-section section-pad section-soft alt" id="pratica"><div class="container">
-      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">6 · Prática guiada</p><h2>Primeiro preveja. Depois execute.</h2><p>Antes de cada comando, registre se a operação deve ser aceita ou rejeitada, qual regra está envolvida e qual mudança você espera observar.</p></div>
+    <section class="dml-section section-pad" id="pratica"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">6 · Prática guiada</p><h2>Preveja → execute → observe → explique</h2><p>Vamos continuar com o mesmo domínio de reserva de salas. Antes de cada comando, diga o que você espera que aconteça; depois execute e compare a previsão com o comportamento real do banco.</p></div>
       <div class="practice-list">
         <article class="practice-card"><span class="n">1</span><h3>Novo usuário</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
 VALUES (100, 'João Martins');</code></pre></div><div class="prediction"><span>Será aceito?</span><span>Que regra observar?</span><span>Qual mudança ocorrerá?</span></div></article>
-        <article class="practice-card"><span class="n">2</span><h3>Mesmo identificador novamente</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
+        <article class="practice-card"><span class="n">2</span><h3>Confira o usuário</h3><div class="sql-block"><pre><code>SELECT *
+FROM usuario
+WHERE id_usuario = 100;</code></pre></div><div class="prediction"><span>Qual linha aparece?</span><span>O filtro está correto?</span><span>O que foi armazenado?</span></div></article>
+        <article class="practice-card"><span class="n">3</span><h3>Mesmo identificador novamente</h3><div class="sql-block"><pre><code>INSERT INTO usuario (id_usuario, nome)
 VALUES (100, 'Maria Lima');</code></pre></div><div class="prediction"><span>Será aceito?</span><span>Que restrição atua?</span><span>O que a mensagem indica?</span></div></article>
-        <article class="practice-card"><span class="n">3</span><h3>Sala ligada a bloco inexistente</h3><div class="sql-block"><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+        <article class="practice-card"><span class="n">4</span><h3>Sala ligada a bloco inexistente</h3><div class="sql-block"><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
 VALUES (700, 'Sala Azul', 10, 999);</code></pre></div><div class="prediction"><span>Será aceito?</span><span>Que integridade está envolvida?</span><span>Por quê?</span></div></article>
-        <article class="practice-card"><span class="n">4</span><h3>Reserva válida</h3><div class="sql-block"><pre><code>INSERT INTO reserva (
+        <article class="practice-card"><span class="n">5</span><h3>Reserva válida</h3><div class="sql-block"><pre><code>INSERT INTO reserva (
     id_reserva, id_usuario, id_sala, data, hora_inicio
 )
 VALUES (
     50, 100, 204, '2026-09-25', '19:00'
 );</code></pre></div><div class="prediction"><span>Será aceita?</span><span>Qual valor será usado em situacao?</span><span>Quais FKs serão verificadas?</span></div></article>
-        <article class="practice-card"><span class="n">5</span><h3>Atualização delimitada</h3><div class="sql-block"><pre><code>UPDATE reserva
+        <article class="practice-card"><span class="n">6</span><h3>Localize antes de alterar</h3><div class="sql-block"><pre><code>SELECT *
+FROM reserva
+WHERE id_reserva = 50;</code></pre></div><div class="prediction"><span>É a reserva esperada?</span><span>Qual situação aparece?</span><span>Podemos alterar com segurança?</span></div></article>
+        <article class="practice-card"><span class="n">7</span><h3>Atualização delimitada</h3><div class="sql-block"><pre><code>UPDATE reserva
 SET situacao = 'cancelada'
 WHERE id_reserva = 50;</code></pre></div><div class="prediction"><span>Quantas linhas?</span><span>Que valor muda?</span><span>Por que WHERE é importante?</span></div></article>
       </div>
@@ -308,16 +348,18 @@ WHERE id_reserva = 50;</code></pre></div><div class="prediction"><span>Quantas l
         <li>Cadastre dois telefones para ela.</li>
         <li>Cadastre a Sala Pinheiro, capacidade 8, no Bloco B.</li>
         <li>Registre uma reserva da sala para 30/09/2026 às 19:00.</li>
-        <li>Depois, cancele essa reserva.</li>
+        <li>Use <code>SELECT</code> para localizar a reserva.</li>
+        <li>Cancele a reserva com <code>UPDATE</code> e confira a alteração.</li>
+        <li>Escolha um registro que possa ser removido, localize-o primeiro e depois teste <code>DELETE</code>.</li>
       </ol><p>Ao final, provoque intencionalmente três erros: uma PK duplicada, uma FK para registro inexistente e uma situação inválida. Para cada um, explique qual regra foi violada.</p></div>
     </div></section>
 
-    <section class="dml-section section-pad" id="sintese"><div class="container">
-      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">7 · Síntese</p><h2>Estrutura, dados e regras agora aparecem juntos</h2><p>A modelagem definiu o significado. A DDL transformou esse significado em estrutura. A DML mostrou o comportamento do banco diante de operações válidas e inválidas.</p></div>
-      <div class="path-strip"><span>Requisitos</span><b>→</b><span>DER</span><b>→</b><span>Modelo relacional</span><b>→</b><span>Normalização</span><b>→</b><span>DDL</span><b>→</b><span>Restrições</span><b>→</b><span>DML</span><b>→</b><span>Dados consistentes</span></div>
+    <section class="dml-section section-pad section-soft alt" id="sintese"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">7 · Síntese</p><h2>Estrutura, dados e regras agora aparecem juntos</h2><p>A modelagem definiu o significado. A estrutura materializou esse significado. Nesta aula, usamos operações básicas para inserir, localizar, alterar e excluir dados e observamos como o banco reage a operações válidas e inválidas.</p></div>
+      <div class="path-strip"><span>Estrutura pronta</span><b>→</b><span>INSERT</span><b>→</b><span>SELECT</span><b>→</b><span>UPDATE</span><b>→</b><span>DELETE</span><b>→</b><span>Dados consistentes</span></div>
       <div class="two-grid">
-        <article class="card"><h3>O que conseguimos fazer</h3><p>Inserir, alterar e excluir dados; interpretar erros; reconhecer integridade de entidade, domínio e referencial; e perceber que uma operação correta depende das regras do domínio.</p></article>
-        <article class="card"><h3>Próxima pergunta</h3><p>Agora que o banco possui dados, como recuperar exatamente a informação que precisamos? Esse será o ponto de partida para <code>SELECT</code>, filtros, ordenação e junções.</p></article>
+        <article class="card"><h3>O que conseguimos fazer</h3><p>Inserir, localizar, alterar e excluir dados; interpretar erros; reconhecer integridade de entidade, domínio e referencial; e perceber que uma operação correta depende das regras do domínio.</p></article>
+        <article class="card"><h3>Próxima pergunta</h3><p>Hoje usamos <code>SELECT</code> apenas para localizar e conferir dados. Na próxima aula vamos aprofundar consultas, filtros, ordenação, operadores e junções entre tabelas.</p></article>
       </div>
     </div></section>
   </main>
