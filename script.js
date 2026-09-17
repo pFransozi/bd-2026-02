@@ -44,9 +44,7 @@ const enhanceAula04Draft = () => {
   const card = document.querySelector('.study-hero .study-card');
   const cardTitle = card?.querySelector('strong');
   const cardText = card?.querySelector('p');
-  if (cardTitle) {
-    cardTitle.textContent = 'Como aproveitar este material';
-  }
+  if (cardTitle) cardTitle.textContent = 'Como aproveitar este material';
   if (cardText) {
     cardText.innerHTML = 'Este aprofundamento retoma a Aula 04 para explorar com mais cuidado as decisões por trás da modelagem conceitual. O objetivo é compreender não apenas <strong>o que representar no DER</strong>, mas também <strong>como justificar e validar cada escolha</strong>.';
   }
@@ -106,64 +104,88 @@ const enhanceAula07CodeExplanations = () => {
     style.id = 'aula07-code-explainer-style';
     style.textContent = `
       body.lesson-dml .code-explainer {
-        margin: .65rem 0 1.35rem;
+        margin: .7rem 0 1.6rem;
+        padding: 1.05rem 1.15rem 1.15rem;
         border: 1px solid var(--line);
-        border-radius: 14px;
-        background: var(--surface);
-        overflow: hidden;
+        border-left: 4px solid var(--primary);
+        border-radius: 0 16px 16px 0;
+        background: color-mix(in srgb,var(--primary) 5%,var(--surface));
       }
 
-      body.lesson-dml .code-explainer summary {
-        cursor: pointer;
-        list-style: none;
-        padding: .78rem 1rem;
-        font-weight: 800;
+      body.lesson-dml .code-explainer-kicker {
+        margin: 0 0 .25rem;
         color: var(--primary);
-        user-select: none;
+        font-size: .72rem;
+        font-weight: 900;
+        letter-spacing: .08em;
+        text-transform: uppercase;
       }
 
-      body.lesson-dml .code-explainer summary::-webkit-details-marker {
-        display: none;
+      body.lesson-dml .code-explainer h4 {
+        margin: 0;
+        font-size: 1rem;
       }
 
-      body.lesson-dml .code-explainer summary::before {
-        content: '＋';
-        display: inline-block;
-        width: 1.35rem;
-        margin-right: .35rem;
-      }
-
-      body.lesson-dml .code-explainer[open] summary::before {
-        content: '−';
-      }
-
-      body.lesson-dml .code-explainer-body {
-        padding: 0 1rem 1rem 2.7rem;
+      body.lesson-dml .code-explainer-intro {
+        margin: .45rem 0 .8rem;
         color: var(--muted);
       }
 
-      body.lesson-dml .code-explainer-body p {
-        margin: .45rem 0;
+      body.lesson-dml .code-steps {
+        display: grid;
+        gap: .55rem;
       }
 
-      body.lesson-dml .code-explainer-body code {
+      body.lesson-dml .code-step {
+        display: grid;
+        grid-template-columns: 1.7rem 1fr;
+        gap: .65rem;
+        align-items: start;
+      }
+
+      body.lesson-dml .code-step-number {
+        display: grid;
+        place-items: center;
+        width: 1.55rem;
+        height: 1.55rem;
+        margin-top: .05rem;
+        border-radius: 999px;
+        background: color-mix(in srgb,var(--primary) 12%,var(--surface));
+        color: var(--primary);
+        font-size: .72rem;
+        font-weight: 900;
+      }
+
+      body.lesson-dml .code-step p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      body.lesson-dml .code-step code,
+      body.lesson-dml .code-explainer-intro code {
         color: var(--text);
       }
 
       body.lesson-dml .code-study-note {
         margin: 1rem 0 1.5rem;
       }
+
+      @media (max-width: 680px) {
+        body.lesson-dml .code-explainer {
+          padding: .95rem;
+        }
+      }
     `;
     document.head.appendChild(style);
   }
 
-  document.querySelectorAll('.ddl-comment-guide, .dml-comment-guide').forEach((node) => node.remove());
+  document.querySelectorAll('.ddl-comment-guide, .dml-comment-guide, details.code-explainer').forEach((node) => node.remove());
 
   const insertHeading = document.querySelector('#insert .dml-heading');
   if (insertHeading && !document.querySelector('#insert .code-study-note')) {
     const note = document.createElement('div');
     note.className = 'callout code-study-note';
-    note.innerHTML = '<strong>Código limpo, explicação sob demanda</strong><p>Primeiro leia e execute o comando como uma unidade. Quando precisar revisar a sintaxe ou entender uma decisão, abra <strong>Entenda este código</strong> logo abaixo do exemplo.</p>';
+    note.innerHTML = '<strong>Primeiro contato com DML</strong><p>DML é a parte do SQL usada para trabalhar com os <strong>dados que estão dentro das tabelas</strong>. Nesta aula, pense sempre em quatro perguntas: <strong>em qual tabela?</strong>, <strong>quais colunas?</strong>, <strong>quais valores?</strong> e <strong>qual registro será afetado?</strong>.</p>';
     insertHeading.insertAdjacentElement('afterend', note);
   }
 
@@ -172,119 +194,274 @@ const enhanceAula07CodeExplanations = () => {
   if (ddlHeading && !document.querySelector('#ambiente .code-study-note')) {
     const note = document.createElement('div');
     note.className = 'callout code-study-note';
-    note.innerHTML = '<strong>Na DDL, observe as regras da estrutura</strong><p>O código fica limpo para facilitar a leitura. Use a explicação recolhível para revisar o papel de <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code>, <code>DEFAULT</code> e <code>ON DELETE</code>.</p>';
+    note.innerHTML = '<strong>Primeiro contato com DDL</strong><p>DDL é a parte do SQL usada para definir a <strong>estrutura</strong> do banco: tabelas, colunas, chaves e regras. Não tente decorar tudo agora. Leia cada <code>CREATE TABLE</code> como uma descrição do que o banco deve aceitar ou impedir.</p>';
     ddlHeading.insertAdjacentElement('afterend', note);
   }
 
-  const byLabel = {
-    'Python · conexão': [
-      '<p><code>import sqlite3</code> disponibiliza o driver do SQLite no Python.</p>',
-      '<p><code>connect()</code> abre o arquivo do banco; se ele não existir, o SQLite cria o arquivo.</p>',
-      '<p>O <code>cursor</code> envia comandos SQL para a conexão.</p>',
-      '<p><code>PRAGMA foreign_keys = ON</code> ativa a verificação das chaves estrangeiras no SQLite.</p>'
-    ],
-    'Python · criando as tabelas do laboratório': [
-      '<p><code>executescript()</code> permite executar vários comandos DDL de uma vez.</p>',
-      '<p>Os <code>DROP TABLE IF EXISTS</code> reiniciam o laboratório e aparecem em ordem inversa às dependências.</p>',
-      '<p>Cada <code>CREATE TABLE</code> define uma parte do domínio e suas regras estruturais.</p>',
-      '<p><code>PRIMARY KEY</code> identifica registros; <code>FOREIGN KEY</code> cria vínculos; <code>NOT NULL</code>, <code>UNIQUE</code> e <code>CHECK</code> impõem restrições.</p>',
-      '<p><code>DEFAULT</code> fornece um valor quando o <code>INSERT</code> omite a coluna. <code>CASCADE</code> propaga a exclusão; <code>RESTRICT</code> bloqueia a exclusão quando há dependências.</p>'
-    ],
-    'Python · conferindo a estrutura': [
-      '<p>A consulta lê <code>sqlite_master</code>, o catálogo interno do SQLite.</p>',
-      '<p>O filtro <code>type = \'table\'</code> mantém apenas tabelas e <code>ORDER BY name</code> organiza o resultado.</p>',
-      '<p>O laço em Python imprime cada tabela encontrada para confirmar que a DDL foi executada.</p>'
-    ],
-    'Python · executar e consultar': [
-      '<p><code>executar()</code> centraliza comandos que modificam o banco e confirma com <code>commit()</code>.</p>',
-      '<p>Se ocorrer erro, <code>rollback()</code> desfaz a operação corrente e a mensagem é exibida.</p>',
-      '<p><code>consultar()</code> executa um <code>SELECT</code>, recupera os nomes das colunas e imprime as linhas retornadas.</p>'
-    ],
-    '1 · blocos': [
-      '<p><code>INSERT INTO bloco</code> informa a tabela e as colunas que serão preenchidas.</p>',
-      '<p>Um único <code>VALUES</code> adiciona três registros. Depois, o <code>SELECT</code> confirma o resultado.</p>'
-    ],
-    '2 · usuários': [
-      '<p>São inseridos três usuários, cada um com uma chave primária diferente.</p>',
-      '<p>O <code>SELECT</code> seguinte serve como verificação imediata da inserção.</p>'
-    ],
-    '3 · telefones': [
-      '<p>O usuário 17 recebe dois telefones. Isso é possível porque a tabela separa um atributo multivalorado.</p>',
-      '<p>A combinação <code>(id_usuario, telefone)</code> é a chave primária composta: o mesmo usuário pode ter vários números, mas a mesma combinação não pode se repetir.</p>'
-    ],
-    '4 · salas': [
-      '<p>Cada sala recebe um <code>id_bloco</code>. Esse valor precisa existir antes na tabela <code>bloco</code> por causa da chave estrangeira.</p>',
-      '<p>A capacidade também precisa respeitar o <code>CHECK (capacidade &gt; 0)</code>.</p>'
-    ],
-    '5 · primeira reserva': [
-      '<p>A reserva referencia um usuário e uma sala já existentes.</p>',
-      '<p>A coluna <code>situacao</code> não é informada. Por isso o banco aplica automaticamente o <code>DEFAULT \'ativa\'</code>.</p>'
-    ],
-    '1 · localize': [
-      '<p>Antes de alterar ou excluir, usamos <code>SELECT ... WHERE</code> para confirmar exatamente qual registro será atingido.</p>'
-    ],
-    '2 · altere': [
-      '<p><code>UPDATE reserva</code> escolhe a tabela; <code>SET</code> define o novo valor; <code>WHERE</code> restringe a alteração à reserva 1.</p>',
-      '<p>Sem <code>WHERE</code>, todas as linhas da tabela poderiam ser alteradas.</p>'
-    ],
-    '3 · confira': [
-      '<p>Repetimos o mesmo <code>SELECT</code> para verificar o estado do registro depois da operação.</p>'
-    ],
-    '2 · exclua um telefone': [
-      '<p><code>DELETE FROM telefone_usuario</code> remove linhas da tabela.</p>',
-      '<p>As duas condições identificam exatamente um telefone do usuário 42, reduzindo o risco de excluir outros registros.</p>'
-    ]
+  const explanationsByLabel = {
+    'Python · conexão': {
+      intro: 'Antes do SQL, o Python precisa abrir o arquivo do banco e preparar um caminho para enviar comandos ao SQLite.',
+      steps: [
+        '<code>import sqlite3</code> carrega o módulo que permite conversar com o SQLite.',
+        '<code>sqlite3.connect(...)</code> abre o arquivo <code>reserva_salas.db</code>. Se o arquivo ainda não existir, ele é criado.',
+        '<code>cursor = conexao.cursor()</code> cria o objeto que envia os comandos SQL ao banco.',
+        '<code>PRAGMA foreign_keys = ON</code> ativa no SQLite a verificação das chaves estrangeiras.'
+      ]
+    },
+    'Python · criando as tabelas do laboratório': {
+      intro: 'Este bloco reconstrói a estrutura do banco. A parte SQL está dentro de <code>executescript()</code> porque queremos executar vários comandos de uma vez.',
+      steps: [
+        '<code>DROP TABLE IF EXISTS</code> apaga as tabelas antigas, caso existam, para todos começarem no mesmo estado.',
+        '<code>CREATE TABLE usuario (...)</code>, por exemplo, significa: “crie uma tabela chamada <code>usuario</code> com estas colunas e regras”.',
+        '<code>PRIMARY KEY</code> define como cada registro será identificado de forma única.',
+        '<code>NOT NULL</code> diz que aquela informação é obrigatória.',
+        '<code>FOREIGN KEY</code> e <code>REFERENCES</code> criam uma ligação entre duas tabelas.',
+        '<code>UNIQUE</code> impede repetições; <code>CHECK</code> valida uma regra; <code>DEFAULT</code> fornece um valor quando ele não é informado.',
+        '<code>ON DELETE CASCADE</code> propaga uma exclusão para registros dependentes; <code>RESTRICT</code> bloqueia a exclusão enquanto houver dependências.'
+      ]
+    },
+    'Python · conferindo a estrutura': {
+      intro: 'Depois de criar as tabelas, não vamos simplesmente assumir que tudo funcionou: consultamos o próprio SQLite para conferir.',
+      steps: [
+        '<code>sqlite_master</code> é uma tabela interna que descreve os objetos existentes no banco.',
+        '<code>WHERE type = \'table\'</code> mantém apenas os objetos que são tabelas.',
+        '<code>ORDER BY name</code> organiza os nomes em ordem alfabética.',
+        'O laço <code>for</code> imprime cada tabela encontrada. O resultado esperado confirma que a DDL foi executada.'
+      ]
+    },
+    'Python · executar e consultar': {
+      intro: 'As duas funções abaixo são apenas auxiliares do notebook. Elas evitam repetir o mesmo código Python a cada exemplo e deixam o foco no SQL.',
+      steps: [
+        '<code>executar(sql)</code> recebe um comando SQL que modifica o banco, executa e confirma a alteração com <code>commit()</code>.',
+        'Se algo der errado, <code>rollback()</code> desfaz a operação corrente e mostramos a mensagem de erro.',
+        '<code>consultar(sql)</code> executa um <code>SELECT</code>, lê as colunas retornadas e imprime as linhas encontradas.',
+        'Nas próximas seções, o que estiver dentro de <code>executar(...)</code> ou <code>consultar(...)</code> será o SQL que estamos estudando.'
+      ]
+    },
+    '1 · blocos': {
+      intro: 'Aqui aparece o primeiro comando DML da aula: <code>INSERT</code>. Ele adiciona novas linhas a uma tabela.',
+      steps: [
+        '<code>INSERT INTO bloco</code> escolhe a tabela que receberá os dados.',
+        '<code>(id_bloco, nome_bloco)</code> informa quais colunas serão preenchidas.',
+        '<code>VALUES</code> inicia a lista de valores. Cada conjunto entre parênteses representa uma nova linha.',
+        'Depois do <code>INSERT</code>, executamos <code>SELECT * FROM bloco</code>. O <code>*</code> significa “mostre todas as colunas”.'
+      ]
+    },
+    '2 · usuários': {
+      intro: 'A estrutura do comando é a mesma. O que muda são a tabela, as colunas e os valores.',
+      steps: [
+        '<code>INSERT INTO usuario</code> indica que as novas linhas serão gravadas em <code>usuario</code>.',
+        'Cada usuário recebe um <code>id_usuario</code> diferente porque essa coluna é a chave primária.',
+        'O <code>SELECT</code> logo abaixo confirma exatamente o que entrou na tabela.'
+      ]
+    },
+    '3 · telefones': {
+      intro: 'Este exemplo mostra por que criamos uma tabela separada para os telefones: um mesmo usuário pode possuir mais de um número.',
+      steps: [
+        'O usuário <code>17</code> aparece em duas linhas porque possui dois telefones.',
+        'A chave primária é composta por <code>(id_usuario, telefone)</code>. Portanto, o usuário pode repetir, mas a combinação usuário + telefone não pode.',
+        '<code>id_usuario</code> também é chave estrangeira: cada telefone precisa pertencer a um usuário que já exista.'
+      ]
+    },
+    '4 · salas': {
+      intro: 'Ao inserir uma sala, o banco já começa a aplicar as regras que definimos na DDL.',
+      steps: [
+        '<code>capacidade</code> precisa ser maior que zero por causa do <code>CHECK</code>.',
+        '<code>id_bloco</code> precisa apontar para um bloco existente por causa da chave estrangeira.',
+        'Por isso os blocos foram inseridos antes das salas.'
+      ]
+    },
+    '5 · primeira reserva': {
+      intro: 'Uma reserva depende de dados que já existem. Ela precisa apontar para um usuário válido e uma sala válida.',
+      steps: [
+        '<code>id_usuario = 17</code> referencia Marina; <code>id_sala = 204</code> referencia a Sala Ipê.',
+        'A coluna <code>situacao</code> não aparece no <code>INSERT</code>. Isso é permitido porque definimos <code>DEFAULT \'ativa\'</code>.',
+        'Ao fazer o <code>SELECT</code>, observe que <code>ativa</code> aparece mesmo sem termos digitado esse valor.'
+      ]
+    },
+    '1 · localize': {
+      intro: 'Antes de alterar ou apagar dados, primeiro localizamos a linha que pretendemos atingir.',
+      steps: [
+        '<code>SELECT *</code> pede todas as colunas.',
+        '<code>FROM reserva</code> informa a tabela.',
+        '<code>WHERE id_reserva = 1</code> restringe o resultado somente à reserva 1.'
+      ]
+    },
+    '2 · altere': {
+      intro: '<code>UPDATE</code> modifica dados que já existem. O ponto mais importante é controlar quais linhas serão alteradas.',
+      steps: [
+        '<code>UPDATE reserva</code> escolhe a tabela.',
+        '<code>SET situacao = \'cancelada\'</code> informa qual coluna muda e qual será o novo valor.',
+        '<code>WHERE id_reserva = 1</code> limita a alteração à reserva 1.',
+        'Sem <code>WHERE</code>, o comando alteraria todas as linhas da tabela.'
+      ]
+    },
+    '3 · confira': {
+      intro: 'Depois de modificar, repetimos a consulta para verificar se o banco ficou no estado esperado.',
+      steps: [
+        'Usamos a mesma condição <code>WHERE id_reserva = 1</code>.',
+        'Compare o valor de <code>situacao</code> antes e depois do <code>UPDATE</code>.'
+      ]
+    },
+    '2 · exclua um telefone': {
+      intro: '<code>DELETE</code> remove linhas. Assim como no <code>UPDATE</code>, a condição é fundamental para não atingir registros errados.',
+      steps: [
+        '<code>DELETE FROM telefone_usuario</code> escolhe a tabela.',
+        '<code>WHERE id_usuario = 42</code> começa a localizar o registro.',
+        '<code>AND telefone = ...</code> acrescenta uma segunda condição e identifica exatamente o telefone desejado.'
+      ]
+    }
   };
 
-  const byTitle = {
-    'PK duplicada': '<p>O comando deve falhar porque <code>id_usuario = 17</code> já existe. A <code>PRIMARY KEY</code> não permite duas linhas com a mesma identidade.</p>',
-    'FK para bloco inexistente': '<p>O comando deve falhar porque o bloco 99 não existe. A <code>FOREIGN KEY</code> impede criar uma sala apontando para um bloco inexistente.</p>',
-    'CHECK de capacidade': '<p>O comando deve falhar porque a capacidade é negativa e viola <code>CHECK (capacidade &gt; 0)</code>.</p>',
-    'Situação inválida': '<p>O comando deve falhar porque <code>aguardando</code> não faz parte dos valores permitidos pelo <code>CHECK</code> da coluna <code>situacao</code>.</p>',
-    'Reserva repetida no mesmo horário': '<p>O comando deve falhar porque a combinação sala + data + horário já existe e foi declarada como <code>UNIQUE</code>.</p>',
-    'Cadastre um novo usuário': '<p>O usuário é criado primeiro porque a reserva do próximo passo precisa apontar para um <code>id_usuario</code> existente.</p>',
-    'Crie uma reserva para esse usuário': '<p>A reserva usa o usuário 100 e a sala 118, que já existem. As chaves estrangeiras podem, portanto, ser satisfeitas.</p>',
-    'Cancele a reserva': '<p>A sequência segue uma boa prática: localizar com <code>SELECT</code>, alterar com <code>UPDATE</code> e consultar novamente para validar o resultado.</p>',
-    'Tente excluir João': '<p>O <code>DELETE</code> deve falhar enquanto a reserva 50 referenciar o usuário 100, pois a relação está protegida por <code>ON DELETE RESTRICT</code>.</p>'
+  const explanationsByTitle = {
+    'PK duplicada': {
+      intro: 'Este comando foi escrito para falhar. O erro ajuda a enxergar a regra funcionando.',
+      steps: [
+        '<code>id_usuario = 17</code> já existe na tabela.',
+        'Como <code>id_usuario</code> é <code>PRIMARY KEY</code>, duas linhas não podem possuir a mesma identidade.',
+        'O SQLite rejeita o <code>INSERT</code> e preserva a integridade da tabela.'
+      ]
+    },
+    'FK para bloco inexistente': {
+      intro: 'Também esperamos um erro aqui, agora causado por uma chave estrangeira.',
+      steps: [
+        'A nova sala tenta usar <code>id_bloco = 99</code>.',
+        'Não existe um bloco 99 na tabela <code>bloco</code>.',
+        'A <code>FOREIGN KEY</code> impede que a sala fique apontando para algo inexistente.'
+      ]
+    },
+    'CHECK de capacidade': {
+      intro: 'O banco também consegue validar regras simples sobre os próprios valores.',
+      steps: [
+        'Tentamos gravar <code>capacidade = -3</code>.',
+        'A tabela possui <code>CHECK (capacidade &gt; 0)</code>.',
+        'Como -3 não atende à regra, o registro é rejeitado.'
+      ]
+    },
+    'Situação inválida': {
+      intro: 'A coluna <code>situacao</code> aceita apenas um pequeno conjunto de valores.',
+      steps: [
+        'Tentamos gravar <code>aguardando</code>.',
+        'O <code>CHECK</code> permite apenas <code>ativa</code>, <code>cancelada</code> ou <code>concluida</code>.',
+        'O banco recusa o valor antes que ele produza um estado inconsistente.'
+      ]
+    },
+    'Reserva repetida no mesmo horário': {
+      intro: 'Aqui o problema não é uma coluna isolada, mas uma combinação que não pode se repetir.',
+      steps: [
+        'A sala 204 já possui uma reserva em <code>2026-09-18</code> às <code>18:30</code>.',
+        'Declaramos <code>UNIQUE (id_sala, data, hora_inicio)</code>.',
+        'A nova reserva é rejeitada porque criaria dois usos da mesma sala no mesmo horário.'
+      ]
+    },
+    'Cadastre um novo usuário': {
+      intro: 'Na prática guiada, repetimos o padrão: primeiro criamos os dados que serão referenciados depois.',
+      steps: [
+        'O usuário 100 é criado antes da reserva.',
+        'O <code>SELECT ... WHERE id_usuario = 100</code> confirma que ele realmente foi gravado.'
+      ]
+    },
+    'Crie uma reserva para esse usuário': {
+      intro: 'Agora podemos criar uma linha em <code>reserva</code> porque as referências necessárias já existem.',
+      steps: [
+        '<code>id_usuario = 100</code> encontra o usuário recém-criado.',
+        '<code>id_sala = 118</code> encontra uma sala existente.',
+        'O <code>SELECT</code> final confirma a nova reserva.'
+      ]
+    },
+    'Cancele a reserva': {
+      intro: 'Este é o fluxo que queremos transformar em hábito ao usar <code>UPDATE</code>.',
+      steps: [
+        'Primeiro: <code>SELECT</code> para conferir qual linha será afetada.',
+        'Depois: <code>UPDATE ... SET ... WHERE ...</code> para alterar somente essa linha.',
+        'Por fim: outro <code>SELECT</code> para confirmar o resultado.'
+      ]
+    },
+    'Tente excluir João': {
+      intro: 'Neste teste, queremos observar a integridade referencial durante uma exclusão.',
+      steps: [
+        'O usuário 100 ainda aparece em uma reserva.',
+        'A relação foi definida com <code>ON DELETE RESTRICT</code>.',
+        'Por isso o banco impede excluir o usuário enquanto existir uma reserva apontando para ele.'
+      ]
+    }
   };
 
-  const addExplainer = (sqlBlock, html) => {
-    if (!sqlBlock || !html || sqlBlock.nextElementSibling?.classList.contains('code-explainer')) return;
+  const createExplainer = (data) => {
+    const box = document.createElement('div');
+    box.className = 'code-explainer';
+    box.innerHTML = `
+      <p class="code-explainer-kicker">Como ler este código</p>
+      <h4>Vamos por partes</h4>
+      <p class="code-explainer-intro">${data.intro}</p>
+      <div class="code-steps">
+        ${data.steps.map((step, index) => `
+          <div class="code-step">
+            <span class="code-step-number">${index + 1}</span>
+            <p>${step}</p>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    return box;
+  };
 
-    const details = document.createElement('details');
-    details.className = 'code-explainer';
-    details.innerHTML = `<summary>Entenda este código</summary><div class="code-explainer-body">${Array.isArray(html) ? html.join('') : html}</div>`;
-    sqlBlock.insertAdjacentElement('afterend', details);
+  const genericExplanation = (code) => {
+    if (/INSERT INTO/i.test(code)) {
+      return {
+        intro: 'Este é um <code>INSERT</code>: um comando usado para adicionar novas linhas a uma tabela.',
+        steps: [
+          '<code>INSERT INTO</code> indica a tabela e, normalmente, as colunas que serão preenchidas.',
+          '<code>VALUES</code> traz os valores que serão gravados, na mesma ordem das colunas.',
+          'Depois da execução, vale conferir o resultado com um <code>SELECT</code>.'
+        ]
+      };
+    }
+    if (/UPDATE/i.test(code)) {
+      return {
+        intro: 'Este é um <code>UPDATE</code>: ele altera dados que já estão armazenados.',
+        steps: [
+          '<code>UPDATE</code> escolhe a tabela.',
+          '<code>SET</code> informa o que será alterado.',
+          '<code>WHERE</code> define quais linhas serão atingidas.'
+        ]
+      };
+    }
+    if (/DELETE FROM/i.test(code)) {
+      return {
+        intro: 'Este é um <code>DELETE</code>: ele remove linhas de uma tabela.',
+        steps: [
+          '<code>DELETE FROM</code> indica a tabela.',
+          '<code>WHERE</code> deve limitar quais linhas serão excluídas.',
+          'Antes de apagar, prefira executar um <code>SELECT</code> com a mesma condição.'
+        ]
+      };
+    }
+    if (/SELECT/i.test(code)) {
+      return {
+        intro: 'Este é um <code>SELECT</code>: ele consulta dados sem modificar o conteúdo da tabela.',
+        steps: [
+          '<code>SELECT</code> informa quais colunas queremos ver.',
+          '<code>FROM</code> indica de qual tabela os dados virão.',
+          '<code>WHERE</code>, quando aparece, filtra quais linhas serão retornadas.'
+        ]
+      };
+    }
+    return null;
   };
 
   document.querySelectorAll('.lesson-dml .sql-block').forEach((sqlBlock) => {
+    if (sqlBlock.nextElementSibling?.classList.contains('code-explainer')) return;
+
     const label = sqlBlock.querySelector('.sql-label')?.textContent.trim();
     const title = sqlBlock.closest('.practice-card')?.querySelector('h3')?.textContent.trim();
-
-    if (title && byTitle[title]) {
-      addExplainer(sqlBlock, byTitle[title]);
-      return;
-    }
-
-    if (label && byLabel[label]) {
-      addExplainer(sqlBlock, byLabel[label]);
-      return;
-    }
-
     const code = sqlBlock.querySelector('code')?.textContent || '';
-    let generic = null;
 
-    if (/^\s*executar\("""[\s\S]*INSERT INTO/im.test(code)) {
-      generic = '<p><code>INSERT INTO</code> escolhe a tabela e as colunas. <code>VALUES</code> fornece os dados que serão gravados.</p>';
-    } else if (/^\s*executar\("""[\s\S]*UPDATE/im.test(code)) {
-      generic = '<p><code>UPDATE</code> escolhe a tabela, <code>SET</code> define a alteração e <code>WHERE</code> limita quais registros serão modificados.</p>';
-    } else if (/^\s*executar\("""[\s\S]*DELETE FROM/im.test(code)) {
-      generic = '<p><code>DELETE FROM</code> remove registros. O <code>WHERE</code> é essencial para limitar exatamente o que será excluído.</p>';
-    } else if (/SELECT/i.test(code)) {
-      generic = '<p>Este <code>SELECT</code> serve para localizar ou conferir dados antes ou depois de uma operação.</p>';
-    }
+    const data = (title && explanationsByTitle[title])
+      || (label && explanationsByLabel[label])
+      || genericExplanation(code);
 
-    if (generic) addExplainer(sqlBlock, generic);
+    if (data) sqlBlock.insertAdjacentElement('afterend', createExplainer(data));
   });
 };
 
