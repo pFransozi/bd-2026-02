@@ -98,8 +98,95 @@ const fixAula07PracticeCards = () => {
   document.head.appendChild(style);
 };
 
+const enhanceAula07DmlComments = () => {
+  if (!document.body.classList.contains('lesson-dml')) return;
+
+  const insertSection = document.getElementById('insert');
+  const insertHeading = insertSection?.querySelector('.dml-heading');
+  if (insertHeading && !insertSection.querySelector('.dml-comment-guide')) {
+    const guide = document.createElement('div');
+    guide.className = 'callout dml-comment-guide';
+    guide.innerHTML = '<strong>Como ler os comentários dos exemplos</strong><p>Dentro do SQL, linhas iniciadas por <code>--</code> explicam o papel de cada parte do comando. Fora da string SQL, linhas iniciadas por <code>#</code> explicam o que o Python está fazendo para executar ou conferir a operação.</p>';
+    insertHeading.insertAdjacentElement('afterend', guide);
+  }
+
+  const contextualNotes = {
+    'PK duplicada': 'Este teste deve falhar: o id 17 já existe e é a PRIMARY KEY de usuario.',
+    'FK para bloco inexistente': 'Este teste deve falhar: não existe bloco com id 99 para a FOREIGN KEY apontar.',
+    'CHECK de capacidade': 'Este teste deve falhar: a regra CHECK exige capacidade maior que zero.',
+    'Situação inválida': "Este teste deve falhar: 'aguardando' não está entre os valores permitidos pelo CHECK.",
+    'Reserva repetida no mesmo horário': 'Este teste deve falhar: sala, data e horário formam uma combinação UNIQUE.',
+    'Cadastre um novo usuário': 'Criamos primeiro o usuário porque a reserva precisa referenciar um id_usuario existente.',
+    'Crie uma reserva para esse usuário': 'Agora a FOREIGN KEY id_usuario pode apontar para o usuário 100 criado no passo anterior.',
+    'Cancele a reserva': 'Localizamos a linha antes e depois do UPDATE para verificar exatamente o que mudou.',
+    'Tente excluir João': 'Este DELETE deve falhar enquanto a reserva 50 ainda referenciar o usuário 100.'
+  };
+
+  const sectionSelector = '#insert .sql-block code, #integridade .sql-block code, #alterar .sql-block code, #pratica .sql-block code';
+
+  document.querySelectorAll(sectionSelector).forEach((code) => {
+    if (code.dataset.didacticComments === 'true') return;
+
+    const original = code.textContent;
+    const lines = original.split('\n');
+    const output = [];
+    const cardTitle = code.closest('.practice-card')?.querySelector('h3')?.textContent.trim();
+    const contextualNote = cardTitle ? contextualNotes[cardTitle] : null;
+
+    if (contextualNote) {
+      output.push(`# ${contextualNote}`, '');
+    }
+
+    let insideSqlString = false;
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+
+      if (/^(executar|consultar)\("""\s*$/.test(trimmed)) {
+        output.push(line);
+        insideSqlString = true;
+        return;
+      }
+
+      if (insideSqlString && /^"""\)\s*$/.test(trimmed)) {
+        output.push(line);
+        insideSqlString = false;
+        return;
+      }
+
+      if (insideSqlString) {
+        if (/^INSERT INTO\b/i.test(trimmed)) {
+          output.push('-- INSERT INTO indica a tabela e as colunas que receberão os novos dados.');
+        } else if (/^VALUES\b/i.test(trimmed)) {
+          output.push('-- VALUES informa os valores na mesma ordem das colunas declaradas acima.');
+        } else if (/^SELECT\b/i.test(trimmed)) {
+          output.push('-- SELECT define quais dados queremos consultar para conferir o estado do banco.');
+        } else if (/^UPDATE\b/i.test(trimmed)) {
+          output.push('-- UPDATE indica qual tabela terá registros alterados.');
+        } else if (/^SET\b/i.test(trimmed)) {
+          output.push('-- SET define o novo valor que será gravado na coluna.');
+        } else if (/^DELETE FROM\b/i.test(trimmed)) {
+          output.push('-- DELETE FROM remove registros da tabela indicada.');
+        } else if (/^WHERE\b/i.test(trimmed)) {
+          output.push('-- WHERE restringe a operação somente ao registro que atende a esta condição.');
+        } else if (/^AND\b/i.test(trimmed)) {
+          output.push('-- AND acrescenta uma segunda condição para tornar a seleção mais específica.');
+        }
+      } else if (/^consultar\("SELECT\b/i.test(trimmed)) {
+        output.push('# SELECT de conferência: verifica quais dados ficaram armazenados após a operação.');
+      }
+
+      output.push(line);
+    });
+
+    code.textContent = output.join('\n');
+    code.dataset.didacticComments = 'true';
+  });
+};
+
 enhanceAula04Draft();
 fixAula07PracticeCards();
+enhanceAula07DmlComments();
 
 const coreScript = document.createElement('script');
 coreScript.src = new URL('script-core.js', document.currentScript?.src || window.location.href).href;
@@ -107,6 +194,7 @@ coreScript.onload = () => {
   enhanceReorganizationSection();
   enhanceAula04Draft();
   fixAula07PracticeCards();
+  enhanceAula07DmlComments();
 };
 coreScript.onerror = () => console.error('Não foi possível carregar o script principal da página.');
 document.head.appendChild(coreScript);
