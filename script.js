@@ -98,6 +98,112 @@ const fixAula07PracticeCards = () => {
   document.head.appendChild(style);
 };
 
+const enhanceAula07DdlComments = () => {
+  if (!document.body.classList.contains('lesson-dml')) return;
+
+  const ambiente = document.getElementById('ambiente');
+  if (!ambiente) return;
+
+  const guideHeading = [...ambiente.querySelectorAll('.dml-heading')]
+    .find((heading) => heading.textContent.includes('Crie a estrutura'));
+
+  if (guideHeading && !ambiente.querySelector('.ddl-comment-guide')) {
+    const guide = document.createElement('div');
+    guide.className = 'callout ddl-comment-guide';
+    guide.innerHTML = '<strong>Leia a DDL como uma descrição das regras do banco</strong><p>Nos comentários abaixo, <code>--</code> explica a parte SQL e <code>#</code> explica o que o Python faz para enviar os comandos ao SQLite. Observe principalmente <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code>, <code>DEFAULT</code> e <code>ON DELETE</code>.</p>';
+    guideHeading.insertAdjacentElement('afterend', guide);
+  }
+
+  const tablePurpose = {
+    usuario: 'Guarda os usuários que poderão realizar reservas.',
+    telefone_usuario: 'Separa os telefones do usuário em uma tabela própria e permite vários telefones por usuário.',
+    bloco: 'Guarda os blocos físicos onde as salas estão localizadas.',
+    sala: 'Guarda as salas e liga cada uma delas a um bloco existente.',
+    reserva: 'Registra a reserva e conecta usuário, sala, data, horário e situação.'
+  };
+
+  ambiente.querySelectorAll('.sql-block code').forEach((code) => {
+    if (code.dataset.ddlComments === 'true') return;
+
+    const original = code.textContent;
+    const lines = original.split('\n');
+    const output = [];
+    let insideDdlString = false;
+    let explainedDrops = false;
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+
+      if (trimmed === 'import sqlite3') {
+        output.push('# Importa o módulo que permite ao Python trabalhar com bancos SQLite.');
+      } else if (/^conexao = sqlite3\.connect/.test(trimmed)) {
+        output.push('# Abre o arquivo do banco. Se ele ainda não existir, o SQLite cria o arquivo.');
+      } else if (trimmed === 'cursor = conexao.cursor()') {
+        output.push('# O cursor será usado para enviar comandos SQL para o banco.');
+      } else if (/PRAGMA foreign_keys = ON/.test(trimmed)) {
+        output.push('# No SQLite, ativamos explicitamente a verificação das chaves estrangeiras.');
+      } else if (/^cursor\.executescript\("""/.test(trimmed)) {
+        output.push('# executescript permite executar vários comandos DDL em sequência.');
+        insideDdlString = true;
+      } else if (insideDdlString && /^"""\)\s*$/.test(trimmed)) {
+        output.push(line);
+        insideDdlString = false;
+        return;
+      }
+
+      if (insideDdlString) {
+        if (/^DROP TABLE IF EXISTS\b/i.test(trimmed) && !explainedDrops) {
+          output.push('-- Remove versões anteriores das tabelas para reiniciar o laboratório do zero.');
+          output.push('-- A ordem é inversa às dependências para evitar conflitos com chaves estrangeiras.');
+          explainedDrops = true;
+        }
+
+        const createMatch = trimmed.match(/^CREATE TABLE\s+([a-zA-Z_]+)/i);
+        if (createMatch) {
+          const tableName = createMatch[1].toLowerCase();
+          output.push('');
+          output.push(`-- Tabela ${tableName.toUpperCase()}: ${tablePurpose[tableName] || 'define uma parte da estrutura do banco.'}`);
+        }
+
+        if (/\bINTEGER PRIMARY KEY\b/i.test(trimmed) || /^PRIMARY KEY\b/i.test(trimmed)) {
+          output.push('-- PRIMARY KEY identifica cada registro de forma única.');
+        } else if (/\bNOT NULL\b/i.test(trimmed) && !/PRIMARY KEY/i.test(trimmed)) {
+          output.push('-- NOT NULL indica que este dado é obrigatório.');
+        }
+
+        if (/^FOREIGN KEY\b/i.test(trimmed)) {
+          output.push('-- FOREIGN KEY cria um vínculo com uma chave existente em outra tabela.');
+        } else if (/^REFERENCES\b/i.test(trimmed)) {
+          output.push('-- REFERENCES informa qual tabela e coluna serão usadas como referência.');
+        } else if (/ON DELETE CASCADE/i.test(trimmed)) {
+          output.push('-- CASCADE: ao excluir o usuário, seus telefones relacionados também são excluídos.');
+        } else if (/ON DELETE RESTRICT/i.test(trimmed)) {
+          output.push('-- RESTRICT: impede excluir o registro enquanto outra tabela ainda depender dele.');
+        }
+
+        if (/\bUNIQUE\b/i.test(trimmed)) {
+          output.push('-- UNIQUE impede a repetição deste valor ou desta combinação de valores.');
+        }
+        if (/\bCHECK\b/i.test(trimmed)) {
+          output.push('-- CHECK valida se o valor atende à regra definida pelo banco.');
+        }
+        if (/\bDEFAULT\b/i.test(trimmed)) {
+          output.push('-- DEFAULT fornece este valor automaticamente quando o INSERT não informar a coluna.');
+        }
+      } else if (trimmed === 'conexao.commit()') {
+        output.push('# Confirma as alterações estruturais realizadas no banco.');
+      } else if (/SELECT name/i.test(trimmed)) {
+        output.push('-- Consulta o catálogo interno para conferir quais tabelas foram criadas.');
+      }
+
+      output.push(line);
+    });
+
+    code.textContent = output.join('\n');
+    code.dataset.ddlComments = 'true';
+  });
+};
+
 const enhanceAula07DmlComments = () => {
   if (!document.body.classList.contains('lesson-dml')) return;
 
@@ -186,6 +292,7 @@ const enhanceAula07DmlComments = () => {
 
 enhanceAula04Draft();
 fixAula07PracticeCards();
+enhanceAula07DdlComments();
 enhanceAula07DmlComments();
 
 const coreScript = document.createElement('script');
@@ -194,6 +301,7 @@ coreScript.onload = () => {
   enhanceReorganizationSection();
   enhanceAula04Draft();
   fixAula07PracticeCards();
+  enhanceAula07DdlComments();
   enhanceAula07DmlComments();
 };
 coreScript.onerror = () => console.error('Não foi possível carregar o script principal da página.');
