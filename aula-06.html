@@ -472,6 +472,20 @@
         <div class="concept-note"><strong>DDL</strong><div><strong>Data Definition Language · Linguagem de Definição de Dados</strong><p>DDL é o conjunto de comandos SQL usado para <strong>definir a estrutura</strong> do banco de dados. Nesta aula, o principal comando será <code>CREATE TABLE</code>, que cria uma tabela e descreve suas colunas, tipos de dados, chaves e restrições.</p></div></div>
 
         <div class="soft-callout">
+          <h3>O que significam as instruções que aparecem no código?</h3>
+          <ul class="compact-list">
+            <li><code>CREATE TABLE</code> — cria uma nova tabela no banco. O nome escrito logo depois será o nome dessa tabela.</li>
+            <li><code>INTEGER</code> — define uma coluna para valores inteiros, como identificadores e quantidades.</li>
+            <li><code>VARCHAR(n)</code> — define uma coluna de texto com tamanho máximo de <code>n</code> caracteres. Por exemplo, <code>VARCHAR(120)</code> aceita textos de até 120 caracteres.</li>
+            <li><code>DATE</code> e <code>TIME</code> — definem colunas próprias para armazenar, respectivamente, datas e horários.</li>
+            <li><code>PRIMARY KEY</code> — indica a chave primária: o valor, ou conjunto de valores, usado para identificar cada registro da tabela.</li>
+            <li><code>FOREIGN KEY</code> — indica uma chave estrangeira, isto é, uma coluna que cria a ligação com outra tabela.</li>
+            <li><code>REFERENCES</code> — informa qual tabela e qual coluna são referenciadas pela chave estrangeira.</li>
+            <li><code>NOT NULL</code> — torna o preenchimento obrigatório: aquela coluna não pode ficar sem valor.</li>
+          </ul>
+        </div>
+
+        <div class="soft-callout">
           <h3>Como ler um <code>CREATE TABLE</code>?</h3>
           <p>Não é necessário decorar a sintaxe de uma vez. Leia o comando linha por linha e procure responder:</p>
           <ul class="compact-list">
