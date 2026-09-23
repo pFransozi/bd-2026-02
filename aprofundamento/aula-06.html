@@ -353,6 +353,90 @@
               <p>O modelo lógico deveria continuar válido mesmo que o SGBD mude. O que muda principalmente é a forma como esse modelo é materializado em DDL.</p>
             </div>
 
+            <h3>O que é DDL?</h3>
+            <p><strong>DDL</strong>, de <em>Data Definition Language</em>, é a parte da SQL usada para <strong>definir e modificar a estrutura do banco de dados</strong>. Enquanto comandos de manipulação trabalham com as linhas armazenadas, os comandos DDL atuam sobre os objetos que organizam essas linhas: tabelas, colunas, restrições, índices, visões e outras estruturas oferecidas pelo SGBD.</p>
+            <p>Do ponto de vista do projeto, DDL é a passagem da descrição lógica para uma definição que o SGBD consegue registrar em seu catálogo. O esquema deixa de ser apenas uma representação e passa a existir como estrutura executável.</p>
+
+            <div class="two-grid">
+              <article class="concept-card">
+                <span>Estrutura</span>
+                <h3>DDL</h3>
+                <p>Define <strong>como os dados podem ser organizados</strong>: quais tabelas existem, quais colunas pertencem a elas, quais tipos são aceitos e quais restrições devem ser preservadas.</p>
+              </article>
+              <article class="concept-card">
+                <span>Conteúdo</span>
+                <h3>DML</h3>
+                <p>Atua sobre <strong>as ocorrências armazenadas</strong>: inserir, alterar e excluir linhas. Essa distinção ajuda a separar a estrutura do banco de seu estado atual.</p>
+              </article>
+            </div>
+
+            <h3><code>CREATE</code>: declarar uma estrutura que ainda não existe</h3>
+            <p>O comando <code>CREATE</code> cria um objeto no banco. No início da disciplina, o caso mais importante é <code>CREATE TABLE</code>. Ele não “preenche” a tabela; ele define <strong>a forma que os futuros registros deverão obedecer</strong>.</p>
+            <p>Ao escrever um <code>CREATE TABLE</code>, estamos declarando pelo menos quatro aspectos estruturais:</p>
+
+            <div class="mapping-grid">
+              <article class="mapping-step"><b>1</b><strong>Objeto</strong><p>Qual relação será materializada como tabela e qual será o seu nome.</p></article>
+              <article class="mapping-step"><b>2</b><strong>Colunas</strong><p>Quais atributos existirão na tabela e como serão nomeados.</p></article>
+              <article class="mapping-step"><b>3</b><strong>Domínios</strong><p>Quais tipos ou representações serão usados para os valores.</p></article>
+              <article class="mapping-step"><b>4</b><strong>Restrições</strong><p>Quais regras estruturais, como PK, FK, <code>NOT NULL</code>, <code>UNIQUE</code> e <code>CHECK</code>, serão fiscalizadas.</p></article>
+            </div>
+
+            <div class="sql-block"><span class="sql-label">Leitura estrutural de CREATE TABLE</span><pre><code>CREATE TABLE sala (
+    id_sala INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    capacidade INTEGER NOT NULL
+);</code></pre></div>
+
+            <p>Esse comando afirma que passa a existir uma tabela chamada <code>sala</code>, composta pelas colunas <code>id_sala</code>, <code>nome</code> e <code>capacidade</code>. Também estabelece que <code>id_sala</code> identifica cada linha e que <code>nome</code> e <code>capacidade</code> são obrigatórios. Nenhuma sala foi cadastrada ainda; apenas a estrutura foi criada.</p>
+
+            <h3><code>CREATE</code> não serve apenas para tabelas</h3>
+            <p>Dependendo do SGBD, o mesmo verbo aparece na criação de outros objetos estruturais. Por exemplo, <code>CREATE INDEX</code> cria uma estrutura de acesso para acelerar determinadas consultas, e <code>CREATE VIEW</code> registra uma visão derivada de uma consulta. O princípio é o mesmo: <strong>CREATE acrescenta um objeto à definição do banco</strong>.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead><tr><th>Comando DDL</th><th>Ação estrutural</th><th>Exemplo de uso</th></tr></thead>
+                <tbody>
+                  <tr><td><code>CREATE</code></td><td>Cria um novo objeto no esquema.</td><td><code>CREATE TABLE</code>, <code>CREATE INDEX</code>, <code>CREATE VIEW</code>.</td></tr>
+                  <tr><td><code>ALTER</code></td><td>Modifica a definição de um objeto já existente.</td><td>Adicionar, remover ou renomear colunas e alterar certas características, conforme o SGBD.</td></tr>
+                  <tr><td><code>DROP</code></td><td>Remove o objeto e sua definição do banco.</td><td><code>DROP TABLE sala;</code> elimina a tabela como estrutura.</td></tr>
+                  <tr><td><code>TRUNCATE</code></td><td>Remove todas as linhas de uma tabela preservando sua estrutura, nos SGBDs que oferecem o comando.</td><td>Útil quando se deseja esvaziar rapidamente uma tabela sem removê-la.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3><code>ALTER</code>: a estrutura também pode evoluir</h3>
+            <p>Depois de criada, uma tabela pode precisar mudar. Um novo requisito pode exigir uma coluna adicional ou uma alteração no esquema. <code>ALTER TABLE</code> existe para modificar a estrutura sem necessariamente recriá-la do zero.</p>
+
+            <div class="sql-block"><span class="sql-label">Exemplo de evolução estrutural</span><pre><code>ALTER TABLE sala
+ADD COLUMN andar INTEGER;</code></pre></div>
+
+            <p>O efeito é estrutural: a definição de <code>sala</code> passa a possuir uma nova coluna. As possibilidades exatas de <code>ALTER TABLE</code> variam entre SGBDs. PostgreSQL oferece um conjunto mais amplo de alterações; SQLite suporta um conjunto mais restrito e, em algumas mudanças, pode exigir uma estratégia de recriação da tabela.</p>
+
+            <h3><code>DROP</code>: remover a estrutura é diferente de remover linhas</h3>
+            <p><code>DROP TABLE</code> elimina a tabela como objeto do esquema. Isso é diferente de <code>DELETE</code>, que remove linhas mas mantém a tabela disponível para novos dados.</p>
+
+            <div class="two-grid">
+              <article class="rule-card">
+                <span>DDL</span>
+                <h3><code>DROP TABLE sala;</code></h3>
+                <p>A tabela deixa de existir como estrutura, juntamente com os dados armazenados nela.</p>
+              </article>
+              <article class="concept-card">
+                <span>DML</span>
+                <h3><code>DELETE FROM sala;</code></h3>
+                <p>As linhas são removidas, mas a definição de <code>sala</code> permanece no banco.</p>
+              </article>
+            </div>
+
+            <h3><code>TRUNCATE</code>: preservar a tabela e esvaziar seu conteúdo</h3>
+            <p>Em SGBDs como PostgreSQL existe <code>TRUNCATE TABLE</code>, normalmente classificado junto aos comandos de definição por atuar de forma estrutural sobre o conteúdo da tabela. Ele remove todas as linhas sem remover a própria tabela.</p>
+            <p><strong>SQLite não possui o comando <code>TRUNCATE TABLE</code>.</strong> Quando precisamos esvaziar uma tabela nesse SGBD, utilizamos <code>DELETE FROM nome_da_tabela</code>. Essa diferença é um bom exemplo de por que aprender DDL exige distinguir a ideia geral da linguagem das capacidades específicas do SGBD.</p>
+
+            <div class="callout">
+              <strong>Uma distinção útil</strong>
+              <p><code>CREATE</code>, <code>ALTER</code> e <code>DROP</code> mudam diretamente a definição dos objetos. <code>TRUNCATE</code> preserva a definição da tabela, mas existe em muitos materiais dentro do grupo DDL por operar sobre a tabela como unidade estrutural. A classificação exata pode variar entre referências e produtos.</p>
+            </div>
+
             <h3>Do conceito para a implementação</h3>
             <p>No esquema relacional escrevemos algo como <code>SALA(id_sala, nome, capacidade, id_bloco)</code>. Essa representação ainda não decide todos os detalhes de implementação. O DDL precisa especificar tipos, obrigatoriedade, geração de identificadores e mecanismos de integridade.</p>
 
@@ -574,7 +658,8 @@ CREATE TABLE sala (
             <ul class="references">
               <li>ELMASRI, Ramez; NAVATHE, Shamkant B. <em>Sistemas de banco de dados</em>. Capítulos sobre dependências funcionais e normalização.</li>
               <li>SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S. <em>Database System Concepts</em>. Seções sobre projeto relacional, formas normais e dependências funcionais.</li>
-              <li>Documentação do SQLite. Seções sobre <code>CREATE TABLE</code>, afinidade de tipos, datas, chaves estrangeiras e <code>ROWID</code>.</li>\n              <li>Documentação do PostgreSQL. Seções sobre definição de dados, tipos, constraints e colunas de identidade.</li>
+              <li>Documentação do SQLite. Seções sobre <code>CREATE TABLE</code>, afinidade de tipos, datas, chaves estrangeiras e <code>ROWID</code>.</li>
+              <li>Documentação do PostgreSQL. Seções sobre definição de dados, tipos, constraints e colunas de identidade.</li>
             </ul>
           </div>
         </div>
