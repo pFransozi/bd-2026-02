@@ -103,33 +103,147 @@
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">2 · Entidades, atributos e identidade</p>
             <h2>Mapear uma entidade significa preservar aquilo que torna cada ocorrência distinguível</h2>
-            <p>Na passagem de uma entidade forte para uma relação, os atributos simples tornam-se atributos da relação e o identificador conceitual orienta a definição da chave. O ponto central é a identidade, não apenas a cópia dos nomes.</p>
+            <p>Quando uma entidade é transformada em uma relação, não estamos apenas convertendo um retângulo do DER em uma tabela. Precisamos preservar a identidade de cada ocorrência e separar aquilo que identifica um objeto daquilo que apenas o descreve.</p>
           </div>
 
           <div class="two-grid">
             <article class="concept-card">
               <span>Modelo conceitual</span>
               <h3>SALA</h3>
-              <p>Uma sala possui uma identidade própria no domínio e características como nome e capacidade.</p>
+              <p>Uma sala possui identidade própria no domínio e características que podem variar, como nome e capacidade.</p>
               <div class="schema-line"><span class="key">ID</span><code>id_sala</code><code>nome</code><code>capacidade</code></div>
             </article>
             <article class="schema-card">
               <span class="label">Esquema relacional</span>
               <h3>SALA</h3>
-              <p>Cada tupla representa uma ocorrência de sala; a chave primária impede que duas tuplas representem a mesma identidade sob o mesmo valor de chave.</p>
+              <p>Cada tupla representa uma ocorrência de sala. A chave primária permite distinguir essa ocorrência das demais e sustenta referências feitas por outras relações.</p>
               <div class="schema-line"><span class="key">PK</span><code>id_sala</code><code>nome</code><code>capacidade</code></div>
             </article>
           </div>
 
           <div class="study-prose">
-            <h3>Identificador conceitual, chave candidata e chave primária não são exatamente a mesma ideia</h3>
-            <p>No DER, procuramos uma propriedade, ou combinação de propriedades, capaz de distinguir uma ocorrência das demais. No modelo relacional, diferentes conjuntos de atributos podem ter essa capacidade e, por isso, podem ser tratados como <strong>chaves candidatas</strong>. Uma delas é escolhida como chave primária; as demais continuam semanticamente importantes e podem exigir restrições de unicidade.</p>
+            <h3>Primeiro precisamos separar identidade de descrição</h3>
+            <p>Considere duas salas chamadas <strong>Laboratório 1</strong>. O nome pode ser útil para exibição, mas, se houver duas ocorrências com o mesmo nome, ele não consegue sozinho dizer de qual sala estamos falando. A identidade precisa permanecer inequívoca mesmo quando alguns atributos descritivos se repetem.</p>
+            <p>Essa distinção é essencial no projeto. Atributos como nome, capacidade, telefone ou endereço normalmente descrevem uma ocorrência. Um identificador deve permitir reconhecer a mesma ocorrência ao longo do tempo e diferenciá-la das demais.</p>
 
-            <h3>Atributos compostos são decompostos porque relações básicas trabalham com valores atômicos</h3>
-            <p>Se um endereço foi modelado como um atributo composto, seus componentes relevantes, por exemplo, logradouro, número, cidade e CEP, aparecem como atributos separados. A decomposição não é uma perda de significado: ela torna explícitas as partes que o modelo relacional manipulará individualmente.</p>
+            <div class="three-grid">
+              <article class="note-card">
+                <strong>Identidade</strong>
+                <p>Responde à pergunta: qual ocorrência específica do domínio está sendo representada?</p>
+              </article>
+              <article class="note-card">
+                <strong>Descrição</strong>
+                <p>Reúne características da ocorrência, como nome, capacidade, situação ou endereço.</p>
+              </article>
+              <article class="note-card">
+                <strong>Referência</strong>
+                <p>Permite que outras relações apontem para a mesma ocorrência por meio de uma chave estrangeira.</p>
+              </article>
+            </div>
 
-            <h3>Atributos derivados exigem uma decisão de projeto</h3>
-            <p>Um valor como idade pode ser calculado a partir da data de nascimento e da data corrente. Guardá-lo como dado persistente cria a obrigação de mantê-lo coerente ao longo do tempo. Portanto, o fato de algo aparecer como atributo no nível conceitual não significa automaticamente que deva ser armazenado materialmente.</p>
+            <h3>O identificador deve continuar válido quando atributos descritivos mudam</h3>
+            <p>Imagine que a sala de código <code>17</code> era chamada <strong>Laboratório de Redes</strong> e passa a se chamar <strong>Laboratório de Infraestrutura</strong>. Se <code>id_sala = 17</code> representa sua identidade, a alteração do nome não cria uma nova sala. Continuamos falando da mesma ocorrência.</p>
+            <p>Esse exemplo mostra por que é perigoso escolher como identificador um atributo que pode mudar com frequência. Uma chave utilizada em referências deve, sempre que possível, ser estável. Alterações descritivas não deveriam obrigar todo o banco a reinterpretar quem é a entidade.</p>
+
+            <h3>Identificador conceitual, chave candidata e chave primária são conceitos relacionados, mas diferentes</h3>
+            <p>No DER, procuramos uma propriedade, ou combinação de propriedades, capaz de distinguir uma ocorrência das demais. Ao chegar ao modelo relacional, podem existir diferentes conjuntos de atributos capazes de exercer essa função.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Conceito</th>
+                    <th>Função</th>
+                    <th>Exemplo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Identificador conceitual</strong></td>
+                    <td>Expressa, no modelo do domínio, como distinguimos uma ocorrência das demais.</td>
+                    <td>O código institucional atribuído a uma sala.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chave candidata</strong></td>
+                    <td>Conjunto mínimo de atributos que consegue identificar unicamente uma tupla.</td>
+                    <td><code>id_sala</code> ou outro atributo realmente único e estável.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chave primária</strong></td>
+                    <td>Chave candidata escolhida como principal referência da relação.</td>
+                    <td><code>PRIMARY KEY (id_sala)</code>.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chave alternativa</strong></td>
+                    <td>Outra chave candidata que não foi escolhida como primária, mas continua exigindo unicidade.</td>
+                    <td>Um código patrimonial único, quando existente.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>Escolher uma chave primária não torna irrelevantes as outras formas de identificação. Se um atributo precisa ser único por regra do domínio, essa regra deve continuar representada, normalmente por uma restrição de unicidade.</p>
+
+            <h3>Chaves naturais e chaves artificiais representam estratégias diferentes</h3>
+            <p>Uma <strong>chave natural</strong> utiliza um valor que já possui significado no domínio. Um exemplo seria um código institucional que já identifica oficialmente uma sala. Uma <strong>chave artificial</strong>, também chamada de chave substituta, é criada especificamente para identificar registros, como um número inteiro gerado pelo sistema.</p>
+            <p>Nenhuma das duas estratégias é automaticamente superior. O ponto importante é distinguir a identidade técnica usada pelo banco das regras de unicidade que pertencem ao domínio.</p>
+
+            <div class="two-grid">
+              <article class="rule-card">
+                <span>Chave natural</span>
+                <h3>Usa um valor do próprio domínio</h3>
+                <p>Pode tornar o esquema mais expressivo, mas exige que esse valor seja realmente único, estável e adequado para referências.</p>
+              </article>
+              <article class="rule-card">
+                <span>Chave artificial</span>
+                <h3>Cria uma identidade técnica estável</h3>
+                <p>Simplifica referências e evita depender de atributos descritivos, mas não substitui restrições de unicidade que existam no domínio.</p>
+              </article>
+            </div>
+
+            <div class="callout">
+              <strong>Exemplo importante</strong>
+              <p>Se usamos <code>id_usuario</code> como chave primária e o e-mail deve ser único, criar a chave artificial não elimina a regra sobre o e-mail. O esquema pode precisar de <code>PRIMARY KEY (id_usuario)</code> e, ao mesmo tempo, de <code>UNIQUE (email)</code>.</p>
+            </div>
+
+            <h3>Uma chave composta aparece quando a identidade depende de mais de um atributo</h3>
+            <p>Nem toda ocorrência pode ser identificada adequadamente por um único atributo. Considere uma disciplina ofertada várias vezes em períodos diferentes. Dependendo do domínio, a combinação de código da disciplina, turma e período pode formar a identidade da oferta.</p>
+            <p>Nesse caso, a chave é composta porque cada atributo isoladamente é insuficiente. O significado está na combinação. Essa ideia será especialmente importante ao tratar entidades fracas e relações associativas.</p>
+
+            <h3>Atributos simples e compostos precisam ser reinterpretados no modelo relacional</h3>
+            <p>Um atributo simples é tratado como uma unidade no modelo conceitual. Um atributo composto representa uma informação que possui partes relevantes próprias. Um endereço, por exemplo, pode ser decomposto em logradouro, número, cidade e CEP.</p>
+            <p>No esquema relacional, normalmente armazenamos essas partes em atributos separados quando precisam ser consultadas, validadas ou manipuladas individualmente. A decomposição não significa perder a noção de endereço. Significa representar explicitamente seus componentes.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>Conceitual</small>
+                <strong>Endereço</strong>
+                <p>Uma característica da entidade percebida como uma unidade do domínio.</p>
+              </article>
+              <article>
+                <small>Componentes</small>
+                <strong>logradouro, número, cidade, CEP</strong>
+                <p>Partes com significado próprio que podem precisar de consulta ou validação.</p>
+              </article>
+              <article>
+                <small>Relacional</small>
+                <strong>Atributos da relação</strong>
+                <p>Os componentes relevantes passam a aparecer explicitamente no esquema.</p>
+              </article>
+            </div>
+
+            <h3>Atributos derivados exigem decidir entre calcular e armazenar</h3>
+            <p>Um atributo derivado pode ser obtido a partir de outros dados. A idade de uma pessoa, por exemplo, pode ser calculada a partir da data de nascimento e da data corrente. Se armazenarmos a idade diretamente, ela se torna um valor que precisa ser atualizado com o passar do tempo.</p>
+            <p>Por isso, durante o mapeamento, precisamos perguntar se o atributo deve realmente existir como dado persistente ou se é melhor calculá-lo quando necessário. Armazenar um valor derivado pode ser justificável em alguns cenários, mas cria a responsabilidade de manter o valor armazenado coerente com os dados que o originam.</p>
+
+            <h3>A escolha dos atributos define quais fatos o banco consegue distinguir</h3>
+            <p>O conjunto de atributos de uma relação não deve ser visto como uma simples lista de campos. Cada atributo representa alguma propriedade considerada relevante para descrever, identificar ou relacionar ocorrências do domínio.</p>
+            <p>Quando um atributo necessário é omitido, fatos diferentes podem se tornar indistinguíveis. Quando um atributo é incluído sem necessidade, o esquema pode carregar informação redundante ou difícil de manter. Por isso, mapear atributos também é uma decisão sobre quais diferenças do mundo representado o banco precisa preservar.</p>
+          </div>
+
+          <div class="callout teal">
+            <strong>Ideia central desta seção</strong>
+            <p>Uma entidade não se transforma corretamente em relação apenas porque seus atributos foram copiados. O esquema precisa preservar três coisas: a identidade de cada ocorrência, as propriedades relevantes que a descrevem e as regras que determinam quais valores podem ser únicos, mutáveis ou derivados.</p>
           </div>
         </div>
       </section>
