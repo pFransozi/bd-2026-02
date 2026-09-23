@@ -62,7 +62,7 @@
           <div>
             <p class="study-kicker eyebrow">Aula 07 · material de aprofundamento</p>
             <h1>Manipular dados é transformar o estado do banco sem romper suas regras</h1>
-            <p class="study-lead lesson-hero-lead">Na aula principal usamos <code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> e observamos restrições sendo aceitas ou rejeitadas pelo SQLite. Aqui o foco é entender o que essas operações significam no modelo relacional e por que integridade não é apenas uma mensagem de erro, mas uma condição para que o banco permaneça em um estado válido.</p>
+            <p class="study-lead lesson-hero-lead">Na aula principal usamos <code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> e observamos restrições sendo aceitas ou rejeitadas pelo SQLite. Neste aprofundamento vamos desacelerar esse percurso: primeiro separar estrutura e estado, depois entender cada operação de manipulação, em seguida observar como as constraints validam as mudanças e, por fim, compreender as consequências das referências entre tabelas.</p>
             <div class="study-meta"><span>Leitura conceitual</span><span>DML</span><span>Integridade</span><span>Constraints</span><span>SQLite</span></div>
           </div>
           <aside class="study-card guiding-question">
@@ -77,37 +77,62 @@
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">1 · Estrutura e estado</p>
-            <h2>O esquema define possibilidades; os dados representam o estado atual</h2>
-            <p>Depois da DDL, o banco possui uma estrutura. Quando começamos a inserir, alterar e excluir linhas, passamos a modificar a instância atual dessa estrutura.</p>
+            <h2>Primeiro precisamos separar a estrutura do banco dos dados que estão dentro dela</h2>
+            <p>Essa distinção ajuda a entender por que a Aula 06 trabalhou com DDL e por que a Aula 07 passa a trabalhar com DML. A estrutura permanece relativamente estável; os dados mudam o tempo todo.</p>
           </div>
 
           <div class="study-prose">
-            <h3>Esquema e instância respondem a perguntas diferentes</h3>
-            <p>O <strong>esquema</strong> descreve quais relações existem, quais atributos pertencem a cada uma, quais tipos são esperados e quais restrições precisam ser preservadas. A <strong>instância</strong> corresponde ao conjunto de valores armazenados em determinado momento.</p>
-            <p>Assim, a definição de <code>RESERVA</code> pode permanecer a mesma durante todo o semestre, enquanto as linhas presentes nessa relação mudam continuamente.</p>
+            <h3>O esquema funciona como a definição do que pode ser armazenado</h3>
+            <p>Quando criamos a tabela <code>RESERVA</code>, definimos que uma reserva possui um identificador, um usuário, uma sala, uma data, um horário e uma situação. Também definimos regras, como a obrigatoriedade de certos valores e a necessidade de que usuário e sala já existam.</p>
+            <p>Essas decisões formam o <strong>esquema</strong>. O esquema não representa uma reserva específica. Ele descreve a forma que qualquer reserva válida deverá possuir.</p>
+
+            <div class="sql-block"><span class="sql-label">Exemplo de estrutura já definida</span><pre><code>RESERVA(
+    id_reserva,
+    id_usuario,
+    id_sala,
+    data,
+    hora_inicio,
+    situacao
+)</code></pre></div>
+
+            <h3>A instância é o conteúdo que existe em determinado momento</h3>
+            <p>Depois que a estrutura existe, começamos a armazenar ocorrências concretas. Uma linha pode representar, por exemplo, uma reserva feita pelo usuário 17 para a sala 204 em determinada data e horário.</p>
+            <p>O conjunto de todas as linhas presentes naquele momento forma a <strong>instância atual</strong> da relação. Se inserirmos uma nova reserva, a estrutura continua sendo RESERVA, mas sua instância mudou.</p>
 
             <div class="two-grid">
               <article class="concept-card">
                 <span>Esquema</span>
-                <h3>O que pode existir</h3>
-                <p>Define colunas, chaves, referências, obrigatoriedade e demais restrições estruturais.</p>
+                <h3>A forma permanece</h3>
+                <p>Define colunas, tipos, chaves e restrições. Responde à pergunta: <strong>como uma reserva válida deve ser representada?</strong></p>
               </article>
               <article class="concept-card">
                 <span>Instância</span>
-                <h3>O que existe agora</h3>
-                <p>É o conjunto atual de usuários, salas, telefones, reservas e demais ocorrências armazenadas.</p>
+                <h3>O conteúdo muda</h3>
+                <p>É o conjunto atual de linhas. Responde à pergunta: <strong>quais reservas existem neste momento?</strong></p>
               </article>
             </div>
 
-            <h3>DML altera a instância, não o significado da relação</h3>
-            <p>Quando inserimos uma reserva, não estamos redefinindo o que significa RESERVA. Estamos acrescentando uma nova ocorrência compatível com o esquema já definido. O mesmo vale para atualizações e exclusões.</p>
+            <h3>É aqui que DML entra</h3>
+            <p>Os comandos de manipulação não redefinem o significado de uma relação. Eles modificam as ocorrências armazenadas nela.</p>
+            <p>Quando usamos <code>INSERT</code>, acrescentamos uma nova ocorrência. Quando usamos <code>UPDATE</code>, produzimos uma nova versão de uma ocorrência já existente. Quando usamos <code>DELETE</code>, removemos uma ocorrência.</p>
 
-            <div class="arrow-chain"><span>Estado válido A</span><b>→ DML →</b><span>Estado válido B</span></div>
+            <div class="mapping-grid">
+              <article class="mapping-step"><b>1</b><strong>Estado inicial</strong><p>O banco possui um conjunto de linhas que já respeitam as restrições.</p></article>
+              <article class="mapping-step"><b>2</b><strong>Comando DML</strong><p>Uma operação tenta inserir, alterar ou remover dados.</p></article>
+              <article class="mapping-step"><b>3</b><strong>Validação</strong><p>O SGBD verifica as restrições envolvidas na operação.</p></article>
+              <article class="mapping-step"><b>4</b><strong>Novo estado</strong><p>Se as regras continuam satisfeitas, a mudança é aceita.</p></article>
+            </div>
 
             <div class="callout teal">
-              <strong>Integridade pode ser vista como uma fronteira</strong>
-              <p>As restrições definem quais estados são aceitos pelo banco. Uma operação que levaria o banco para fora desse conjunto deve ser rejeitada.</p>
+              <strong>Uma forma simples de pensar</strong>
+              <p>DDL define o formato do recipiente. DML modifica o conteúdo que está dentro dele. As constraints determinam quais conteúdos são permitidos.</p>
             </div>
+
+            <h3>Estado válido não significa apenas "SQL sem erro de sintaxe"</h3>
+            <p>Um comando pode estar escrito corretamente e ainda assim ser rejeitado. Isso acontece quando a operação tentaria produzir um estado incompatível com alguma regra do banco.</p>
+            <p>Por exemplo, <code>INSERT INTO sala ... id_bloco = 99</code> pode estar sintaticamente correto. Se o bloco 99 não existe e existe uma chave estrangeira para BLOCO, o novo estado seria inválido. O SGBD então rejeita a mudança.</p>
+
+            <div class="arrow-chain"><span>Estado válido A</span><b>→ operação →</b><span>verificação das regras</span><b>→</b><span>Estado válido B</span></div>
           </div>
         </div>
       </section>
@@ -116,40 +141,89 @@
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">2 · DML como transformação de estado</p>
-            <h2>INSERT, UPDATE e DELETE não fazem a mesma coisa</h2>
-            <p>Os três comandos modificam dados, mas cada um altera a relação de uma forma diferente.</p>
+            <h2>INSERT, UPDATE e DELETE são três maneiras diferentes de modificar os fatos armazenados</h2>
+            <p>Os três comandos pertencem ao mesmo momento do trabalho com o banco, mas cada um produz uma transformação diferente sobre uma relação.</p>
           </div>
 
           <div class="three-grid">
-            <article class="note-card"><strong><code>INSERT</code></strong><p>Acrescenta uma nova tupla, desde que os valores informados produzam uma ocorrência válida.</p></article>
-            <article class="note-card"><strong><code>UPDATE</code></strong><p>Substitui valores em tuplas já existentes e precisa validar novamente as regras afetadas pela alteração.</p></article>
-            <article class="note-card"><strong><code>DELETE</code></strong><p>Remove tuplas e pode afetar outras relações quando existem referências para a ocorrência removida.</p></article>
+            <article class="note-card"><strong><code>INSERT</code></strong><p>Cria uma nova linha. A pergunta é: <strong>essa nova ocorrência pode existir sem violar as regras?</strong></p></article>
+            <article class="note-card"><strong><code>UPDATE</code></strong><p>Altera valores de linhas que já existem. A pergunta é: <strong>depois da alteração, essas ocorrências continuam válidas?</strong></p></article>
+            <article class="note-card"><strong><code>DELETE</code></strong><p>Remove linhas. A pergunta é: <strong>a remoção deixa alguma referência ou regra quebrada?</strong></p></article>
           </div>
 
           <div class="study-prose">
-            <h3>INSERT é uma tentativa de acrescentar um novo fato</h3>
-            <p>Ao executar um <code>INSERT</code>, o SGBD precisa verificar se a nova tupla pode coexistir com as demais. Uma chave primária repetida, uma chave estrangeira sem correspondente ou um valor que viola um <code>CHECK</code> impedem que esse novo fato seja incorporado ao banco.</p>
+            <h3>INSERT: acrescentar uma nova ocorrência</h3>
+            <p>Quando executamos um <code>INSERT</code>, estamos propondo um novo fato para o banco. O SGBD não simplesmente acrescenta a linha. Antes de confirmar a operação, ele verifica as restrições que se aplicam à nova ocorrência.</p>
 
-            <h3>UPDATE pode modificar uma ou muitas tuplas</h3>
-            <p><code>UPDATE</code> trabalha sobre o conjunto de linhas que satisfaz a condição definida. O comando não possui a noção de "registro que eu queria alterar"; ele utiliza a expressão de seleção informada.</p>
+            <div class="sql-block"><span class="sql-label">Inserção de uma nova reserva</span><pre><code>INSERT INTO reserva (
+    id_reserva, id_usuario, id_sala, data, hora_inicio
+)
+VALUES (
+    1, 17, 204, '2026-09-18', '18:30'
+);</code></pre></div>
 
-            <div class="sql-block"><span class="sql-label">Escopo definido por condição</span><pre><code>UPDATE reserva
+            <p>Esse comando precisa passar por várias perguntas implícitas:</p>
+            <ul>
+              <li><code>id_reserva = 1</code> já existe?</li>
+              <li>o usuário 17 existe?</li>
+              <li>a sala 204 existe?</li>
+              <li>data e horário possuem valores aceitos pela estrutura?</li>
+              <li>já existe outra reserva para a mesma sala, data e horário quando essa combinação é <code>UNIQUE</code>?</li>
+              <li>o valor de <code>situacao</code> foi omitido? Se sim, existe um <code>DEFAULT</code>?</li>
+            </ul>
+            <p>Se todas as condições relevantes forem satisfeitas, a nova tupla passa a fazer parte da relação.</p>
+
+            <h3>UPDATE: produzir uma nova versão das linhas selecionadas</h3>
+            <p><code>UPDATE</code> não "edita uma célula" isoladamente como em uma planilha. Ele seleciona um conjunto de linhas e produz novos valores para os atributos indicados.</p>
+
+            <div class="sql-block"><span class="sql-label">Atualização de uma reserva</span><pre><code>UPDATE reserva
 SET situacao = 'cancelada'
 WHERE id_reserva = 1;</code></pre></div>
 
-            <p>A condição seleciona uma ocorrência específica porque <code>id_reserva</code> é chave. Se a condição identificar dez linhas, as dez serão atualizadas. Se não houver <code>WHERE</code>, todas as linhas da relação entram no conjunto alvo.</p>
+            <p>Podemos ler esse comando em três partes:</p>
 
-            <h3>DELETE remove ocorrências, não "campos"</h3>
-            <p><code>DELETE</code> atua sobre tuplas completas. Para remover apenas um valor de uma coluna, normalmente usamos <code>UPDATE</code>, quando a estrutura permite esse novo valor. A exclusão de uma tupla também precisa considerar as relações que dependem dela.</p>
-
-            <div class="callout warn">
-              <strong>WHERE não é um mecanismo de segurança</strong>
-              <p><code>WHERE</code> apenas define o conjunto de linhas sobre o qual a operação atuará. A segurança vem de formular corretamente esse predicado, conferir seu alcance e manter restrições adequadas no banco.</p>
+            <div class="mapping-grid">
+              <article class="mapping-step"><b>1</b><strong>Relação alvo</strong><p><code>UPDATE reserva</code> indica qual relação será modificada.</p></article>
+              <article class="mapping-step"><b>2</b><strong>Novo valor</strong><p><code>SET situacao = 'cancelada'</code> define a alteração.</p></article>
+              <article class="mapping-step"><b>3</b><strong>Conjunto alvo</strong><p><code>WHERE id_reserva = 1</code> seleciona quais linhas serão atingidas.</p></article>
+              <article class="mapping-step"><b>4</b><strong>Nova validação</strong><p>O valor resultante precisa continuar atendendo às constraints.</p></article>
             </div>
 
-            <h3>E onde entra SELECT?</h3>
-            <p><code>SELECT</code> não altera o estado do banco. Nesta disciplina ele aparece junto às operações de manipulação porque é a principal ferramenta para observar o estado atual, localizar as linhas que serão afetadas e verificar o resultado depois de uma alteração.</p>
-            <p>Por isso, a sequência <code>SELECT → UPDATE/DELETE → SELECT</code> não é uma exigência sintática da SQL. É uma disciplina operacional útil para tornar explícito o conjunto que será modificado.</p>
+            <p>Se trocássemos <code>'cancelada'</code> por <code>'aguardando'</code>, e o <code>CHECK</code> permitisse apenas <code>ativa</code>, <code>cancelada</code> e <code>concluida</code>, a atualização seria rejeitada.</p>
+
+            <h3>DELETE: remover uma ocorrência inteira</h3>
+            <p><code>DELETE</code> remove linhas completas. Ele não remove apenas uma coluna da estrutura e também não elimina a tabela. Esses outros efeitos pertencem a operações diferentes.</p>
+
+            <div class="sql-block"><span class="sql-label">Remoção de uma ocorrência</span><pre><code>DELETE FROM telefone_usuario
+WHERE id_usuario = 42
+  AND telefone = '41984327710';</code></pre></div>
+
+            <p>Aqui a condição identifica uma combinação específica de usuário e telefone. Se ela corresponder a uma linha, essa ocorrência é removida da relação.</p>
+
+            <h3>DELETE não é DROP</h3>
+            <div class="two-grid">
+              <article class="rule-card">
+                <span>DML</span>
+                <h3><code>DELETE FROM sala;</code></h3>
+                <p>Remove linhas da tabela SALA, mas a estrutura da tabela continua existindo.</p>
+              </article>
+              <article class="rule-card">
+                <span>DDL</span>
+                <h3><code>DROP TABLE sala;</code></h3>
+                <p>Remove a própria tabela como objeto do esquema. A estrutura deixa de existir.</p>
+              </article>
+            </div>
+
+            <h3>E o SELECT?</h3>
+            <p>Neste material, tratamos <code>SELECT</code> como comando de consulta. Ele não modifica o estado do banco, mas é essencial para trabalhar com DML de maneira consciente.</p>
+            <p>Antes de alterar ou excluir, o <code>SELECT</code> permite verificar quais linhas satisfazem a condição. Depois da operação, ele permite observar o novo estado.</p>
+
+            <div class="arrow-chain"><span>SELECT</span><b>→</b><span>entender o estado</span><b>→</b><span>UPDATE/DELETE</span><b>→</b><span>SELECT</span></div>
+
+            <div class="callout">
+              <strong>Por isso usamos SELECT junto com DML na aula</strong>
+              <p>Não porque SELECT altere dados, mas porque ele nos permite enxergar o conjunto que será transformado e verificar o resultado depois da mudança.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -158,44 +232,91 @@ WHERE id_reserva = 1;</code></pre></div>
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">3 · Integridade</p>
-            <h2>Uma restrição descreve estados que o banco não deve aceitar</h2>
-            <p>As constraints não existem apenas para produzir mensagens de erro. Elas registram regras que precisam continuar verdadeiras depois de cada modificação.</p>
+            <h2>Integridade é a ideia de manter o banco coerente com as regras do domínio</h2>
+            <p>Uma constraint é uma forma de registrar no próprio banco uma condição que deve permanecer verdadeira. Quando uma operação tenta quebrar essa condição, o SGBD deve impedir a mudança.</p>
           </div>
 
           <div class="study-prose">
-            <h3>Integridade de entidade</h3>
-            <p>A identidade de uma ocorrência precisa permanecer inequívoca. A chave primária impede que duas tuplas utilizem a mesma identidade e não admite valor nulo para a chave.</p>
+            <h3>Integridade de entidade: cada ocorrência precisa continuar identificável</h3>
+            <p>No modelo relacional, precisamos distinguir uma tupla das demais. A chave primária cumpre esse papel.</p>
+            <p>Se duas linhas de USUARIO tivessem o mesmo <code>id_usuario</code>, não conseguiríamos mais afirmar com segurança qual usuário uma reserva está referenciando. Por isso, a chave primária exige unicidade.</p>
 
-            <h3>Integridade de domínio</h3>
-            <p>Os valores de um atributo precisam respeitar o conjunto de valores considerado válido para aquela propriedade. Tipo, <code>NOT NULL</code> e <code>CHECK</code> ajudam a aproximar a estrutura do domínio representado.</p>
+            <div class="sql-block"><span class="sql-label">Regra de identidade</span><pre><code>id_usuario INTEGER PRIMARY KEY</code></pre></div>
 
-            <h3>Integridade referencial</h3>
-            <p>Uma chave estrangeira representa uma referência para uma ocorrência de outra relação. Se uma reserva informa <code>id_usuario = 17</code>, a referência precisa apontar para um usuário existente, salvo quando o modelo permite valor nulo.</p>
+            <p>Em termos simples: <strong>duas ocorrências diferentes não podem compartilhar a mesma identidade primária.</strong></p>
 
+            <h3>Integridade de domínio: nem todo valor faz sentido para todo atributo</h3>
+            <p>Um atributo representa uma propriedade específica. Portanto, seus valores precisam pertencer a um conjunto coerente com essa propriedade.</p>
+            <p>Na relação SALA, uma capacidade negativa não representa um estado válido. Na relação RESERVA, uma situação como <code>'aguardando'</code> também pode ser inválida se o domínio definido permitir apenas três valores.</p>
+
+            <div class="two-grid">
+              <article class="concept-card">
+                <span>Faixa válida</span>
+                <h3>Capacidade</h3>
+                <p><code>CHECK (capacidade &gt; 0)</code> impede valores incompatíveis com a ideia de capacidade da sala.</p>
+              </article>
+              <article class="concept-card">
+                <span>Conjunto válido</span>
+                <h3>Situação</h3>
+                <p><code>CHECK (situacao IN (...))</code> limita o atributo aos estados reconhecidos pelo sistema.</p>
+              </article>
+            </div>
+
+            <h3>Integridade referencial: referências precisam apontar para algo que existe</h3>
+            <p>Uma chave estrangeira não é apenas uma coluna com um número. Ela representa uma ligação entre ocorrências de relações diferentes.</p>
+            <p>Se <code>RESERVA.id_usuario = 17</code>, esse valor significa "esta reserva pertence ao usuário identificado por 17". Se nenhum usuário 17 existe, a referência perde o significado.</p>
+
+            <div class="sql-block"><span class="sql-label">Referência declarada</span><pre><code>FOREIGN KEY (id_usuario)
+    REFERENCES usuario(id_usuario)</code></pre></div>
+
+            <h3>As principais constraints da aula atuam em pontos diferentes</h3>
             <div class="constraint-table-wrap">
               <table class="constraint-table">
-                <thead><tr><th>Construção</th><th>O que expressa</th><th>Quando é verificada</th></tr></thead>
+                <thead><tr><th>Construção</th><th>Pergunta que ela responde</th><th>Exemplo na aula</th></tr></thead>
                 <tbody>
-                  <tr><td><code>PRIMARY KEY</code></td><td>Identidade única da tupla.</td><td>Em inserções e alterações da chave.</td></tr>
-                  <tr><td><code>FOREIGN KEY</code></td><td>Referência válida a outra relação.</td><td>Em inserções, alterações e operações que atinjam a ocorrência referenciada.</td></tr>
-                  <tr><td><code>NOT NULL</code></td><td>O atributo precisa possuir valor.</td><td>Quando a nova versão da tupla é produzida.</td></tr>
-                  <tr><td><code>UNIQUE</code></td><td>Um valor ou combinação não pode se repetir segundo a regra declarada.</td><td>Em inserções e atualizações que possam criar repetição.</td></tr>
-                  <tr><td><code>CHECK</code></td><td>O valor precisa satisfazer uma expressão.</td><td>Quando a linha é inserida ou modificada.</td></tr>
-                  <tr><td><code>DEFAULT</code></td><td>Fornece um valor quando o atributo é omitido.</td><td>Na criação da nova linha, quando aplicável.</td></tr>
+                  <tr><td><code>PRIMARY KEY</code></td><td>Como distinguir cada ocorrência?</td><td><code>id_reserva</code> identifica cada reserva.</td></tr>
+                  <tr><td><code>FOREIGN KEY</code></td><td>Essa referência aponta para uma ocorrência existente?</td><td><code>id_sala</code> precisa corresponder a uma sala válida.</td></tr>
+                  <tr><td><code>NOT NULL</code></td><td>Esse valor pode estar ausente?</td><td>Uma sala precisa possuir nome e capacidade.</td></tr>
+                  <tr><td><code>UNIQUE</code></td><td>Esse valor ou combinação pode se repetir?</td><td>A mesma sala não pode receber duas reservas na mesma data e horário.</td></tr>
+                  <tr><td><code>CHECK</code></td><td>Esse valor pertence ao conjunto considerado válido?</td><td>Capacidade positiva e situação pertencente ao conjunto definido.</td></tr>
+                  <tr><td><code>DEFAULT</code></td><td>Qual valor deve ser usado quando o atributo for omitido?</td><td>Uma nova reserva recebe <code>'ativa'</code> por padrão.</td></tr>
                 </tbody>
               </table>
             </div>
 
-            <h3>DEFAULT não é a mesma coisa que uma regra de validação</h3>
-            <p><code>DEFAULT</code> ajuda a construir uma nova tupla quando um valor foi omitido. Ele não garante, sozinho, que todos os valores futuros sejam válidos. No exemplo da aula, <code>DEFAULT 'ativa'</code> fornece uma situação inicial, enquanto <code>CHECK (situacao IN (...))</code> limita quais situações podem ser armazenadas.</p>
+            <h3>NOT NULL não significa "valor correto"</h3>
+            <p><code>NOT NULL</code> verifica apenas se existe algum valor. Ele não verifica se o valor faz sentido.</p>
+            <p>Por exemplo, uma capacidade de <code>-3</code> não é nula. Portanto, <code>NOT NULL</code> sozinho aceitaria esse valor. Precisamos de <code>CHECK</code> para expressar a regra adicional.</p>
 
-            <h3>Restrições se complementam</h3>
-            <p>Uma única constraint raramente descreve todo o significado de um atributo. Em <code>situacao</code>, por exemplo, <code>NOT NULL</code> impede ausência de valor, <code>DEFAULT</code> fornece um valor inicial e <code>CHECK</code> restringe o conjunto de valores aceitos.</p>
+            <h3>UNIQUE pode envolver mais de uma coluna</h3>
+            <p>Na aula, a regra de agenda não é "a data deve ser única" nem "o horário deve ser único". O que não pode se repetir é a combinação de <strong>sala + data + horário</strong>.</p>
+
+            <div class="sql-block"><span class="sql-label">Unicidade composta</span><pre><code>UNIQUE (id_sala, data, hora_inicio)</code></pre></div>
+
+            <p>Isso permite várias reservas na mesma data, desde que sejam em salas ou horários diferentes.</p>
+
+            <h3>DEFAULT fornece um valor, mas não valida todos os valores possíveis</h3>
+            <p>Esse ponto merece atenção. <code>DEFAULT</code> é aplicado quando um valor é omitido na inserção. Ele não impede que alguém informe explicitamente outro valor.</p>
+
+            <div class="sql-block"><span class="sql-label">Duas funções diferentes</span><pre><code>situacao TEXT NOT NULL DEFAULT 'ativa'
+    CHECK (situacao IN ('ativa', 'cancelada', 'concluida'))</code></pre></div>
+
+            <p>Nessa definição:</p>
+            <ul>
+              <li><code>DEFAULT 'ativa'</code> escolhe o valor inicial quando <code>situacao</code> não é informada;</li>
+              <li><code>NOT NULL</code> impede ausência de valor;</li>
+              <li><code>CHECK</code> limita quais valores são aceitos.</li>
+            </ul>
 
             <div class="callout teal">
-              <strong>Rejeitar uma operação pode ser o comportamento correto</strong>
-              <p>Quando o SGBD rejeita uma inserção ou atualização que viola uma regra, ele está preservando a consistência do modelo. O erro é evidência de que a restrição foi aplicada, não necessariamente de que o banco "falhou".</p>
+              <strong>Constraints trabalham em conjunto</strong>
+              <p>Uma coluna pode precisar de várias regras porque cada constraint responde a um problema diferente.</p>
             </div>
+
+            <h3>Uma operação rejeitada pode indicar que o banco funcionou corretamente</h3>
+            <p>Se tentamos inserir uma sala com bloco inexistente e recebemos uma violação de chave estrangeira, o SGBD impediu que uma referência sem significado fosse armazenada.</p>
+            <p>O mesmo ocorre quando uma PK duplicada, um <code>CHECK</code> inválido ou uma combinação <code>UNIQUE</code> repetida é rejeitada.</p>
+            <p>Nesses casos, a mensagem de erro não significa que a integridade falhou. Significa justamente que a integridade foi preservada.</p>
           </div>
         </div>
       </section>
@@ -204,57 +325,88 @@ WHERE id_reserva = 1;</code></pre></div>
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">4 · Integridade referencial e ações de exclusão</p>
-            <h2>Excluir uma ocorrência pode ter consequências em outras relações</h2>
-            <p>Quando uma chave é referenciada, o banco precisa saber o que fazer se a ocorrência proprietária for removida.</p>
+            <h2>Uma exclusão pode começar em uma tabela e produzir consequências em outra</h2>
+            <p>Quando existem chaves estrangeiras, remover uma linha referenciada exige decidir o que deve acontecer com as linhas que dependem dela.</p>
           </div>
 
           <div class="study-prose">
-            <h3>Relação referenciada e relação que referencia</h3>
-            <p>Em <code>TELEFONE_USUARIO</code>, a coluna <code>id_usuario</code> referencia <code>USUARIO.id_usuario</code>. USUARIO ocupa o papel de relação referenciada; TELEFONE_USUARIO contém a chave estrangeira.</p>
-            <p>Em <code>RESERVA</code>, tanto USUARIO quanto SALA são referenciados. A existência dessas referências faz com que uma exclusão no lado referenciado não seja uma decisão isolada.</p>
+            <h3>Primeiro, identifique os dois lados da referência</h3>
+            <p>Considere a relação entre USUARIO e TELEFONE_USUARIO.</p>
+
+            <div class="arrow-chain"><span>USUARIO.id_usuario</span><b>← referência ←</b><span>TELEFONE_USUARIO.id_usuario</span></div>
+
+            <p>USUARIO contém a chave referenciada. TELEFONE_USUARIO contém a chave estrangeira. Isso significa que a existência de uma linha de telefone depende de uma ocorrência de usuário.</p>
+
+            <h3>O problema aparece quando a linha referenciada é removida</h3>
+            <p>Imagine que o usuário 17 possui dois telefones cadastrados. Se apagarmos o usuário 17, o que deve acontecer com esses telefones?</p>
+            <p>Existem diferentes respostas possíveis. A escolha correta depende do significado do domínio.</p>
 
             <div class="three-grid">
               <article class="rule-card">
                 <span>RESTRICT</span>
-                <h3>Protege a ocorrência referenciada</h3>
-                <p>A exclusão é rejeitada enquanto existirem linhas dependentes que apontam para ela.</p>
+                <h3>Não permita a exclusão</h3>
+                <p>Enquanto existirem linhas dependentes, a linha referenciada permanece protegida. Primeiro é preciso resolver as dependências.</p>
               </article>
               <article class="rule-card">
                 <span>CASCADE</span>
-                <h3>Propaga a exclusão</h3>
-                <p>Ao remover a ocorrência referenciada, o SGBD remove também as linhas dependentes correspondentes.</p>
+                <h3>Remova também as dependências</h3>
+                <p>A exclusão da linha referenciada provoca a remoção automática das linhas que dependem dela.</p>
               </article>
               <article class="rule-card">
                 <span>SET NULL</span>
-                <h3>Preserva a linha, remove a referência</h3>
-                <p>A FK passa a ser nula, desde que a coluna permita <code>NULL</code> e essa situação faça sentido no domínio.</p>
+                <h3>Mantenha a linha sem referência</h3>
+                <p>A linha dependente permanece, mas a FK passa a ser nula. Isso só faz sentido se a coluna aceitar <code>NULL</code>.</p>
               </article>
             </div>
 
-            <h3>Por que TELEFONE_USUARIO usa CASCADE?</h3>
-            <p>Na estrutura da aula, um telefone registrado nessa relação só existe como telefone de um usuário específico. Se o usuário for removido, manter a linha de telefone sem proprietário não representa um fato útil no modelo. <code>ON DELETE CASCADE</code> expressa essa dependência.</p>
+            <h3>Por que TELEFONE_USUARIO usa ON DELETE CASCADE?</h3>
+            <p>Na estrutura da aula, TELEFONE_USUARIO representa telefones associados a um usuário. A linha <code>(17, '41987651223')</code> não representa um telefone independente do usuário; ela representa <strong>um telefone do usuário 17</strong>.</p>
+            <p>Se o usuário deixar de existir, manter essa linha produziria um fato sem proprietário. Por isso, a aula usa:</p>
 
-            <h3>Por que RESERVA usa RESTRICT?</h3>
-            <p>Uma reserva registra um fato do sistema que envolve usuário e sala. Apagar automaticamente todo o histórico de reservas ao excluir um usuário ou uma sala teria consequências diferentes. A opção <code>RESTRICT</code> obriga a resolver primeiro as referências existentes.</p>
+            <div class="sql-block"><span class="sql-label">Dependência forte</span><pre><code>FOREIGN KEY (id_usuario)
+    REFERENCES usuario(id_usuario)
+    ON DELETE CASCADE</code></pre></div>
+
+            <p>Ao excluir o usuário, os telefones associados também são removidos.</p>
+
+            <h3>Por que RESERVA usa ON DELETE RESTRICT?</h3>
+            <p>RESERVA possui um papel diferente. Uma reserva registra um fato do sistema que envolve usuário, sala, data e horário. Apagar automaticamente reservas porque um usuário foi excluído pode destruir informação que o sistema ainda precisa preservar.</p>
+            <p>Por isso, na aula adotamos <code>RESTRICT</code>. Se houver uma reserva apontando para o usuário, a exclusão do usuário é bloqueada.</p>
+
+            <div class="sql-block"><span class="sql-label">Proteção da referência</span><pre><code>FOREIGN KEY (id_usuario)
+    REFERENCES usuario(id_usuario)
+    ON DELETE RESTRICT</code></pre></div>
+
+            <h3>CASCADE não é "melhor" ou "pior" que RESTRICT</h3>
+            <p>São comportamentos diferentes. A escolha depende do que a relação dependente representa.</p>
 
             <div class="constraint-table-wrap">
               <table class="constraint-table">
-                <thead><tr><th>Situação</th><th>Ação</th><th>Efeito conceitual</th></tr></thead>
+                <thead><tr><th>Relação dependente</th><th>Se o pai for excluído...</th><th>Interpretação</th></tr></thead>
                 <tbody>
-                  <tr><td>Excluir usuário com telefones</td><td><code>ON DELETE CASCADE</code></td><td>Os telefones associados deixam de existir junto com o usuário.</td></tr>
-                  <tr><td>Excluir usuário com reservas</td><td><code>ON DELETE RESTRICT</code></td><td>A exclusão é bloqueada enquanto o histórico de reserva mantiver a referência.</td></tr>
-                  <tr><td>Excluir sala com reservas</td><td><code>ON DELETE RESTRICT</code></td><td>O banco impede que a referência de uma reserva passe a apontar para nada.</td></tr>
+                  <tr><td><code>TELEFONE_USUARIO</code></td><td><code>CASCADE</code></td><td>O telefone deixa de existir como vínculo porque seu proprietário foi removido.</td></tr>
+                  <tr><td><code>RESERVA</code> em relação a USUARIO</td><td><code>RESTRICT</code></td><td>O usuário não pode ser removido enquanto uma reserva ainda depende dele.</td></tr>
+                  <tr><td><code>RESERVA</code> em relação a SALA</td><td><code>RESTRICT</code></td><td>A sala não pode desaparecer deixando reservas com referência quebrada.</td></tr>
                 </tbody>
               </table>
             </div>
 
+            <h3>E onde SET NULL faria sentido?</h3>
+            <p><code>SET NULL</code> é adequado quando a linha dependente ainda faz sentido mesmo sem a referência original.</p>
+            <p>Por exemplo, em outro domínio, poderíamos manter um registro histórico e permitir que uma referência opcional para um responsável seja removida. Para isso, a coluna da FK precisaria aceitar <code>NULL</code>.</p>
+            <p>No nosso caso de RESERVA, <code>id_usuario</code> e <code>id_sala</code> são obrigatórios. Portanto, <code>SET NULL</code> entraria em conflito com essa decisão.</p>
+
             <div class="callout">
-              <strong>A ação referencial é uma decisão de modelagem</strong>
-              <p><code>CASCADE</code>, <code>RESTRICT</code> e <code>SET NULL</code> não são apenas opções de sintaxe. Cada escolha descreve o que deve acontecer com fatos dependentes quando a ocorrência referenciada deixa de existir.</p>
+              <strong>A ação referencial traduz uma regra do domínio</strong>
+              <p>Escolher <code>CASCADE</code>, <code>RESTRICT</code> ou <code>SET NULL</code> significa decidir o que deve acontecer com fatos dependentes quando a ocorrência referenciada deixa de existir.</p>
             </div>
 
-            <h3>No SQLite, a fiscalização de FKs precisa estar ativa na conexão</h3>
-            <p>A declaração da chave estrangeira registra a regra na estrutura. Na configuração usada em aula, a conexão também executa <code>PRAGMA foreign_keys = ON</code> para ativar a verificação das restrições referenciais.</p>
+            <h3>No SQLite, declarar a FK e fiscalizar a FK são duas etapas relacionadas</h3>
+            <p>A constraint é escrita na definição da tabela, mas a conexão usada na aula também executa <code>PRAGMA foreign_keys = ON</code>.</p>
+
+            <div class="sql-block"><span class="sql-label">SQLite</span><pre><code>PRAGMA foreign_keys = ON;</code></pre></div>
+
+            <p>Esse comando não cria as chaves estrangeiras. Ele ativa a fiscalização das FKs declaradas para aquela conexão.</p>
           </div>
         </div>
       </section>
@@ -263,39 +415,71 @@ WHERE id_reserva = 1;</code></pre></div>
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">5 · O predicado define o alcance da mudança</p>
-            <h2>UPDATE e DELETE são operações sobre conjuntos</h2>
-            <p>Mesmo quando pensamos em "alterar um registro", a SQL continua operando sobre todas as tuplas que satisfazem uma condição.</p>
+            <h2>UPDATE e DELETE trabalham com conjuntos de linhas</h2>
+            <p>Essa é uma mudança importante de raciocínio: SQL não precisa receber uma linha de cada vez. Uma única instrução pode atingir nenhuma, uma ou muitas ocorrências.</p>
           </div>
 
           <div class="study-prose">
-            <h3>A condição não identifica automaticamente uma única linha</h3>
-            <p>Uma expressão como <code>WHERE situacao = 'ativa'</code> pode selecionar muitas reservas. Uma expressão sobre chave primária tende a selecionar no máximo uma, porque a unicidade já foi garantida pela estrutura.</p>
+            <h3>WHERE funciona como um filtro sobre as linhas</h3>
+            <p>A cláusula <code>WHERE</code> contém uma condição lógica. Cada linha é avaliada em relação a essa condição. As linhas que satisfazem o predicado entram no conjunto alvo da operação.</p>
+
+            <div class="sql-block"><span class="sql-label">Predicado sobre uma chave</span><pre><code>WHERE id_reserva = 1</code></pre></div>
+
+            <p>Como <code>id_reserva</code> é chave primária, no máximo uma linha pode satisfazer essa condição.</p>
+
+            <div class="sql-block"><span class="sql-label">Predicado sobre um valor comum</span><pre><code>WHERE situacao = 'ativa'</code></pre></div>
+
+            <p>Nesse caso, várias linhas podem satisfazer a condição. Portanto, um <code>UPDATE</code> com esse predicado pode modificar várias reservas ao mesmo tempo.</p>
 
             <div class="two-grid">
               <article class="concept-card">
-                <span>Predicado seletivo</span>
-                <h3><code>WHERE id_reserva = 1</code></h3>
-                <p>Como <code>id_reserva</code> é chave, a condição alcança no máximo uma reserva.</p>
+                <span>Condição sobre chave</span>
+                <h3>Alcance previsivelmente pequeno</h3>
+                <p>A unicidade da chave garante que o predicado alcance no máximo uma linha.</p>
               </article>
               <article class="concept-card">
-                <span>Predicado amplo</span>
-                <h3><code>WHERE situacao = 'ativa'</code></h3>
-                <p>Pode atingir qualquer quantidade de linhas que esteja atualmente nessa situação.</p>
+                <span>Condição não exclusiva</span>
+                <h3>Alcance potencialmente grande</h3>
+                <p>Qualquer quantidade de linhas pode compartilhar o mesmo valor e entrar no conjunto alvo.</p>
               </article>
             </div>
 
-            <h3>Sem WHERE, o conjunto alvo é toda a relação</h3>
-            <p>Em <code>UPDATE</code> e <code>DELETE</code>, a ausência de <code>WHERE</code> não torna o comando inválido. Ela apenas significa que nenhuma linha foi excluída do conjunto alvo.</p>
+            <h3>Sem WHERE, nenhuma linha é filtrada</h3>
+            <p>Observe a diferença:</p>
 
-            <div class="sql-block"><span class="sql-label">Operação válida, mas de grande alcance</span><pre><code>UPDATE reserva
+            <div class="sql-block"><span class="sql-label">Com filtro</span><pre><code>UPDATE reserva
+SET situacao = 'cancelada'
+WHERE id_reserva = 1;</code></pre></div>
+
+            <div class="sql-block"><span class="sql-label">Sem filtro</span><pre><code>UPDATE reserva
 SET situacao = 'cancelada';</code></pre></div>
 
-            <p>O risco não está na sintaxe. Está no fato de a operação representar uma transformação muito maior do que a intenção original.</p>
+            <p>O segundo comando não contém erro de sintaxe. Ele significa: aplique a nova situação a todas as linhas de RESERVA.</p>
 
-            <h3>SELECT antes da alteração é uma forma de inspecionar o predicado</h3>
-            <p>Executar primeiro um <code>SELECT</code> com a mesma condição permite observar quais linhas satisfazem o predicado antes da modificação. Essa prática aproxima a intenção do operador do conjunto real que a SQL atingirá.</p>
+            <h3>Por isso "esquecer o WHERE" é tão perigoso</h3>
+            <p>O SGBD não conhece a intenção humana por trás do comando. Ele executa exatamente a transformação descrita.</p>
+            <p>Se a intenção era alterar uma reserva e o predicado seleciona todas, o banco não possui informação suficiente para adivinhar que o comando estava amplo demais.</p>
 
-            <div class="arrow-chain"><span>Definir condição</span><b>→</b><span>SELECT</span><b>→</b><span>Conferir conjunto</span><b>→</b><span>UPDATE/DELETE</span><b>→</b><span>SELECT</span></div>
+            <h3>A estratégia SELECT → conferir → modificar reduz esse risco</h3>
+            <p>Antes de usar <code>UPDATE</code> ou <code>DELETE</code>, podemos aplicar a mesma condição em um <code>SELECT</code>.</p>
+
+            <div class="sql-block"><span class="sql-label">Primeiro observe</span><pre><code>SELECT *
+FROM reserva
+WHERE id_reserva = 1;</code></pre></div>
+
+            <p>Se o resultado contém exatamente a ocorrência esperada, podemos reutilizar o mesmo predicado na operação de modificação.</p>
+
+            <div class="mapping-grid">
+              <article class="mapping-step"><b>1</b><strong>Definir a intenção</strong><p>Qual ocorrência ou conjunto realmente precisa ser alterado?</p></article>
+              <article class="mapping-step"><b>2</b><strong>Escrever o predicado</strong><p>Transforme essa intenção em uma condição lógica.</p></article>
+              <article class="mapping-step"><b>3</b><strong>Conferir com SELECT</strong><p>Veja quais linhas satisfazem a condição no estado atual.</p></article>
+              <article class="mapping-step"><b>4</b><strong>Executar e conferir</strong><p>Aplique UPDATE/DELETE e consulte novamente.</p></article>
+            </div>
+
+            <div class="callout warn">
+              <strong>WHERE não garante que a condição está correta</strong>
+              <p>Ele apenas limita o conjunto segundo a expressão escrita. Um predicado incorreto ainda pode selecionar linhas erradas. A conferência continua necessária.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -304,33 +488,56 @@ SET situacao = 'cancelada';</code></pre></div>
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">6 · Banco e aplicação</p>
-            <h2>Validar na aplicação e restringir no banco são responsabilidades complementares</h2>
-            <p>Uma interface pode impedir muitos erros antes que o comando seja enviado, mas as regras estruturais importantes continuam úteis no próprio banco.</p>
+            <h2>A aplicação pode orientar o usuário; o banco precisa preservar os dados</h2>
+            <p>Em um sistema real, regras podem aparecer em diferentes camadas. O ponto importante é entender que validação de interface e integridade do banco possuem objetivos diferentes.</p>
           </div>
 
           <div class="study-prose">
-            <h3>A aplicação conhece o fluxo de uso</h3>
-            <p>Ela pode orientar preenchimento, exibir mensagens amigáveis, confirmar exclusões e impedir ações inadequadas na interface.</p>
+            <h3>A aplicação trabalha perto da interação com o usuário</h3>
+            <p>Uma interface pode impedir que o usuário digite letras em um campo numérico, exigir preenchimento, exibir opções de situação em uma lista e pedir confirmação antes de uma exclusão.</p>
+            <p>Essas validações melhoram a experiência porque evitam operações obviamente incorretas antes mesmo de chegar ao banco.</p>
 
-            <h3>O banco conhece o estado persistido</h3>
-            <p>O SGBD recebe operações de diferentes pontos da aplicação, scripts, integrações e ferramentas administrativas. Constraints mantêm regras fundamentais próximas dos dados que precisam respeitá-las.</p>
+            <div class="concept-card">
+              <span>Exemplo</span>
+              <h3>Seleção da situação</h3>
+              <p>A interface pode apresentar apenas três opções: ativa, cancelada e concluída. Assim, o usuário nem vê a opção "aguardando".</p>
+            </div>
+
+            <h3>Mas a aplicação não é o único caminho até o banco</h3>
+            <p>Dados podem ser modificados por scripts, integrações, rotinas administrativas, importações ou outra versão da aplicação.</p>
+            <p>Se uma regra fundamental existir apenas na tela, outro caminho de escrita pode ignorá-la.</p>
+
+            <h3>O SGBD atua no ponto onde os dados são persistidos</h3>
+            <p>Quando uma constraint está no banco, qualquer operação que tente produzir um estado inválido precisa enfrentar a mesma regra.</p>
 
             <div class="two-grid">
               <article class="rule-card">
                 <span>Aplicação</span>
-                <h3>Prevenir e explicar</h3>
-                <p>Ajuda o usuário a formular uma operação válida antes de enviá-la ao banco.</p>
+                <h3>Antecipar e explicar</h3>
+                <p>Ajuda o usuário a fornecer dados válidos, mostra mensagens compreensíveis e organiza o fluxo da operação.</p>
               </article>
               <article class="rule-card">
-                <span>Banco</span>
+                <span>Banco de dados</span>
                 <h3>Preservar invariantes</h3>
-                <p>Recusa estados incompatíveis com as constraints declaradas, independentemente do caminho usado para chegar até ele.</p>
+                <p>Mantém regras estruturais essenciais independentemente de qual aplicação, script ou usuário enviou o comando.</p>
               </article>
             </div>
 
+            <h3>As duas camadas podem representar a mesma regra por motivos diferentes</h3>
+            <p>Considere a capacidade da sala.</p>
+            <ul>
+              <li>a aplicação pode impedir a digitação de números menores ou iguais a zero;</li>
+              <li>o banco pode manter <code>CHECK (capacidade &gt; 0)</code>.</li>
+            </ul>
+            <p>Isso não é necessariamente duplicação inútil. A interface melhora a interação; a constraint protege o estado persistido.</p>
+
+            <h3>Nem toda regra cabe facilmente em uma constraint simples</h3>
+            <p>Algumas regras dependem de várias linhas, de tempo, de processos da aplicação ou de decisões mais complexas. Por isso, o projeto precisa decidir onde cada regra será garantida.</p>
+            <p>Nesta aula trabalhamos principalmente com regras que podem ser expressas diretamente por PK, FK, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code>, <code>DEFAULT</code> e ações referenciais.</p>
+
             <div class="callout teal">
-              <strong>Uma regra importante deve sobreviver à interface</strong>
-              <p>Se a consistência depende apenas de um formulário específico, outro caminho de escrita pode produzir dados incompatíveis. Regras estruturais centrais devem estar representadas onde os dados são preservados.</p>
+              <strong>Princípio útil</strong>
+              <p>Quanto mais central uma regra for para a consistência dos dados, menos ela deve depender apenas de uma interface específica.</p>
             </div>
           </div>
         </div>
@@ -340,28 +547,41 @@ SET situacao = 'cancelada';</code></pre></div>
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">Síntese conceitual</p>
-            <h2>DML muda fatos; integridade limita quais mudanças são aceitáveis</h2>
-            <p>Manipular dados é transformar a instância do banco sem perder as propriedades que tornam essa instância coerente com o modelo.</p>
+            <h2>Manipular dados é propor mudanças; integridade decide quais mudanças podem permanecer</h2>
+            <p>A Aula 07 deixa de olhar apenas para a estrutura e passa a observar o comportamento do banco quando seu estado é alterado.</p>
           </div>
 
           <div class="three-grid">
-            <article class="note-card"><strong>Estado</strong><p>Os dados atuais formam uma instância do esquema e podem mudar continuamente.</p></article>
-            <article class="note-card"><strong>DML</strong><p><code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> transformam esse estado sobre conjuntos de tuplas.</p></article>
-            <article class="note-card"><strong>Integridade</strong><p>PK, FK, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code> e ações referenciais restringem os estados que podem ser aceitos.</p></article>
+            <article class="note-card"><strong>Estado</strong><p>O esquema define a forma. A instância representa os dados que existem agora.</p></article>
+            <article class="note-card"><strong>DML</strong><p><code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> transformam o conjunto atual de tuplas.</p></article>
+            <article class="note-card"><strong>Integridade</strong><p>As constraints impedem que uma transformação produza estados incompatíveis com as regras declaradas.</p></article>
           </div>
 
           <div class="study-prose" style="margin-top:2.2rem">
+            <h3>O percurso desta aula pode ser lido assim</h3>
+
+            <div class="arrow-chain"><span>Estrutura pronta</span><b>→</b><span>estado atual</span><b>→</b><span>operação DML</span><b>→</b><span>constraints</span><b>→</b><span>novo estado válido</span></div>
+
+            <h3>Quatro ideias para guardar</h3>
+            <div class="four-grid">
+              <article class="concept-card"><span>1</span><h3>DML muda dados</h3><p>Não redefine a estrutura do banco; modifica a instância atual.</p></article>
+              <article class="concept-card"><span>2</span><h3>SQL opera sobre conjuntos</h3><p>UPDATE e DELETE podem atingir nenhuma, uma ou muitas linhas.</p></article>
+              <article class="concept-card"><span>3</span><h3>Erro pode ser proteção</h3><p>Uma operação rejeitada por uma constraint pode indicar que a integridade foi preservada.</p></article>
+              <article class="concept-card"><span>4</span><h3>FK expressa dependência</h3><p>Ações como CASCADE e RESTRICT registram consequências da exclusão de ocorrências referenciadas.</p></article>
+            </div>
+
             <h3>Referências para aprofundamento</h3>
             <ul class="references">
-              <li>ELMASRI, Ramez; NAVATHE, Shamkant B. <em>Sistemas de banco de dados</em>. Seções sobre restrições do modelo relacional, SQL, atualização e integridade referencial.</li>
+              <li>ELMASRI, Ramez; NAVATHE, Shamkant B. <em>Sistemas de banco de dados</em>. Seções sobre restrições do modelo relacional, SQL, operações de atualização e integridade referencial.</li>
               <li>SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S. <em>Database System Concepts</em>. Capítulos sobre SQL, modificação do banco e restrições de integridade.</li>
-              <li>MACHADO, Felipe Nery Rodrigues. <em>Banco de Dados: Projeto e Implementação</em>. Seções sobre integridade referencial, <code>CHECK</code> e ações em cascata.</li>
+              <li>MACHADO, Felipe Nery Rodrigues. <em>Banco de Dados: Projeto e Implementação</em>. Seções sobre regras de validação, integridade referencial e ações em cascata.</li>
               <li>Documentação do SQLite. Seções sobre <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, constraints e foreign keys.</li>
             </ul>
           </div>
         </div>
       </section>
-    </main>
+
+      </main>
 
     <aside class="standard-toc" aria-label="Índice desta página">
       <div class="standard-toc-head"><span class="standard-toc-label">Nesta página</span></div>
