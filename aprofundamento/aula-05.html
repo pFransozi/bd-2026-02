@@ -43,7 +43,7 @@
 
   <header class="site-header" id="inicio">
     <div class="container nav-wrap">
-      <a class="brand" href="../index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <a class="brand" href="../index.html" aria-label="Banco de Dados, página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
       <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
       <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
         <a href="../aula-05.html">Aula 05</a>
@@ -123,10 +123,10 @@
 
           <div class="study-prose">
             <h3>Identificador conceitual, chave candidata e chave primária não são exatamente a mesma ideia</h3>
-            <p>No DER, procuramos uma propriedade — ou combinação de propriedades — capaz de distinguir uma ocorrência das demais. No modelo relacional, diferentes conjuntos de atributos podem ter essa capacidade e, por isso, podem ser tratados como <strong>chaves candidatas</strong>. Uma delas é escolhida como chave primária; as demais continuam semanticamente importantes e podem exigir restrições de unicidade.</p>
+            <p>No DER, procuramos uma propriedade, ou combinação de propriedades, capaz de distinguir uma ocorrência das demais. No modelo relacional, diferentes conjuntos de atributos podem ter essa capacidade e, por isso, podem ser tratados como <strong>chaves candidatas</strong>. Uma delas é escolhida como chave primária; as demais continuam semanticamente importantes e podem exigir restrições de unicidade.</p>
 
             <h3>Atributos compostos são decompostos porque relações básicas trabalham com valores atômicos</h3>
-            <p>Se um endereço foi modelado como um atributo composto, seus componentes relevantes — por exemplo, logradouro, número, cidade e CEP — aparecem como atributos separados. A decomposição não é uma perda de significado: ela torna explícitas as partes que o modelo relacional manipulará individualmente.</p>
+            <p>Se um endereço foi modelado como um atributo composto, seus componentes relevantes, por exemplo, logradouro, número, cidade e CEP, aparecem como atributos separados. A decomposição não é uma perda de significado: ela torna explícitas as partes que o modelo relacional manipulará individualmente.</p>
 
             <h3>Atributos derivados exigem uma decisão de projeto</h3>
             <p>Um valor como idade pode ser calculado a partir da data de nascimento e da data corrente. Guardá-lo como dado persistente cria a obrigação de mantê-lo coerente ao longo do tempo. Portanto, o fato de algo aparecer como atributo no nível conceitual não significa automaticamente que deva ser armazenado materialmente.</p>
@@ -166,7 +166,7 @@
             <p>Em um relacionamento 1:1, a referência pode ficar em qualquer um dos lados, em princípio. A escolha costuma considerar participação, quantidade esperada de valores nulos e significado do domínio. Isso mostra que o mapeamento não é sempre único: mais de um esquema pode representar a mesma associação, mas alguns esquemas expressam melhor certas restrições.</p>
 
             <h3>Por que N:N exige uma relação própria?</h3>
-            <p>Uma única FK não consegue representar simultaneamente “um aluno cursa várias disciplinas” e “uma disciplina possui vários alunos”. A nova relação — por exemplo, MATRICULA — representa a própria ocorrência da associação. Se o relacionamento possui atributos, como semestre ou nota, esses atributos pertencem naturalmente a essa relação.</p>
+            <p>Uma única FK não consegue representar simultaneamente “um aluno cursa várias disciplinas” e “uma disciplina possui vários alunos”. A nova relação, por exemplo MATRICULA, representa a própria ocorrência da associação. Se o relacionamento possui atributos, como semestre ou nota, esses atributos pertencem naturalmente a essa relação.</p>
           </div>
 
           <div class="callout"><strong>Uma observação importante</strong><p>Chave estrangeira representa referência; ela não representa, sozinha, todas as regras de cardinalidade e participação. Em alguns casos, precisamos combiná-la com unicidade, obrigatoriedade ou outras restrições para que a semântica original não seja enfraquecida.</p></div>
@@ -225,7 +225,7 @@
             <p>Uma FK pode garantir que a sala referenciada existe, mas não garante, por exemplo, que duas reservas não ocupem a mesma sala no mesmo horário. Essa regra envolve uma combinação de atributos e pode exigir uma restrição adicional ou uma estratégia específica de implementação.</p>
 
             <h3>Validação significa reler o esquema como uma representação do domínio</h3>
-            <p>Depois do mapeamento, devemos conseguir responder perguntas como: cada fato importante continua representável? Alguma cardinalidade foi enfraquecida? Alguma associação perdeu atributos? Alguma dependência de existência deixou de aparecer? Se a resposta for incerta, o problema pode estar no mapeamento — ou até no próprio DER.</p>
+            <p>Depois do mapeamento, devemos conseguir responder perguntas como: cada fato importante continua representável? Alguma cardinalidade foi enfraquecida? Alguma associação perdeu atributos? Alguma dependência de existência deixou de aparecer? Se a resposta for incerta, o problema pode estar no mapeamento ou até no próprio DER.</p>
           </div>
 
           <div class="callout teal"><strong>Conexão com as próximas aulas</strong><p>A Aula 05 encerra a tradução conceitual → relacional. A etapa seguinte examina a qualidade interna das relações por meio de dependências e normalização; só então a estrutura é materializada e manipulada de forma sistemática no SGBD.</p></div>
