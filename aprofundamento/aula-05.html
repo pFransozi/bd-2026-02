@@ -476,31 +476,243 @@
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">4 · Quando uma coluna não basta</p>
-            <h2>Atributos multivalorados e entidades fracas revelam limites da cópia direta</h2>
-            <p>Esses dois casos são especialmente úteis porque mostram que o modelo relacional exige uma reorganização da informação para manter o significado do modelo conceitual.</p>
+            <h2>Alguns fatos precisam virar novas ocorrências para não perder significado</h2>
+            <p>Atributos multivalorados e entidades fracas mostram que mapear um DER não significa simplesmente criar uma coluna para cada informação desenhada. Em certos casos, o significado depende de repetir ocorrências, preservar uma dependência ou construir uma identidade composta.</p>
           </div>
 
           <div class="two-grid">
             <article class="rule-card">
               <span>Atributo multivalorado</span>
               <h3>Um usuário pode possuir vários telefones</h3>
-              <p>Uma coluna não deve armazenar uma lista arbitrária de valores se queremos permanecer no modelo relacional básico. Cada telefone precisa virar uma ocorrência própria vinculada ao usuário.</p>
+              <p>O valor conceitual de TELEFONE não é um único número, mas um conjunto de números associados ao mesmo usuário.</p>
               <div class="schema-line"><span class="key fk">FK</span><code>id_usuario</code><span class="key">PK</span><code>telefone</code></div>
             </article>
             <article class="rule-card">
               <span>Entidade fraca</span>
               <h3>Uma faixa de agenda só é identificável dentro de uma sala</h3>
-              <p>Data e horário podem se repetir em salas diferentes. Por isso, a identificação da faixa precisa incorporar a identidade da entidade proprietária.</p>
+              <p>Data e horário distinguem uma faixa apenas dentro do contexto de uma sala específica. A identidade da proprietária participa da própria identificação da faixa.</p>
               <div class="schema-line"><span class="key">PK/FK</span><code>id_sala</code><span class="key">PK</span><code>data</code><span class="key">PK</span><code>hora_inicio</code></div>
             </article>
           </div>
 
           <div class="study-prose">
-            <h3>A relação criada para um atributo multivalorado representa um conjunto de valores associados</h3>
-            <p>Ao criar TELEFONE_USUARIO, repetimos a chave do usuário uma vez para cada telefone. O que antes aparecia como “um atributo com vários valores” passa a aparecer como “várias tuplas relacionadas à mesma ocorrência de usuário”. Essa mudança é estrutural, mas preserva o fato original.</p>
+            <h3>O problema começa quando um atributo representa vários valores ao mesmo tempo</h3>
+            <p>Considere um usuário que possui três telefones. No modelo conceitual, é natural dizer que TELEFONE é um atributo multivalorado de USUARIO. A dificuldade surge quando tentamos transportar essa ideia diretamente para uma única coluna.</p>
 
-            <h3>A entidade fraca evidencia que identidade pode depender de contexto</h3>
-            <p>FAIXA_AGENDA não possui uma identidade global independente de SALA. A combinação <code>(id_sala, data, hora_inicio)</code> expressa exatamente essa dependência: a chave da proprietária participa simultaneamente da referência e da própria identificação da entidade fraca.</p>
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>id_usuario</th>
+                    <th>nome</th>
+                    <th>telefone</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>17</td>
+                    <td>Ana</td>
+                    <td><code>41999990000, 4133334444, 41988887777</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>Visualmente, parece que todos os telefones foram armazenados. Porém, a coluna deixou de representar um único valor do domínio telefone e passou a conter uma pequena coleção codificada dentro de um texto.</p>
+            <p>Isso cria dificuldades imediatas: como verificar se um número específico já está cadastrado? Como impedir o mesmo número de aparecer duas vezes para o usuário? Como armazenar informações diferentes para cada telefone? Como aplicar uma restrição ao número sem antes separar o conteúdo da coluna?</p>
+
+            <div class="callout">
+              <strong>A questão não é apenas estética</strong>
+              <p>Separar valores por vírgula parece simples enquanto apenas exibimos o conteúdo. O problema aparece quando o banco precisa identificar, consultar, validar, relacionar ou alterar cada valor individualmente.</p>
+            </div>
+
+            <h3>Outra tentativa ruim seria criar uma quantidade fixa de colunas</h3>
+            <p>Uma solução como <code>telefone_1</code>, <code>telefone_2</code> e <code>telefone_3</code> também parece funcionar inicialmente. Entretanto, ela incorpora ao esquema um limite arbitrário que pertence apenas à nossa implementação.</p>
+            <p>Se um usuário possuir um quarto telefone, seria necessário alterar a estrutura da relação. Se outro usuário possuir apenas um, as demais colunas ficariam vazias. Além disso, a mesma propriedade do domínio passaria a ser representada por vários atributos diferentes.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>Lista em uma coluna</small>
+                <strong>Vários valores escondidos</strong>
+                <p>A aplicação precisa interpretar internamente o conteúdo para encontrar ou alterar um telefone.</p>
+              </article>
+              <article>
+                <small>Colunas telefone_1, telefone_2...</small>
+                <strong>Quantidade limitada pelo esquema</strong>
+                <p>O número de valores possíveis passa a depender da quantidade de colunas criada.</p>
+              </article>
+              <article>
+                <small>Nova relação</small>
+                <strong>Um valor por ocorrência</strong>
+                <p>Cada telefone se torna diretamente identificável, consultável e relacionável.</p>
+              </article>
+            </div>
+
+            <h3>O atributo multivalorado se transforma em uma relação própria</h3>
+            <p>Uma representação mais adequada cria <code>TELEFONE_USUARIO</code>. Cada linha passa a representar um fato simples: <em>“este telefone pertence a este usuário”</em>.</p>
+
+            <div class="two-grid">
+              <article class="schema-card">
+                <span class="label">USUARIO</span>
+                <h3>ocorrência proprietária</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_usuario</code><code>nome</code></div>
+                <p>O usuário aparece uma única vez, independentemente da quantidade de telefones que possui.</p>
+              </article>
+              <article class="schema-card">
+                <span class="label">TELEFONE_USUARIO</span>
+                <h3>valores multivalorados</h3>
+                <div class="schema-line"><span class="key">PK/FK</span><code>id_usuario</code><span class="key">PK</span><code>telefone</code></div>
+                <p>Cada telefone aparece em uma ocorrência separada e permanece vinculado ao usuário por meio da FK.</p>
+              </article>
+            </div>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>id_usuario</th>
+                    <th>telefone</th>
+                    <th>Significado da linha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>17</td><td>41999990000</td><td>O telefone 41999990000 pertence ao usuário 17.</td></tr>
+                  <tr><td>17</td><td>4133334444</td><td>O telefone 4133334444 pertence ao usuário 17.</td></tr>
+                  <tr><td>17</td><td>41988887777</td><td>O telefone 41988887777 pertence ao usuário 17.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>A repetição de <code>id_usuario</code> é intencional. Ela conecta vários valores do atributo à mesma ocorrência proprietária. A combinação <code>(id_usuario, telefone)</code> pode ser usada como chave primária para impedir que o mesmo telefone seja registrado duas vezes para o mesmo usuário.</p>
+
+            <h3>A chave composta expressa exatamente qual repetição é proibida</h3>
+            <p>Se a chave for <code>(id_usuario, telefone)</code>, o mesmo telefone não pode aparecer duas vezes para o mesmo usuário. Entretanto, o modelo ainda permite que o mesmo número apareça associado a usuários diferentes.</p>
+            <p>Se a regra do domínio afirmar que um telefone só pode pertencer a um único usuário, será necessária uma restrição adicional de unicidade sobre <code>telefone</code>. Isso mostra novamente que a escolha da chave representa uma regra sobre o significado dos dados.</p>
+
+            <h3>Quando um atributo multivalorado começa a parecer uma entidade própria?</h3>
+            <p>Nem todo conjunto de valores deve permanecer conceitualmente tratado apenas como atributo. Imagine que cada telefone precise registrar tipo, ramal, data de confirmação, situação ou preferência de contato.</p>
+            <p>Nesse momento, o telefone começa a possuir propriedades próprias. A estrutura relacional pode continuar usando uma relação separada, mas conceitualmente talvez seja mais adequado reconhecer TELEFONE como uma entidade ou estrutura independente no domínio.</p>
+
+            <div class="two-grid">
+              <article class="concept-card">
+                <span>Apenas valor</span>
+                <h3>telefone</h3>
+                <p>Quando apenas o número interessa, tratá-lo como atributo multivalorado pode ser suficiente.</p>
+              </article>
+              <article class="concept-card">
+                <span>Objeto descrito</span>
+                <h3>TELEFONE</h3>
+                <p>Quando o telefone possui tipo, situação, verificação ou outras propriedades, ele passa a ter estrutura própria.</p>
+              </article>
+            </div>
+
+            <h3>A nova relação resolve a multiplicidade, mas não representa automaticamente o mínimo</h3>
+            <p>O requisito da aula afirma que um usuário possui um ou mais telefones. Criar TELEFONE_USUARIO permite armazenar vários telefones e garante que cada telefone cadastrado aponte para um usuário existente.</p>
+            <p>Porém, apenas a FK não impede que exista um usuário sem nenhuma linha em TELEFONE_USUARIO. Garantir que todo usuário possua pelo menos um telefone é uma regra de participação mínima que pode exigir lógica adicional na implementação.</p>
+
+            <div class="callout teal">
+              <strong>Um ponto importante sobre o mapeamento</strong>
+              <p>Transformar o atributo multivalorado em uma relação preserva a possibilidade de vários valores. A exigência de existir pelo menos um valor é uma regra diferente e precisa ser tratada separadamente.</p>
+            </div>
+
+            <h3>Entidade fraca é um problema diferente</h3>
+            <p>No atributo multivalorado, o desafio era representar vários valores associados a uma ocorrência. Na entidade fraca, a dificuldade está na própria identidade: a ocorrência não possui identificação completa sem a entidade proprietária.</p>
+            <p>Considere FAIXA_AGENDA. Uma faixa pode ser descrita por data, hora de início e situação. Entretanto, <code>10/09 às 19:00</code> não identifica uma faixa globalmente, porque diversas salas podem possuir uma faixa nessa mesma data e horário.</p>
+
+            <div class="relation-board" aria-label="Dependência entre sala e faixa de agenda">
+              <div class="entity-box"><strong>SALA</strong><span>entidade proprietária</span></div>
+              <div class="relation-arrow">→</div>
+              <div class="entity-box"><strong>FAIXA_AGENDA</strong><span>identidade depende de SALA</span></div>
+            </div>
+
+            <h3>A entidade fraca possui uma chave parcial</h3>
+            <p>Dentro de uma sala específica, a combinação <code>(data, hora_inicio)</code> pode distinguir uma faixa das demais. Esses atributos cumprem o papel de identificação parcial, porque só funcionam depois que sabemos qual é a sala proprietária.</p>
+            <p>Para construir uma identificação completa no esquema relacional, precisamos combinar a chave da proprietária com essa identificação parcial.</p>
+
+            <div class="schema-line" style="margin:1.3rem 0">
+              <span class="key">PK/FK</span><code>id_sala</code>
+              <span class="key">PK</span><code>data</code>
+              <span class="key">PK</span><code>hora_inicio</code>
+            </div>
+
+            <p>Assim, a chave primária de FAIXA_AGENDA pode ser:</p>
+            <div class="callout">
+              <strong>PK(FAIXA_AGENDA)</strong>
+              <p><code>(id_sala, data, hora_inicio)</code></p>
+            </div>
+
+            <h3>O mesmo atributo pode ser chave primária e chave estrangeira ao mesmo tempo</h3>
+            <p>Em FAIXA_AGENDA, <code>id_sala</code> possui duas funções simultâneas. Como FK, ele aponta para a sala proprietária. Como parte da PK, ele participa da identificação da própria faixa.</p>
+            <p>Essa dupla função não é acidental. Ela representa diretamente a ideia conceitual de que a faixa só pode ser identificada quando sabemos a qual sala pertence.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Atributo</th>
+                    <th>Papel</th>
+                    <th>O que representa?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>id_sala</code></td>
+                    <td><strong>PK + FK</strong></td>
+                    <td>Identifica a proprietária e participa da identidade da faixa.</td>
+                  </tr>
+                  <tr>
+                    <td><code>data</code></td>
+                    <td><strong>PK</strong></td>
+                    <td>Participa da distinção entre faixas da mesma sala.</td>
+                  </tr>
+                  <tr>
+                    <td><code>hora_inicio</code></td>
+                    <td><strong>PK</strong></td>
+                    <td>Completa a identificação temporal da faixa dentro da sala.</td>
+                  </tr>
+                  <tr>
+                    <td><code>situacao</code></td>
+                    <td>Atributo descritivo</td>
+                    <td>Descreve o estado atual da faixa, mas não sua identidade.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Dependência de identificação e dependência de existência estão relacionadas</h3>
+            <p>Uma entidade fraca não depende apenas da proprietária para formar sua chave. Seu significado normalmente também pressupõe a existência da proprietária. Uma FAIXA_AGENDA sem uma SALA correspondente não representa um fato completo no domínio.</p>
+            <p>A FK garante que uma faixa cadastrada não possa apontar para uma sala inexistente. A política adotada quando uma sala é removida precisa respeitar essa dependência. Em muitos domínios, não faria sentido manter faixas de agenda órfãs.</p>
+
+            <h3>Ter uma FK não torna automaticamente uma entidade fraca</h3>
+            <p>Essa distinção é importante. RESERVA possui FKs para USUARIO e SALA, mas também possui <code>id_reserva</code>, uma identidade própria independente das chaves dessas entidades.</p>
+            <p>FAIXA_AGENDA é diferente porque a chave de SALA participa da própria identificação da faixa. Portanto, a existência de uma FK indica relacionamento; a presença da chave da proprietária dentro da identidade é que evidencia a dependência característica da entidade fraca.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>Entidade comum relacionada</small>
+                <strong>RESERVA</strong>
+                <p>Possui chave própria e usa FKs para se relacionar com USUARIO e SALA.</p>
+              </article>
+              <article>
+                <small>Entidade fraca</small>
+                <strong>FAIXA_AGENDA</strong>
+                <p>Precisa da chave de SALA para completar sua própria identificação.</p>
+              </article>
+              <article>
+                <small>Atributo multivalorado</small>
+                <strong>TELEFONE_USUARIO</strong>
+                <p>Surge para transformar vários valores de um atributo em ocorrências separadas.</p>
+              </article>
+            </div>
+
+            <h3>Os dois casos criam novas relações, mas por razões diferentes</h3>
+            <p>TELEFONE_USUARIO e FAIXA_AGENDA podem parecer semelhantes quando observamos apenas o esquema final, pois ambos contêm a chave de outra relação. Entretanto, a motivação conceitual é diferente.</p>
+            <p>TELEFONE_USUARIO surge porque uma propriedade pode assumir vários valores. FAIXA_AGENDA surge porque existe uma ocorrência com atributos próprios cuja identidade depende do contexto fornecido por SALA.</p>
+          </div>
+
+          <div class="callout teal">
+            <strong>Ideia central desta seção</strong>
+            <p>Quando uma informação não cabe adequadamente em uma única coluna, precisamos perguntar por quê. Se existem vários valores independentes, podemos precisar de uma relação para o atributo multivalorado. Se existe uma ocorrência cuja identidade só fica completa dentro de outra entidade, estamos diante de uma dependência de identificação, característica das entidades fracas.</p>
           </div>
         </div>
       </section>
