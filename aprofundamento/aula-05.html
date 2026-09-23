@@ -252,38 +252,223 @@
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">3 · Relacionamentos e restrições</p>
-            <h2>A cardinalidade não vira apenas uma linha: ela precisa aparecer como uma regra estrutural</h2>
-            <p>No DER, 1:1, 1:N e N:N são propriedades do relacionamento. No modelo relacional, essas propriedades precisam ser reconstruídas usando chaves estrangeiras, unicidade, obrigatoriedade e, quando necessário, uma nova relação.</p>
+            <h2>Relacionamentos precisam continuar existindo como regras do esquema</h2>
+            <p>No DER, uma linha entre entidades não indica apenas que elas estão conectadas. Ela expressa quais ocorrências podem se associar, quantas associações são permitidas e, em muitos casos, se a participação é opcional ou obrigatória. Ao passar para o modelo relacional, essas regras precisam reaparecer por meio de chaves estrangeiras, unicidade, obrigatoriedade e novas relações.</p>
           </div>
 
-          <div class="constraint-table-wrap">
-            <table class="constraint-table">
-              <thead><tr><th>Estrutura conceitual</th><th>Transformação típica</th><th>O que a transformação preserva</th></tr></thead>
-              <tbody>
-                <tr><td><strong>1:N</strong></td><td>A chave do lado 1 aparece como FK na relação do lado N.</td><td>Cada ocorrência do lado N referencia no máximo uma ocorrência do lado 1; várias ocorrências do lado N podem repetir a mesma referência.</td></tr>
-                <tr><td><strong>1:1</strong></td><td>Uma FK pode ser colocada em um dos lados, acompanhada de unicidade.</td><td>A FK cria a referência; a unicidade impede que várias ocorrências usem a mesma referência e transformem o relacionamento em 1:N.</td></tr>
-                <tr><td><strong>N:N</strong></td><td>Cria-se uma relação intermediária com FKs para as duas entidades.</td><td>Cada tupla da relação intermediária passa a representar uma ocorrência da associação entre os participantes.</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3 style="margin-top:2rem">Por que a FK fica no lado N em um relacionamento 1:N?</h3>
-          <div class="relation-board" aria-label="Exemplo de relacionamento um para muitos">
-            <div class="entity-box"><strong>USUARIO</strong><span>lado 1</span></div>
-            <div class="relation-arrow">→</div>
-            <div class="entity-box"><strong>RESERVA</strong><span>lado N · guarda id_usuario</span></div>
-          </div>
           <div class="study-prose">
-            <p>Uma reserva pertence a um único usuário, mas um usuário pode aparecer em muitas reservas. Assim, é cada ocorrência de RESERVA que precisa “saber” qual usuário participa daquela associação. A repetição controlada de <code>id_usuario</code> em várias reservas é justamente o mecanismo relacional que representa o lado N.</p>
+            <h3>Um relacionamento representa um fato entre ocorrências</h3>
+            <p>Considere o relacionamento entre USUARIO e RESERVA. O fato relevante não é simplesmente que as duas entidades existem no mesmo sistema. O domínio afirma que <strong>uma reserva é realizada por um usuário</strong>. Essa associação precisa continuar representável depois que o desenho do DER desaparece.</p>
+            <p>No esquema relacional, isso ocorre quando RESERVA recebe o atributo <code>id_usuario</code> como chave estrangeira. O valor armazenado nessa coluna indica qual ocorrência de USUARIO participa daquela reserva.</p>
 
-            <h3>Por que 1:1 precisa de uma decisão adicional?</h3>
-            <p>Em um relacionamento 1:1, a referência pode ficar em qualquer um dos lados, em princípio. A escolha costuma considerar participação, quantidade esperada de valores nulos e significado do domínio. Isso mostra que o mapeamento não é sempre único: mais de um esquema pode representar a mesma associação, mas alguns esquemas expressam melhor certas restrições.</p>
+            <div class="relation-board" aria-label="Exemplo de relacionamento entre usuário e reserva">
+              <div class="entity-box"><strong>USUARIO</strong><span>lado 1</span></div>
+              <div class="relation-arrow">→</div>
+              <div class="entity-box"><strong>RESERVA</strong><span>lado N · contém id_usuario</span></div>
+            </div>
 
-            <h3>Por que N:N exige uma relação própria?</h3>
-            <p>Uma única FK não consegue representar simultaneamente “um aluno cursa várias disciplinas” e “uma disciplina possui vários alunos”. A nova relação, por exemplo MATRICULA, representa a própria ocorrência da associação. Se o relacionamento possui atributos, como semestre ou nota, esses atributos pertencem naturalmente a essa relação.</p>
+            <div class="callout teal">
+              <strong>Ideia central</strong>
+              <p>No DER, o relacionamento aparece como uma conexão explícita. No modelo relacional, a conexão passa a ser representada por valores compatíveis entre uma chave estrangeira e a chave da relação referenciada.</p>
+            </div>
+
+            <h3>Cardinalidade máxima e participação mínima respondem a perguntas diferentes</h3>
+            <p>A notação conceitual pode expressar duas dimensões importantes. A <strong>cardinalidade máxima</strong> indica quantas ocorrências podem participar do relacionamento, enquanto a <strong>participação mínima</strong> indica se participar é obrigatório ou opcional.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Questão</th>
+                    <th>O que está sendo definido?</th>
+                    <th>Exemplo</th>
+                    <th>Como pode aparecer no esquema</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Máximo</strong></td>
+                    <td>Uma ocorrência pode se relacionar com uma ou com várias ocorrências do outro lado?</td>
+                    <td>Um usuário pode possuir várias reservas.</td>
+                    <td>Repetição permitida da FK no lado N.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mínimo</strong></td>
+                    <td>A ocorrência pode existir sem participar do relacionamento?</td>
+                    <td>Uma reserva deve possuir um usuário.</td>
+                    <td>A FK pode ser obrigatória, por exemplo com <code>NOT NULL</code>.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>Essa separação é importante porque uma chave estrangeira, sozinha, normalmente responde apenas à pergunta <em>“qual ocorrência está sendo referenciada?”</em>. Outras restrições são necessárias para representar quantidade máxima ou obrigatoriedade.</p>
+
+            <h3>1:N: a referência fica no lado que pode se repetir</h3>
+            <p>No relacionamento <strong>USUARIO 1:N RESERVA</strong>, um usuário pode estar associado a várias reservas, mas cada reserva referencia um único usuário. Por isso, <code>id_usuario</code> aparece em RESERVA.</p>
+            <p>A repetição do mesmo valor de <code>id_usuario</code> em várias linhas de RESERVA não é redundância acidental. Nesse contexto, ela representa precisamente a cardinalidade do relacionamento: várias reservas podem apontar para a mesma ocorrência de USUARIO.</p>
+
+            <div class="two-grid">
+              <article class="schema-card">
+                <span class="label">USUARIO</span>
+                <h3>lado 1</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_usuario</code><code>nome</code></div>
+                <p>Uma ocorrência pode ser referenciada por muitas reservas.</p>
+              </article>
+              <article class="schema-card">
+                <span class="label">RESERVA</span>
+                <h3>lado N</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_reserva</code><span class="key fk">FK</span><code>id_usuario</code></div>
+                <p>Cada reserva armazena a referência para o usuário associado.</p>
+              </article>
+            </div>
+
+            <h3>Por que colocar a FK no lado 1 produziria uma estrutura inadequada?</h3>
+            <p>Se USUARIO precisasse armazenar os identificadores de todas as suas reservas, uma única coluna teria de conter vários valores ou várias colunas teriam de ser criadas para um número imprevisível de reservas. As duas soluções violariam a organização relacional básica.</p>
+            <p>Ao colocar a referência no lado N, cada linha de RESERVA precisa armazenar apenas um valor, enquanto o conjunto das linhas representa naturalmente todas as reservas pertencentes ao usuário.</p>
+
+            <h3>A chave estrangeira também preserva integridade referencial</h3>
+            <p>Uma FK não serve apenas para indicar a direção do relacionamento. Ela estabelece que um valor usado como referência deve corresponder a uma ocorrência existente na relação referenciada.</p>
+            <p>Se <code>RESERVA.id_usuario = 25</code>, o banco deve possuir um USUARIO cuja chave seja 25, a menos que o relacionamento permita valor nulo. Essa regra impede referências para ocorrências inexistentes e mantém coerência entre as relações.</p>
+
+            <div class="callout">
+              <strong>Referência não é apenas coincidência de valores</strong>
+              <p>Duas colunas podem conter números iguais sem existir qualquer relacionamento entre elas. A chave estrangeira torna explícito que os valores possuem uma relação semântica e que o SGBD deve preservar essa referência.</p>
+            </div>
+
+            <h3>1:1: a FK cria a referência, mas a unicidade preserva o limite máximo</h3>
+            <p>Considere <strong>PESSOA 1:1 CRACHA</strong>. Se colocarmos <code>id_pessoa</code> em CRACHA apenas como chave estrangeira, nada impediria que diversas linhas de CRACHA repetissem a mesma pessoa. O esquema passaria a permitir vários crachás para a mesma pessoa, caracterizando um relacionamento 1:N.</p>
+            <p>Para preservar o máximo 1, a referência precisa ser única.</p>
+
+            <div class="two-grid">
+              <article class="rule-card">
+                <span>Somente FK</span>
+                <h3>Referência preservada</h3>
+                <p><code>id_pessoa</code> aponta para PESSOA, mas pode aparecer repetidamente. Isso permite vários crachás para a mesma pessoa.</p>
+              </article>
+              <article class="rule-card">
+                <span>FK + UNIQUE</span>
+                <h3>Referência e cardinalidade preservadas</h3>
+                <p><code>id_pessoa</code> continua sendo uma referência, mas cada pessoa pode aparecer no máximo uma vez em CRACHA.</p>
+              </article>
+            </div>
+
+            <div class="schema-line" style="margin:1.3rem 0">
+              <span class="key">PK</span><code>CRACHA.id_cracha</code>
+              <span class="key fk">FK</span><code>CRACHA.id_pessoa</code>
+              <span class="key">UNIQUE</span><code>id_pessoa</code>
+            </div>
+
+            <h3>Em 1:1, escolher onde colocar a FK também comunica significado</h3>
+            <p>Em princípio, a FK pode ser colocada em qualquer uma das duas relações. Entretanto, a participação ajuda a tomar uma decisão mais adequada. Se todo crachá necessariamente pertence a uma pessoa, mas uma pessoa pode ainda não possuir crachá, colocar <code>id_pessoa</code> em CRACHA representa esse domínio de forma natural.</p>
+            <p>Nesse esquema, uma pessoa pode existir sem uma linha correspondente em CRACHA. Porém, sempre que um crachá existir, ele precisa apontar para uma pessoa.</p>
+
+            <h3>Obrigatoriedade e valor nulo estão relacionados</h3>
+            <p>Quando a participação do lado que contém a FK é obrigatória, permitir <code>NULL</code> enfraquece a regra conceitual. Se toda reserva deve ser feita por um usuário, então uma linha de RESERVA sem <code>id_usuario</code> representaria um estado que o modelo conceitual não permitia.</p>
+            <p>Por isso, uma FK pode aparecer combinada com <code>NOT NULL</code>. A FK garante que a referência, quando existe, aponta para uma ocorrência válida; <code>NOT NULL</code> garante que a referência precisa existir.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Restrição</th>
+                    <th>O que garante?</th>
+                    <th>O que não garante sozinha?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>FOREIGN KEY</strong></td>
+                    <td>A referência aponta para uma ocorrência existente.</td>
+                    <td>Não determina, sozinha, se a referência é obrigatória ou única.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>UNIQUE</strong></td>
+                    <td>Um mesmo valor não pode aparecer repetidamente.</td>
+                    <td>Não cria, sozinho, referência para outra relação.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>NOT NULL</strong></td>
+                    <td>O atributo precisa possuir um valor.</td>
+                    <td>Não verifica se esse valor existe em outra relação.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>N:N: a associação precisa se tornar uma relação</h3>
+            <p>Considere <strong>ALUNO N:N DISCIPLINA</strong>. Um aluno pode cursar diversas disciplinas e cada disciplina pode possuir diversos alunos. Colocar <code>id_disciplina</code> dentro de ALUNO permitiria apenas uma disciplina por aluno. Colocar <code>id_aluno</code> dentro de DISCIPLINA permitiria apenas um aluno por disciplina.</p>
+            <p>A solução é representar a própria associação como uma nova relação, por exemplo MATRICULA.</p>
+
+            <div class="three-grid">
+              <article class="schema-card">
+                <span class="label">ALUNO</span>
+                <h3>entidade participante</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_aluno</code></div>
+              </article>
+              <article class="schema-card">
+                <span class="label">MATRICULA</span>
+                <h3>associação</h3>
+                <div class="schema-line"><span class="key">PK/FK</span><code>id_aluno</code><span class="key">PK/FK</span><code>id_disciplina</code></div>
+              </article>
+              <article class="schema-card">
+                <span class="label">DISCIPLINA</span>
+                <h3>entidade participante</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_disciplina</code></div>
+              </article>
+            </div>
+
+            <p>Cada linha de MATRICULA passa a afirmar um fato específico: <em>“este aluno está associado a esta disciplina”</em>. O conjunto dessas linhas consegue representar qualquer quantidade de associações dos dois lados.</p>
+
+            <h3>A relação intermediária também pode possuir atributos próprios</h3>
+            <p>Alguns valores não descrevem ALUNO nem DISCIPLINA isoladamente. Eles descrevem a associação entre ambos. Semestre, situação da matrícula ou nota são exemplos típicos.</p>
+            <p>Uma nota não pertence genericamente ao aluno, pois o mesmo aluno possui notas diferentes em disciplinas diferentes. Também não pertence genericamente à disciplina, pois diferentes alunos recebem notas diferentes. Ela depende da ocorrência específica da associação.</p>
+
+            <div class="callout teal">
+              <strong>Pergunta útil para localizar um atributo</strong>
+              <p>Se o valor só pode ser determinado depois que sabemos quais ocorrências estão relacionadas, há forte indicação de que ele descreve o relacionamento e deve ser armazenado na relação que representa essa associação.</p>
+            </div>
+
+            <h3>A chave da relação intermediária depende da identidade da associação</h3>
+            <p>No caso mais simples, a combinação <code>(id_aluno, id_disciplina)</code> pode formar a chave primária de MATRICULA. Isso significa que o mesmo aluno não pode aparecer duas vezes na mesma disciplina dentro do contexto representado.</p>
+            <p>Entretanto, se o domínio permite que um aluno curse novamente a mesma disciplina em períodos diferentes, a combinação de apenas duas chaves deixa de identificar unicamente uma matrícula. O período, a turma ou um identificador próprio da matrícula pode precisar participar da identidade.</p>
+            <p>Esse exemplo mostra novamente que a transformação não pode ser puramente mecânica. A chave precisa representar aquilo que o domínio considera uma ocorrência distinta.</p>
+
+            <h3>Relacionamentos podem ser transformados em entidades relevantes para o domínio</h3>
+            <p>Na modelagem trabalhada anteriormente, RESERVA possui data, horário, situação e histórico próprios. Embora conecte USUARIO e SALA, ela representa um fato com identidade e propriedades próprias. Por isso, no esquema relacional, RESERVA aparece naturalmente como uma relação com chave própria e FKs para as entidades participantes.</p>
+            <p>Esse caso ajuda a perceber que a fronteira entre “relacionamento” e “entidade associativa” depende do significado do domínio. Quando a associação precisa ser identificada, descrita ou acompanhada ao longo do tempo, tratá-la como uma ocorrência própria pode ser a representação mais adequada.</p>
+
+            <h3>O que acontece quando uma ocorrência referenciada é removida?</h3>
+            <p>Depois que uma FK foi criada, surge uma nova questão: o que deve acontecer se tentarmos excluir uma ocorrência que ainda é referenciada? Por exemplo, é possível remover um USUARIO que possui RESERVAS?</p>
+            <p>O modelo relacional exige que a integridade referencial continue válida. A implementação pode impedir a exclusão, propagar a exclusão para ocorrências dependentes ou adotar outra política coerente com o domínio. A escolha concreta pertence à etapa de implementação, mas a regra de negócio deve orientar essa decisão.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>DER</small>
+                <strong>Expressa a regra</strong>
+                <p>Cardinalidade e participação mostram como as ocorrências podem se relacionar.</p>
+              </article>
+              <article>
+                <small>Esquema relacional</small>
+                <strong>Reconstrói a regra</strong>
+                <p>FK, UNIQUE, NOT NULL, chaves compostas e novas relações preservam a estrutura conceitual.</p>
+              </article>
+              <article>
+                <small>SGBD</small>
+                <strong>Faz a regra valer</strong>
+                <p>As constraints implementadas impedem estados que violariam parte das regras do modelo.</p>
+              </article>
+            </div>
+
+            <h3>Nem toda regra de relacionamento cabe em uma única constraint</h3>
+            <p>Algumas regras são diretamente representáveis com PK, FK, <code>UNIQUE</code> e <code>NOT NULL</code>. Outras dependem de combinações de atributos ou de condições mais complexas.</p>
+            <p>Por exemplo, uma FK pode garantir que a sala de uma reserva existe, mas não garante que duas reservas não ocupem a mesma sala no mesmo intervalo de horário. Essa é uma regra adicional sobre o relacionamento entre sala, data e período de uso.</p>
           </div>
 
-          <div class="callout"><strong>Uma observação importante</strong><p>Chave estrangeira representa referência; ela não representa, sozinha, todas as regras de cardinalidade e participação. Em alguns casos, precisamos combiná-la com unicidade, obrigatoriedade ou outras restrições para que a semântica original não seja enfraquecida.</p></div>
+          <div class="callout">
+            <strong>Ideia central desta seção</strong>
+            <p>Mapear relacionamentos significa reconstruir no esquema relacional as regras que estavam explícitas no DER. A chave estrangeira cria a referência, mas cardinalidade e participação podem exigir também unicidade, obrigatoriedade, chaves compostas ou uma relação própria.</p>
+          </div>
         </div>
       </section>
 
