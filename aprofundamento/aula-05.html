@@ -721,25 +721,211 @@
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">5 · O que o mapeamento não resolve sozinho</p>
-            <h2>Transformar o DER em relações não encerra o projeto</h2>
-            <p>O esquema relacional resultante ainda precisa ser validado. Algumas regras são preservadas diretamente por PKs, FKs e unicidade; outras exigirão restrições adicionais, normalização ou lógica de aplicação.</p>
+            <h2>Transformar o DER em relações é uma etapa importante, mas não encerra o projeto</h2>
+            <p>O mapeamento responde principalmente à pergunta <strong>“como representar no modelo relacional aquilo que foi definido no modelo conceitual?”</strong>. Depois dessa tradução, ainda precisamos verificar se o esquema preserva corretamente as regras do domínio, se sua estrutura está bem organizada e como essas regras serão efetivamente implementadas no SGBD.</p>
           </div>
 
           <div class="compare-strip">
-            <article><small>Mapeamento</small><strong>Muda a representação</strong><p>Converte entidades, atributos e relacionamentos em construções do modelo relacional.</p></article>
-            <article><small>Normalização</small><strong>Analisa dependências e redundâncias</strong><p>Verifica se as relações resultantes possuem estruturas que evitam anomalias e dependências indesejadas.</p></article>
-            <article><small>Implementação</small><strong>Materializa o esquema no SGBD</strong><p>Define tipos, constraints, índices e demais detalhes dependentes da tecnologia escolhida.</p></article>
+            <article>
+              <small>Mapeamento</small>
+              <strong>Traduz a representação</strong>
+              <p>Transforma entidades, atributos e relacionamentos em relações, atributos, PKs, FKs e outras estruturas relacionais.</p>
+            </article>
+            <article>
+              <small>Normalização</small>
+              <strong>Analisa a organização interna</strong>
+              <p>Examina dependências entre atributos e ajuda a identificar redundâncias e estruturas que podem produzir anomalias.</p>
+            </article>
+            <article>
+              <small>Implementação</small>
+              <strong>Faz o esquema existir no SGBD</strong>
+              <p>Define tipos, constraints, índices, políticas de atualização e demais decisões concretas da tecnologia escolhida.</p>
+            </article>
           </div>
 
           <div class="study-prose">
-            <h3>Nem toda regra de negócio cabe em PK e FK</h3>
-            <p>Uma FK pode garantir que a sala referenciada existe, mas não garante, por exemplo, que duas reservas não ocupem a mesma sala no mesmo horário. Essa regra envolve uma combinação de atributos e pode exigir uma restrição adicional ou uma estratégia específica de implementação.</p>
+            <h3>O mapeamento preserva estruturas, mas não prova automaticamente que o projeto está correto</h3>
+            <p>É possível aplicar corretamente uma regra de transformação e ainda obter um esquema inadequado porque o problema já estava presente no modelo conceitual ou porque alguma regra do domínio não foi representada.</p>
+            <p>Se o DER não registrou que um e-mail deve ser único, por exemplo, o mapeamento não inventará essa regra. Da mesma forma, se uma associação importante foi omitida durante a modelagem, converter o restante do diagrama em relações não corrige essa ausência.</p>
 
-            <h3>Validação significa reler o esquema como uma representação do domínio</h3>
-            <p>Depois do mapeamento, devemos conseguir responder perguntas como: cada fato importante continua representável? Alguma cardinalidade foi enfraquecida? Alguma associação perdeu atributos? Alguma dependência de existência deixou de aparecer? Se a resposta for incerta, o problema pode estar no mapeamento ou até no próprio DER.</p>
+            <div class="callout">
+              <strong>Uma transformação correta pode preservar um modelo incompleto</strong>
+              <p>O mapeamento é uma tradução. Se a origem não representa adequadamente o domínio, a tradução pode ser tecnicamente correta e ainda assim produzir um esquema insuficiente.</p>
+            </div>
+
+            <h3>Por isso, o esquema precisa ser relido como uma representação do domínio</h3>
+            <p>Depois do mapeamento, vale abandonar por alguns instantes o desenho original e observar apenas o conjunto de relações resultante. A pergunta passa a ser: <strong>com essas relações, conseguimos representar todos os fatos e impedir os estados inválidos que realmente importam?</strong></p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>O que verificar?</th>
+                    <th>Pergunta de validação</th>
+                    <th>Exemplo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Identidade</strong></td>
+                    <td>Cada ocorrência importante pode ser distinguida das demais?</td>
+                    <td>Uma RESERVA possui uma identidade clara?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Referências</strong></td>
+                    <td>As associações do domínio continuam representáveis?</td>
+                    <td>RESERVA consegue indicar qual USUARIO e qual SALA participam?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Cardinalidade</strong></td>
+                    <td>O esquema permite exatamente as quantidades previstas?</td>
+                    <td>Um relacionamento 1:1 não foi enfraquecido para 1:N?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Obrigatoriedade</strong></td>
+                    <td>Uma ocorrência pode existir sem uma referência que deveria ser obrigatória?</td>
+                    <td>Uma RESERVA pode ficar sem <code>id_usuario</code>?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Unicidade</strong></td>
+                    <td>Valores que deveriam ser únicos continuam protegidos?</td>
+                    <td>Dois usuários podem ter o mesmo e-mail quando isso não é permitido?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Dependência</strong></td>
+                    <td>Ocorrências dependentes continuam vinculadas à proprietária?</td>
+                    <td>FAIXA_AGENDA continua dependendo de SALA para sua identificação?</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Nem toda regra de negócio cabe em PK, FK, UNIQUE e NOT NULL</h3>
+            <p>As constraints estruturais resolvem uma parte importante do problema, mas algumas regras dependem de combinações mais complexas de valores ou até de informações presentes em várias linhas.</p>
+            <p>Uma FK pode garantir que a sala referenciada em uma reserva existe. Porém, ela não garante que duas reservas não ocupem a mesma sala no mesmo horário. Essa regra depende de <code>id_sala</code>, data, horário e possivelmente duração ou horário final.</p>
+
+            <div class="two-grid">
+              <article class="rule-card">
+                <span>Regra estrutural simples</span>
+                <h3>A sala precisa existir</h3>
+                <p>Uma FK entre <code>RESERVA.id_sala</code> e <code>SALA.id_sala</code> consegue representar essa exigência diretamente.</p>
+              </article>
+              <article class="rule-card">
+                <span>Regra de negócio mais complexa</span>
+                <h3>Não pode haver conflito de horário</h3>
+                <p>A validade depende da comparação entre diferentes reservas e pode exigir uma constraint específica, lógica transacional ou outra estratégia do SGBD.</p>
+              </article>
+            </div>
+
+            <h3>O esquema relacional também precisa ser analisado quanto à redundância</h3>
+            <p>Imagine que, durante o mapeamento, RESERVA recebesse não apenas <code>id_usuario</code>, mas também <code>nome_usuario</code> e <code>email_usuario</code>. O banco continuaria sendo capaz de representar uma reserva, mas os mesmos dados do usuário seriam repetidos em diversas linhas.</p>
+            <p>Se o usuário alterasse o e-mail, várias reservas antigas precisariam ser atualizadas. Se uma delas permanecesse com o valor anterior, o banco passaria a armazenar duas versões do mesmo fato.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>Referência</small>
+                <strong><code>id_usuario</code></strong>
+                <p>Identifica qual usuário participa da reserva sem repetir seus dados descritivos.</p>
+              </article>
+              <article>
+                <small>Repetição desnecessária</small>
+                <strong><code>nome_usuario</code></strong>
+                <p>Repete em RESERVA uma informação que pertence à relação USUARIO.</p>
+              </article>
+              <article>
+                <small>Consequência</small>
+                <strong>Possível inconsistência</strong>
+                <p>Uma atualização pode modificar algumas cópias e deixar outras com valores antigos.</p>
+              </article>
+            </div>
+
+            <h3>É nesse ponto que a normalização ganha importância</h3>
+            <p>A normalização fornece uma forma sistemática de analisar como os atributos dependem uns dos outros. Em vez de perguntar apenas se uma tabela “parece organizada”, examinamos quais atributos determinam outros atributos e se informações de fatos diferentes foram misturadas na mesma relação.</p>
+            <p>Ela ajuda a compreender problemas como redundância e anomalias de inserção, atualização e exclusão. Também ajuda a justificar por que certos fatos devem permanecer em relações separadas.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Tipo de anomalia</th>
+                    <th>O que pode acontecer?</th>
+                    <th>Exemplo conceitual</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Atualização</strong></td>
+                    <td>O mesmo fato precisa ser alterado em várias linhas.</td>
+                    <td>O e-mail do usuário aparece repetido em todas as reservas.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Inserção</strong></td>
+                    <td>Não conseguimos registrar um fato sem registrar outro que ainda não existe.</td>
+                    <td>Não seria possível cadastrar uma sala antes que ela tivesse uma reserva.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Exclusão</strong></td>
+                    <td>Excluir uma ocorrência remove involuntariamente outro fato importante.</td>
+                    <td>Ao apagar a última reserva de uma sala, perderíamos também os dados da própria sala.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Normalização não significa que todo esquema vindo do DER está errado</h3>
+            <p>Um bom processo de modelagem conceitual e de mapeamento já tende a separar fatos diferentes em relações diferentes. No exemplo desenvolvido nas aulas, USUARIO, SALA, RESERVA, TELEFONE_USUARIO e FAIXA_AGENDA já chegam ao modelo relacional com uma organização coerente.</p>
+            <p>Por isso, a normalização não precisa necessariamente decompor ainda mais esse esquema. Ela também pode ser usada para <strong>confirmar e justificar formalmente</strong> que as separações realizadas anteriormente fazem sentido.</p>
+
+            <div class="callout teal">
+              <strong>Ligação com a Aula 06</strong>
+              <p>Na próxima etapa, a normalização será usada tanto para compreender por que o esquema construído até aqui está bem organizado quanto para analisar uma versão propositalmente mal estruturada do mesmo domínio.</p>
+            </div>
+
+            <h3>Depois da estrutura lógica, ainda existem decisões de implementação</h3>
+            <p>Mesmo um esquema relacional correto ainda não é um banco de dados implementado. Precisamos escolher tipos concretos, definir constraints, nomes, políticas de exclusão e atualização, índices e outros detalhes suportados pelo SGBD.</p>
+            <p>Por exemplo, afirmar no modelo relacional que <code>email</code> deve ser único é uma decisão lógica. Na implementação, essa decisão precisa virar uma constraint concreta, como <code>UNIQUE</code>. Da mesma forma, afirmar que uma reserva precisa de uma sala é uma regra lógica que pode ser implementada por uma combinação de <code>FOREIGN KEY</code> e <code>NOT NULL</code>.</p>
+
+            <div class="two-grid">
+              <article class="concept-card">
+                <span>Modelo relacional</span>
+                <h3>Regra lógica</h3>
+                <p>RESERVA referencia SALA e essa participação é obrigatória.</p>
+              </article>
+              <article class="schema-card">
+                <span class="label">Implementação</span>
+                <h3>Regra materializada</h3>
+                <p><code>id_sala INTEGER NOT NULL REFERENCES SALA(id_sala)</code></p>
+              </article>
+            </div>
+
+            <h3>Algumas decisões pertencem ao nível físico e não devem ser antecipadas no DER</h3>
+            <p>Índices, estratégias de armazenamento, detalhes de desempenho e recursos específicos do SGBD não são o foco do modelo conceitual. Eles aparecem depois, quando já sabemos quais fatos precisam ser representados e quais regras devem ser preservadas.</p>
+            <p>Essa separação de níveis evita que decisões de uma tecnologia específica sejam confundidas com regras do domínio.</p>
+
+            <h3>Validar o esquema também significa testar cenários limites</h3>
+            <p>Uma forma útil de revisar o modelo é imaginar situações que podem revelar fragilidades. O que acontece se um usuário possuir três telefones? E se uma pessoa ainda não possuir crachá? E se duas salas tiverem uma faixa no mesmo horário? E se o mesmo aluno cursar novamente a mesma disciplina em outro semestre?</p>
+            <p>Esses cenários obrigam o projeto a mostrar se chaves, cardinalidades e restrições realmente representam o que o domínio permite.</p>
+
+            <div class="callout">
+              <strong>Validação não é apenas conferir o desenho</strong>
+              <p>Um esquema é melhor compreendido quando tentamos inserir nele situações válidas e inválidas do domínio e verificamos se a estrutura consegue diferenciá-las.</p>
+            </div>
+
+            <h3>O percurso completo mantém cada decisão em seu nível</h3>
+            <p>O projeto de banco de dados pode ser entendido como uma sequência de refinamentos. Primeiro identificamos os fatos do domínio. Depois organizamos esses fatos conceitualmente. Em seguida, traduzimos o modelo para relações, analisamos a qualidade dessa estrutura e, finalmente, implementamos as regras no SGBD.</p>
+
+            <div class="mapping-grid" aria-label="Percurso do projeto de banco de dados">
+              <article class="mapping-step"><b>1</b><strong>Domínio</strong><p>Quais fatos, objetos e regras precisam ser representados?</p></article>
+              <article class="mapping-step"><b>2</b><strong>DER</strong><p>Como entidades, atributos e relacionamentos expressam esses fatos?</p></article>
+              <article class="mapping-step"><b>3</b><strong>Modelo relacional</strong><p>Como preservar essas decisões usando relações, chaves e restrições?</p></article>
+              <article class="mapping-step"><b>4</b><strong>Implementação</strong><p>Como materializar e fazer essas regras valerem no SGBD escolhido?</p></article>
+            </div>
           </div>
 
-          <div class="callout teal"><strong>Conexão com as próximas aulas</strong><p>A Aula 05 encerra a tradução conceitual → relacional. A etapa seguinte examina a qualidade interna das relações por meio de dependências e normalização; só então a estrutura é materializada e manipulada de forma sistemática no SGBD.</p></div>
+          <div class="callout teal">
+            <strong>Ideia central desta seção</strong>
+            <p>O mapeamento resolve a mudança de representação, mas o projeto ainda precisa ser validado. Normalização, constraints e decisões de implementação atuam em problemas diferentes e complementares. Um bom esquema surge quando significado, organização e implementação permanecem coerentes entre si.</p>
+          </div>
         </div>
       </section>
 
