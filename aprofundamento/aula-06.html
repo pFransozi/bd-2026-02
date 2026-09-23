@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Versão de validação do material de aprofundamento da Aula 06 de Banco de Dados: normalização, dependências funcionais, 1FN, 2FN, 3FN, anomalias, decomposição e passagem do modelo relacional para DDL no SQLite.">
+  <meta name="description" content="Versão de validação do material de aprofundamento da Aula 06 de Banco de Dados: normalização, dependências funcionais, 1FN, 2FN, 3FN, anomalias, decomposição e passagem do modelo relacional para DDL com comparação entre SQL padrão, SQLite e PostgreSQL.">
   <meta name="theme-color" content="#0f172a">
   <title>Aula 06 · Aprofundamento | Banco de Dados</title>
   <link rel="stylesheet" href="../styles.css">
@@ -65,8 +65,8 @@
           <div>
             <p class="study-kicker eyebrow">Aula 06 · material de aprofundamento</p>
             <h1>Por que normalizar e como o esquema se transforma em estrutura executável</h1>
-            <p class="study-lead lesson-hero-lead">A aula principal apresenta 1FN, 2FN, 3FN, dependências funcionais e a primeira implementação em SQL. Neste aprofundamento, o foco é compreender <strong>o raciocínio por trás dessas etapas</strong>: por que certas repetições são perigosas, como uma dependência revela fatos misturados e o que muda quando o modelo lógico é materializado no SQLite.</p>
-            <div class="study-meta"><span>Leitura conceitual</span><span>Normalização</span><span>Dependências funcionais</span><span>SQLite e DDL</span></div>
+            <p class="study-lead lesson-hero-lead">A aula principal apresenta 1FN, 2FN, 3FN, dependências funcionais e a primeira implementação em SQL. Neste aprofundamento, o foco é compreender <strong>o raciocínio por trás dessas etapas</strong>: por que certas repetições são perigosas, como uma dependência revela fatos misturados e o que muda quando o modelo lógico é materializado em diferentes SGBDs, com comparação entre SQLite e PostgreSQL.</p>
+            <div class="study-meta"><span>Leitura conceitual</span><span>Normalização</span><span>Dependências funcionais</span><span>SQL padrão, SQLite e PostgreSQL</span></div>
           </div>
           <aside class="study-card guiding-question">
             <strong>Pergunta central</strong>
@@ -321,68 +321,200 @@
         <div class="container">
           <div class="study-heading section-heading">
             <p class="study-kicker eyebrow">5 · Do esquema para DDL</p>
-            <h2>SQL materializa decisões que já deveriam estar claras no modelo</h2>
-            <p>Quando chegamos ao <code>CREATE TABLE</code>, as principais decisões conceituais e relacionais já deveriam estar tomadas. O código passa a registrar essas decisões de uma forma que o SQLite consegue executar e fiscalizar.</p>
+            <h2>O mesmo esquema lógico pode gerar DDL diferente em cada SGBD</h2>
+            <p>Quando chegamos ao <code>CREATE TABLE</code>, as principais decisões conceituais e relacionais já deveriam estar tomadas. A partir daqui entramos na implementação: relações, atributos, chaves e restrições precisam ser expressos no dialeto SQL aceito pelo SGBD escolhido.</p>
           </div>
 
           <div class="study-prose">
-            <h3>SQL e SQLite ocupam papéis diferentes</h3>
-            <p><strong>SQL</strong> é a linguagem usada para expressar operações sobre bancos relacionais. <strong>SQLite</strong> é um SGBD que interpreta parte dessa linguagem, administra as estruturas e mantém os dados persistidos.</p>
+            <h3>SQL não é um SGBD</h3>
+            <p><strong>SQL</strong> é uma linguagem padronizada para definir, consultar e manipular dados relacionais. <strong>PostgreSQL</strong> e <strong>SQLite</strong> são SGBDs que implementam SQL, mas não de maneira idêntica. Cada um possui seu próprio dialeto, extensões, tipos e comportamentos.</p>
+            <p>Por isso, é mais preciso falar em <strong>SQL padrão</strong> do que em “SQL clássico”. O padrão fornece uma base comum. Os SGBDs implementam essa base e acrescentam decisões próprias.</p>
 
-            <div class="two-grid">
-              <article class="concept-card"><span>Linguagem</span><h3>SQL</h3><p>Descreve operações como criar tabelas, inserir dados, consultar, atualizar e excluir.</p></article>
-              <article class="concept-card"><span>SGBD</span><h3>SQLite</h3><p>Executa os comandos, mantém o arquivo do banco e aplica as regras que foram declaradas.</p></article>
+            <div class="three-grid">
+              <article class="concept-card">
+                <span>Linguagem</span>
+                <h3>SQL padrão</h3>
+                <p>Define construções como <code>CREATE TABLE</code>, tipos, chaves, restrições, consultas e operações de manipulação. Serve como referência comum entre implementações.</p>
+              </article>
+              <article class="concept-card">
+                <span>SGBD</span>
+                <h3>PostgreSQL</h3>
+                <p>Adota tipagem rígida, possui tipos nativos ricos e implementa grande parte do SQL padrão, além de várias extensões próprias.</p>
+              </article>
+              <article class="concept-card">
+                <span>SGBD</span>
+                <h3>SQLite</h3>
+                <p>É embutido, leve e baseado em arquivo. Mantém grande compatibilidade sintática com SQL, mas usa um sistema de tipos mais flexível e possui particularidades próprias.</p>
+              </article>
             </div>
 
-            <h3>DDL descreve a estrutura e parte das regras</h3>
-            <p>Comandos DDL, como <code>CREATE TABLE</code>, não servem apenas para criar nomes de tabelas e colunas. Eles também permitem registrar restrições que transformam decisões do modelo em condições fiscalizadas pelo SGBD.</p>
+            <div class="callout teal">
+              <strong>O ponto central</strong>
+              <p>O modelo lógico deveria continuar válido mesmo que o SGBD mude. O que muda principalmente é a forma como esse modelo é materializado em DDL.</p>
+            </div>
+
+            <h3>Do conceito para a implementação</h3>
+            <p>No esquema relacional escrevemos algo como <code>SALA(id_sala, nome, capacidade, id_bloco)</code>. Essa representação ainda não decide todos os detalhes de implementação. O DDL precisa especificar tipos, obrigatoriedade, geração de identificadores e mecanismos de integridade.</p>
 
             <div class="constraint-table-wrap">
               <table class="constraint-table">
-                <thead><tr><th>Decisão do modelo</th><th>Possível representação em DDL</th><th>Função</th></tr></thead>
+                <thead><tr><th>Decisão lógica</th><th>DDL</th><th>O que passa a ser fiscalizado</th></tr></thead>
                 <tbody>
-                  <tr><td>Identidade de uma ocorrência</td><td><code>PRIMARY KEY</code></td><td>Impede duplicação da chave e identifica registros.</td></tr>
-                  <tr><td>Referência entre relações</td><td><code>FOREIGN KEY ... REFERENCES</code></td><td>Preserva integridade referencial.</td></tr>
-                  <tr><td>Participação obrigatória</td><td><code>NOT NULL</code></td><td>Impede ausência de valor.</td></tr>
-                  <tr><td>Valor que precisa ser único</td><td><code>UNIQUE</code></td><td>Impede repetição do valor ou combinação indicada.</td></tr>
-                  <tr><td>Regra simples sobre um valor</td><td><code>CHECK</code></td><td>Limita valores aceitos segundo uma expressão.</td></tr>
+                  <tr><td>Identidade de uma ocorrência</td><td><code>PRIMARY KEY</code></td><td>Unicidade e identificação da linha.</td></tr>
+                  <tr><td>Referência entre relações</td><td><code>FOREIGN KEY ... REFERENCES</code></td><td>Integridade referencial.</td></tr>
+                  <tr><td>Atributo obrigatório</td><td><code>NOT NULL</code></td><td>Ausência de valor não é permitida.</td></tr>
+                  <tr><td>Valor ou combinação única</td><td><code>UNIQUE</code></td><td>Repetições incompatíveis com a regra são rejeitadas.</td></tr>
+                  <tr><td>Regra simples de domínio</td><td><code>CHECK</code></td><td>Valores são validados por uma expressão.</td></tr>
+                  <tr><td>Identificador gerado pelo SGBD</td><td><code>IDENTITY</code>, sequência ou mecanismo equivalente</td><td>A geração do valor deixa de depender da aplicação.</td></tr>
                 </tbody>
               </table>
             </div>
 
-            <h3>Uma FK declarada não basta se a verificação estiver desativada</h3>
-            <p>No SQLite, a verificação de chaves estrangeiras precisa estar habilitada na conexão. Por isso, a aula utiliza:</p>
+            <h3>O núcleo é parecido, os detalhes mudam</h3>
+            <p>Considere uma relação SALA associada a BLOCO. A regra de negócio é a mesma nos três casos: toda sala possui uma chave, um nome, uma capacidade e uma referência obrigatória para um bloco existente. O modo de escrever alguns detalhes, porém, depende do SGBD.</p>
 
-            <div class="sql-block"><span class="sql-label">SQLite</span><pre><code>PRAGMA foreign_keys = ON;</code></pre></div>
+            <div class="sql-block"><span class="sql-label">SQL padrão, forma conceitualmente portável</span><pre><code>CREATE TABLE bloco (
+    id_bloco INTEGER GENERATED BY DEFAULT AS IDENTITY,
+    nome VARCHAR(80) NOT NULL,
+    PRIMARY KEY (id_bloco)
+);
 
-            <p>Essa instrução não cria as FKs. Ela ativa a fiscalização das restrições de integridade referencial declaradas nas tabelas.</p>
-
-            <h3>Tipos no SQLite são mais flexíveis do que em muitos outros SGBDs</h3>
-            <p>SQLite utiliza afinidade de tipos e possui comportamento mais flexível do que SGBDs como PostgreSQL. Na aula, datas e horários são representados como <code>TEXT</code> usando formatos padronizados, como <code>2026-09-18</code> e <code>18:30</code>.</p>
-            <p>Essa escolha funciona bem para o momento didático e para formatos ordenáveis lexicograficamente, mas não significa que SQL, em geral, não possua tipos próprios para datas e horários.</p>
-
-            <h3>Leia um CREATE TABLE como uma especificação</h3>
-            <div class="sql-block"><span class="sql-label">Exemplo</span><pre><code>CREATE TABLE sala (
-    id_sala INTEGER PRIMARY KEY,
-    nome TEXT NOT NULL,
+CREATE TABLE sala (
+    id_sala INTEGER GENERATED BY DEFAULT AS IDENTITY,
+    nome VARCHAR(100) NOT NULL,
     capacidade INTEGER NOT NULL,
     id_bloco INTEGER NOT NULL,
-
+    PRIMARY KEY (id_sala),
+    CHECK (capacidade > 0),
     FOREIGN KEY (id_bloco)
         REFERENCES bloco(id_bloco)
 );</code></pre></div>
 
-            <p>Esse comando pode ser lido como uma sequência de afirmações: existe uma relação chamada SALA; cada sala possui identificador, nome, capacidade e bloco; o identificador é a chave; nome, capacidade e bloco são obrigatórios; e o bloco informado precisa existir na relação BLOCO.</p>
+            <p>Esse exemplo mostra a intenção de uma implementação portável: tipos explícitos, chave gerada, restrições e integridade referencial. Na prática, precisamos conferir como o SGBD escolhido implementa cada recurso do padrão.</p>
 
-            <h3>O código não deveria inventar decisões que o modelo não explicou</h3>
-            <p>Quando uma constraint aparece apenas durante a programação, sem que sua regra tenha sido discutida no domínio ou no esquema lógico, existe o risco de a implementação se tornar a única fonte de uma decisão importante.</p>
-            <p>O caminho mais claro é manter rastreabilidade: requisito, modelo conceitual, esquema relacional e DDL devem representar a mesma regra em níveis diferentes.</p>
+            <h3>No PostgreSQL, o tipo declarado é parte forte da regra</h3>
+            <p>PostgreSQL trabalha com tipagem rígida. Tipos como <code>INTEGER</code>, <code>VARCHAR(n)</code>, <code>BOOLEAN</code>, <code>DATE</code>, <code>TIME</code> e <code>TIMESTAMP</code> possuem comportamento próprio e são efetivamente verificados pelo SGBD.</p>
+            <p>Para novos identificadores automáticos, a forma moderna é usar colunas <code>GENERATED ... AS IDENTITY</code>. Uma identidade gera valores automaticamente, mas a unicidade ainda é garantida pela restrição <code>PRIMARY KEY</code> ou <code>UNIQUE</code>.</p>
+
+            <div class="sql-block"><span class="sql-label">PostgreSQL</span><pre><code>CREATE TABLE bloco (
+    id_bloco INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE sala (
+    id_sala INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    capacidade INTEGER NOT NULL CHECK (capacidade > 0),
+    id_bloco INTEGER NOT NULL REFERENCES bloco(id_bloco)
+);</code></pre></div>
+
+            <h3>No SQLite, declarar um tipo não significa a mesma coisa</h3>
+            <p>SQLite utiliza <strong>afinidade de tipos</strong>. Em uma tabela comum, o tipo declarado orienta o armazenamento, mas o sistema é mais flexível do que em SGBDs de tipagem rígida. Uma coluna declarada como <code>VARCHAR(100)</code>, por exemplo, recebe afinidade de texto, mas o número <code>100</code> não funciona automaticamente como limite de tamanho.</p>
+            <p>SQLite também não possui um tipo dedicado para data e hora. Valores temporais costumam ser armazenados como <code>TEXT</code>, <code>REAL</code> ou <code>INTEGER</code>. Na disciplina usamos texto em formato ordenável, como <code>2026-09-18</code> e <code>18:30</code>.</p>
+
+            <div class="sql-block"><span class="sql-label">SQLite</span><pre><code>PRAGMA foreign_keys = ON;
+
+CREATE TABLE bloco (
+    id_bloco INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL
+);
+
+CREATE TABLE sala (
+    id_sala INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    capacidade INTEGER NOT NULL CHECK (capacidade > 0),
+    id_bloco INTEGER NOT NULL,
+    FOREIGN KEY (id_bloco)
+        REFERENCES bloco(id_bloco)
+);</code></pre></div>
+
+            <p>No SQLite, <code>INTEGER PRIMARY KEY</code> possui uma característica especial: ele se associa ao identificador interno da linha, o <code>ROWID</code>. Se o valor não for informado na inserção, o SQLite pode gerar um inteiro automaticamente. Isso não deve ser confundido com o comportamento de uma coluna <code>INTEGER PRIMARY KEY</code> no PostgreSQL.</p>
+
+            <div class="callout">
+              <strong><code>AUTOINCREMENT</code> não é sinônimo de chave primária no SQLite</strong>
+              <p>Na maior parte dos casos, <code>INTEGER PRIMARY KEY</code> já fornece geração automática de identificadores quando o valor é omitido. A palavra <code>AUTOINCREMENT</code> altera a política de reutilização dos valores e normalmente não é necessária.</p>
+            </div>
+
+            <h3>Comparando as escolhas mais visíveis</h3>
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr><th>Aspecto</th><th>SQL padrão</th><th>PostgreSQL</th><th>SQLite</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Tipagem</strong></td>
+                    <td>Tipos fazem parte da definição formal da coluna.</td>
+                    <td>Tipagem rígida e ampla variedade de tipos nativos.</td>
+                    <td>Tipagem dinâmica com afinidades; tabelas <code>STRICT</code> podem impor comportamento mais rígido.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Texto limitado</strong></td>
+                    <td><code>VARCHAR(n)</code></td>
+                    <td><code>VARCHAR(n)</code> aplica o limite declarado.</td>
+                    <td><code>VARCHAR(n)</code> possui afinidade TEXT; o tamanho não é fiscalizado automaticamente.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Booleano</strong></td>
+                    <td><code>BOOLEAN</code></td>
+                    <td>Tipo nativo <code>BOOLEAN</code>.</td>
+                    <td>Não há classe de armazenamento booleana própria; valores booleanos são normalmente representados por inteiros.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Data e hora</strong></td>
+                    <td><code>DATE</code>, <code>TIME</code>, <code>TIMESTAMP</code></td>
+                    <td>Tipos temporais nativos.</td>
+                    <td>Sem tipo temporal dedicado; normalmente usa TEXT, REAL ou INTEGER.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Identidade automática</strong></td>
+                    <td><code>GENERATED ... AS IDENTITY</code></td>
+                    <td><code>GENERATED ... AS IDENTITY</code>, baseado em sequência implícita.</td>
+                    <td><code>INTEGER PRIMARY KEY</code> pode receber automaticamente um ROWID quando o valor é omitido.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chave estrangeira</strong></td>
+                    <td><code>FOREIGN KEY</code></td>
+                    <td>Fiscalizada pelo SGBD quando declarada.</td>
+                    <td>Precisa estar habilitada para a conexão com <code>PRAGMA foreign_keys = ON</code>.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Uma mesma intenção pode exigir cuidados diferentes</h3>
+            <p>Suponha que o requisito diga que a capacidade de uma sala deve estar entre 1 e 500. No PostgreSQL, declarar <code>INTEGER</code> já restringe a coluna a valores inteiros, e <code>CHECK</code> complementa a regra de faixa. No SQLite, o <code>CHECK</code> continua importante, mas também precisamos lembrar que o sistema de tipos é mais permissivo.</p>
+
+            <div class="sql-block"><span class="sql-label">Regra explícita no DDL</span><pre><code>capacidade INTEGER NOT NULL
+    CHECK (capacidade BETWEEN 1 AND 500)</code></pre></div>
+
+            <p>Quanto mais importante for uma regra para a consistência do banco, menos ela deve depender de uma expectativa implícita sobre o comportamento do SGBD.</p>
+
+            <h3>SQLite é simples para começar, mas não deve ser confundido com “o SQL”</h3>
+            <p>Usar SQLite no início da disciplina reduz a complexidade operacional: não precisamos instalar e administrar um servidor para estudar relações, chaves, DDL e DML. Isso permite concentrar a atenção no modelo e nos comandos.</p>
+            <p>Ao migrar para PostgreSQL, o modelo conceitual e o esquema relacional continuam sendo a referência. O que precisa ser revisto é a implementação: tipos, geração de identificadores, recursos do DDL e particularidades do dialeto.</p>
+
+            <div class="arrow-chain">
+              <span>Requisitos</span><b>→</b>
+              <span>DER</span><b>→</b>
+              <span>Esquema relacional</span><b>→</b>
+              <span>DDL comum</span><b>→</b>
+              <span>Dialeto do SGBD</span>
+            </div>
+
+            <h3>Rastreabilidade continua sendo a melhor defesa contra inconsistências</h3>
+            <p>O código não deveria inventar decisões que o modelo não explicou. Se uma coluna recebe <code>NOT NULL</code>, se uma combinação recebe <code>UNIQUE</code> ou se uma FK utiliza determinada ação de exclusão, deve existir uma regra do domínio que justifique essa escolha.</p>
 
             <div class="mapping-grid">
               <article class="mapping-step"><b>1</b><strong>Domínio</strong><p>Uma reserva precisa estar associada a uma sala existente.</p></article>
               <article class="mapping-step"><b>2</b><strong>Modelo relacional</strong><p>RESERVA contém <code>id_sala</code> como FK obrigatória.</p></article>
-              <article class="mapping-step"><b>3</b><strong>DDL</strong><p><code>id_sala INTEGER NOT NULL</code> e <code>FOREIGN KEY</code>.</p></article>
-              <article class="mapping-step"><b>4</b><strong>SGBD</strong><p>SQLite rejeita estados que violam a restrição ativada.</p></article>
+              <article class="mapping-step"><b>3</b><strong>DDL</strong><p>A coluna recebe <code>NOT NULL</code> e uma restrição <code>FOREIGN KEY</code>.</p></article>
+              <article class="mapping-step"><b>4</b><strong>SGBD</strong><p>PostgreSQL e SQLite preservam a regra, mas cada implementação possui detalhes próprios de execução.</p></article>
+            </div>
+
+            <div class="callout teal">
+              <strong>Ideia para levar adiante</strong>
+              <p>Aprender SQL não é decorar uma sintaxe de SQLite ou PostgreSQL. É compreender o modelo relacional e depois aprender como cada SGBD expressa e executa esse modelo.</p>
             </div>
           </div>
         </div>
@@ -434,7 +566,7 @@
           <div class="three-grid">
             <article class="note-card"><strong>Dependências</strong><p>Mostram quais atributos determinam outros e revelam quando fatos distintos foram misturados.</p></article>
             <article class="note-card"><strong>Formas normais</strong><p>Fornecem critérios progressivos para remover valores múltiplos, dependências parciais e dependências transitivas.</p></article>
-            <article class="note-card"><strong>DDL</strong><p>Materializa relações, chaves e restrições em comandos que o SQLite consegue executar.</p></article>
+            <article class="note-card"><strong>DDL</strong><p>Materializa relações, chaves e restrições no dialeto do SGBD, preservando o mesmo esquema lógico em implementações como SQLite e PostgreSQL.</p></article>
           </div>
 
           <div class="study-prose" style="margin-top:2.2rem">
@@ -442,7 +574,7 @@
             <ul class="references">
               <li>ELMASRI, Ramez; NAVATHE, Shamkant B. <em>Sistemas de banco de dados</em>. Capítulos sobre dependências funcionais e normalização.</li>
               <li>SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S. <em>Database System Concepts</em>. Seções sobre projeto relacional, formas normais e dependências funcionais.</li>
-              <li>Documentação do SQLite. Seções sobre <code>CREATE TABLE</code>, tipos de dados e chaves estrangeiras.</li>
+              <li>Documentação do SQLite. Seções sobre <code>CREATE TABLE</code>, afinidade de tipos, datas, chaves estrangeiras e <code>ROWID</code>.</li>\n              <li>Documentação do PostgreSQL. Seções sobre definição de dados, tipos, constraints e colunas de identidade.</li>
             </ul>
           </div>
         </div>
