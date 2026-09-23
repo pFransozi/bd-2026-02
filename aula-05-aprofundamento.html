@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Material de aprofundamento da Aula 05 de Banco de Dados: passagem do modelo conceitual ao esquema relacional, preservação de significado, chaves, cardinalidades, atributos multivalorados e entidades fracas.">
+  <meta name="theme-color" content="#0f172a">
+  <title>Aula 05 · Aprofundamento | Banco de Dados</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+  <style>
+    .study-page{background:var(--bg);color:var(--text)}
+    
+    .study-hero{padding:5.7rem 0 4.5rem;background:radial-gradient(circle at 88% 16%,rgba(49,94,251,.14),transparent 28rem),radial-gradient(circle at 10% 84%,rgba(22,165,163,.09),transparent 24rem),var(--bg)}
+    .study-hero-grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(280px,.72fr);gap:3rem;align-items:end}
+    .study-hero h1{margin:0;max-width:980px;font-size:clamp(3rem,6vw,5.7rem);line-height:.96;letter-spacing:-.055em}
+    .study-lead{max-width:900px;margin:1.45rem 0 0;color:var(--muted);font-size:clamp(1.12rem,2vw,1.36rem)}
+    .study-meta{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.3rem}.study-meta span{padding:.38rem .72rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-size:.82rem}
+    .study-card,.concept-card,.rule-card,.schema-card,.note-card{padding:1.3rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+    .study-card strong{display:block;margin-bottom:.55rem;color:var(--primary)}.study-card p:last-child{margin-bottom:0}
+    .study-section{padding:5rem 0;scroll-margin-top:110px}.study-section.alt{background:var(--surface-soft)}
+    .study-heading{max-width:1000px;margin-bottom:2rem}.study-heading h2{margin:0;font-size:clamp(2.1rem,4vw,3.5rem);line-height:1.04;letter-spacing:-.045em}.study-heading>p:last-child{margin:1rem 0 0;color:var(--muted);font-size:1.04rem}
+    .study-kicker{margin:0 0 .65rem;color:var(--primary);font-size:.77rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+    .study-prose{max-width:1040px}.study-prose h3{margin:2.2rem 0 .7rem;font-size:1.5rem}.study-prose h3:first-child{margin-top:0}.study-prose p,.study-prose li{color:var(--muted)}.study-prose p{margin:0 0 1.05rem}.study-prose ul{padding-left:1.25rem}
+    .two-grid,.three-grid,.mapping-grid{display:grid;gap:1rem}.two-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.three-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.mapping-grid{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;margin:1.5rem 0}
+    .concept-card span,.rule-card span,.schema-card span.label{display:block;margin-bottom:.45rem;color:var(--primary);font-size:.75rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.concept-card h3,.rule-card h3,.schema-card h3{margin:.05rem 0 .55rem}.concept-card p,.rule-card p,.schema-card p{margin:0;color:var(--muted)}
+    .mapping-step{position:relative;padding:1.25rem;border:1px solid var(--line);border-radius:18px;background:var(--surface)}.mapping-step b{display:grid;place-items:center;width:2.15rem;height:2.15rem;margin-bottom:.85rem;border-radius:11px;background:var(--primary);color:#fff}.mapping-step strong{display:block;margin-bottom:.35rem}.mapping-step p{margin:0;color:var(--muted);font-size:.9rem}
+    .callout{padding:1.08rem 1.18rem;margin:1.3rem 0;border-left:4px solid var(--primary);border-radius:0 16px 16px 0;background:color-mix(in srgb,var(--primary) 8%,var(--surface))}.callout>strong{display:block;margin-bottom:.35rem;color:var(--primary)}.callout p{margin:0;color:var(--muted)}.callout.teal{border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--surface))}.callout.teal>strong{color:var(--accent)}
+    .schema-line{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-top:.8rem}.schema-line code{padding:.4rem .55rem;border:1px solid var(--line);border-radius:9px;background:var(--surface-soft)}.key{display:inline-flex;align-items:center;justify-content:center;min-width:2.1rem;padding:.25rem .45rem;border-radius:8px;background:color-mix(in srgb,var(--primary) 12%,var(--surface));color:var(--primary);font-size:.72rem;font-weight:900}.key.fk{background:color-mix(in srgb,var(--accent) 13%,var(--surface));color:var(--accent)}
+    .relation-board{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:1rem;align-items:center;margin:1.5rem 0}.entity-box{padding:1.25rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);text-align:center}.entity-box strong{display:block;font-size:1.1rem}.entity-box span{display:inline-block;margin-top:.55rem;padding:.25rem .55rem;border-radius:999px;background:var(--surface-soft);color:var(--muted);font-size:.8rem}.relation-arrow{color:var(--primary);font-size:2rem;font-weight:900;text-align:center}
+    .constraint-table-wrap{overflow-x:auto;margin:1.4rem 0;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.constraint-table{width:100%;border-collapse:collapse;min-width:760px}.constraint-table th,.constraint-table td{padding:.86rem .9rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.constraint-table th{background:color-mix(in srgb,var(--primary) 9%,var(--surface));font-size:.8rem}.constraint-table td{color:var(--muted);font-size:.9rem}.constraint-table tr:last-child td{border-bottom:0}
+    .compare-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.5rem 0}.compare-strip article{padding:1.15rem;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.compare-strip small{display:block;margin-bottom:.4rem;color:var(--primary);font-weight:850;text-transform:uppercase;letter-spacing:.07em}.compare-strip strong{display:block;margin-bottom:.35rem}.compare-strip p{margin:0;color:var(--muted);font-size:.9rem}
+    .references{padding-left:1.2rem}.references li{color:var(--muted)}.references li+li{margin-top:.65rem}
+    @media(max-width:1000px){.study-hero-grid,.two-grid{grid-template-columns:1fr}.three-grid,.mapping-grid,.compare-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:680px){.study-hero{padding:4.2rem 0 3.5rem}.study-section{padding:4rem 0}.three-grid,.mapping-grid,.compare-strip,.relation-board{grid-template-columns:1fr}.relation-arrow{transform:rotate(90deg)}}
+  </style>
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+</head>
+<body class="teaching-page teaching-lesson lesson-page study-page">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+<header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="Banco de Dados, página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+        <a href="aula-05.html">Aula 05</a>
+        <a href="#niveis">Níveis</a>
+        <a href="#relacionamentos">Relacionamentos</a>
+        <a href="#casos-especiais">Casos especiais</a>
+        <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="standard-shell standard-page-grid">
+    <main id="conteudo">
+      <section class="study-hero lesson-hero section-pad">
+        <div class="container study-hero-grid lesson-hero-grid">
+          <div>
+            <p class="study-kicker eyebrow">Aula 05 · material de aprofundamento</p>
+            <h1>Do significado do domínio à estrutura relacional</h1>
+            <p class="study-lead lesson-hero-lead">Na aula principal usamos regras de mapeamento para transformar o DER em relações. Aqui o objetivo é entender <strong>por que</strong> essas regras existem, quais aspectos do significado elas preservam e quais decisões ainda permanecem sob responsabilidade de quem projeta o banco.</p>
+            <div class="study-meta"><span>Leitura conceitual</span><span>Modelo ER</span><span>Modelo relacional</span><span>Chaves e restrições</span></div>
+          </div>
+          <aside class="study-card guiding-question">
+            <strong>Pergunta central</strong>
+            <blockquote>Mapear um DER é apenas trocar desenhos por tabelas?</blockquote>
+            <p>Não. O mapeamento é uma mudança de representação: o modelo muda de linguagem, mas as regras essenciais do domínio precisam continuar reconhecíveis.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="study-section section-pad alt section-soft" id="niveis">
+        <div class="container">
+          <div class="study-heading section-heading">
+            <p class="study-kicker eyebrow">1 · Níveis de representação</p>
+            <h2>O mesmo domínio pode ser descrito em níveis diferentes</h2>
+            <p>Uma das ideias mais importantes do projeto de banco de dados é separar a compreensão do problema das decisões de implementação. Isso evita que limitações ou hábitos de uma tecnologia específica distorçam a leitura do domínio.</p>
+          </div>
+
+          <div class="mapping-grid" aria-label="Fluxo entre níveis de modelagem">
+            <article class="mapping-step"><b>1</b><strong>Requisitos</strong><p>Descrevem fatos, regras e necessidades do domínio em linguagem do problema.</p></article>
+            <article class="mapping-step"><b>2</b><strong>Modelo conceitual</strong><p>Organiza entidades, atributos, relacionamentos, cardinalidades e dependências sem decidir ainda como o SGBD armazenará isso.</p></article>
+            <article class="mapping-step"><b>3</b><strong>Esquema relacional</strong><p>Reexpressa o modelo usando relações, atributos, chaves e restrições próprias do modelo relacional.</p></article>
+            <article class="mapping-step"><b>4</b><strong>Implementação física</strong><p>Acrescenta decisões dependentes do SGBD, como tipos concretos, índices, detalhes de armazenamento e comandos DDL.</p></article>
+          </div>
+
+          <div class="study-prose">
+            <h3>O que realmente muda no mapeamento?</h3>
+            <p>No modelo conceitual, uma associação pode aparecer como um relacionamento explícito entre duas entidades. No modelo relacional, a mesma associação pode aparecer como uma chave estrangeira ou como uma relação própria. Portanto, a forma visual muda, mas a pergunta permanece a mesma: <strong>que fatos sobre o domínio precisam continuar verdadeiros?</strong></p>
+            <p>É por isso que o mapeamento não deve ser tratado como uma operação puramente gráfica. Ele é uma tradução entre modelos com capacidades representacionais diferentes.</p>
+          </div>
+
+          <div class="callout teal"><strong>Ideia-chave</strong><p>Um bom esquema relacional não é o que “parece” mais com o DER. É o que consegue representar, com as construções do modelo relacional, as mesmas identidades, associações e restrições relevantes do domínio.</p></div>
+        </div>
+      </section>
+
+      <section class="study-section section-pad" id="identidade">
+        <div class="container">
+          <div class="study-heading section-heading">
+            <p class="study-kicker eyebrow">2 · Entidades, atributos e identidade</p>
+            <h2>Mapear uma entidade significa preservar aquilo que torna cada ocorrência distinguível</h2>
+            <p>Quando uma entidade é transformada em uma relação, não estamos apenas convertendo um retângulo do DER em uma tabela. Precisamos preservar a identidade de cada ocorrência e separar aquilo que identifica um objeto daquilo que apenas o descreve.</p>
+          </div>
+
+          <div class="two-grid">
+            <article class="concept-card">
+              <span>Modelo conceitual</span>
+              <h3>SALA</h3>
+              <p>Uma sala possui identidade própria no domínio e características que podem variar, como nome e capacidade.</p>
+              <div class="schema-line"><span class="key">ID</span><code>id_sala</code><code>nome</code><code>capacidade</code></div>
+            </article>
+            <article class="schema-card">
+              <span class="label">Esquema relacional</span>
+              <h3>SALA</h3>
+              <p>Cada tupla representa uma ocorrência de sala. A chave primária permite distinguir essa ocorrência das demais e sustenta referências feitas por outras relações.</p>
+              <div class="schema-line"><span class="key">PK</span><code>id_sala</code><code>nome</code><code>capacidade</code></div>
+            </article>
+          </div>
+
+          <div class="study-prose">
+            <h3>Primeiro precisamos separar identidade de descrição</h3>
+            <p>Considere duas salas chamadas <strong>Laboratório 1</strong>. O nome pode ser útil para exibição, mas, se houver duas ocorrências com o mesmo nome, ele não consegue sozinho dizer de qual sala estamos falando. A identidade precisa permanecer inequívoca mesmo quando alguns atributos descritivos se repetem.</p>
+            <p>Essa distinção é essencial no projeto. Atributos como nome, capacidade, telefone ou endereço normalmente descrevem uma ocorrência. Um identificador deve permitir reconhecer a mesma ocorrência ao longo do tempo e diferenciá-la das demais.</p>
+
+            <div class="three-grid">
+              <article class="note-card">
+                <strong>Identidade</strong>
+                <p>Responde à pergunta: qual ocorrência específica do domínio está sendo representada?</p>
+              </article>
+              <article class="note-card">
+                <strong>Descrição</strong>
+                <p>Reúne características da ocorrência, como nome, capacidade, situação ou endereço.</p>
+              </article>
+              <article class="note-card">
+                <strong>Referência</strong>
+                <p>Permite que outras relações apontem para a mesma ocorrência por meio de uma chave estrangeira.</p>
+              </article>
+            </div>
+
+            <h3>O identificador deve continuar válido quando atributos descritivos mudam</h3>
+            <p>Imagine que a sala de código <code>17</code> era chamada <strong>Laboratório de Redes</strong> e passa a se chamar <strong>Laboratório de Infraestrutura</strong>. Se <code>id_sala = 17</code> representa sua identidade, a alteração do nome não cria uma nova sala. Continuamos falando da mesma ocorrência.</p>
+            <p>Esse exemplo mostra por que é perigoso escolher como identificador um atributo que pode mudar com frequência. Uma chave utilizada em referências deve, sempre que possível, ser estável. Alterações descritivas não deveriam obrigar todo o banco a reinterpretar quem é a entidade.</p>
+
+            <h3>Identificador conceitual, chave candidata e chave primária são conceitos relacionados, mas diferentes</h3>
+            <p>No DER, procuramos uma propriedade, ou combinação de propriedades, capaz de distinguir uma ocorrência das demais. Ao chegar ao modelo relacional, podem existir diferentes conjuntos de atributos capazes de exercer essa função.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Conceito</th>
+                    <th>Função</th>
+                    <th>Exemplo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Identificador conceitual</strong></td>
+                    <td>Expressa, no modelo do domínio, como distinguimos uma ocorrência das demais.</td>
+                    <td>O código institucional atribuído a uma sala.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chave candidata</strong></td>
+                    <td>Conjunto mínimo de atributos que consegue identificar unicamente uma tupla.</td>
+                    <td><code>id_sala</code> ou outro atributo realmente único e estável.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chave primária</strong></td>
+                    <td>Chave candidata escolhida como principal referência da relação.</td>
+                    <td><code>PRIMARY KEY (id_sala)</code>.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chave alternativa</strong></td>
+                    <td>Outra chave candidata que não foi escolhida como primária, mas continua exigindo unicidade.</td>
+                    <td>Um código patrimonial único, quando existente.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>Escolher uma chave primária não torna irrelevantes as outras formas de identificação. Se um atributo precisa ser único por regra do domínio, essa regra deve continuar representada, normalmente por uma restrição de unicidade.</p>
+
+            <h3>Chaves naturais e chaves artificiais representam estratégias diferentes</h3>
+            <p>Uma <strong>chave natural</strong> utiliza um valor que já possui significado no domínio. Um exemplo seria um código institucional que já identifica oficialmente uma sala. Uma <strong>chave artificial</strong>, também chamada de chave substituta, é criada especificamente para identificar registros, como um número inteiro gerado pelo sistema.</p>
+            <p>Nenhuma das duas estratégias é automaticamente superior. O ponto importante é distinguir a identidade técnica usada pelo banco das regras de unicidade que pertencem ao domínio.</p>
+
+            <div class="two-grid">
+              <article class="rule-card">
+                <span>Chave natural</span>
+                <h3>Usa um valor do próprio domínio</h3>
+                <p>Pode tornar o esquema mais expressivo, mas exige que esse valor seja realmente único, estável e adequado para referências.</p>
+              </article>
+              <article class="rule-card">
+                <span>Chave artificial</span>
+                <h3>Cria uma identidade técnica estável</h3>
+                <p>Simplifica referências e evita depender de atributos descritivos, mas não substitui restrições de unicidade que existam no domínio.</p>
+              </article>
+            </div>
+
+            <div class="callout">
+              <strong>Exemplo importante</strong>
+              <p>Se usamos <code>id_usuario</code> como chave primária e o e-mail deve ser único, criar a chave artificial não elimina a regra sobre o e-mail. O esquema pode precisar de <code>PRIMARY KEY (id_usuario)</code> e, ao mesmo tempo, de <code>UNIQUE (email)</code>.</p>
+            </div>
+
+            <h3>Uma chave composta aparece quando a identidade depende de mais de um atributo</h3>
+            <p>Nem toda ocorrência pode ser identificada adequadamente por um único atributo. Considere uma disciplina ofertada várias vezes em períodos diferentes. Dependendo do domínio, a combinação de código da disciplina, turma e período pode formar a identidade da oferta.</p>
+            <p>Nesse caso, a chave é composta porque cada atributo isoladamente é insuficiente. O significado está na combinação. Essa ideia será especialmente importante ao tratar entidades fracas e relações associativas.</p>
+
+            <h3>Atributos simples e compostos precisam ser reinterpretados no modelo relacional</h3>
+            <p>Um atributo simples é tratado como uma unidade no modelo conceitual. Um atributo composto representa uma informação que possui partes relevantes próprias. Um endereço, por exemplo, pode ser decomposto em logradouro, número, cidade e CEP.</p>
+            <p>No esquema relacional, normalmente armazenamos essas partes em atributos separados quando precisam ser consultadas, validadas ou manipuladas individualmente. A decomposição não significa perder a noção de endereço. Significa representar explicitamente seus componentes.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>Conceitual</small>
+                <strong>Endereço</strong>
+                <p>Uma característica da entidade percebida como uma unidade do domínio.</p>
+              </article>
+              <article>
+                <small>Componentes</small>
+                <strong>logradouro, número, cidade, CEP</strong>
+                <p>Partes com significado próprio que podem precisar de consulta ou validação.</p>
+              </article>
+              <article>
+                <small>Relacional</small>
+                <strong>Atributos da relação</strong>
+                <p>Os componentes relevantes passam a aparecer explicitamente no esquema.</p>
+              </article>
+            </div>
+
+            <h3>Atributos derivados exigem decidir entre calcular e armazenar</h3>
+            <p>Um atributo derivado pode ser obtido a partir de outros dados. A idade de uma pessoa, por exemplo, pode ser calculada a partir da data de nascimento e da data corrente. Se armazenarmos a idade diretamente, ela se torna um valor que precisa ser atualizado com o passar do tempo.</p>
+            <p>Por isso, durante o mapeamento, precisamos perguntar se o atributo deve realmente existir como dado persistente ou se é melhor calculá-lo quando necessário. Armazenar um valor derivado pode ser justificável em alguns cenários, mas cria a responsabilidade de manter o valor armazenado coerente com os dados que o originam.</p>
+
+            <h3>A escolha dos atributos define quais fatos o banco consegue distinguir</h3>
+            <p>O conjunto de atributos de uma relação não deve ser visto como uma simples lista de campos. Cada atributo representa alguma propriedade considerada relevante para descrever, identificar ou relacionar ocorrências do domínio.</p>
+            <p>Quando um atributo necessário é omitido, fatos diferentes podem se tornar indistinguíveis. Quando um atributo é incluído sem necessidade, o esquema pode carregar informação redundante ou difícil de manter. Por isso, mapear atributos também é uma decisão sobre quais diferenças do mundo representado o banco precisa preservar.</p>
+          </div>
+
+          <div class="callout teal">
+            <strong>Ideia central desta seção</strong>
+            <p>Uma entidade não se transforma corretamente em relação apenas porque seus atributos foram copiados. O esquema precisa preservar três coisas: a identidade de cada ocorrência, as propriedades relevantes que a descrevem e as regras que determinam quais valores podem ser únicos, mutáveis ou derivados.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="study-section section-pad alt section-soft" id="relacionamentos">
+        <div class="container">
+          <div class="study-heading section-heading">
+            <p class="study-kicker eyebrow">3 · Relacionamentos e restrições</p>
+            <h2>Relacionamentos precisam continuar existindo como regras do esquema</h2>
+            <p>No DER, uma linha entre entidades não indica apenas que elas estão conectadas. Ela expressa quais ocorrências podem se associar, quantas associações são permitidas e, em muitos casos, se a participação é opcional ou obrigatória. Ao passar para o modelo relacional, essas regras precisam reaparecer por meio de chaves estrangeiras, unicidade, obrigatoriedade e novas relações.</p>
+          </div>
+
+          <div class="study-prose">
+            <h3>Um relacionamento representa um fato entre ocorrências</h3>
+            <p>Considere o relacionamento entre USUARIO e RESERVA. O fato relevante não é simplesmente que as duas entidades existem no mesmo sistema. O domínio afirma que <strong>uma reserva é realizada por um usuário</strong>. Essa associação precisa continuar representável depois que o desenho do DER desaparece.</p>
+            <p>No esquema relacional, isso ocorre quando RESERVA recebe o atributo <code>id_usuario</code> como chave estrangeira. O valor armazenado nessa coluna indica qual ocorrência de USUARIO participa daquela reserva.</p>
+
+            <div class="relation-board" aria-label="Exemplo de relacionamento entre usuário e reserva">
+              <div class="entity-box"><strong>USUARIO</strong><span>lado 1</span></div>
+              <div class="relation-arrow">→</div>
+              <div class="entity-box"><strong>RESERVA</strong><span>lado N · contém id_usuario</span></div>
+            </div>
+
+            <div class="callout teal">
+              <strong>Ideia central</strong>
+              <p>No DER, o relacionamento aparece como uma conexão explícita. No modelo relacional, a conexão passa a ser representada por valores compatíveis entre uma chave estrangeira e a chave da relação referenciada.</p>
+            </div>
+
+            <h3>Cardinalidade máxima e participação mínima respondem a perguntas diferentes</h3>
+            <p>A notação conceitual pode expressar duas dimensões importantes. A <strong>cardinalidade máxima</strong> indica quantas ocorrências podem participar do relacionamento, enquanto a <strong>participação mínima</strong> indica se participar é obrigatório ou opcional.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Questão</th>
+                    <th>O que está sendo definido?</th>
+                    <th>Exemplo</th>
+                    <th>Como pode aparecer no esquema</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Máximo</strong></td>
+                    <td>Uma ocorrência pode se relacionar com uma ou com várias ocorrências do outro lado?</td>
+                    <td>Um usuário pode possuir várias reservas.</td>
+                    <td>Repetição permitida da FK no lado N.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mínimo</strong></td>
+                    <td>A ocorrência pode existir sem participar do relacionamento?</td>
+                    <td>Uma reserva deve possuir um usuário.</td>
+                    <td>A FK pode ser obrigatória, por exemplo com <code>NOT NULL</code>.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>Essa separação é importante porque uma chave estrangeira, sozinha, normalmente responde apenas à pergunta <em>“qual ocorrência está sendo referenciada?”</em>. Outras restrições são necessárias para representar quantidade máxima ou obrigatoriedade.</p>
+
+            <h3>1:N: a referência fica no lado que pode se repetir</h3>
+            <p>No relacionamento <strong>USUARIO 1:N RESERVA</strong>, um usuário pode estar associado a várias reservas, mas cada reserva referencia um único usuário. Por isso, <code>id_usuario</code> aparece em RESERVA.</p>
+            <p>A repetição do mesmo valor de <code>id_usuario</code> em várias linhas de RESERVA não é redundância acidental. Nesse contexto, ela representa precisamente a cardinalidade do relacionamento: várias reservas podem apontar para a mesma ocorrência de USUARIO.</p>
+
+            <div class="two-grid">
+              <article class="schema-card">
+                <span class="label">USUARIO</span>
+                <h3>lado 1</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_usuario</code><code>nome</code></div>
+                <p>Uma ocorrência pode ser referenciada por muitas reservas.</p>
+              </article>
+              <article class="schema-card">
+                <span class="label">RESERVA</span>
+                <h3>lado N</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_reserva</code><span class="key fk">FK</span><code>id_usuario</code></div>
+                <p>Cada reserva armazena a referência para o usuário associado.</p>
+              </article>
+            </div>
+
+            <h3>Por que colocar a FK no lado 1 produziria uma estrutura inadequada?</h3>
+            <p>Se USUARIO precisasse armazenar os identificadores de todas as suas reservas, uma única coluna teria de conter vários valores ou várias colunas teriam de ser criadas para um número imprevisível de reservas. As duas soluções violariam a organização relacional básica.</p>
+            <p>Ao colocar a referência no lado N, cada linha de RESERVA precisa armazenar apenas um valor, enquanto o conjunto das linhas representa naturalmente todas as reservas pertencentes ao usuário.</p>
+
+            <h3>A chave estrangeira também preserva integridade referencial</h3>
+            <p>Uma FK não serve apenas para indicar a direção do relacionamento. Ela estabelece que um valor usado como referência deve corresponder a uma ocorrência existente na relação referenciada.</p>
+            <p>Se <code>RESERVA.id_usuario = 25</code>, o banco deve possuir um USUARIO cuja chave seja 25, a menos que o relacionamento permita valor nulo. Essa regra impede referências para ocorrências inexistentes e mantém coerência entre as relações.</p>
+
+            <div class="callout">
+              <strong>Referência não é apenas coincidência de valores</strong>
+              <p>Duas colunas podem conter números iguais sem existir qualquer relacionamento entre elas. A chave estrangeira torna explícito que os valores possuem uma relação semântica e que o SGBD deve preservar essa referência.</p>
+            </div>
+
+            <h3>1:1: a FK cria a referência, mas a unicidade preserva o limite máximo</h3>
+            <p>Considere <strong>PESSOA 1:1 CRACHA</strong>. Se colocarmos <code>id_pessoa</code> em CRACHA apenas como chave estrangeira, nada impediria que diversas linhas de CRACHA repetissem a mesma pessoa. O esquema passaria a permitir vários crachás para a mesma pessoa, caracterizando um relacionamento 1:N.</p>
+            <p>Para preservar o máximo 1, a referência precisa ser única.</p>
+
+            <div class="two-grid">
+              <article class="rule-card">
+                <span>Somente FK</span>
+                <h3>Referência preservada</h3>
+                <p><code>id_pessoa</code> aponta para PESSOA, mas pode aparecer repetidamente. Isso permite vários crachás para a mesma pessoa.</p>
+              </article>
+              <article class="rule-card">
+                <span>FK + UNIQUE</span>
+                <h3>Referência e cardinalidade preservadas</h3>
+                <p><code>id_pessoa</code> continua sendo uma referência, mas cada pessoa pode aparecer no máximo uma vez em CRACHA.</p>
+              </article>
+            </div>
+
+            <div class="schema-line" style="margin:1.3rem 0">
+              <span class="key">PK</span><code>CRACHA.id_cracha</code>
+              <span class="key fk">FK</span><code>CRACHA.id_pessoa</code>
+              <span class="key">UNIQUE</span><code>id_pessoa</code>
+            </div>
+
+            <h3>Em 1:1, escolher onde colocar a FK também comunica significado</h3>
+            <p>Em princípio, a FK pode ser colocada em qualquer uma das duas relações. Entretanto, a participação ajuda a tomar uma decisão mais adequada. Se todo crachá necessariamente pertence a uma pessoa, mas uma pessoa pode ainda não possuir crachá, colocar <code>id_pessoa</code> em CRACHA representa esse domínio de forma natural.</p>
+            <p>Nesse esquema, uma pessoa pode existir sem uma linha correspondente em CRACHA. Porém, sempre que um crachá existir, ele precisa apontar para uma pessoa.</p>
+
+            <h3>Obrigatoriedade e valor nulo estão relacionados</h3>
+            <p>Quando a participação do lado que contém a FK é obrigatória, permitir <code>NULL</code> enfraquece a regra conceitual. Se toda reserva deve ser feita por um usuário, então uma linha de RESERVA sem <code>id_usuario</code> representaria um estado que o modelo conceitual não permitia.</p>
+            <p>Por isso, uma FK pode aparecer combinada com <code>NOT NULL</code>. A FK garante que a referência, quando existe, aponta para uma ocorrência válida; <code>NOT NULL</code> garante que a referência precisa existir.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Restrição</th>
+                    <th>O que garante?</th>
+                    <th>O que não garante sozinha?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>FOREIGN KEY</strong></td>
+                    <td>A referência aponta para uma ocorrência existente.</td>
+                    <td>Não determina, sozinha, se a referência é obrigatória ou única.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>UNIQUE</strong></td>
+                    <td>Um mesmo valor não pode aparecer repetidamente.</td>
+                    <td>Não cria, sozinho, referência para outra relação.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>NOT NULL</strong></td>
+                    <td>O atributo precisa possuir um valor.</td>
+                    <td>Não verifica se esse valor existe em outra relação.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>N:N: a associação precisa se tornar uma relação</h3>
+            <p>Considere <strong>ALUNO N:N DISCIPLINA</strong>. Um aluno pode cursar diversas disciplinas e cada disciplina pode possuir diversos alunos. Colocar <code>id_disciplina</code> dentro de ALUNO permitiria apenas uma disciplina por aluno. Colocar <code>id_aluno</code> dentro de DISCIPLINA permitiria apenas um aluno por disciplina.</p>
+            <p>A solução é representar a própria associação como uma nova relação, por exemplo MATRICULA.</p>
+
+            <div class="three-grid">
+              <article class="schema-card">
+                <span class="label">ALUNO</span>
+                <h3>entidade participante</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_aluno</code></div>
+              </article>
+              <article class="schema-card">
+                <span class="label">MATRICULA</span>
+                <h3>associação</h3>
+                <div class="schema-line"><span class="key">PK/FK</span><code>id_aluno</code><span class="key">PK/FK</span><code>id_disciplina</code></div>
+              </article>
+              <article class="schema-card">
+                <span class="label">DISCIPLINA</span>
+                <h3>entidade participante</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_disciplina</code></div>
+              </article>
+            </div>
+
+            <p>Cada linha de MATRICULA passa a afirmar um fato específico: <em>“este aluno está associado a esta disciplina”</em>. O conjunto dessas linhas consegue representar qualquer quantidade de associações dos dois lados.</p>
+
+            <h3>A relação intermediária também pode possuir atributos próprios</h3>
+            <p>Alguns valores não descrevem ALUNO nem DISCIPLINA isoladamente. Eles descrevem a associação entre ambos. Semestre, situação da matrícula ou nota são exemplos típicos.</p>
+            <p>Uma nota não pertence genericamente ao aluno, pois o mesmo aluno possui notas diferentes em disciplinas diferentes. Também não pertence genericamente à disciplina, pois diferentes alunos recebem notas diferentes. Ela depende da ocorrência específica da associação.</p>
+
+            <div class="callout teal">
+              <strong>Pergunta útil para localizar um atributo</strong>
+              <p>Se o valor só pode ser determinado depois que sabemos quais ocorrências estão relacionadas, há forte indicação de que ele descreve o relacionamento e deve ser armazenado na relação que representa essa associação.</p>
+            </div>
+
+            <h3>A chave da relação intermediária depende da identidade da associação</h3>
+            <p>No caso mais simples, a combinação <code>(id_aluno, id_disciplina)</code> pode formar a chave primária de MATRICULA. Isso significa que o mesmo aluno não pode aparecer duas vezes na mesma disciplina dentro do contexto representado.</p>
+            <p>Entretanto, se o domínio permite que um aluno curse novamente a mesma disciplina em períodos diferentes, a combinação de apenas duas chaves deixa de identificar unicamente uma matrícula. O período, a turma ou um identificador próprio da matrícula pode precisar participar da identidade.</p>
+            <p>Esse exemplo mostra novamente que a transformação não pode ser puramente mecânica. A chave precisa representar aquilo que o domínio considera uma ocorrência distinta.</p>
+
+            <h3>Relacionamentos podem ser transformados em entidades relevantes para o domínio</h3>
+            <p>Na modelagem trabalhada anteriormente, RESERVA possui data, horário, situação e histórico próprios. Embora conecte USUARIO e SALA, ela representa um fato com identidade e propriedades próprias. Por isso, no esquema relacional, RESERVA aparece naturalmente como uma relação com chave própria e FKs para as entidades participantes.</p>
+            <p>Esse caso ajuda a perceber que a fronteira entre “relacionamento” e “entidade associativa” depende do significado do domínio. Quando a associação precisa ser identificada, descrita ou acompanhada ao longo do tempo, tratá-la como uma ocorrência própria pode ser a representação mais adequada.</p>
+
+            <h3>O que acontece quando uma ocorrência referenciada é removida?</h3>
+            <p>Depois que uma FK foi criada, surge uma nova questão: o que deve acontecer se tentarmos excluir uma ocorrência que ainda é referenciada? Por exemplo, é possível remover um USUARIO que possui RESERVAS?</p>
+            <p>O modelo relacional exige que a integridade referencial continue válida. A implementação pode impedir a exclusão, propagar a exclusão para ocorrências dependentes ou adotar outra política coerente com o domínio. A escolha concreta pertence à etapa de implementação, mas a regra de negócio deve orientar essa decisão.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>DER</small>
+                <strong>Expressa a regra</strong>
+                <p>Cardinalidade e participação mostram como as ocorrências podem se relacionar.</p>
+              </article>
+              <article>
+                <small>Esquema relacional</small>
+                <strong>Reconstrói a regra</strong>
+                <p>FK, UNIQUE, NOT NULL, chaves compostas e novas relações preservam a estrutura conceitual.</p>
+              </article>
+              <article>
+                <small>SGBD</small>
+                <strong>Faz a regra valer</strong>
+                <p>As constraints implementadas impedem estados que violariam parte das regras do modelo.</p>
+              </article>
+            </div>
+
+            <h3>Nem toda regra de relacionamento cabe em uma única constraint</h3>
+            <p>Algumas regras são diretamente representáveis com PK, FK, <code>UNIQUE</code> e <code>NOT NULL</code>. Outras dependem de combinações de atributos ou de condições mais complexas.</p>
+            <p>Por exemplo, uma FK pode garantir que a sala de uma reserva existe, mas não garante que duas reservas não ocupem a mesma sala no mesmo intervalo de horário. Essa é uma regra adicional sobre o relacionamento entre sala, data e período de uso.</p>
+          </div>
+
+          <div class="callout">
+            <strong>Ideia central desta seção</strong>
+            <p>Mapear relacionamentos significa reconstruir no esquema relacional as regras que estavam explícitas no DER. A chave estrangeira cria a referência, mas cardinalidade e participação podem exigir também unicidade, obrigatoriedade, chaves compostas ou uma relação própria.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="study-section section-pad" id="casos-especiais">
+        <div class="container">
+          <div class="study-heading section-heading">
+            <p class="study-kicker eyebrow">4 · Quando uma coluna não basta</p>
+            <h2>Alguns fatos precisam virar novas ocorrências para não perder significado</h2>
+            <p>Atributos multivalorados e entidades fracas mostram que mapear um DER não significa simplesmente criar uma coluna para cada informação desenhada. Em certos casos, o significado depende de repetir ocorrências, preservar uma dependência ou construir uma identidade composta.</p>
+          </div>
+
+          <div class="two-grid">
+            <article class="rule-card">
+              <span>Atributo multivalorado</span>
+              <h3>Um usuário pode possuir vários telefones</h3>
+              <p>O valor conceitual de TELEFONE não é um único número, mas um conjunto de números associados ao mesmo usuário.</p>
+              <div class="schema-line"><span class="key fk">FK</span><code>id_usuario</code><span class="key">PK</span><code>telefone</code></div>
+            </article>
+            <article class="rule-card">
+              <span>Entidade fraca</span>
+              <h3>Uma faixa de agenda só é identificável dentro de uma sala</h3>
+              <p>Data e horário distinguem uma faixa apenas dentro do contexto de uma sala específica. A identidade da proprietária participa da própria identificação da faixa.</p>
+              <div class="schema-line"><span class="key">PK/FK</span><code>id_sala</code><span class="key">PK</span><code>data</code><span class="key">PK</span><code>hora_inicio</code></div>
+            </article>
+          </div>
+
+          <div class="study-prose">
+            <h3>O problema começa quando um atributo representa vários valores ao mesmo tempo</h3>
+            <p>Considere um usuário que possui três telefones. No modelo conceitual, é natural dizer que TELEFONE é um atributo multivalorado de USUARIO. A dificuldade surge quando tentamos transportar essa ideia diretamente para uma única coluna.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>id_usuario</th>
+                    <th>nome</th>
+                    <th>telefone</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>17</td>
+                    <td>Ana</td>
+                    <td><code>41999990000, 4133334444, 41988887777</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>Visualmente, parece que todos os telefones foram armazenados. Porém, a coluna deixou de representar um único valor do domínio telefone e passou a conter uma pequena coleção codificada dentro de um texto.</p>
+            <p>Isso cria dificuldades imediatas: como verificar se um número específico já está cadastrado? Como impedir o mesmo número de aparecer duas vezes para o usuário? Como armazenar informações diferentes para cada telefone? Como aplicar uma restrição ao número sem antes separar o conteúdo da coluna?</p>
+
+            <div class="callout">
+              <strong>A questão não é apenas estética</strong>
+              <p>Separar valores por vírgula parece simples enquanto apenas exibimos o conteúdo. O problema aparece quando o banco precisa identificar, consultar, validar, relacionar ou alterar cada valor individualmente.</p>
+            </div>
+
+            <h3>Outra tentativa ruim seria criar uma quantidade fixa de colunas</h3>
+            <p>Uma solução como <code>telefone_1</code>, <code>telefone_2</code> e <code>telefone_3</code> também parece funcionar inicialmente. Entretanto, ela incorpora ao esquema um limite arbitrário que pertence apenas à nossa implementação.</p>
+            <p>Se um usuário possuir um quarto telefone, seria necessário alterar a estrutura da relação. Se outro usuário possuir apenas um, as demais colunas ficariam vazias. Além disso, a mesma propriedade do domínio passaria a ser representada por vários atributos diferentes.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>Lista em uma coluna</small>
+                <strong>Vários valores escondidos</strong>
+                <p>A aplicação precisa interpretar internamente o conteúdo para encontrar ou alterar um telefone.</p>
+              </article>
+              <article>
+                <small>Colunas telefone_1, telefone_2...</small>
+                <strong>Quantidade limitada pelo esquema</strong>
+                <p>O número de valores possíveis passa a depender da quantidade de colunas criada.</p>
+              </article>
+              <article>
+                <small>Nova relação</small>
+                <strong>Um valor por ocorrência</strong>
+                <p>Cada telefone se torna diretamente identificável, consultável e relacionável.</p>
+              </article>
+            </div>
+
+            <h3>O atributo multivalorado se transforma em uma relação própria</h3>
+            <p>Uma representação mais adequada cria <code>TELEFONE_USUARIO</code>. Cada linha passa a representar um fato simples: <em>“este telefone pertence a este usuário”</em>.</p>
+
+            <div class="two-grid">
+              <article class="schema-card">
+                <span class="label">USUARIO</span>
+                <h3>ocorrência proprietária</h3>
+                <div class="schema-line"><span class="key">PK</span><code>id_usuario</code><code>nome</code></div>
+                <p>O usuário aparece uma única vez, independentemente da quantidade de telefones que possui.</p>
+              </article>
+              <article class="schema-card">
+                <span class="label">TELEFONE_USUARIO</span>
+                <h3>valores multivalorados</h3>
+                <div class="schema-line"><span class="key">PK/FK</span><code>id_usuario</code><span class="key">PK</span><code>telefone</code></div>
+                <p>Cada telefone aparece em uma ocorrência separada e permanece vinculado ao usuário por meio da FK.</p>
+              </article>
+            </div>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>id_usuario</th>
+                    <th>telefone</th>
+                    <th>Significado da linha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>17</td><td>41999990000</td><td>O telefone 41999990000 pertence ao usuário 17.</td></tr>
+                  <tr><td>17</td><td>4133334444</td><td>O telefone 4133334444 pertence ao usuário 17.</td></tr>
+                  <tr><td>17</td><td>41988887777</td><td>O telefone 41988887777 pertence ao usuário 17.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>A repetição de <code>id_usuario</code> é intencional. Ela conecta vários valores do atributo à mesma ocorrência proprietária. A combinação <code>(id_usuario, telefone)</code> pode ser usada como chave primária para impedir que o mesmo telefone seja registrado duas vezes para o mesmo usuário.</p>
+
+            <h3>A chave composta expressa exatamente qual repetição é proibida</h3>
+            <p>Se a chave for <code>(id_usuario, telefone)</code>, o mesmo telefone não pode aparecer duas vezes para o mesmo usuário. Entretanto, o modelo ainda permite que o mesmo número apareça associado a usuários diferentes.</p>
+            <p>Se a regra do domínio afirmar que um telefone só pode pertencer a um único usuário, será necessária uma restrição adicional de unicidade sobre <code>telefone</code>. Isso mostra novamente que a escolha da chave representa uma regra sobre o significado dos dados.</p>
+
+            <h3>Quando um atributo multivalorado começa a parecer uma entidade própria?</h3>
+            <p>Nem todo conjunto de valores deve permanecer conceitualmente tratado apenas como atributo. Imagine que cada telefone precise registrar tipo, ramal, data de confirmação, situação ou preferência de contato.</p>
+            <p>Nesse momento, o telefone começa a possuir propriedades próprias. A estrutura relacional pode continuar usando uma relação separada, mas conceitualmente talvez seja mais adequado reconhecer TELEFONE como uma entidade ou estrutura independente no domínio.</p>
+
+            <div class="two-grid">
+              <article class="concept-card">
+                <span>Apenas valor</span>
+                <h3>telefone</h3>
+                <p>Quando apenas o número interessa, tratá-lo como atributo multivalorado pode ser suficiente.</p>
+              </article>
+              <article class="concept-card">
+                <span>Objeto descrito</span>
+                <h3>TELEFONE</h3>
+                <p>Quando o telefone possui tipo, situação, verificação ou outras propriedades, ele passa a ter estrutura própria.</p>
+              </article>
+            </div>
+
+            <h3>A nova relação resolve a multiplicidade, mas não representa automaticamente o mínimo</h3>
+            <p>O requisito da aula afirma que um usuário possui um ou mais telefones. Criar TELEFONE_USUARIO permite armazenar vários telefones e garante que cada telefone cadastrado aponte para um usuário existente.</p>
+            <p>Porém, apenas a FK não impede que exista um usuário sem nenhuma linha em TELEFONE_USUARIO. Garantir que todo usuário possua pelo menos um telefone é uma regra de participação mínima que pode exigir lógica adicional na implementação.</p>
+
+            <div class="callout teal">
+              <strong>Um ponto importante sobre o mapeamento</strong>
+              <p>Transformar o atributo multivalorado em uma relação preserva a possibilidade de vários valores. A exigência de existir pelo menos um valor é uma regra diferente e precisa ser tratada separadamente.</p>
+            </div>
+
+            <h3>Entidade fraca é um problema diferente</h3>
+            <p>No atributo multivalorado, o desafio era representar vários valores associados a uma ocorrência. Na entidade fraca, a dificuldade está na própria identidade: a ocorrência não possui identificação completa sem a entidade proprietária.</p>
+            <p>Considere FAIXA_AGENDA. Uma faixa pode ser descrita por data, hora de início e situação. Entretanto, <code>10/09 às 19:00</code> não identifica uma faixa globalmente, porque diversas salas podem possuir uma faixa nessa mesma data e horário.</p>
+
+            <div class="relation-board" aria-label="Dependência entre sala e faixa de agenda">
+              <div class="entity-box"><strong>SALA</strong><span>entidade proprietária</span></div>
+              <div class="relation-arrow">→</div>
+              <div class="entity-box"><strong>FAIXA_AGENDA</strong><span>identidade depende de SALA</span></div>
+            </div>
+
+            <h3>A entidade fraca possui uma chave parcial</h3>
+            <p>Dentro de uma sala específica, a combinação <code>(data, hora_inicio)</code> pode distinguir uma faixa das demais. Esses atributos cumprem o papel de identificação parcial, porque só funcionam depois que sabemos qual é a sala proprietária.</p>
+            <p>Para construir uma identificação completa no esquema relacional, precisamos combinar a chave da proprietária com essa identificação parcial.</p>
+
+            <div class="schema-line" style="margin:1.3rem 0">
+              <span class="key">PK/FK</span><code>id_sala</code>
+              <span class="key">PK</span><code>data</code>
+              <span class="key">PK</span><code>hora_inicio</code>
+            </div>
+
+            <p>Assim, a chave primária de FAIXA_AGENDA pode ser:</p>
+            <div class="callout">
+              <strong>PK(FAIXA_AGENDA)</strong>
+              <p><code>(id_sala, data, hora_inicio)</code></p>
+            </div>
+
+            <h3>O mesmo atributo pode ser chave primária e chave estrangeira ao mesmo tempo</h3>
+            <p>Em FAIXA_AGENDA, <code>id_sala</code> possui duas funções simultâneas. Como FK, ele aponta para a sala proprietária. Como parte da PK, ele participa da identificação da própria faixa.</p>
+            <p>Essa dupla função não é acidental. Ela representa diretamente a ideia conceitual de que a faixa só pode ser identificada quando sabemos a qual sala pertence.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Atributo</th>
+                    <th>Papel</th>
+                    <th>O que representa?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>id_sala</code></td>
+                    <td><strong>PK + FK</strong></td>
+                    <td>Identifica a proprietária e participa da identidade da faixa.</td>
+                  </tr>
+                  <tr>
+                    <td><code>data</code></td>
+                    <td><strong>PK</strong></td>
+                    <td>Participa da distinção entre faixas da mesma sala.</td>
+                  </tr>
+                  <tr>
+                    <td><code>hora_inicio</code></td>
+                    <td><strong>PK</strong></td>
+                    <td>Completa a identificação temporal da faixa dentro da sala.</td>
+                  </tr>
+                  <tr>
+                    <td><code>situacao</code></td>
+                    <td>Atributo descritivo</td>
+                    <td>Descreve o estado atual da faixa, mas não sua identidade.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Dependência de identificação e dependência de existência estão relacionadas</h3>
+            <p>Uma entidade fraca não depende apenas da proprietária para formar sua chave. Seu significado normalmente também pressupõe a existência da proprietária. Uma FAIXA_AGENDA sem uma SALA correspondente não representa um fato completo no domínio.</p>
+            <p>A FK garante que uma faixa cadastrada não possa apontar para uma sala inexistente. A política adotada quando uma sala é removida precisa respeitar essa dependência. Em muitos domínios, não faria sentido manter faixas de agenda órfãs.</p>
+
+            <h3>Ter uma FK não torna automaticamente uma entidade fraca</h3>
+            <p>Essa distinção é importante. RESERVA possui FKs para USUARIO e SALA, mas também possui <code>id_reserva</code>, uma identidade própria independente das chaves dessas entidades.</p>
+            <p>FAIXA_AGENDA é diferente porque a chave de SALA participa da própria identificação da faixa. Portanto, a existência de uma FK indica relacionamento; a presença da chave da proprietária dentro da identidade é que evidencia a dependência característica da entidade fraca.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>Entidade comum relacionada</small>
+                <strong>RESERVA</strong>
+                <p>Possui chave própria e usa FKs para se relacionar com USUARIO e SALA.</p>
+              </article>
+              <article>
+                <small>Entidade fraca</small>
+                <strong>FAIXA_AGENDA</strong>
+                <p>Precisa da chave de SALA para completar sua própria identificação.</p>
+              </article>
+              <article>
+                <small>Atributo multivalorado</small>
+                <strong>TELEFONE_USUARIO</strong>
+                <p>Surge para transformar vários valores de um atributo em ocorrências separadas.</p>
+              </article>
+            </div>
+
+            <h3>Os dois casos criam novas relações, mas por razões diferentes</h3>
+            <p>TELEFONE_USUARIO e FAIXA_AGENDA podem parecer semelhantes quando observamos apenas o esquema final, pois ambos contêm a chave de outra relação. Entretanto, a motivação conceitual é diferente.</p>
+            <p>TELEFONE_USUARIO surge porque uma propriedade pode assumir vários valores. FAIXA_AGENDA surge porque existe uma ocorrência com atributos próprios cuja identidade depende do contexto fornecido por SALA.</p>
+          </div>
+
+          <div class="callout teal">
+            <strong>Ideia central desta seção</strong>
+            <p>Quando uma informação não cabe adequadamente em uma única coluna, precisamos perguntar por quê. Se existem vários valores independentes, podemos precisar de uma relação para o atributo multivalorado. Se existe uma ocorrência cuja identidade só fica completa dentro de outra entidade, estamos diante de uma dependência de identificação, característica das entidades fracas.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="study-section section-pad alt section-soft" id="limites">
+        <div class="container">
+          <div class="study-heading section-heading">
+            <p class="study-kicker eyebrow">5 · O que o mapeamento não resolve sozinho</p>
+            <h2>Transformar o DER em relações é uma etapa importante, mas não encerra o projeto</h2>
+            <p>O mapeamento responde principalmente à pergunta <strong>“como representar no modelo relacional aquilo que foi definido no modelo conceitual?”</strong>. Depois dessa tradução, ainda precisamos verificar se o esquema preserva corretamente as regras do domínio, se sua estrutura está bem organizada e como essas regras serão efetivamente implementadas no SGBD.</p>
+          </div>
+
+          <div class="compare-strip">
+            <article>
+              <small>Mapeamento</small>
+              <strong>Traduz a representação</strong>
+              <p>Transforma entidades, atributos e relacionamentos em relações, atributos, PKs, FKs e outras estruturas relacionais.</p>
+            </article>
+            <article>
+              <small>Normalização</small>
+              <strong>Analisa a organização interna</strong>
+              <p>Examina dependências entre atributos e ajuda a identificar redundâncias e estruturas que podem produzir anomalias.</p>
+            </article>
+            <article>
+              <small>Implementação</small>
+              <strong>Faz o esquema existir no SGBD</strong>
+              <p>Define tipos, constraints, índices, políticas de atualização e demais decisões concretas da tecnologia escolhida.</p>
+            </article>
+          </div>
+
+          <div class="study-prose">
+            <h3>O mapeamento preserva estruturas, mas não prova automaticamente que o projeto está correto</h3>
+            <p>É possível aplicar corretamente uma regra de transformação e ainda obter um esquema inadequado porque o problema já estava presente no modelo conceitual ou porque alguma regra do domínio não foi representada.</p>
+            <p>Se o DER não registrou que um e-mail deve ser único, por exemplo, o mapeamento não inventará essa regra. Da mesma forma, se uma associação importante foi omitida durante a modelagem, converter o restante do diagrama em relações não corrige essa ausência.</p>
+
+            <div class="callout">
+              <strong>Uma transformação correta pode preservar um modelo incompleto</strong>
+              <p>O mapeamento é uma tradução. Se a origem não representa adequadamente o domínio, a tradução pode ser tecnicamente correta e ainda assim produzir um esquema insuficiente.</p>
+            </div>
+
+            <h3>Por isso, o esquema precisa ser relido como uma representação do domínio</h3>
+            <p>Depois do mapeamento, vale abandonar por alguns instantes o desenho original e observar apenas o conjunto de relações resultante. A pergunta passa a ser: <strong>com essas relações, conseguimos representar todos os fatos e impedir os estados inválidos que realmente importam?</strong></p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>O que verificar?</th>
+                    <th>Pergunta de validação</th>
+                    <th>Exemplo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Identidade</strong></td>
+                    <td>Cada ocorrência importante pode ser distinguida das demais?</td>
+                    <td>Uma RESERVA possui uma identidade clara?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Referências</strong></td>
+                    <td>As associações do domínio continuam representáveis?</td>
+                    <td>RESERVA consegue indicar qual USUARIO e qual SALA participam?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Cardinalidade</strong></td>
+                    <td>O esquema permite exatamente as quantidades previstas?</td>
+                    <td>Um relacionamento 1:1 não foi enfraquecido para 1:N?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Obrigatoriedade</strong></td>
+                    <td>Uma ocorrência pode existir sem uma referência que deveria ser obrigatória?</td>
+                    <td>Uma RESERVA pode ficar sem <code>id_usuario</code>?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Unicidade</strong></td>
+                    <td>Valores que deveriam ser únicos continuam protegidos?</td>
+                    <td>Dois usuários podem ter o mesmo e-mail quando isso não é permitido?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Dependência</strong></td>
+                    <td>Ocorrências dependentes continuam vinculadas à proprietária?</td>
+                    <td>FAIXA_AGENDA continua dependendo de SALA para sua identificação?</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Nem toda regra de negócio cabe em PK, FK, UNIQUE e NOT NULL</h3>
+            <p>As constraints estruturais resolvem uma parte importante do problema, mas algumas regras dependem de combinações mais complexas de valores ou até de informações presentes em várias linhas.</p>
+            <p>Uma FK pode garantir que a sala referenciada em uma reserva existe. Porém, ela não garante que duas reservas não ocupem a mesma sala no mesmo horário. Essa regra depende de <code>id_sala</code>, data, horário e possivelmente duração ou horário final.</p>
+
+            <div class="two-grid">
+              <article class="rule-card">
+                <span>Regra estrutural simples</span>
+                <h3>A sala precisa existir</h3>
+                <p>Uma FK entre <code>RESERVA.id_sala</code> e <code>SALA.id_sala</code> consegue representar essa exigência diretamente.</p>
+              </article>
+              <article class="rule-card">
+                <span>Regra de negócio mais complexa</span>
+                <h3>Não pode haver conflito de horário</h3>
+                <p>A validade depende da comparação entre diferentes reservas e pode exigir uma constraint específica, lógica transacional ou outra estratégia do SGBD.</p>
+              </article>
+            </div>
+
+            <h3>O esquema relacional também precisa ser analisado quanto à redundância</h3>
+            <p>Imagine que, durante o mapeamento, RESERVA recebesse não apenas <code>id_usuario</code>, mas também <code>nome_usuario</code> e <code>email_usuario</code>. O banco continuaria sendo capaz de representar uma reserva, mas os mesmos dados do usuário seriam repetidos em diversas linhas.</p>
+            <p>Se o usuário alterasse o e-mail, várias reservas antigas precisariam ser atualizadas. Se uma delas permanecesse com o valor anterior, o banco passaria a armazenar duas versões do mesmo fato.</p>
+
+            <div class="compare-strip">
+              <article>
+                <small>Referência</small>
+                <strong><code>id_usuario</code></strong>
+                <p>Identifica qual usuário participa da reserva sem repetir seus dados descritivos.</p>
+              </article>
+              <article>
+                <small>Repetição desnecessária</small>
+                <strong><code>nome_usuario</code></strong>
+                <p>Repete em RESERVA uma informação que pertence à relação USUARIO.</p>
+              </article>
+              <article>
+                <small>Consequência</small>
+                <strong>Possível inconsistência</strong>
+                <p>Uma atualização pode modificar algumas cópias e deixar outras com valores antigos.</p>
+              </article>
+            </div>
+
+            <h3>É nesse ponto que a normalização ganha importância</h3>
+            <p>A normalização fornece uma forma sistemática de analisar como os atributos dependem uns dos outros. Em vez de perguntar apenas se uma tabela “parece organizada”, examinamos quais atributos determinam outros atributos e se informações de fatos diferentes foram misturadas na mesma relação.</p>
+            <p>Ela ajuda a compreender problemas como redundância e anomalias de inserção, atualização e exclusão. Também ajuda a justificar por que certos fatos devem permanecer em relações separadas.</p>
+
+            <div class="constraint-table-wrap">
+              <table class="constraint-table">
+                <thead>
+                  <tr>
+                    <th>Tipo de anomalia</th>
+                    <th>O que pode acontecer?</th>
+                    <th>Exemplo conceitual</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Atualização</strong></td>
+                    <td>O mesmo fato precisa ser alterado em várias linhas.</td>
+                    <td>O e-mail do usuário aparece repetido em todas as reservas.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Inserção</strong></td>
+                    <td>Não conseguimos registrar um fato sem registrar outro que ainda não existe.</td>
+                    <td>Não seria possível cadastrar uma sala antes que ela tivesse uma reserva.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Exclusão</strong></td>
+                    <td>Excluir uma ocorrência remove involuntariamente outro fato importante.</td>
+                    <td>Ao apagar a última reserva de uma sala, perderíamos também os dados da própria sala.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Normalização não significa que todo esquema vindo do DER está errado</h3>
+            <p>Um bom processo de modelagem conceitual e de mapeamento já tende a separar fatos diferentes em relações diferentes. No exemplo desenvolvido nas aulas, USUARIO, SALA, RESERVA, TELEFONE_USUARIO e FAIXA_AGENDA já chegam ao modelo relacional com uma organização coerente.</p>
+            <p>Por isso, a normalização não precisa necessariamente decompor ainda mais esse esquema. Ela também pode ser usada para <strong>confirmar e justificar formalmente</strong> que as separações realizadas anteriormente fazem sentido.</p>
+
+            <div class="callout teal">
+              <strong>Ligação com a Aula 06</strong>
+              <p>Na próxima etapa, a normalização será usada tanto para compreender por que o esquema construído até aqui está bem organizado quanto para analisar uma versão propositalmente mal estruturada do mesmo domínio.</p>
+            </div>
+
+            <h3>Depois da estrutura lógica, ainda existem decisões de implementação</h3>
+            <p>Mesmo um esquema relacional correto ainda não é um banco de dados implementado. Precisamos escolher tipos concretos, definir constraints, nomes, políticas de exclusão e atualização, índices e outros detalhes suportados pelo SGBD.</p>
+            <p>Por exemplo, afirmar no modelo relacional que <code>email</code> deve ser único é uma decisão lógica. Na implementação, essa decisão precisa virar uma constraint concreta, como <code>UNIQUE</code>. Da mesma forma, afirmar que uma reserva precisa de uma sala é uma regra lógica que pode ser implementada por uma combinação de <code>FOREIGN KEY</code> e <code>NOT NULL</code>.</p>
+
+            <div class="two-grid">
+              <article class="concept-card">
+                <span>Modelo relacional</span>
+                <h3>Regra lógica</h3>
+                <p>RESERVA referencia SALA e essa participação é obrigatória.</p>
+              </article>
+              <article class="schema-card">
+                <span class="label">Implementação</span>
+                <h3>Regra materializada</h3>
+                <p><code>id_sala INTEGER NOT NULL REFERENCES SALA(id_sala)</code></p>
+              </article>
+            </div>
+
+            <h3>Algumas decisões pertencem ao nível físico e não devem ser antecipadas no DER</h3>
+            <p>Índices, estratégias de armazenamento, detalhes de desempenho e recursos específicos do SGBD não são o foco do modelo conceitual. Eles aparecem depois, quando já sabemos quais fatos precisam ser representados e quais regras devem ser preservadas.</p>
+            <p>Essa separação de níveis evita que decisões de uma tecnologia específica sejam confundidas com regras do domínio.</p>
+
+            <h3>Validar o esquema também significa testar cenários limites</h3>
+            <p>Uma forma útil de revisar o modelo é imaginar situações que podem revelar fragilidades. O que acontece se um usuário possuir três telefones? E se uma pessoa ainda não possuir crachá? E se duas salas tiverem uma faixa no mesmo horário? E se o mesmo aluno cursar novamente a mesma disciplina em outro semestre?</p>
+            <p>Esses cenários obrigam o projeto a mostrar se chaves, cardinalidades e restrições realmente representam o que o domínio permite.</p>
+
+            <div class="callout">
+              <strong>Validação não é apenas conferir o desenho</strong>
+              <p>Um esquema é melhor compreendido quando tentamos inserir nele situações válidas e inválidas do domínio e verificamos se a estrutura consegue diferenciá-las.</p>
+            </div>
+
+            <h3>O percurso completo mantém cada decisão em seu nível</h3>
+            <p>O projeto de banco de dados pode ser entendido como uma sequência de refinamentos. Primeiro identificamos os fatos do domínio. Depois organizamos esses fatos conceitualmente. Em seguida, traduzimos o modelo para relações, analisamos a qualidade dessa estrutura e, finalmente, implementamos as regras no SGBD.</p>
+
+            <div class="mapping-grid" aria-label="Percurso do projeto de banco de dados">
+              <article class="mapping-step"><b>1</b><strong>Domínio</strong><p>Quais fatos, objetos e regras precisam ser representados?</p></article>
+              <article class="mapping-step"><b>2</b><strong>DER</strong><p>Como entidades, atributos e relacionamentos expressam esses fatos?</p></article>
+              <article class="mapping-step"><b>3</b><strong>Modelo relacional</strong><p>Como preservar essas decisões usando relações, chaves e restrições?</p></article>
+              <article class="mapping-step"><b>4</b><strong>Implementação</strong><p>Como materializar e fazer essas regras valerem no SGBD escolhido?</p></article>
+            </div>
+          </div>
+
+          <div class="callout teal">
+            <strong>Ideia central desta seção</strong>
+            <p>O mapeamento resolve a mudança de representação, mas o projeto ainda precisa ser validado. Normalização, constraints e decisões de implementação atuam em problemas diferentes e complementares. Um bom esquema surge quando significado, organização e implementação permanecem coerentes entre si.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="study-section section-pad" id="sintese">
+        <div class="container">
+          <div class="study-heading section-heading">
+            <p class="study-kicker eyebrow">Síntese conceitual</p>
+            <h2>Mapear é preservar sem copiar literalmente</h2>
+            <p>A passagem do DER para o esquema relacional é uma tradução entre formas diferentes de representar os mesmos fatos do domínio.</p>
+          </div>
+
+          <div class="three-grid">
+            <article class="note-card"><strong>Identidade</strong><p>Identificadores conceituais tornam-se chaves capazes de distinguir tuplas e sustentar referências.</p></article>
+            <article class="note-card"><strong>Associação</strong><p>Cardinalidades e participação orientam onde FKs aparecem, quando é necessária unicidade e quando surge uma relação intermediária.</p></article>
+            <article class="note-card"><strong>Dependência</strong><p>Atributos multivalorados e entidades fracas mostram que alguns fatos só podem ser preservados mediante novas relações ou chaves compostas.</p></article>
+          </div>
+
+          <div class="study-prose" style="margin-top:2.2rem">
+            <h3>Referências para aprofundamento</h3>
+            <ul class="references">
+              <li>ELMASRI, Ramez; NAVATHE, Shamkant B. <em>Sistemas de banco de dados</em>. Capítulos 7 a 9, especialmente o algoritmo de mapeamento ER/EER para o modelo relacional.</li>
+              <li>MACHADO, Felipe Nery Rodrigues. <em>Banco de Dados: Projeto e Implementação</em>. Discussões sobre níveis conceitual, lógico e físico e sobre transformação de modelos.</li>
+              <li>SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S. <em>Database System Concepts</em>. Capítulo 6: projeto usando o modelo E-R e redução para esquemas relacionais.</li>
+              <li>HAO, Qiang; TSIKERDEKIS, Michail. <em>Grokking Relational Database Design</em>. Capítulos 4 a 6: entidades, relacionamentos, normalização e implementação.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="standard-toc" aria-label="Índice desta página">
+      <div class="standard-toc-head"><span class="standard-toc-label">Nesta página</span></div>
+      <nav></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Prof. Philipe Fransozi</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+</body>
+</html>
