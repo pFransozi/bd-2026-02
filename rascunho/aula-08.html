@@ -38,10 +38,17 @@
     .topic-exercises{margin:1.45rem 0 2.5rem;padding:1.15rem;border:1px dashed var(--line);border-radius:18px;background:color-mix(in srgb,var(--primary) 3%,var(--surface))}
     .topic-exercises-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem}.topic-exercises-head strong{font-size:.9rem;color:var(--primary)}.topic-exercises-head span{font-size:.82rem;color:var(--muted)}
     .topic-exercises-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.topic-exercise{padding:1rem;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.topic-exercise b{display:block;margin-bottom:.35rem}.topic-exercise p{margin:0;color:var(--muted)}
+    .join-set-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.35rem 0 1.6rem}
+    .join-set-card{padding:1.1rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+    .join-set-card h3{margin:.1rem 0 .35rem}.join-set-card>p{margin:.2rem 0 1rem;color:var(--muted)}
+    .join-set-svg{display:block;width:100%;height:auto;max-width:310px;margin:.35rem auto .9rem}
+    .join-set-labels{display:flex;justify-content:space-between;gap:1rem;color:var(--muted);font-size:.78rem;font-weight:800}
+    .join-set-note{font-size:.88rem;color:var(--muted)}
 
-    @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}.three-grid,.four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+    @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}.three-grid,.four-grid,.join-set-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:900px){.dml-hero-grid,.overview-grid,.two-grid,.question-step,.topic-exercises-grid{grid-template-columns:1fr}}
-    @media(max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc,.three-grid,.four-grid{grid-template-columns:1fr}.dml-section{padding:4rem 0;scroll-margin-top:90px}.practice-card{padding-left:1.25rem!important;padding-top:4.8rem!important}.practice-card>h3{min-height:0}}
+    @media(max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc,.three-grid,.four-grid,.join-set-grid{grid-template-columns:1fr}.dml-section{padding:4rem 0;scroll-margin-top:90px}.practice-card{padding-left:1.25rem!important;padding-top:4.8rem!important}.practice-card>h3{min-height:0}}
   </style>
   <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
   <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
@@ -708,7 +715,75 @@ WHERE r.id_reserva IS NULL;
 
       <div class="callout warn"><strong>Não escolha o JOIN pelo nome mais conhecido</strong><p>Primeiro formule a pergunta. Se linhas sem correspondência precisam continuar no resultado, uma junção externa como <code>LEFT JOIN</code> é necessária.</p></div>
 
-      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.9 · Por que vamos preferir JOIN ... ON?</p><h2>Deixe explícita a condição que representa o relacionamento</h2><p>SQL possui outras formas de expressar junções. Nesta disciplina vamos priorizar <code>JOIN ... ON</code>, porque ele separa claramente a condição de relacionamento das condições de filtragem e obriga a consulta a registrar quais colunas estão sendo relacionadas.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:3rem"><p class="dml-kicker eyebrow">4.9 · Uma intuição pela teoria dos conjuntos</p><h2>Visualize quais linhas permanecem no resultado</h2><p>As figuras abaixo ajudam a criar uma intuição sobre o que cada tipo de junção preserva. Considere o conjunto da esquerda como <code>usuario</code> e o da direita como <code>reserva</code>. A correspondência continua sendo definida pela condição do <code>ON</code>.</p></div>
+
+      <div class="join-set-grid">
+        <article class="join-set-card">
+          <h3><code>INNER JOIN</code></h3>
+          <p>Permanece apenas o que encontra correspondência dos dois lados.</p>
+          <svg class="join-set-svg" viewBox="0 0 320 190" role="img" aria-labelledby="inner-title">
+            <title id="inner-title">Representação intuitiva de INNER JOIN pela sobreposição de dois conjuntos</title>
+            <defs>
+              <clipPath id="inner-left-clip"><circle cx="125" cy="95" r="70"/></clipPath>
+            </defs>
+            <circle cx="125" cy="95" r="70" fill="none" stroke="currentColor" stroke-width="3" opacity=".55"/>
+            <circle cx="195" cy="95" r="70" fill="none" stroke="currentColor" stroke-width="3" opacity=".55"/>
+            <circle cx="195" cy="95" r="70" fill="var(--primary)" opacity=".28" clip-path="url(#inner-left-clip)"/>
+            <text x="78" y="36" font-size="16" font-weight="800" fill="currentColor">A</text>
+            <text x="230" y="36" font-size="16" font-weight="800" fill="currentColor">B</text>
+          </svg>
+          <div class="join-set-labels"><span>A · usuario</span><span>B · reserva</span></div>
+          <p class="join-set-note"><strong>Leitura:</strong> usuários que possuem uma reserva correspondente.</p>
+        </article>
+
+        <article class="join-set-card">
+          <h3><code>LEFT JOIN</code></h3>
+          <p>Todo o conjunto da esquerda permanece, exista ou não correspondência à direita.</p>
+          <svg class="join-set-svg" viewBox="0 0 320 190" role="img" aria-labelledby="left-title">
+            <title id="left-title">Representação intuitiva de LEFT JOIN preservando todo o conjunto da esquerda</title>
+            <circle cx="125" cy="95" r="70" fill="var(--primary)" opacity=".22" stroke="currentColor" stroke-width="3"/>
+            <circle cx="195" cy="95" r="70" fill="none" stroke="currentColor" stroke-width="3" opacity=".55"/>
+            <text x="78" y="36" font-size="16" font-weight="800" fill="currentColor">A</text>
+            <text x="230" y="36" font-size="16" font-weight="800" fill="currentColor">B</text>
+          </svg>
+          <div class="join-set-labels"><span>A · usuario</span><span>B · reserva</span></div>
+          <p class="join-set-note"><strong>Leitura:</strong> todos os usuários, inclusive aqueles sem reserva.</p>
+        </article>
+
+        <article class="join-set-card">
+          <h3><code>LEFT JOIN</code> + <code>IS NULL</code></h3>
+          <p>Fica apenas a parte da esquerda que não encontrou correspondência.</p>
+          <svg class="join-set-svg" viewBox="0 0 320 190" role="img" aria-labelledby="anti-title">
+            <title id="anti-title">Representação intuitiva da parte do conjunto da esquerda sem correspondência no conjunto da direita</title>
+            <defs>
+              <mask id="anti-mask">
+                <rect width="320" height="190" fill="white"/>
+                <circle cx="195" cy="95" r="70" fill="black"/>
+              </mask>
+            </defs>
+            <circle cx="125" cy="95" r="70" fill="var(--primary)" opacity=".30" mask="url(#anti-mask)"/>
+            <circle cx="125" cy="95" r="70" fill="none" stroke="currentColor" stroke-width="3" opacity=".55"/>
+            <circle cx="195" cy="95" r="70" fill="none" stroke="currentColor" stroke-width="3" opacity=".55"/>
+            <text x="78" y="36" font-size="16" font-weight="800" fill="currentColor">A</text>
+            <text x="230" y="36" font-size="16" font-weight="800" fill="currentColor">B</text>
+          </svg>
+          <div class="join-set-labels"><span>A · usuario</span><span>B · reserva</span></div>
+          <p class="join-set-note"><strong>Leitura:</strong> usuários que ainda não possuem reserva.</p>
+        </article>
+      </div>
+
+      <div class="callout warn"><strong>Use as figuras como intuição, não como definição completa</strong><p>Um <code>JOIN</code> não é simplesmente uma interseção geométrica. Em SQL, a junção combina <strong>linhas e colunas de relações diferentes</strong> de acordo com a expressão do <code>ON</code>. As figuras ajudam a visualizar quais linhas são preservadas no resultado.</p></div>
+
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Para a pergunta “quais salas nunca foram reservadas?”, indique qual das três representações melhor descreve o resultado desejado e justifique.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Para a pergunta “quais usuários possuem pelo menos uma reserva?”, indique qual representação corresponde melhor à consulta.</p></article>
+        </div>
+      </div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.10 · Por que vamos preferir JOIN ... ON?</p><h2>Deixe explícita a condição que representa o relacionamento</h2><p>SQL possui outras formas de expressar junções. Nesta disciplina vamos priorizar <code>JOIN ... ON</code>, porque ele separa claramente a condição de relacionamento das condições de filtragem e obriga a consulta a registrar quais colunas estão sendo relacionadas.</p></div>
 
       <div class="callout"><strong>Sobre NATURAL JOIN</strong><p>Esse recurso cria condições de igualdade implicitamente a partir de colunas com o mesmo nome. Isso pode parecer conveniente, mas uma mudança no esquema ou a existência de outra coluna homônima pode alterar o resultado. Por isso, nos exemplos da disciplina, a condição de junção ficará explícita.</p></div>
 
