@@ -173,7 +173,8 @@ CREATE TABLE reserva (
 INSERT INTO bloco (id_bloco, nome_bloco) VALUES
     (1, 'Bloco A'),
     (2, 'Bloco B'),
-    (3, 'Bloco C');
+    (3, 'Bloco C'),
+    (4, 'Bloco D');
 
 INSERT INTO usuario (id_usuario, nome) VALUES
     (8, 'Larissa Moura'),
@@ -181,21 +182,39 @@ INSERT INTO usuario (id_usuario, nome) VALUES
     (42, 'Gustavo Neri'),
     (55, 'Ana Souza'),
     (71, 'Bruno Ramos'),
-    (100, 'João Martins');
+    (100, 'João Martins'),
+    (108, 'Camila Freitas'),
+    (112, 'Rafael Costa'),
+    (119, 'Beatriz Lima'),
+    (124, 'Diego Martins'),
+    (130, 'Pedro Alves'),
+    (135, 'Sofia Rocha');
 
 INSERT INTO telefone_usuario (id_usuario, telefone) VALUES
     (8, '41981234567'),
     (17, '41987651223'),
     (17, '41991128080'),
     (42, '41984327710'),
-    (55, '41990001122');
+    (55, '41990001122'),
+    (71, '41982223344'),
+    (100, '41985556677'),
+    (108, '41987778899'),
+    (112, '41983334455'),
+    (119, '41986667788'),
+    (124, '41989990011'),
+    (135, '41981112233');
 
 INSERT INTO sala (id_sala, nome, capacidade, id_bloco) VALUES
     (118, 'Sala Araucária', 8, 1),
     (119, 'Sala Cedro', 12, 1),
+    (120, 'Sala Imbuia', 20, 1),
     (204, 'Sala Ipê', 6, 2),
     (205, 'Sala Pinhão', 4, 2),
-    (305, 'Sala Horizonte', 10, 3);
+    (206, 'Sala Gralha Azul', 14, 2),
+    (305, 'Sala Horizonte', 10, 3),
+    (306, 'Laboratório Sul', 24, 3),
+    (401, 'Laboratório Maker', 16, 4),
+    (402, 'Sala Inovação', 30, 4);
 
 INSERT INTO reserva
     (id_reserva, id_usuario, id_sala, data, hora_inicio, situacao, observacao)
@@ -207,7 +226,19 @@ VALUES
     (5, 17, 118, '2026-10-10', '18:30', 'ativa', 'Estudo em grupo'),
     (6, 71, 204, '2026-10-10', '19:30', 'ativa', NULL),
     (7, 42, 305, '2026-10-11', '18:00', 'concluida', 'Defesa de trabalho'),
-    (8, 55, 205, '2026-10-11', '20:00', 'ativa', NULL);
+    (8, 55, 205, '2026-10-11', '20:00', 'ativa', NULL),
+    (9, 100, 120, '2026-10-12', '08:00', 'ativa', 'Encontro da equipe'),
+    (10, 108, 206, '2026-10-12', '10:00', 'cancelada', NULL),
+    (11, 112, 306, '2026-10-12', '14:00', 'ativa', 'Revisão de sprint'),
+    (12, 119, 401, '2026-10-12', '16:00', 'concluida', 'Oficina de prototipação'),
+    (13, 124, 402, '2026-10-13', '09:00', 'ativa', NULL),
+    (14, 135, 118, '2026-10-13', '18:30', 'ativa', 'Orientação de projeto'),
+    (15, 8, 206, '2026-10-13', '19:30', 'cancelada', NULL),
+    (16, 17, 305, '2026-10-14', '18:00', 'concluida', 'Apresentação parcial'),
+    (17, 42, 401, '2026-10-14', '19:00', 'ativa', NULL),
+    (18, 71, 402, '2026-10-14', '20:00', 'ativa', 'Planejamento'),
+    (19, 108, 119, '2026-10-15', '18:30', 'concluida', NULL),
+    (20, 112, 204, '2026-10-15', '19:30', 'ativa', 'Reunião técnica');
 """)
 
 conexao.commit()
@@ -226,7 +257,7 @@ print("Banco preparado.")</code></pre></div>
         print(linha)</code></pre></div>
 
       <div class="sql-block"><span class="sql-label">Teste inicial</span><pre><code>consultar("SELECT * FROM usuario;")</code></pre></div>
-      <div class="callout ok"><strong>Antes de avançar</strong><p>Devem aparecer seis usuários. Se o resultado estiver correto, o laboratório está pronto.</p></div>
+      <div class="callout ok"><strong>Antes de avançar</strong><p>Devem aparecer doze usuários. Se o resultado estiver correto, o laboratório está pronto.</p></div>
     </div></section>
 
     <section class="dml-section section-pad section-soft alt" id="select"><div class="container">
@@ -397,7 +428,7 @@ SELECT COUNT(*) AS combinacoes
 FROM usuario, reserva;
 """)</code></pre></div>
 
-      <div class="callout warn"><strong>6 usuários × 8 reservas = 48 combinações</strong><p>Sem uma condição de relacionamento, cada usuário é combinado com cada reserva. A maioria dessas combinações não representa um fato do nosso domínio.</p></div>
+      <div class="callout warn"><strong>12 usuários × 20 reservas = 240 combinações</strong><p>Sem uma condição de relacionamento, cada usuário é combinado com cada reserva. A maioria dessas combinações não representa um fato do nosso domínio.</p></div>
 
       <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">INNER JOIN</p><h2>Use as chaves para recuperar somente as combinações relacionadas</h2></div>
 
