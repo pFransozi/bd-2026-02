@@ -35,8 +35,12 @@
     .practice-list{display:grid;gap:1rem}.practice-card{position:relative;padding-left:5.4rem!important}.practice-card .n{position:absolute;left:1.25rem;top:1.25rem;display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:12px;background:var(--primary);color:#fff;font-weight:900}.practice-card>h3{min-height:2.4rem;display:flex;align-items:center;margin-top:0}
     .question-step{display:grid;grid-template-columns:minmax(180px,.35fr) minmax(0,1fr);gap:1rem;align-items:start;margin:1rem 0}.question-step .card{height:100%}
     .mini-query{font-weight:850;color:var(--primary)}
+    .topic-exercises{margin:1.45rem 0 2.5rem;padding:1.15rem;border:1px dashed var(--line);border-radius:18px;background:color-mix(in srgb,var(--primary) 3%,var(--surface))}
+    .topic-exercises-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem}.topic-exercises-head strong{font-size:.9rem;color:var(--primary)}.topic-exercises-head span{font-size:.82rem;color:var(--muted)}
+    .topic-exercises-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.topic-exercise{padding:1rem;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.topic-exercise b{display:block;margin-bottom:.35rem}.topic-exercise p{margin:0;color:var(--muted)}
+
     @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}.three-grid,.four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:900px){.dml-hero-grid,.overview-grid,.two-grid,.question-step{grid-template-columns:1fr}}
+    @media(max-width:900px){.dml-hero-grid,.overview-grid,.two-grid,.question-step,.topic-exercises-grid{grid-template-columns:1fr}}
     @media(max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc,.three-grid,.four-grid{grid-template-columns:1fr}.dml-section{padding:4rem 0;scroll-margin-top:90px}.practice-card{padding-left:1.25rem!important;padding-top:4.8rem!important}.practice-card>h3{min-height:0}}
   </style>
   <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
@@ -280,6 +284,13 @@ SELECT nome
 FROM usuario;
 """)</code></pre></div>
       </div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Mostre apenas o <strong>nome</strong> e a <strong>capacidade</strong> de todas as salas.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Mostre apenas <strong>data</strong>, <strong>hora de início</strong> e <strong>situação</strong> de todas as reservas.</p></article>
+        </div>
+      </div>
 
       <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Aliases</p><h2>O resultado também pode ser apresentado com nomes mais claros</h2></div>
       <div class="sql-block"><span class="sql-label">AS · nome temporário no resultado</span><pre><code>consultar("""
@@ -289,6 +300,13 @@ SELECT
 FROM usuario;
 """)</code></pre></div>
       <div class="callout"><strong>O alias não altera a tabela</strong><p><code>AS</code> muda apenas o cabeçalho apresentado pela consulta. A coluna continua se chamando <code>id_usuario</code> no banco.</p></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Consulte as salas exibindo <code>nome</code> com o cabeçalho <strong>sala</strong> e <code>capacidade</code> com o cabeçalho <strong>lugares</strong>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Consulte as reservas exibindo <code>id_reserva</code> com o cabeçalho <strong>codigo_reserva</strong> e <code>situacao</code> com o cabeçalho <strong>estado</strong>.</p></article>
+        </div>
+      </div>
 
       <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">DISTINCT</p><h2>Quando queremos valores diferentes, e não todas as ocorrências</h2></div>
       <div class="sql-block"><span class="sql-label">Primeiro observe as repetições</span><pre><code>consultar("""
@@ -300,6 +318,13 @@ SELECT DISTINCT situacao
 FROM reserva;
 """)</code></pre></div>
       <div class="callout ok"><strong>Importante</strong><p><code>DISTINCT</code> não apaga dados. Ele apenas elimina linhas repetidas do resultado produzido pela consulta.</p></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste, sem repetição, os <strong>identificadores das salas</strong> que aparecem em alguma reserva.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Liste, sem repetição, as <strong>datas</strong> em que existe pelo menos uma reserva cadastrada.</p></article>
+        </div>
+      </div>
     </div></section>
 
     <section class="dml-section section-pad" id="filtros"><div class="container">
@@ -320,6 +345,13 @@ WHERE capacidade >= 8;
         <tr><td><code>&gt;</code> / <code>&gt;=</code></td><td>maior / maior ou igual</td><td><code>capacidade &gt;= 8</code></td></tr>
         <tr><td><code>&lt;</code> / <code>&lt;=</code></td><td>menor / menor ou igual</td><td><code>capacidade &lt; 10</code></td></tr>
       </tbody></table></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste as salas com capacidade <strong>menor que 10</strong>, mostrando nome e capacidade.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Liste as reservas cuja situação seja <strong>cancelada</strong>, mostrando id, data e horário.</p></article>
+        </div>
+      </div>
 
       <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">AND, OR e NOT</p><h2>Combine condições</h2><p>Uma pergunta pode exigir mais de um critério ao mesmo tempo.</p></div>
 
@@ -342,6 +374,13 @@ SELECT id_reserva, situacao
 FROM reserva
 WHERE NOT situacao = 'cancelada';
 """)</code></pre></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste as reservas <strong>ativas</strong> realizadas em <strong>2026-10-12</strong>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Liste as reservas que estejam <strong>canceladas ou concluídas</strong>, mas não mostre as reservas ativas.</p></article>
+        </div>
+      </div>
 
       <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Atalhos úteis de filtragem</p><h2>IN, BETWEEN e LIKE</h2></div>
 
@@ -356,12 +395,26 @@ SELECT id_reserva, situacao
 FROM reserva
 WHERE situacao IN ('ativa', 'concluida');
 """)</code></pre></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste as reservas feitas pelos usuários de id <strong>17, 42 ou 55</strong>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Liste as salas cujos identificadores sejam <strong>118, 204, 305 ou 401</strong>.</p></article>
+        </div>
+      </div>
 
       <div class="sql-block"><span class="sql-label">BETWEEN · intervalo de capacidade</span><pre><code>consultar("""
 SELECT nome, capacidade
 FROM sala
 WHERE capacidade BETWEEN 6 AND 10;
 """)</code></pre></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste as salas com capacidade entre <strong>10 e 20 pessoas</strong>, incluindo os limites.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Liste as reservas com data entre <strong>2026-10-12</strong> e <strong>2026-10-14</strong>.</p></article>
+        </div>
+      </div>
 
       <div class="sql-block"><span class="sql-label">LIKE · nomes iniciados por M</span><pre><code>consultar("""
 SELECT id_usuario, nome
@@ -370,6 +423,13 @@ WHERE nome LIKE 'M%';
 """)</code></pre></div>
 
       <div class="callout"><strong>O curinga <code>%</code></strong><p>Em <code>LIKE</code>, <code>%</code> representa qualquer sequência de caracteres. Assim, <code>'M%'</code> significa “começa com M”, enquanto <code>'%a%'</code> significa “contém a letra a em alguma posição”.</p></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste os usuários cujo nome contenha a sequência <strong>“Martins”</strong>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Liste as salas cujo nome comece com <strong>“Sala”</strong>, excluindo visualmente os laboratórios do resultado.</p></article>
+        </div>
+      </div>
     </div></section>
 
     <section class="dml-section section-pad section-soft alt" id="null-ordem"><div class="container">
@@ -393,6 +453,13 @@ SELECT id_reserva, observacao
 FROM reserva
 WHERE observacao IS NOT NULL;
 """)</code></pre></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste <strong>data, horário e situação</strong> das reservas que não possuem observação.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Liste <strong>id da reserva e observação</strong> somente das reservas em que uma observação foi registrada.</p></article>
+        </div>
+      </div>
 
       <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">ORDER BY</p><h2>Filtrar decide quem aparece. Ordenar decide em que sequência.</h2></div>
 
@@ -409,6 +476,13 @@ ORDER BY data ASC, hora_inicio ASC;
 """)</code></pre></div>
 
       <div class="callout ok"><strong>ASC e DESC</strong><p><code>ASC</code> ordena de forma crescente e é o padrão. <code>DESC</code> ordena de forma decrescente.</p></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste os usuários em <strong>ordem alfabética pelo nome</strong>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Liste as reservas da <strong>mais recente para a mais antiga</strong>; para reservas na mesma data, mostre primeiro o horário mais tarde.</p></article>
+        </div>
+      </div>
     </div></section>
 
     <section class="dml-section section-pad" id="join"><div class="container">
@@ -429,6 +503,13 @@ FROM usuario, reserva;
 """)</code></pre></div>
 
       <div class="callout warn"><strong>12 usuários × 20 reservas = 240 combinações</strong><p>Sem uma condição de relacionamento, cada usuário é combinado com cada reserva. A maioria dessas combinações não representa um fato do nosso domínio.</p></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Sem executar primeiro, calcule quantas combinações seriam produzidas por <code>sala</code> × <code>bloco</code> sem condição de relacionamento. Depois confirme com uma consulta usando <code>COUNT(*)</code>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Compare a quantidade de linhas de <code>usuario</code> × <code>reserva</code> com a quantidade real de reservas. Explique por que os números são diferentes.</p></article>
+        </div>
+      </div>
 
       <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">INNER JOIN</p><h2>Use as chaves para recuperar somente as combinações relacionadas</h2></div>
 
@@ -444,6 +525,13 @@ INNER JOIN usuario AS u
 """)</code></pre></div>
 
       <div class="callout ok"><strong>Leia o <code>ON</code> como uma regra de correspondência</strong><p>Uma linha de <code>reserva</code> só é combinada com a linha de <code>usuario</code> cujo identificador é o mesmo valor armazenado na FK <code>r.id_usuario</code>.</p></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Mostre cada <strong>sala</strong> junto com o <strong>nome do bloco</strong> ao qual ela pertence.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Mostre cada <strong>telefone</strong> junto com o <strong>nome do usuário</strong> correspondente.</p></article>
+        </div>
+      </div>
 
       <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Mais de uma junção</p><h2>Monte uma resposta que faça sentido para o sistema</h2><p>Agora queremos saber quem reservou, qual sala foi utilizada e em qual bloco ela está.</p></div>
 
@@ -482,6 +570,13 @@ INNER JOIN sala AS s
 WHERE r.situacao = 'ativa'
 ORDER BY r.data, r.hora_inicio;
 """)</code></pre></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Monte uma consulta que mostre <strong>usuário, sala e bloco</strong> apenas para reservas <strong>concluídas</strong>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Mostre <strong>usuário, sala, data e horário</strong> das reservas realizadas em salas com capacidade <strong>maior ou igual a 16</strong>, ordenando por data.</p></article>
+        </div>
+      </div>
     </div></section>
 
     <section class="dml-section section-pad section-soft alt" id="algebra"><div class="container">
@@ -523,6 +618,13 @@ FROM reserva;
 """)</code></pre></div>
 
       <div class="callout"><strong>Não transforme isso em memorização de comandos</strong><p>O objetivo é perceber que uma consulta pode ser entendida como uma sequência de operações sobre conjuntos de linhas e colunas. Essa leitura ajuda a construir consultas mais complexas depois.</p></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Use uma operação de conjunto para obter os <strong>ids de usuários</strong> que aparecem em reservas <strong>ativas ou canceladas</strong>, sem duplicidades.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Use uma operação de diferença para descobrir quais <strong>salas nunca aparecem em uma reserva</strong>.</p></article>
+        </div>
+      </div>
     </div></section>
 
     <section class="dml-section section-pad" id="pratica"><div class="container">
