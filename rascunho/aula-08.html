@@ -285,7 +285,7 @@ FROM usuario;
 """)</code></pre></div>
       </div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Mostre apenas o <strong>nome</strong> e a <strong>capacidade</strong> de todas as salas.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Mostre apenas <strong>data</strong>, <strong>hora de início</strong> e <strong>situação</strong> de todas as reservas.</p></article>
@@ -301,7 +301,7 @@ FROM usuario;
 """)</code></pre></div>
       <div class="callout"><strong>O alias não altera a tabela</strong><p><code>AS</code> muda apenas o cabeçalho apresentado pela consulta. A coluna continua se chamando <code>id_usuario</code> no banco.</p></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Consulte as salas exibindo <code>nome</code> com o cabeçalho <strong>sala</strong> e <code>capacidade</code> com o cabeçalho <strong>lugares</strong>.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Consulte as reservas exibindo <code>id_reserva</code> com o cabeçalho <strong>codigo_reserva</strong> e <code>situacao</code> com o cabeçalho <strong>estado</strong>.</p></article>
@@ -319,7 +319,7 @@ FROM reserva;
 """)</code></pre></div>
       <div class="callout ok"><strong>Importante</strong><p><code>DISTINCT</code> não apaga dados. Ele apenas elimina linhas repetidas do resultado produzido pela consulta.</p></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Liste, sem repetição, os <strong>identificadores das salas</strong> que aparecem em alguma reserva.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Liste, sem repetição, as <strong>datas</strong> em que existe pelo menos uma reserva cadastrada.</p></article>
@@ -346,7 +346,7 @@ WHERE capacidade >= 8;
         <tr><td><code>&lt;</code> / <code>&lt;=</code></td><td>menor / menor ou igual</td><td><code>capacidade &lt; 10</code></td></tr>
       </tbody></table></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Liste as salas com capacidade <strong>menor que 10</strong>, mostrando nome e capacidade.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Liste as reservas cuja situação seja <strong>cancelada</strong>, mostrando id, data e horário.</p></article>
@@ -375,7 +375,7 @@ FROM reserva
 WHERE NOT situacao = 'cancelada';
 """)</code></pre></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Liste as reservas <strong>ativas</strong> realizadas em <strong>2026-10-12</strong>.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Liste as reservas que estejam <strong>canceladas ou concluídas</strong>, mas não mostre as reservas ativas.</p></article>
@@ -396,7 +396,7 @@ FROM reserva
 WHERE situacao IN ('ativa', 'concluida');
 """)</code></pre></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Liste as reservas feitas pelos usuários de id <strong>17, 42 ou 55</strong>.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Liste as salas cujos identificadores sejam <strong>118, 204, 305 ou 401</strong>.</p></article>
@@ -409,7 +409,7 @@ FROM sala
 WHERE capacidade BETWEEN 6 AND 10;
 """)</code></pre></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Liste as salas com capacidade entre <strong>10 e 20 pessoas</strong>, incluindo os limites.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Liste as reservas com data entre <strong>2026-10-12</strong> e <strong>2026-10-14</strong>.</p></article>
@@ -424,7 +424,7 @@ WHERE nome LIKE 'M%';
 
       <div class="callout"><strong>O curinga <code>%</code></strong><p>Em <code>LIKE</code>, <code>%</code> representa qualquer sequência de caracteres. Assim, <code>'M%'</code> significa “começa com M”, enquanto <code>'%a%'</code> significa “contém a letra a em alguma posição”.</p></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Liste os usuários cujo nome contenha a sequência <strong>“Martins”</strong>.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Liste as salas cujo nome comece com <strong>“Sala”</strong>, excluindo visualmente os laboratórios do resultado.</p></article>
@@ -454,7 +454,7 @@ FROM reserva
 WHERE observacao IS NOT NULL;
 """)</code></pre></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Liste <strong>data, horário e situação</strong> das reservas que não possuem observação.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Liste <strong>id da reserva e observação</strong> somente das reservas em que uma observação foi registrada.</p></article>
@@ -477,7 +477,7 @@ ORDER BY data ASC, hora_inicio ASC;
 
       <div class="callout ok"><strong>ASC e DESC</strong><p><code>ASC</code> ordena de forma crescente e é o padrão. <code>DESC</code> ordena de forma decrescente.</p></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Liste os usuários em <strong>ordem alfabética pelo nome</strong>.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Liste as reservas da <strong>mais recente para a mais antiga</strong>; para reservas na mesma data, mostre primeiro o horário mais tarde.</p></article>
@@ -504,7 +504,7 @@ FROM usuario, reserva;
 
       <div class="callout warn"><strong>12 usuários × 20 reservas = 240 combinações</strong><p>Sem uma condição de relacionamento, cada usuário é combinado com cada reserva. A maioria dessas combinações não representa um fato do nosso domínio.</p></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Sem executar primeiro, calcule quantas combinações seriam produzidas por <code>sala</code> × <code>bloco</code> sem condição de relacionamento. Depois confirme com uma consulta usando <code>COUNT(*)</code>.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Compare a quantidade de linhas de <code>usuario</code> × <code>reserva</code> com a quantidade real de reservas. Explique por que os números são diferentes.</p></article>
@@ -526,7 +526,7 @@ INNER JOIN usuario AS u
 
       <div class="callout ok"><strong>Leia o <code>ON</code> como uma regra de correspondência</strong><p>Uma linha de <code>reserva</code> só é combinada com a linha de <code>usuario</code> cujo identificador é o mesmo valor armazenado na FK <code>r.id_usuario</code>.</p></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Mostre cada <strong>sala</strong> junto com o <strong>nome do bloco</strong> ao qual ela pertence.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Mostre cada <strong>telefone</strong> junto com o <strong>nome do usuário</strong> correspondente.</p></article>
@@ -571,7 +571,7 @@ WHERE r.situacao = 'ativa'
 ORDER BY r.data, r.hora_inicio;
 """)</code></pre></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Monte uma consulta que mostre <strong>usuário, sala e bloco</strong> apenas para reservas <strong>concluídas</strong>.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Mostre <strong>usuário, sala, data e horário</strong> das reservas realizadas em salas com capacidade <strong>maior ou igual a 16</strong>, ordenando por data.</p></article>
@@ -619,7 +619,7 @@ FROM reserva;
 
       <div class="callout"><strong>Não transforme isso em memorização de comandos</strong><p>O objetivo é perceber que uma consulta pode ser entendida como uma sequência de operações sobre conjuntos de linhas e colunas. Essa leitura ajuda a construir consultas mais complexas depois.</p></div>
       <div class="topic-exercises">
-        <div class="topic-exercises-head"><strong>Agora pratique</strong><span>Use a mesma base. Não há resposta pronta.</span></div>
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
           <article class="topic-exercise"><b>1.</b><p>Use uma operação de conjunto para obter os <strong>ids de usuários</strong> que aparecem em reservas <strong>ativas ou canceladas</strong>, sem duplicidades.</p></article>
           <article class="topic-exercise"><b>2.</b><p>Use uma operação de diferença para descobrir quais <strong>salas nunca aparecem em uma reserva</strong>.</p></article>
