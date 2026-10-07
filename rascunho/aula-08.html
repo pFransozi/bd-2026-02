@@ -218,7 +218,8 @@ INSERT INTO sala (id_sala, nome, capacidade, id_bloco) VALUES
     (305, 'Sala Horizonte', 10, 3),
     (306, 'Laboratório Sul', 24, 3),
     (401, 'Laboratório Maker', 16, 4),
-    (402, 'Sala Inovação', 30, 4);
+    (402, 'Sala Inovação', 30, 4),
+    (403, 'Sala Jacarandá', 18, 4);
 
 INSERT INTO reserva
     (id_reserva, id_usuario, id_sala, data, hora_inicio, situacao, observacao)
@@ -486,32 +487,66 @@ ORDER BY data ASC, hora_inicio ASC;
     </div></section>
 
     <section class="dml-section section-pad" id="join"><div class="container">
-      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">4 · Consultando mais de uma tabela</p><h2>Uma reserva possui identificadores. A pergunta do usuário precisa de significado.</h2><p>Observe a tabela <code>reserva</code>: ela armazena <code>id_usuario</code> e <code>id_sala</code>. Isso é suficiente para manter os relacionamentos, mas não é a forma mais útil de apresentar a informação para uma pessoa.</p></div>
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">4 · Junções</p><h2>Quando uma pergunta atravessa mais de uma tabela</h2><p>Em um banco relacional, informações que pertencem a conceitos diferentes ficam separadas. A consulta precisa reconstruir temporariamente essas relações. Por isso, antes de escrever um <code>JOIN</code>, vamos identificar <strong>o que queremos mostrar</strong>, <strong>por quais tabelas precisamos passar</strong> e <strong>quais chaves conectam essas tabelas</strong>.</p></div>
 
-      <div class="sql-block"><span class="sql-label">Comece vendo a tabela de reserva</span><pre><code>consultar("""
-SELECT id_reserva, id_usuario, id_sala, data, hora_inicio
+      <div class="path-strip"><span>Pergunta</span><b>→</b><span>colunas desejadas</span><b>→</b><span>tabelas envolvidas</span><b>→</b><span>chaves de ligação</span><b>→</b><span>JOIN</span></div>
+
+      <div class="three-grid">
+        <article class="card"><h3>1 · O que quero mostrar?</h3><p>Liste as colunas necessárias para responder à pergunta.</p></article>
+        <article class="card"><h3>2 · Onde cada dado está?</h3><p>Identifique as tabelas que armazenam essas colunas.</p></article>
+        <article class="card"><h3>3 · Como elas se conectam?</h3><p>Procure PKs e FKs que formam o caminho entre as tabelas.</p></article>
+      </div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.1 · Por que precisamos de uma junção?</p><h2>A tabela de reserva guarda referências, não todos os dados descritivos</h2><p>A reserva registra <code>id_usuario</code> e <code>id_sala</code>. Esses identificadores preservam os relacionamentos, mas uma interface normalmente precisa mostrar nomes.</p></div>
+
+      <div class="sql-block"><span class="sql-label">Veja primeiro apenas a tabela reserva</span><pre><code>consultar("""
+SELECT
+    id_reserva,
+    id_usuario,
+    id_sala,
+    data,
+    hora_inicio
 FROM reserva;
 """)</code></pre></div>
 
-      <div class="callout"><strong>A pergunta agora é outra</strong><p>Como mostrar o <strong>nome do usuário</strong> no lugar de apenas <code>id_usuario</code>? Esse dado está em outra tabela. Precisamos usar o relacionamento já definido entre <code>usuario</code> e <code>reserva</code>.</p></div>
+      <div class="callout"><strong>Pergunta</strong><p>Como mostrar <strong>Marina Lopes</strong> em vez de apenas <code>17</code>? O nome está em <code>usuario</code>. Precisamos combinar a reserva com o usuário correspondente.</p></div>
 
-      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Antes do JOIN</p><h2>Veja o que acontece quando combinamos tabelas sem dizer como elas se relacionam</h2></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Identifique em quais tabelas estão os dados necessários para mostrar: <strong>usuário, sala, data e horário</strong> de uma reserva.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Identifique quais chaves formam o caminho entre <code>reserva</code>, <code>sala</code> e <code>bloco</code>.</p></article>
+        </div>
+      </div>
 
-      <div class="sql-block"><span class="sql-label">Produto cartesiano · apenas para observar</span><pre><code>consultar("""
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.2 · Produto cartesiano</p><h2>Combinar tabelas sem informar a relação produz todas as combinações possíveis</h2><p>Antes de usar <code>JOIN</code>, vale observar o problema que a condição de junção resolve.</p></div>
+
+      <div class="sql-block"><span class="sql-label">Apenas para observar</span><pre><code>consultar("""
 SELECT COUNT(*) AS combinacoes
 FROM usuario, reserva;
 """)</code></pre></div>
 
-      <div class="callout warn"><strong>12 usuários × 20 reservas = 240 combinações</strong><p>Sem uma condição de relacionamento, cada usuário é combinado com cada reserva. A maioria dessas combinações não representa um fato do nosso domínio.</p></div>
+      <div class="callout warn"><strong>12 usuários × 20 reservas = 240 combinações</strong><p>Cada usuário foi combinado com cada reserva. A maioria dessas linhas não corresponde a uma relação verdadeira do domínio.</p></div>
+
+      <div class="sql-block"><span class="sql-label">Veja algumas combinações</span><pre><code>consultar("""
+SELECT
+    u.nome,
+    r.id_reserva
+FROM usuario AS u, reserva AS r
+LIMIT 12;
+""")</code></pre></div>
+
+      <div class="callout"><strong>Ligação com a álgebra relacional</strong><p>Uma junção interna pode ser compreendida como uma combinação seguida de uma condição que mantém somente os pares relacionados.</p></div>
+
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
-          <article class="topic-exercise"><b>1.</b><p>Sem executar primeiro, calcule quantas combinações seriam produzidas por <code>sala</code> × <code>bloco</code> sem condição de relacionamento. Depois confirme com uma consulta usando <code>COUNT(*)</code>.</p></article>
-          <article class="topic-exercise"><b>2.</b><p>Compare a quantidade de linhas de <code>usuario</code> × <code>reserva</code> com a quantidade real de reservas. Explique por que os números são diferentes.</p></article>
+          <article class="topic-exercise"><b>1.</b><p>Sem executar primeiro, calcule quantas combinações seriam produzidas por <code>sala</code> × <code>bloco</code>. Depois confirme com <code>COUNT(*)</code>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Compare a quantidade de linhas de <code>usuario</code> × <code>reserva</code> com a quantidade real de reservas e explique a diferença.</p></article>
         </div>
       </div>
 
-      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">INNER JOIN</p><h2>Use as chaves para recuperar somente as combinações relacionadas</h2></div>
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.3 · INNER JOIN</p><h2>Mantenha apenas as linhas que possuem correspondência</h2><p>O <code>INNER JOIN</code> combina linhas quando a expressão do <code>ON</code> é satisfeita. No nosso caso, a FK da reserva deve ser igual à PK do usuário.</p></div>
 
       <div class="sql-block"><span class="sql-label">Reserva + usuário</span><pre><code>consultar("""
 SELECT
@@ -524,7 +559,15 @@ INNER JOIN usuario AS u
     ON u.id_usuario = r.id_usuario;
 """)</code></pre></div>
 
-      <div class="callout ok"><strong>Leia o <code>ON</code> como uma regra de correspondência</strong><p>Uma linha de <code>reserva</code> só é combinada com a linha de <code>usuario</code> cujo identificador é o mesmo valor armazenado na FK <code>r.id_usuario</code>.</p></div>
+      <div class="callout ok"><strong>Leia o ON como a regra de correspondência</strong><p><code>u.id_usuario = r.id_usuario</code> significa: combine a reserva somente com o usuário cujo identificador corresponde ao valor armazenado na FK.</p></div>
+
+      <div class="constraint-table-wrap"><table class="constraint-table"><thead><tr><th>Trecho</th><th>Papel na consulta</th></tr></thead><tbody>
+        <tr><td><code>FROM reserva AS r</code></td><td>Define a primeira relação e cria o alias <code>r</code>.</td></tr>
+        <tr><td><code>INNER JOIN usuario AS u</code></td><td>Indica a relação que será combinada e cria o alias <code>u</code>.</td></tr>
+        <tr><td><code>ON u.id_usuario = r.id_usuario</code></td><td>Define quando uma linha de uma relação corresponde a uma linha da outra.</td></tr>
+        <tr><td><code>u.nome</code></td><td>Qualifica a coluna, deixando explícito de qual tabela ela vem.</td></tr>
+      </tbody></table></div>
+
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
@@ -533,7 +576,35 @@ INNER JOIN usuario AS u
         </div>
       </div>
 
-      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Mais de uma junção</p><h2>Monte uma resposta que faça sentido para o sistema</h2><p>Agora queremos saber quem reservou, qual sala foi utilizada e em qual bloco ela está.</p></div>
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.4 · Caminhos de junção</p><h2>Nem sempre as tabelas que queremos consultar estão ligadas diretamente</h2><p>Um usuário não possui uma FK apontando diretamente para uma sala. A relação entre eles aparece por meio de <code>reserva</code>. A tabela intermediária faz parte do caminho da consulta.</p></div>
+
+      <div class="path-strip"><span>USUARIO</span><b>← id_usuario →</b><span>RESERVA</span><b>← id_sala →</b><span>SALA</span><b>← id_bloco →</b><span>BLOCO</span></div>
+
+      <div class="sql-block"><span class="sql-label">Usuário + reserva + sala</span><pre><code>consultar("""
+SELECT
+    u.nome AS usuario,
+    s.nome AS sala,
+    r.data,
+    r.hora_inicio
+FROM usuario AS u
+INNER JOIN reserva AS r
+    ON r.id_usuario = u.id_usuario
+INNER JOIN sala AS s
+    ON s.id_sala = r.id_sala
+ORDER BY r.data, r.hora_inicio;
+""")</code></pre></div>
+
+      <div class="callout"><strong>A ordem visual ajuda a raciocinar</strong><p>A consulta pode ser lida como um caminho: partimos de <code>usuario</code>, alcançamos <code>reserva</code> pela FK <code>id_usuario</code> e, em seguida, alcançamos <code>sala</code> por <code>id_sala</code>.</p></div>
+
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Mostre <strong>usuário, sala e situação</strong> de todas as reservas.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Mostre <strong>usuário, sala, data e horário</strong>, ordenando primeiro pelo nome do usuário e depois pela data.</p></article>
+        </div>
+      </div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.5 · Junções com várias tabelas</p><h2>Continue o caminho até obter toda a informação necessária</h2><p>Se também precisamos do bloco, adicionamos mais uma junção. Cada novo <code>JOIN</code> precisa de uma condição que conecte a nova tabela ao caminho já construído.</p></div>
 
       <div class="sql-block"><span class="sql-label">Reserva + usuário + sala + bloco</span><pre><code>consultar("""
 SELECT
@@ -554,9 +625,17 @@ INNER JOIN bloco AS b
 ORDER BY r.data, r.hora_inicio;
 """)</code></pre></div>
 
-      <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">JOIN + WHERE + ORDER BY</p><h2>As cláusulas podem trabalhar juntas</h2></div>
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Mostre <strong>nome do usuário, nome da sala, capacidade e bloco</strong> para cada reserva.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Inclua também a <strong>observação</strong> da reserva e ordene o resultado por bloco e sala.</p></article>
+        </div>
+      </div>
 
-      <div class="sql-block"><span class="sql-label">Reservas ativas com nomes de usuário e sala</span><pre><code>consultar("""
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.6 · ON e WHERE têm responsabilidades diferentes</p><h2>Primeiro relacione as tabelas. Depois filtre o resultado.</h2><p>Uma boa leitura é separar duas perguntas: <strong>como as tabelas se conectam?</strong> e <strong>quais linhas relacionadas eu quero manter?</strong></p></div>
+
+      <div class="sql-block"><span class="sql-label">JOIN + filtro</span><pre><code>consultar("""
 SELECT
     u.nome AS usuario,
     s.nome AS sala,
@@ -570,11 +649,74 @@ INNER JOIN sala AS s
 WHERE r.situacao = 'ativa'
 ORDER BY r.data, r.hora_inicio;
 """)</code></pre></div>
+
+      <div class="two-grid">
+        <article class="card"><h3><code>ON</code></h3><p>Expressa a condição que relaciona as linhas das tabelas.</p></article>
+        <article class="card"><h3><code>WHERE</code></h3><p>Filtra as linhas do resultado depois que as relações necessárias foram estabelecidas.</p></article>
+      </div>
+
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
-          <article class="topic-exercise"><b>1.</b><p>Monte uma consulta que mostre <strong>usuário, sala e bloco</strong> apenas para reservas <strong>concluídas</strong>.</p></article>
-          <article class="topic-exercise"><b>2.</b><p>Mostre <strong>usuário, sala, data e horário</strong> das reservas realizadas em salas com capacidade <strong>maior ou igual a 16</strong>, ordenando por data.</p></article>
+          <article class="topic-exercise"><b>1.</b><p>Mostre <strong>usuário, sala e bloco</strong> apenas para reservas <strong>concluídas</strong>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Mostre <strong>usuário, sala, data e horário</strong> das reservas realizadas em salas com capacidade <strong>maior ou igual a 16</strong>.</p></article>
+        </div>
+      </div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.7 · LEFT JOIN</p><h2>Às vezes, a ausência de correspondência também é informação</h2><p>O <code>INNER JOIN</code> mostra apenas linhas que possuem correspondência dos dois lados. O <code>LEFT JOIN</code> preserva todas as linhas da tabela à esquerda, mesmo quando não existe linha relacionada à direita. Nesse caso, as colunas da tabela da direita aparecem como <code>NULL</code>.</p></div>
+
+      <div class="sql-block"><span class="sql-label">Todos os usuários, inclusive quem ainda não possui reserva</span><pre><code>consultar("""
+SELECT
+    u.id_usuario,
+    u.nome,
+    r.id_reserva,
+    r.data
+FROM usuario AS u
+LEFT JOIN reserva AS r
+    ON r.id_usuario = u.id_usuario
+ORDER BY u.nome;
+""")</code></pre></div>
+
+      <div class="callout ok"><strong>Observe Pedro Alves</strong><p>O usuário aparece mesmo sem possuir reserva. As colunas vindas de <code>reserva</code> ficam com <code>NULL</code>. Isso não aconteceria com <code>INNER JOIN</code>.</p></div>
+
+      <div class="sql-block"><span class="sql-label">Agora use a ausência para responder uma pergunta</span><pre><code>consultar("""
+SELECT
+    u.id_usuario,
+    u.nome
+FROM usuario AS u
+LEFT JOIN reserva AS r
+    ON r.id_usuario = u.id_usuario
+WHERE r.id_reserva IS NULL;
+""")</code></pre></div>
+
+      <div class="callout"><strong>Padrão importante</strong><p><code>LEFT JOIN</code> + teste de <code>NULL</code> permite localizar linhas da tabela principal que ainda não possuem correspondência na tabela relacionada.</p></div>
+
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Liste todas as <strong>salas</strong> e, quando existir, o id de uma reserva associada. Observe o que acontece com a <strong>Sala Jacarandá</strong>.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Use <code>LEFT JOIN</code> para listar apenas as <strong>salas que nunca foram reservadas</strong>.</p></article>
+        </div>
+      </div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.8 · INNER JOIN x LEFT JOIN</p><h2>A escolha depende da pergunta</h2></div>
+
+      <div class="constraint-table-wrap"><table class="constraint-table"><thead><tr><th>Tipo</th><th>O que preserva</th><th>Pergunta típica</th></tr></thead><tbody>
+        <tr><td><code>INNER JOIN</code></td><td>Somente linhas com correspondência dos dois lados.</td><td>Quais usuários possuem reservas e em quais salas?</td></tr>
+        <tr><td><code>LEFT JOIN</code></td><td>Todas as linhas da tabela à esquerda, com ou sem correspondência.</td><td>Quais usuários existem, inclusive os que ainda não reservaram?</td></tr>
+      </tbody></table></div>
+
+      <div class="callout warn"><strong>Não escolha o JOIN pelo nome mais conhecido</strong><p>Primeiro formule a pergunta. Se linhas sem correspondência precisam continuar no resultado, uma junção externa como <code>LEFT JOIN</code> é necessária.</p></div>
+
+      <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.9 · Por que vamos preferir JOIN ... ON?</p><h2>Deixe explícita a condição que representa o relacionamento</h2><p>SQL possui outras formas de expressar junções. Nesta disciplina vamos priorizar <code>JOIN ... ON</code>, porque ele separa claramente a condição de relacionamento das condições de filtragem e obriga a consulta a registrar quais colunas estão sendo relacionadas.</p></div>
+
+      <div class="callout"><strong>Sobre NATURAL JOIN</strong><p>Esse recurso cria condições de igualdade implicitamente a partir de colunas com o mesmo nome. Isso pode parecer conveniente, mas uma mudança no esquema ou a existência de outra coluna homônima pode alterar o resultado. Por isso, nos exemplos da disciplina, a condição de junção ficará explícita.</p></div>
+
+      <div class="topic-exercises">
+        <div class="topic-exercises-head"><strong>Fechamento de junções</strong></div>
+        <div class="topic-exercises-grid">
+          <article class="topic-exercise"><b>1.</b><p>Explique por que <code>ON u.id_usuario = r.id_usuario</code> representa uma regra do modelo, enquanto <code>WHERE r.situacao = 'ativa'</code> representa um filtro da pergunta.</p></article>
+          <article class="topic-exercise"><b>2.</b><p>Escreva o caminho de tabelas necessário para responder: “quais usuários reservaram salas do Bloco D?”. Depois transforme esse caminho em uma consulta.</p></article>
         </div>
       </div>
     </div></section>
