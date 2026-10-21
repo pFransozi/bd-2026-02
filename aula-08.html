@@ -52,6 +52,77 @@
   </style>
   <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
   <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <style>
+    /* Ajuste local: menu compacto com zoom / larguras estreitas.
+       O CSS compartilhado esconde .nav-toggle e força .main-nav visível,
+       sobrescrevendo o comportamento responsivo de styles.css. */
+    @media (max-width: 1080px) {
+      body.teaching-page.lesson-dml .site-header .nav-wrap {
+        position: relative;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 12px;
+        min-height: 58px;
+      }
+      body.teaching-page.lesson-dml .site-header .brand {
+        min-width: 0;
+        max-width: calc(100% - 56px);
+      }
+      body.teaching-page.lesson-dml .site-header .brand strong {
+        font-size: clamp(0.95rem, 2.5vw, 1.12rem);
+        line-height: 1.15;
+      }
+      body.teaching-page.lesson-dml .site-header .nav-toggle {
+        display: block !important;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        margin-left: auto;
+        padding: 8px;
+        border: 1px solid var(--ensino-line);
+        border-radius: 10px;
+        background: var(--ensino-surface);
+        color: var(--ensino-text);
+        cursor: pointer;
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav {
+        display: none !important;
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        z-index: 110;
+        width: 100%;
+        max-height: calc(100dvh - 85px);
+        overflow-y: auto;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 10px;
+        border: 1px solid var(--ensino-line);
+        border-radius: 12px;
+        background: var(--ensino-surface);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav.is-open {
+        display: flex !important;
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav a {
+        display: block;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        line-height: 1.35;
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav a[href^="#"] {
+        display: none;
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav .theme-toggle {
+        align-self: flex-start;
+        margin: 4px 0 2px 8px;
+      }
+    }
+  </style>
 </head>
 <body class="teaching-page teaching-lesson lesson-dml">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
