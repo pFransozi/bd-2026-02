@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Aula 08 de Banco de Dados: prática guiada de consultas SQL com SELECT, filtros, ordenação, NULL, INNER JOIN e relações com álgebra relacional em SQLite.">
+  <meta name="description" content="Aula 08 de Banco de Dados: consultas SQL com SELECT, filtros, ordenação, NULL, INNER JOIN e relações com álgebra relacional em SQLite.">
   <meta name="theme-color" content="#0f172a">
   <title>Aula 08 · Consultas SQL e álgebra relacional | Banco de Dados</title>
   <link rel="stylesheet" href="styles.css">
@@ -132,7 +132,7 @@
       <a class="brand" href="index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
       <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
       <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
-        <a href="index.html">Página principal</a><a href="aula-07.html">Aula 07</a><a href="#pratica">Prática</a>
+        <a href="index.html">Página principal</a><a href="aula-07.html">Aula 07</a><a href="#sintese">Síntese</a>
         <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
       </nav>
     </div>
@@ -152,7 +152,7 @@
       </div>
     </section>
 
-    <div class="dml-toc-shell standard-toc"><nav class="container dml-toc" aria-label="Sumário da aula"><a href="#visao">Visão</a><a href="#ambiente">Ambiente</a><a href="#select">SELECT</a><a href="#filtros">Filtros</a><a href="#null-ordem">NULL e ordem</a><a href="#join">JOIN</a><a href="#algebra">Álgebra</a><a href="#pratica">Prática</a></nav></div>
+    <div class="dml-toc-shell standard-toc"><nav class="container dml-toc" aria-label="Sumário da aula"><a href="#visao">Visão</a><a href="#ambiente">Ambiente</a><a href="#select">SELECT</a><a href="#filtros">Filtros</a><a href="#null-ordem">NULL e ordem</a><a href="#join">JOIN</a><a href="#algebra">Álgebra</a><a href="#sintese">Síntese</a></nav></div>
 
     <section class="dml-section section-pad section-soft alt" id="visao"><div class="container">
       <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">Visão da aula</p><h2>O que vamos desenvolver</h2><p>A aula será construída a partir de perguntas sobre o sistema de reserva de salas. Para cada pergunta, vamos identificar de quais tabelas vêm os dados, quais colunas precisamos, quais registros devem permanecer e como expressar isso em SQL.</p></div>
@@ -915,94 +915,8 @@ FROM reserva;
       </div>
     </div></section>
 
-    <section class="dml-section section-pad" id="pratica"><div class="container">
-      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">6 · Prática guiada</p><h2>Pergunta → identifique os dados → escreva a consulta → confira o resultado</h2><p>Continuamos no mesmo banco. Em cada etapa, leia primeiro a necessidade de informação e só depois execute a consulta.</p></div>
-
-      <div class="practice-list">
-        <article class="practice-card"><span class="n">1</span><h3>Quais salas possuem capacidade para 6 ou mais pessoas?</h3>
-          <p>Precisamos do nome e da capacidade. Depois, queremos visualizar primeiro as maiores salas.</p>
-          <div class="sql-block"><pre><code>consultar("""
-SELECT nome, capacidade
-FROM sala
-WHERE capacidade >= 6
-ORDER BY capacidade DESC;
-""")</code></pre></div>
-          <div class="callout"><strong>Modifique</strong><p>Troque <code>&gt;= 6</code> por <code>BETWEEN 6 AND 10</code>. Quais salas deixam de aparecer?</p></div>
-        </article>
-
-        <article class="practice-card"><span class="n">2</span><h3>Quais reservas estão ativas no dia 10/10?</h3>
-          <p>Primeiro resolva usando apenas a tabela <code>reserva</code>.</p>
-          <div class="sql-block"><pre><code>consultar("""
-SELECT id_reserva, id_usuario, id_sala, hora_inicio
-FROM reserva
-WHERE data = '2026-10-10'
-  AND situacao = 'ativa'
-ORDER BY hora_inicio;
-""")</code></pre></div>
-          <div class="callout ok"><strong>Resultado intermediário</strong><p>A consulta responde corretamente, mas ainda mostra identificadores. No próximo passo vamos tornar a resposta mais útil.</p></div>
-        </article>
-
-        <article class="practice-card"><span class="n">3</span><h3>Substitua os identificadores pelos nomes</h3>
-          <p>A mesma pergunta agora deve mostrar o usuário e a sala.</p>
-          <div class="sql-block"><pre><code>consultar("""
-SELECT
-    u.nome AS usuario,
-    s.nome AS sala,
-    r.hora_inicio
-FROM reserva AS r
-INNER JOIN usuario AS u
-    ON u.id_usuario = r.id_usuario
-INNER JOIN sala AS s
-    ON s.id_sala = r.id_sala
-WHERE r.data = '2026-10-10'
-  AND r.situacao = 'ativa'
-ORDER BY r.hora_inicio;
-""")</code></pre></div>
-        </article>
-
-        <article class="practice-card"><span class="n">4</span><h3>Localize reservas que precisam de complemento</h3>
-          <p>Considere como “precisam de complemento” as reservas que não possuem observação.</p>
-          <div class="sql-block"><pre><code>consultar("""
-SELECT id_reserva, data, hora_inicio, observacao
-FROM reserva
-WHERE observacao IS NULL
-ORDER BY data, hora_inicio;
-""")</code></pre></div>
-        </article>
-
-        <article class="practice-card"><span class="n">5</span><h3>Monte um painel simples das reservas ativas</h3>
-          <p>Mostre usuário, sala, bloco, data e horário. Ordene por data e horário.</p>
-          <div class="sql-block"><pre><code>consultar("""
-SELECT
-    u.nome AS usuario,
-    s.nome AS sala,
-    b.nome_bloco AS bloco,
-    r.data,
-    r.hora_inicio
-FROM reserva AS r
-INNER JOIN usuario AS u
-    ON u.id_usuario = r.id_usuario
-INNER JOIN sala AS s
-    ON s.id_sala = r.id_sala
-INNER JOIN bloco AS b
-    ON b.id_bloco = s.id_bloco
-WHERE r.situacao = 'ativa'
-ORDER BY r.data, r.hora_inicio;
-""")</code></pre></div>
-        </article>
-
-        <article class="practice-card"><span class="n">6</span><h3>Agora altere a pergunta</h3>
-          <p>Partindo da consulta anterior, faça três modificações, uma de cada vez:</p>
-          <ul>
-            <li>mostre apenas reservas do <strong>Bloco A</strong>;</li>
-            <li>mostre apenas salas com capacidade entre <strong>6 e 10</strong>;</li>
-            <li>mostre apenas usuários cujo nome contenha a letra <strong>a</strong>.</li>
-          </ul>
-          <div class="callout warn"><strong>Nesta etapa não há uma consulta pronta</strong><p>Use a estrutura já construída e altere apenas as condições necessárias. Execute uma mudança por vez para conseguir observar o efeito de cada filtro.</p></div>
-        </article>
-      </div>
-
-      <div class="dml-heading section-heading" style="margin-top:3.2rem"><p class="dml-kicker eyebrow">Síntese</p><h2>Consultar é construir uma resposta a partir das relações</h2><p>Hoje partimos de perguntas sobre o sistema e fomos refinando as consultas: primeiro escolhemos tabelas e colunas, depois filtramos e ordenamos linhas, tratamos ausência de valor e, por fim, combinamos relações diferentes por meio das chaves.</p></div>
+        <section class="dml-section section-pad" id="sintese"><div class="container">
+      <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">Síntese</p><h2>Consultar é construir uma resposta a partir das relações</h2><p>Hoje partimos de perguntas sobre o sistema e fomos refinando as consultas: primeiro escolhemos tabelas e colunas, depois filtramos e ordenamos linhas, tratamos ausência de valor e, por fim, combinamos relações diferentes por meio das chaves.</p></div>
       <div class="path-strip"><span>Pergunta</span><b>→</b><span>SELECT / FROM</span><b>→</b><span>WHERE</span><b>→</b><span>ORDER BY</span><b>→</b><span>JOIN</span><b>→</b><span>Resposta</span></div>
     </div></section>
 
