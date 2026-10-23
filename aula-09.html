@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Aula 09 de Banco de Dados: retomada da anatomia da SQL, funções de agregação, GROUP BY, HAVING e subconsultas no SQLite.">
+  <meta name="theme-color" content="#0f172a">
+  <title>Aula 09 · Agregação, agrupamento e subconsultas | Banco de Dados</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+  <style>
+    .lesson-dml{background:var(--bg);color:var(--text)}
+    .dml-hero{padding:5.6rem 0 4.4rem;background:radial-gradient(circle at 88% 15%,rgba(49,94,251,.15),transparent 28rem),radial-gradient(circle at 10% 85%,rgba(22,165,163,.10),transparent 24rem),var(--bg)}
+    .dml-hero-grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(280px,.72fr);gap:3rem;align-items:end}
+    .dml-kicker{margin:0 0 .7rem;color:var(--primary);font-size:.78rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+    .dml-hero h1{margin:0;max-width:980px;font-size:clamp(3rem,6vw,5.7rem);line-height:.96;letter-spacing:-.055em}
+    .dml-lead{max-width:880px;margin:1.45rem 0 0;color:var(--muted);font-size:clamp(1.12rem,2vw,1.35rem)}
+    .dml-meta{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.25rem}.dml-meta span{padding:.38rem .72rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-size:.82rem}
+    .guiding-card,.card,.practice-card{padding:1.25rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+    .guiding-card strong{display:block;margin-bottom:.55rem;color:var(--primary)}.guiding-card blockquote{margin:0;font-size:1.18rem;line-height:1.45;font-weight:800}
+    .dml-toc-shell{position:sticky;top:76px;z-index:60;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(14px)}
+    .dml-toc{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.5rem;padding:.82rem 0}.dml-toc a{padding:.68rem .5rem;border:1px solid var(--line);border-radius:12px;text-align:center;text-decoration:none;color:var(--muted);background:var(--surface);font-size:.73rem;font-weight:850;line-height:1.2}
+    .dml-section{padding:5rem 0;scroll-margin-top:150px}.dml-section.alt{background:var(--surface-soft)}
+    .dml-heading{max-width:1000px;margin-bottom:2rem}.dml-heading h2{margin:0;font-size:clamp(2.1rem,4vw,3.5rem);line-height:1.04;letter-spacing:-.045em}.dml-heading>p:last-child{margin:1rem 0 0;color:var(--muted);font-size:1.04rem}
+    .overview-grid,.two-grid,.three-grid,.four-grid{display:grid;gap:1rem}.overview-grid,.two-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.three-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.four-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card h3,.practice-card h3{margin:.05rem 0 .55rem}.card p,.card li,.practice-card p{color:var(--muted)}.card ul{padding-left:1.2rem;margin:.65rem 0 0}
+    .skill-line{display:grid;grid-template-columns:auto 1fr;gap:.65rem;align-items:start;padding:.7rem 0;border-bottom:1px solid var(--line)}.skill-line:last-child{border-bottom:0}.skill-line strong{min-width:3rem;color:var(--primary)}.skill-line span{color:var(--muted)}
+    .path-strip{display:flex;align-items:center;justify-content:center;gap:.65rem;flex-wrap:wrap;margin:1.3rem 0;padding:1.2rem;border:1px solid var(--line);border-radius:18px;background:var(--surface)}.path-strip span{padding:.72rem .9rem;border-radius:999px;background:color-mix(in srgb,var(--primary) 8%,var(--surface));font-size:.87rem;font-weight:850}.path-strip b{color:var(--primary)}
+    body.teaching-page.lesson-dml .sql-block{margin:1rem 0;overflow:hidden;border:1px solid var(--ensino-line);border-radius:var(--ensino-radius-sm);background:var(--ensino-code-bg);color:var(--ensino-code-text);box-shadow:none}
+    body.teaching-page.lesson-dml .sql-label{display:block;padding:.55rem .85rem;border-bottom:1px solid var(--ensino-line);background:var(--ensino-surface);color:var(--ensino-muted);font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+    body.teaching-page.lesson-dml .sql-block pre{margin:0;padding:1rem 1.05rem;border:0;border-radius:0;background:transparent;color:var(--ensino-code-text);box-shadow:none;font-size:.9rem;line-height:1.65;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+    body.teaching-page.lesson-dml .sql-block code{background:transparent;color:inherit;font-family:inherit}
+    .callout{padding:1.05rem 1.15rem;margin:1.2rem 0;border-left:4px solid var(--primary);border-radius:0 16px 16px 0;background:color-mix(in srgb,var(--primary) 8%,var(--surface))}.callout>strong{display:block;margin-bottom:.35rem;color:var(--primary)}.callout p{margin:0;color:var(--muted)}.callout.warn{border-left-color:#d97706;background:color-mix(in srgb,#d97706 8%,var(--surface))}.callout.warn>strong{color:#d97706}.callout.ok{border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--surface))}.callout.ok>strong{color:var(--accent)}
+    .constraint-table-wrap{overflow-x:auto;margin:1.25rem 0;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.constraint-table{width:100%;border-collapse:collapse;min-width:760px}.constraint-table th,.constraint-table td{padding:.82rem .9rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.constraint-table th{background:color-mix(in srgb,var(--primary) 9%,var(--surface));font-size:.8rem}.constraint-table td{color:var(--muted);font-size:.9rem}.constraint-table tr:last-child td{border-bottom:0}
+    .practice-list{display:grid;gap:1rem}.practice-card{position:relative;padding-left:5.4rem!important}.practice-card .n{position:absolute;left:1.25rem;top:1.25rem;display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:12px;background:var(--primary);color:#fff;font-weight:900}.practice-card>h3{min-height:2.4rem;display:flex;align-items:center;margin-top:0}
+    .question-step{display:grid;grid-template-columns:minmax(180px,.35fr) minmax(0,1fr);gap:1rem;align-items:start;margin:1rem 0}.question-step .card{height:100%}
+    .mini-query{font-weight:850;color:var(--primary)}
+    .topic-exercises{margin:1.45rem 0 2.5rem;padding:1.15rem;border:1px dashed var(--line);border-radius:18px;background:color-mix(in srgb,var(--primary) 3%,var(--surface))}
+    .topic-exercises-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem}.topic-exercises-head strong{font-size:.9rem;color:var(--primary)}.topic-exercises-head span{font-size:.82rem;color:var(--muted)}
+    .topic-exercises-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.topic-exercise{padding:1rem;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.topic-exercise b{display:block;margin-bottom:.35rem}.topic-exercise p{margin:0;color:var(--muted)}
+    .join-set-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.35rem 0 1.6rem}
+    .join-set-card{padding:1.1rem;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+    .join-set-card h3{margin:.1rem 0 .35rem}.join-set-card>p{margin:.2rem 0 1rem;color:var(--muted)}
+    .join-set-svg{display:block;width:100%;height:auto;max-width:310px;margin:.35rem auto .9rem}
+    .join-set-labels{display:flex;justify-content:space-between;gap:1rem;color:var(--muted);font-size:.78rem;font-weight:800}
+    .join-set-note{font-size:.88rem;color:var(--muted)}
+
+
+    @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}.three-grid,.four-grid,.join-set-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:900px){.dml-hero-grid,.overview-grid,.two-grid,.question-step,.topic-exercises-grid{grid-template-columns:1fr}}
+    @media(max-width:680px){.dml-hero{padding:4.2rem 0 3.4rem}.dml-toc-shell{position:static}.dml-toc,.three-grid,.four-grid,.join-set-grid{grid-template-columns:1fr}.dml-section{padding:4rem 0;scroll-margin-top:90px}.practice-card{padding-left:1.25rem!important;padding-top:4.8rem!important}.practice-card>h3{min-height:0}}
+  </style>
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <style>
+    /* Ajuste local: menu compacto com zoom / larguras estreitas.
+       O CSS compartilhado esconde .nav-toggle e força .main-nav visível,
+       sobrescrevendo o comportamento responsivo de styles.css. */
+    @media (max-width: 1080px) {
+      body.teaching-page.lesson-dml .site-header .nav-wrap {
+        position: relative;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 12px;
+        min-height: 58px;
+      }
+      body.teaching-page.lesson-dml .site-header .brand {
+        min-width: 0;
+        max-width: calc(100% - 56px);
+      }
+      body.teaching-page.lesson-dml .site-header .brand strong {
+        font-size: clamp(0.95rem, 2.5vw, 1.12rem);
+        line-height: 1.15;
+      }
+      body.teaching-page.lesson-dml .site-header .nav-toggle {
+        display: block !important;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        margin-left: auto;
+        padding: 8px;
+        border: 1px solid var(--ensino-line);
+        border-radius: 10px;
+        background: var(--ensino-surface);
+        color: var(--ensino-text);
+        cursor: pointer;
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav {
+        display: none !important;
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        z-index: 110;
+        width: 100%;
+        max-height: calc(100dvh - 85px);
+        overflow-y: auto;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 10px;
+        border: 1px solid var(--ensino-line);
+        border-radius: 12px;
+        background: var(--ensino-surface);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav.is-open {
+        display: flex !important;
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav a {
+        display: block;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        line-height: 1.35;
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav a[href^="#"] {
+        display: none;
+      }
+      body.teaching-page.lesson-dml .site-header .main-nav .theme-toggle {
+        align-self: flex-start;
+        margin: 4px 0 2px 8px;
+      }
+    }
+  </style>
+
+  <style>
+    /* Aula 09: revisão compacta e exemplos de resultados */
+    .dml-hero{padding:3.65rem 0 3rem}
+    .dml-hero h1{font-size:clamp(2.55rem,4.8vw,4.2rem);line-height:1.02;letter-spacing:-.042em}
+    .dml-lead{font-size:1.08rem;margin-top:1rem;line-height:1.65}
+    .dml-section{padding:3.45rem 0;scroll-margin-top:136px}
+    .dml-heading{margin-bottom:1.55rem}
+    .dml-heading h2{font-size:clamp(1.85rem,3.15vw,2.65rem);line-height:1.13;letter-spacing:-.035em}
+    .dml-toc{grid-template-columns:repeat(7,minmax(0,1fr))}
+    .dml-toc a{font-size:.82rem}
+
+    .lesson-intro{max-width:900px}
+    .lesson-intro p,.lesson-block>p{color:var(--muted);line-height:1.65}
+    .lesson-block{margin:1.8rem 0 2.2rem}
+    .lesson-block h3{margin:0 0 .5rem;font-size:1.42rem;letter-spacing:-.025em}
+    .lesson-block p{margin:.5rem 0 1rem}
+    .compact-table-wrap{margin:1.15rem 0 1.4rem;overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+    .compact-table{border-collapse:collapse;width:100%;min-width:540px}
+    .compact-table th,.compact-table td{padding:.73rem .85rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:.9rem}
+    .compact-table th{background:color-mix(in srgb,var(--primary) 7%,var(--surface));font-weight:800}
+    .compact-table td{color:var(--muted)}
+    .compact-table tbody tr:last-child td{border-bottom:0}
+    .compact-table code{white-space:nowrap}
+    .sql-note{margin:.5rem 0 0;color:var(--muted);font-size:.89rem}
+    .result-box{margin:1rem 0 1.5rem;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+    .result-head{display:flex;align-items:baseline;justify-content:space-between;gap:.65rem;padding:.65rem .85rem;border-bottom:1px solid var(--line);background:var(--surface-soft)}
+    .result-head strong{font-size:.82rem;color:var(--text)}.result-head span{font-size:.78rem;color:var(--muted)}
+    .result-scroll{overflow-x:auto}
+    .result-table{border-collapse:collapse;width:100%;min-width:320px}
+    .result-table th,.result-table td{border-bottom:1px solid var(--line);padding:.57rem .85rem;text-align:left;font-size:.88rem}
+    .result-table th{font-weight:750;background:color-mix(in srgb,var(--primary) 5%,var(--surface))}
+    .result-table tbody tr:last-child td{border-bottom:0}
+    .result-table td{color:var(--muted);font-variant-numeric:tabular-nums}
+    .result-table td.numeric,.result-table th.numeric{text-align:right}
+    .explain{border-left:3px solid var(--primary);padding:.72rem 1rem;margin:1rem 0 1.55rem;background:color-mix(in srgb,var(--primary) 5%,var(--surface));border-radius:0 9px 9px 0}
+    .explain p{margin:.2rem 0;color:var(--muted);font-size:.93rem;line-height:1.55}
+    .schema-flow{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;padding:.8rem 0}
+    .schema-flow span{padding:.4rem .62rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:.83rem;font-weight:750}
+    .schema-flow b{color:var(--primary)}
+    .example-prompt{margin:.8rem 0 .45rem;font-weight:800}
+    .section-kicker{margin-bottom:.5rem;color:var(--primary);font-size:.8rem;text-transform:uppercase;letter-spacing:.075em;font-weight:800}
+    .content-list{margin:.4rem 0 1.2rem;padding-left:1.3rem;color:var(--muted)}
+    .content-list li{margin:.32rem 0}
+    .example-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+    .example-compare .sql-block{height:calc(100% - .4rem)}
+    .practice-simple{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:1rem}
+    .practice-simple article{padding:1rem 1.1rem;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+    .practice-simple strong{color:var(--primary)}.practice-simple p{margin:.35rem 0 0;color:var(--muted);font-size:.94rem}
+    .reference-brief{font-size:.9rem;color:var(--muted)}
+    @media(max-width:1050px){.dml-toc{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    @media(max-width:780px){.dml-hero-grid,.example-compare,.practice-simple{grid-template-columns:1fr}}
+    @media(max-width:680px){.dml-hero{padding:2.8rem 0 2.3rem}.dml-toc{grid-template-columns:repeat(2,minmax(0,1fr))}.dml-section{padding:2.6rem 0}.result-table th,.result-table td{padding:.55rem .7rem}}
+  </style>
+</head>
+<body class="teaching-page teaching-lesson lesson-dml">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+        <a href="index.html">Página principal</a><a href="aula-07.html">Aula 07</a><a href="aula-08.html">Aula 08</a>
+        <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="standard-shell standard-page-grid">
+    <main id="conteudo">
+      <section class="dml-hero lesson-hero section-pad">
+        <div class="container dml-hero-grid lesson-hero-grid">
+          <div>
+            <p class="dml-kicker eyebrow">Aula 09 </p>
+            <h1>Agregação, agrupamento e subconsultas em SQL</h1>
+            <p class="dml-lead lesson-hero-lead">Retomada objetiva das consultas das Aulas 07 e 08 e ampliação da SQL para contar, calcular, agrupar registros e utilizar uma consulta dentro de outra.</p>
+            <div class="dml-meta"><span>SQLite</span><span>Anatomia da SQL</span><span>COUNT / SUM / AVG</span><span>GROUP BY / HAVING</span><span>Subconsultas</span></div>
+          </div>
+          <aside class="guiding-card guiding-question"><strong>Pergunta-guia</strong><blockquote>Como transformar registros individuais em informações resumidas e em consultas mais elaboradas?</blockquote></aside>
+        </div>
+      </section>
+
+      <div class="dml-toc-shell standard-toc">
+        <nav class="container dml-toc" aria-label="Sumário da aula">
+          <a href="#visao">Visão</a><a href="#retomada">Retomada</a><a href="#dados">Dados</a><a href="#agregacao">Agregação</a><a href="#agrupamento">Agrupamento</a><a href="#subconsultas">Subconsultas</a><a href="#pratica">Prática</a>
+        </nav>
+      </div>
+
+      <section class="dml-section section-pad section-soft alt" id="visao"><div class="container">
+        <div class="dml-heading section-heading">
+          <p class="dml-kicker eyebrow">Visão da aula</p>
+          <h2>O que vamos desenvolver</h2>
+          <p>Vamos utilizar o mesmo sistema de reserva de salas, começando por uma revisão da estrutura das consultas e avançando apenas nos recursos essenciais que ainda faltam.</p>
+        </div>
+        <div class="overview-grid lesson-overview-grid">
+          <article class="card"><span class="overview-icon">OBJ</span><h3>Objetivos de aprendizagem</h3>
+            <ul>
+              <li>Reconhecer as partes de uma consulta SQL e sua finalidade.</li>
+              <li>Utilizar <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code> e <code>MAX</code>.</li>
+              <li>Agrupar registros com <code>GROUP BY</code> e filtrar grupos com <code>HAVING</code>.</li>
+              <li>Combinar agregações com junções e formular subconsultas com <code>IN</code>, <code>EXISTS</code> e <code>NOT EXISTS</code>.</li>
+            </ul>
+          </article>
+          <article class="card competency-card"><span class="overview-icon">C/H</span><h3>Competências e habilidades mobilizadas</h3>
+            <div class="skill-line"><strong>C2</strong><span><strong>H6:</strong> desenvolver consultas para recuperar e resumir dados.</span></div>
+            <div class="skill-line"><strong>C3</strong><span><strong>H9:</strong> identificar tabelas, atributos e relações necessários à consulta.</span></div>
+            <div class="skill-line"><strong>C10</strong><span><strong>H34:</strong> explicar consultas, agrupamentos e resultados.</span></div>
+            <div class="skill-line"><strong>C11</strong><span><strong>H38:</strong> construir consultas para problemas do domínio.</span></div>
+          </article>
+        </div>
+      </div></section>
+
+      <section class="dml-section section-pad" id="retomada"><div class="container">
+        <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">1 · Retomada das Aulas 07 e 08</p>
+          <h2>Anatomia da SQL que já utilizamos</h2>
+          <p>Na Aula 07 manipulamos os dados e verificamos restrições. Na Aula 08 elaboramos consultas para selecionar colunas, filtrar linhas, ordenar registros e combinar tabelas.</p>
+        </div>
+        <div class="compact-table-wrap"><table class="compact-table"><thead><tr><th>Operação</th><th>Recursos conhecidos</th><th>Finalidade</th></tr></thead><tbody>
+          <tr><td><strong>Manipular registros</strong></td><td><code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code></td><td>Inserir, modificar ou remover linhas; cuidado com os critérios usados em <code>UPDATE</code> e <code>DELETE</code>.</td></tr>
+          <tr><td><strong>Preservar a integridade</strong></td><td><code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code>, <code>DEFAULT</code></td><td>Respeitar identificadores, relacionamentos e regras do esquema.</td></tr>
+          <tr><td><strong>Consultar e filtrar</strong></td><td><code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>, <code>IN</code>, <code>BETWEEN</code>, <code>LIKE</code>, <code>IS NULL</code></td><td>Definir as colunas exibidas e quais linhas devem permanecer.</td></tr>
+          <tr><td><strong>Relacionar e organizar</strong></td><td><code>INNER JOIN</code>, <code>LEFT JOIN</code>, <code>ON</code>, <code>ORDER BY</code>, <code>DISTINCT</code></td><td>Combinar dados relacionados, ordenar a resposta e eliminar repetições quando necessário.</td></tr>
+        </tbody></table></div>
+
+        <div class="lesson-block">
+          <h3>A estrutura básica de uma consulta</h3>
+          <div class="sql-block"><span class="sql-label">Exemplo de retomada · reservas canceladas</span><pre><code>SELECT s.nome AS sala, r.situacao
+FROM reserva AS r
+INNER JOIN sala AS s
+    ON s.id_sala = r.id_sala
+WHERE r.situacao = 'cancelada'
+ORDER BY s.nome;</code></pre></div>
+          <div class="compact-table-wrap"><table class="compact-table"><thead><tr><th>Trecho</th><th>O que determina?</th></tr></thead><tbody>
+            <tr><td><code>SELECT</code></td><td>Quais colunas ou expressões serão mostradas.</td></tr>
+            <tr><td><code>FROM</code></td><td>De qual tabela partimos.</td></tr>
+            <tr><td><code>JOIN ... ON</code></td><td>Como relacionar linhas de outras tabelas.</td></tr>
+            <tr><td><code>WHERE</code></td><td>Quais linhas atendem à condição.</td></tr>
+            <tr><td><code>ORDER BY</code></td><td>Como ordenar as linhas devolvidas.</td></tr>
+          </tbody></table></div>
+          <div class="explain"><p><strong>Agora acrescentaremos:</strong> funções no <code>SELECT</code> para calcular valores, <code>GROUP BY</code> para formar grupos, <code>HAVING</code> para filtrá-los e subconsultas para obter critérios a partir de outros <code>SELECT</code>s.</p></div>
+        </div>
+      </div></section>
+
+      <section class="dml-section section-pad section-soft alt" id="dados"><div class="container">
+        <div class="dml-heading section-heading">
+          <p class="dml-kicker eyebrow">2 · Base de dados da aula</p>
+          <h2>Vamos continuar com o sistema de reservas</h2>
+          <p>Todos os resultados apresentados a seguir foram obtidos com a carga inicial da <a href="aula-08.html#ambiente">Aula 08</a>: 12 usuários, 11 salas e 20 reservas.</p>
+        </div>
+        <div class="schema-flow"><span>USUARIO</span><b>→</b><span>RESERVA</span><b>←</b><span>SALA</span><b>→</b><span>BLOCO</span></div>
+        <div class="callout"><strong>Preparação no Google Colab</strong><p>Execute as células 1, 2 e 3 da <a href="aula-08.html#ambiente">preparação da Aula 08</a>. Depois, passe cada consulta SQL desta aula à função <code>consultar(""" ... """)</code>. Se você alterou os registros, execute novamente a carga inicial antes de comparar os resultados.</p></div>
+        <p class="sql-note">Os exemplos usam SQL compatível com o SQLite e mostram os dados retornados, sem a formatação de listas do Python.</p>
+      </div></section>
+
+      <section class="dml-section section-pad" id="agregacao"><div class="container">
+        <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">3 · Funções de agregação</p>
+          <h2>Calcular um valor a partir de várias linhas</h2>
+          <p>Em vez de listar cada ocorrência, uma função de agregação calcula um resultado sobre um conjunto de registros. Sem <code>GROUP BY</code>, a agregação considera todas as linhas que passaram pelo filtro.</p>
+        </div>
+        <div class="compact-table-wrap"><table class="compact-table"><thead><tr><th>Função</th><th>O que devolve</th></tr></thead><tbody>
+          <tr><td><code>COUNT(*)</code></td><td>Quantidade de linhas, incluindo aquelas com valores <code>NULL</code> em alguma coluna.</td></tr>
+          <tr><td><code>COUNT(coluna)</code></td><td>Quantidade de valores não nulos naquela coluna.</td></tr>
+          <tr><td><code>SUM(coluna)</code></td><td>Soma dos valores numéricos não nulos.</td></tr>
+          <tr><td><code>AVG(coluna)</code></td><td>Média dos valores numéricos não nulos.</td></tr>
+          <tr><td><code>MIN(coluna)</code> / <code>MAX(coluna)</code></td><td>Menor / maior valor.</td></tr>
+        </tbody></table></div>
+        <div class="lesson-block">
+          <h3>3.1 · Quantas reservas e quantos usuários participaram?</h3>
+          <p class="example-prompt">Uma linha de resultado resume 20 reservas.</p>
+          <div class="sql-block"><span class="sql-label">SQL · contagem de registros e de valores distintos</span><pre><code>SELECT
+    COUNT(*) AS total_reservas,
+    COUNT(DISTINCT id_usuario) AS usuarios_com_reserva,
+    COUNT(observacao) AS com_observacao
+FROM reserva;</code></pre></div>
+          <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>1 linha</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th class="numeric">total_reservas</th><th class="numeric">usuarios_com_reserva</th><th class="numeric">com_observacao</th></tr></thead>
+            <tbody><tr><td class="numeric">20</td><td class="numeric">11</td><td class="numeric">11</td></tr></tbody>
+          </table></div></div>
+          <div class="explain"><p><code>COUNT(*)</code> conta 20 linhas. <code>COUNT(DISTINCT id_usuario)</code> conta 11 usuários diferentes. <code>COUNT(observacao)</code> não conta os nove registros em que a observação é <code>NULL</code>.</p></div>
+        </div>
+        <div class="lesson-block">
+          <h3>3.2 · Qual é a capacidade das salas do Bloco B?</h3>
+          <p class="example-prompt">Uma combinação de funções numéricas aplicada apenas às três salas do bloco.</p>
+          <div class="sql-block"><span class="sql-label">SQL · soma, média, menor e maior capacidade</span><pre><code>SELECT
+    SUM(capacidade) AS soma_capacidades,
+    AVG(capacidade) AS media_capacidade,
+    MIN(capacidade) AS menor,
+    MAX(capacidade) AS maior
+FROM sala
+WHERE id_bloco = 2;</code></pre></div>
+          <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>1 linha</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th class="numeric">soma_capacidades</th><th class="numeric">media_capacidade</th><th class="numeric">menor</th><th class="numeric">maior</th></tr></thead>
+            <tbody><tr><td class="numeric">24</td><td class="numeric">8.0</td><td class="numeric">4</td><td class="numeric">14</td></tr></tbody>
+          </table></div></div>
+          <p class="sql-note">O <code>WHERE</code> seleciona as salas do Bloco B antes de as funções calcularem os resultados.</p>
+        </div>
+      </div></section>
+
+      <section class="dml-section section-pad section-soft alt" id="agrupamento"><div class="container">
+        <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">4 · GROUP BY e HAVING</p>
+          <h2>Produzir um resultado para cada grupo</h2>
+          <p>Uma agregação sem <code>GROUP BY</code> produz um resumo geral. Com <code>GROUP BY</code>, as linhas são separadas por valores comuns e cada grupo recebe sua própria agregação.</p>
+        </div>
+        <div class="lesson-block">
+          <h3>4.1 · Quantas reservas existem em cada situação?</h3>
+          <div class="sql-block"><span class="sql-label">SQL · agrupamento por situação</span><pre><code>SELECT situacao, COUNT(*) AS total
+FROM reserva
+GROUP BY situacao
+ORDER BY situacao;</code></pre></div>
+          <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>3 grupos</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th>situacao</th><th class="numeric">total</th></tr></thead>
+            <tbody><tr><td>ativa</td><td class="numeric">12</td></tr><tr><td>cancelada</td><td class="numeric">3</td></tr><tr><td>concluida</td><td class="numeric">5</td></tr></tbody>
+          </table></div></div>
+          <div class="explain"><p>O banco continua com 20 reservas, mas o resultado agora tem uma linha para cada valor distinto de <code>situacao</code>. A coluna <code>total</code> indica o tamanho de cada grupo.</p></div>
+        </div>
+        <div class="lesson-block">
+          <h3>4.2 · A diferença entre WHERE e HAVING</h3>
+          <p><code>WHERE</code> seleciona linhas antes da formação dos grupos. <code>HAVING</code> seleciona grupos depois da agregação.</p>
+          <div class="sql-block"><span class="sql-label">SQL · reservas a partir de 12/10 e grupos com pelo menos 3 registros</span><pre><code>SELECT situacao, COUNT(*) AS total
+FROM reserva
+WHERE data >= '2026-10-12'
+GROUP BY situacao
+HAVING COUNT(*) >= 3
+ORDER BY situacao;</code></pre></div>
+          <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>2 grupos</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th>situacao</th><th class="numeric">total</th></tr></thead>
+            <tbody><tr><td>ativa</td><td class="numeric">7</td></tr><tr><td>concluida</td><td class="numeric">3</td></tr></tbody>
+          </table></div></div>
+          <div class="schema-flow"><span>FROM</span><b>→</b><span>WHERE (linhas)</span><b>→</b><span>GROUP BY (grupos)</span><b>→</b><span>HAVING (grupos)</span><b>→</b><span>SELECT</span><b>→</b><span>ORDER BY</span></div>
+          <p class="sql-note">O agrupamento <code>cancelada</code> tinha duas reservas a partir de 12/10, por isso foi eliminado pelo <code>HAVING</code>.</p>
+        </div>
+        <div class="lesson-block">
+          <h3>4.3 · Agregação com JOIN: quais salas foram reservadas pelo menos duas vezes?</h3>
+          <p>O <code>JOIN</code> associa cada reserva à sua sala. O <code>GROUP BY</code> reúne as reservas da mesma sala; o <code>HAVING</code> mantém apenas os grupos que atendem à condição.</p>
+          <div class="sql-block"><span class="sql-label">SQL · junção, contagem e filtragem de grupos</span><pre><code>SELECT
+    s.nome AS sala,
+    COUNT(r.id_reserva) AS total_reservas
+FROM sala AS s
+LEFT JOIN reserva AS r
+    ON r.id_sala = s.id_sala
+GROUP BY s.id_sala, s.nome
+HAVING COUNT(r.id_reserva) >= 2
+ORDER BY total_reservas DESC, s.nome;</code></pre></div>
+          <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>7 salas</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th>sala</th><th class="numeric">total_reservas</th></tr></thead>
+            <tbody>
+              <tr><td>Sala Araucária</td><td class="numeric">3</td></tr>
+              <tr><td>Sala Horizonte</td><td class="numeric">3</td></tr>
+              <tr><td>Sala Ipê</td><td class="numeric">3</td></tr>
+              <tr><td>Laboratório Maker</td><td class="numeric">2</td></tr>
+              <tr><td>Sala Cedro</td><td class="numeric">2</td></tr>
+              <tr><td>Sala Gralha Azul</td><td class="numeric">2</td></tr>
+              <tr><td>Sala Inovação</td><td class="numeric">2</td></tr>
+            </tbody>
+          </table></div></div>
+          <div class="explain"><p>Em um <code>LEFT JOIN</code>, prefira <code>COUNT(r.id_reserva)</code> quando quiser contar reservas reais: a Sala Jacarandá não possui reservas e teria contagem zero. <code>COUNT(*)</code> contaria a linha preservada pela junção.</p></div>
+        </div>
+      </div></section>
+
+      <section class="dml-section section-pad" id="subconsultas"><div class="container">
+        <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">5 · Subconsultas</p>
+          <h2>Utilizar uma consulta como parte de outra</h2>
+          <p>Uma subconsulta é um <code>SELECT</code> dentro de outra instrução. Ela pode fornecer um valor, um conjunto de valores ou testar a existência de registros. Vamos observar três usos essenciais.</p>
+        </div>
+        <div class="lesson-block">
+          <h3>5.1 · Subconsulta escalar: salas acima da capacidade média</h3>
+          <p>A consulta interna calcula uma média. A externa compara a capacidade de cada sala com esse valor.</p>
+          <div class="sql-block"><span class="sql-label">SQL · um valor calculado por outra consulta</span><pre><code>SELECT nome, capacidade
+FROM sala
+WHERE capacidade > (
+    SELECT AVG(capacidade)
+    FROM sala
+)
+ORDER BY capacidade DESC, nome;</code></pre></div>
+          <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>5 salas</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th>nome</th><th class="numeric">capacidade</th></tr></thead>
+            <tbody>
+              <tr><td>Sala Inovação</td><td class="numeric">30</td></tr>
+              <tr><td>Laboratório Sul</td><td class="numeric">24</td></tr>
+              <tr><td>Sala Imbuia</td><td class="numeric">20</td></tr>
+              <tr><td>Sala Jacarandá</td><td class="numeric">18</td></tr>
+              <tr><td>Laboratório Maker</td><td class="numeric">16</td></tr>
+            </tbody>
+          </table></div></div>
+          <div class="explain"><p>A média calculada pela consulta interna é aproximadamente <strong>14,73</strong>. A consulta externa retorna somente as salas com capacidade superior a esse número.</p></div>
+        </div>
+        <div class="lesson-block">
+          <h3>5.2 · IN e EXISTS: usuários com reserva concluída</h3>
+          <p>As duas consultas abaixo respondem à mesma pergunta por caminhos diferentes. Em <code>IN</code>, comparamos o identificador a um conjunto de valores; em <code>EXISTS</code>, verificamos se existe uma reserva correspondente.</p>
+          <div class="example-compare">
+            <div class="sql-block"><span class="sql-label">SQL · subconsulta com IN</span><pre><code>SELECT nome
+FROM usuario
+WHERE id_usuario IN (
+    SELECT id_usuario
+    FROM reserva
+    WHERE situacao = 'concluida'
+)
+ORDER BY nome;</code></pre></div>
+            <div class="sql-block"><span class="sql-label">SQL · subconsulta com EXISTS</span><pre><code>SELECT u.nome
+FROM usuario AS u
+WHERE EXISTS (
+    SELECT 1
+    FROM reserva AS r
+    WHERE r.id_usuario = u.id_usuario
+      AND r.situacao = 'concluida'
+)
+ORDER BY u.nome;</code></pre></div>
+          </div>
+          <div class="result-box"><div class="result-head"><strong>Resultado das duas consultas</strong><span>5 usuários</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th>nome</th></tr></thead>
+            <tbody><tr><td>Beatriz Lima</td></tr><tr><td>Camila Freitas</td></tr><tr><td>Gustavo Neri</td></tr><tr><td>Larissa Moura</td></tr><tr><td>Marina Lopes</td></tr></tbody>
+          </table></div></div>
+          <p class="sql-note">Na versão com <code>EXISTS</code>, a condição <code>r.id_usuario = u.id_usuario</code> relaciona a subconsulta à linha da consulta externa. <code>SELECT 1</code> é usado porque interessa saber se existe ao menos uma linha, não recuperar suas colunas.</p>
+        </div>
+        <div class="lesson-block">
+          <h3>5.3 · NOT EXISTS: salas sem nenhuma reserva</h3>
+          <p>Com <code>NOT EXISTS</code>, selecionamos linhas para as quais a subconsulta não encontra correspondências.</p>
+          <div class="sql-block"><span class="sql-label">SQL · ausência de registros relacionados</span><pre><code>SELECT s.nome
+FROM sala AS s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM reserva AS r
+    WHERE r.id_sala = s.id_sala
+)
+ORDER BY s.nome;</code></pre></div>
+          <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>1 sala</span></div><div class="result-scroll"><table class="result-table"><thead><tr><th>nome</th></tr></thead><tbody><tr><td>Sala Jacarandá</td></tr></tbody></table></div></div>
+          <div class="explain"><p>Para a Sala Jacarandá, a subconsulta não encontra nenhuma reserva. Por isso, a linha é mantida pela condição <code>NOT EXISTS</code>.</p></div>
+        </div>
+      </div></section>
+
+      <section class="dml-section section-pad section-soft alt" id="pratica"><div class="container">
+        <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">6 · Prática guiada</p>
+          <h2>Agora formule as consultas</h2>
+          <p>Use a mesma base de dados da Aula 08. Para cada pergunta, identifique as tabelas e escreva uma consulta SQL. Confira se os resultados fazem sentido.</p>
+        </div>
+        <div class="practice-simple">
+          <article><strong>1 · Contagem</strong><p>Quantas reservas possuem uma observação preenchida? Use uma função de agregação e um alias claro.</p></article>
+          <article><strong>2 · Agrupamento</strong><p>Quantas reservas existem para cada usuário? Mostre o nome e inclua usuários que ainda não fizeram reservas.</p></article>
+          <article><strong>3 · HAVING</strong><p>Quais situações aparecem em pelo menos quatro reservas? Mostre a situação e a quantidade.</p></article>
+          <article><strong>4 · Subconsulta escalar</strong><p>Quais salas têm capacidade menor que a capacidade média de todas as salas? Ordene pela capacidade.</p></article>
+          <article><strong>5 · NOT EXISTS</strong><p>Quais usuários ainda não realizaram nenhuma reserva?</p></article>
+        </div>
+        <div class="lesson-block" id="sintese">
+          <h3>Síntese da estrutura</h3>
+          <div class="sql-block"><span class="sql-label">Ordem de escrita das cláusulas usadas nesta aula</span><pre><code>SELECT coluna_agrupada, COUNT(*) AS total
+FROM tabela
+JOIN outra_tabela ON condicao_de_juncao
+WHERE condicao_sobre_linhas
+GROUP BY coluna_agrupada
+HAVING COUNT(*) >= 2
+ORDER BY total DESC;</code></pre></div>
+          <p class="sql-note">Este último bloco é um modelo de estrutura, não uma consulta executável no banco de reservas. Subconsultas podem aparecer dentro de expressões como as condições do <code>WHERE</code>.</p>
+        </div>
+        <div class="reference-brief">
+          <strong>Referências de apoio:</strong> SILBERSCHATZ, KORTH e SUDARSHAN, <em>Database System Concepts</em>, 7. ed., cap. 3; ELMASRI e NAVATHE, <em>Sistemas de Banco de Dados</em>, 6. ed., caps. 4 e 5.
+        </div>
+        <nav aria-label="Navegação da aula" class="lesson-bottom-nav">
+          <a href="aula-08.html">← Aula 08</a>
+          <a href="index.html">Página da disciplina</a>
+        </nav>
+      </div></section>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Prof. Philipe Fransozi</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+</body>
+</html>
