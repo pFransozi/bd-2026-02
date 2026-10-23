@@ -327,7 +327,7 @@ VALUES
 conexao.commit()
 print("Banco preparado.")</code></pre></div>
 
-      <div class="callout warn"><strong>Ao executar novamente, os dados anteriores serão apagados</strong><p>A célula reconstrói o banco para garantir que todos trabalhem com o mesmo conjunto de dados durante os exemplos.</p></div>
+      <div class="callout warn"><strong>Ao executar novamente, os dados anteriores serão apagados</strong><p>A célula recria o banco e substitui os dados anteriores.</p></div>
 
       <div class="dml-heading section-heading" style="margin-top:2.6rem"><p class="dml-kicker eyebrow">Célula 3</p><h2>Use a mesma função de consulta</h2><p>Ela recebe uma instrução SQL, mostra os nomes das colunas e imprime as linhas retornadas.</p></div>
       <div class="sql-block"><span class="sql-label">Python · função de apoio</span><pre><code>def consultar(sql):
@@ -340,7 +340,7 @@ print("Banco preparado.")</code></pre></div>
         print(linha)</code></pre></div>
 
       <div class="sql-block"><span class="sql-label">Teste inicial</span><pre><code>consultar("SELECT * FROM usuario;")</code></pre></div>
-      <div class="callout ok"><strong>Antes de avançar</strong><p>Devem aparecer doze usuários. Se o resultado estiver correto, o laboratório está pronto.</p></div>
+      <div class="callout ok"><strong>Antes de avançar</strong><p>Confira se a consulta retorna 12 usuários.</p></div>
     </div></section>
 
     <section class="dml-section section-pad section-soft alt" id="select"><div class="container">
@@ -354,7 +354,7 @@ FROM usuario;
 """)</code></pre></div>
       </div>
 
-      <div class="callout"><strong>Leia a consulta de cima para baixo</strong><p><code>SELECT</code> indica o que queremos no resultado. <code>FROM</code> indica de onde os dados serão obtidos. O asterisco representa todas as colunas da tabela.</p></div>
+      <div class="callout"><strong>Leia a consulta de cima para baixo</strong><p><code>SELECT</code> define as colunas; <code>FROM</code> indica a tabela; <code>*</code> seleciona todas as colunas.</p></div>
 
       <div class="question-step">
         <article class="card"><p class="mini-query">Nova pergunta</p><h3>Quero apenas os nomes dos usuários.</h3><p>Agora não precisamos de todas as colunas.</p></article>
@@ -378,7 +378,7 @@ SELECT
     nome AS usuario
 FROM usuario;
 """)</code></pre></div>
-      <div class="callout"><strong>O alias não altera a tabela</strong><p><code>AS</code> muda apenas o cabeçalho apresentado pela consulta. A coluna continua se chamando <code>id_usuario</code> no banco.</p></div>
+      <div class="callout"><strong>O alias não altera a tabela</strong><p><code>AS</code> altera apenas o nome exibido no resultado.</p></div>
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
@@ -396,7 +396,7 @@ FROM reserva;
 SELECT DISTINCT situacao
 FROM reserva;
 """)</code></pre></div>
-      <div class="callout ok"><strong>Importante</strong><p><code>DISTINCT</code> não apaga dados. Ele apenas elimina linhas repetidas do resultado produzido pela consulta.</p></div>
+      <div class="callout ok"><strong>Importante</strong><p><code>DISTINCT</code> remove duplicidades do resultado, não da tabela.</p></div>
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
@@ -554,7 +554,7 @@ FROM reserva
 ORDER BY data ASC, hora_inicio ASC;
 """)</code></pre></div>
 
-      <div class="callout ok"><strong>ASC e DESC</strong><p><code>ASC</code> ordena de forma crescente e é o padrão. <code>DESC</code> ordena de forma decrescente.</p></div>
+      <div class="callout ok"><strong>ASC e DESC</strong><p><code>ASC</code>: crescente (padrão). <code>DESC</code>: decrescente.</p></div>
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
@@ -587,7 +587,7 @@ SELECT
 FROM reserva;
 """)</code></pre></div>
 
-      <div class="callout"><strong>Pergunta</strong><p>Como mostrar <strong>Marina Lopes</strong> em vez de apenas <code>17</code>? O nome está em <code>usuario</code>. Precisamos combinar a reserva com o usuário correspondente.</p></div>
+      <div class="callout"><strong>Pergunta</strong><p>Para mostrar o nome de Marina Lopes, precisamos relacionar <code>reserva</code> e <code>usuario</code>.</p></div>
 
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
@@ -604,7 +604,7 @@ SELECT COUNT(*) AS combinacoes
 FROM usuario, reserva;
 """)</code></pre></div>
 
-      <div class="callout warn"><strong>12 usuários × 20 reservas = 240 combinações</strong><p>Cada usuário foi combinado com cada reserva. A maioria dessas linhas não corresponde a uma relação verdadeira do domínio.</p></div>
+      <div class="callout warn"><strong>12 usuários × 20 reservas = 240 combinações</strong><p>Sem condição de junção, surgem 240 combinações, inclusive as que não representam reservas reais.</p></div>
 
       <div class="sql-block"><span class="sql-label">Veja algumas combinações</span><pre><code>consultar("""
 SELECT
@@ -614,7 +614,7 @@ FROM usuario AS u, reserva AS r
 LIMIT 12;
 """)</code></pre></div>
 
-      <div class="callout"><strong>Ligação com a álgebra relacional</strong><p>Uma junção interna pode ser compreendida como uma combinação seguida de uma condição que mantém somente os pares relacionados.</p></div>
+      <div class="callout"><strong>Ligação com a álgebra relacional</strong><p>Uma junção interna preserva as combinações que satisfazem a condição de relacionamento.</p></div>
 
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
@@ -637,7 +637,7 @@ INNER JOIN usuario AS u
     ON u.id_usuario = r.id_usuario;
 """)</code></pre></div>
 
-      <div class="callout ok"><strong>Leia o ON como a regra de correspondência</strong><p><code>u.id_usuario = r.id_usuario</code> significa: combine a reserva somente com o usuário cujo identificador corresponde ao valor armazenado na FK.</p></div>
+      <div class="callout ok"><strong>Leia o ON como a regra de correspondência</strong><p><code>ON u.id_usuario = r.id_usuario</code> relaciona cada reserva ao usuário correspondente.</p></div>
 
       <div class="constraint-table-wrap"><table class="constraint-table"><thead><tr><th>Trecho</th><th>Papel na consulta</th></tr></thead><tbody>
         <tr><td><code>FROM reserva AS r</code></td><td>Define a primeira relação e cria o alias <code>r</code>.</td></tr>
@@ -672,7 +672,7 @@ INNER JOIN sala AS s
 ORDER BY r.data, r.hora_inicio;
 """)</code></pre></div>
 
-      <div class="callout"><strong>A ordem visual ajuda a raciocinar</strong><p>A consulta pode ser lida como um caminho: partimos de <code>usuario</code>, alcançamos <code>reserva</code> pela FK <code>id_usuario</code> e, em seguida, alcançamos <code>sala</code> por <code>id_sala</code>.</p></div>
+      <div class="callout"><strong>A ordem visual ajuda a raciocinar</strong><p>Caminho da consulta: <code>usuario → reserva → sala</code>, pelas respectivas chaves.</p></div>
 
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
@@ -755,7 +755,7 @@ LEFT JOIN reserva AS r
 ORDER BY u.nome;
 """)</code></pre></div>
 
-      <div class="callout ok"><strong>Observe Pedro Alves</strong><p>O usuário aparece mesmo sem possuir reserva. As colunas vindas de <code>reserva</code> ficam com <code>NULL</code>. Isso não aconteceria com <code>INNER JOIN</code>.</p></div>
+      <div class="callout ok"><strong>Observe Pedro Alves</strong><p>Ele aparece mesmo sem reserva; as colunas correspondentes ficam <code>NULL</code>.</p></div>
 
       <div class="sql-block"><span class="sql-label">Agora use a ausência para responder uma pergunta</span><pre><code>consultar("""
 SELECT
@@ -767,7 +767,7 @@ LEFT JOIN reserva AS r
 WHERE r.id_reserva IS NULL;
 """)</code></pre></div>
 
-      <div class="callout"><strong>Padrão importante</strong><p><code>LEFT JOIN</code> + teste de <code>NULL</code> permite localizar linhas da tabela principal que ainda não possuem correspondência na tabela relacionada.</p></div>
+      <div class="callout"><strong>Padrão importante</strong><p><code>LEFT JOIN</code> com <code>IS NULL</code> identifica registros sem correspondência.</p></div>
 
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
@@ -784,7 +784,7 @@ WHERE r.id_reserva IS NULL;
         <tr><td><code>LEFT JOIN</code></td><td>Todas as linhas da tabela à esquerda, com ou sem correspondência.</td><td>Quais usuários existem, inclusive os que ainda não reservaram?</td></tr>
       </tbody></table></div>
 
-      <div class="callout warn"><strong>Não escolha o JOIN pelo nome mais conhecido</strong><p>Primeiro formule a pergunta. Se linhas sem correspondência precisam continuar no resultado, uma junção externa como <code>LEFT JOIN</code> é necessária.</p></div>
+      <div class="callout warn"><strong>Não escolha o JOIN pelo nome mais conhecido</strong><p>Use <code>LEFT JOIN</code> quando for preciso manter linhas sem correspondência.</p></div>
 
 
       <div class="dml-heading section-heading" style="margin-top:3rem"><p class="dml-kicker eyebrow">4.9 · Uma intuição pela teoria dos conjuntos</p><h2>Visualize quais linhas permanecem no resultado</h2><p>As figuras abaixo ajudam a criar uma intuição sobre o que cada tipo de junção preserva. Considere o conjunto da esquerda como <code>usuario</code> e o da direita como <code>reserva</code>. A correspondência continua sendo definida pela condição do <code>ON</code>.</p></div>
@@ -844,7 +844,7 @@ WHERE r.id_reserva IS NULL;
         </article>
       </div>
 
-      <div class="callout warn"><strong>Use as figuras como intuição, não como definição completa</strong><p>Um <code>JOIN</code> não é simplesmente uma interseção geométrica. Em SQL, a junção combina <strong>linhas e colunas de relações diferentes</strong> de acordo com a expressão do <code>ON</code>. As figuras ajudam a visualizar quais linhas são preservadas no resultado.</p></div>
+      <div class="callout warn"><strong>Use as figuras como intuição, não como definição completa</strong><p>As figuras ilustram a preservação das linhas, mas <code>JOIN</code> combina registros conforme a condição <code>ON</code>.</p></div>
 
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
@@ -856,7 +856,7 @@ WHERE r.id_reserva IS NULL;
 
       <div class="dml-heading section-heading" style="margin-top:2.8rem"><p class="dml-kicker eyebrow">4.10 · Por que vamos preferir JOIN ... ON?</p><h2>Deixe explícita a condição que representa o relacionamento</h2><p>SQL possui outras formas de expressar junções. Nesta disciplina vamos priorizar <code>JOIN ... ON</code>, porque ele separa claramente a condição de relacionamento das condições de filtragem e obriga a consulta a registrar quais colunas estão sendo relacionadas.</p></div>
 
-      <div class="callout"><strong>Sobre NATURAL JOIN</strong><p>Esse recurso cria condições de igualdade implicitamente a partir de colunas com o mesmo nome. Isso pode parecer conveniente, mas uma mudança no esquema ou a existência de outra coluna homônima pode alterar o resultado. Por isso, nos exemplos da disciplina, a condição de junção ficará explícita.</p></div>
+      <div class="callout"><strong>Sobre NATURAL JOIN</strong><p><code>NATURAL JOIN</code> relaciona colunas homônimas implicitamente; mudanças no esquema podem alterar a junção. Preferimos <code>JOIN ... ON</code>.</p></div>
 
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Fechamento de junções</strong></div>
@@ -905,7 +905,7 @@ SELECT id_usuario
 FROM reserva;
 """)</code></pre></div>
 
-      <div class="callout"><strong>Não transforme isso em memorização de comandos</strong><p>O objetivo é perceber que uma consulta pode ser entendida como uma sequência de operações sobre conjuntos de linhas e colunas. Essa leitura ajuda a construir consultas mais complexas depois.</p></div>
+      <div class="callout"><strong>Não transforme isso em memorização de comandos</strong><p>Observe as operações relacionais representadas pelas consultas.</p></div>
       <div class="topic-exercises">
         <div class="topic-exercises-head"><strong>Agora pratique</strong></div>
         <div class="topic-exercises-grid">
