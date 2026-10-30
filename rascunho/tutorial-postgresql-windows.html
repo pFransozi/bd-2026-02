@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Tutorial de instalação do PostgreSQL 18 com Docker Desktop no Windows, acesso via pgAdmin 4 e primeiro teste SQL.">
+  <title>Tutorial · PostgreSQL no Windows com Docker e pgAdmin 4 | Banco de Dados</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="../script.js"></script>
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <style>
+    body.tutorial-pg{background:var(--bg);color:var(--text)}
+    .pg-hero{padding:3.4rem 0 2.8rem;border-bottom:1px solid var(--line);background:var(--bg)}
+    .pg-kicker{margin:0 0 .6rem;color:var(--primary);font-size:.78rem;font-weight:800;letter-spacing:.065em;text-transform:uppercase}
+    .pg-hero h1{font-size:clamp(2.25rem,4.4vw,4rem);line-height:1.07;letter-spacing:-.04em;margin:0;max-width:850px}
+    .pg-lead{max-width:800px;margin:1rem 0 1.1rem;color:var(--muted);font-size:1.075rem;line-height:1.65}
+    .pg-tags{display:flex;flex-wrap:wrap;gap:.48rem}.pg-tags span{border:1px solid var(--line);border-radius:8px;padding:.34rem .58rem;color:var(--muted);background:var(--surface);font-size:.82rem}
+    .pg-toc-shell{position:sticky;top:72px;z-index:45;border-bottom:1px solid var(--line);background:var(--surface)}
+    .pg-toc{display:flex;flex-wrap:wrap;gap:.35rem;padding:.58rem 0}.pg-toc a{color:var(--muted);text-decoration:none;font-size:.82rem;padding:.46rem .65rem;border-radius:8px}
+    .pg-toc a:hover,.pg-toc a:focus-visible{background:var(--surface-soft);color:var(--text)}
+    .pg-section{padding:2.75rem 0;scroll-margin-top:145px;border-bottom:1px solid var(--line)}
+    .pg-section:nth-of-type(even){background:var(--surface-soft)}
+    .pg-body{max-width:1010px}
+    .pg-section h2{margin:.1rem 0 .8rem;font-size:clamp(1.55rem,2.9vw,2.2rem);line-height:1.15;letter-spacing:-.025em}
+    .pg-section h3{margin:1.55rem 0 .6rem;font-size:1.13rem}
+    .pg-section p,.pg-section li{line-height:1.64;color:var(--muted)}
+    .pg-section p{margin:.6rem 0 1.05rem}
+    .pg-section code:not(pre code){font-family:ui-monospace,Consolas,monospace;font-size:.92em}
+    .pg-section ol,.pg-section ul{padding-left:1.4rem}
+    .pg-section li{margin:.43rem 0}
+    .pg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0 1.45rem}
+    .pg-card{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:1.05rem 1.1rem}
+    .pg-card strong{display:block;margin-bottom:.3rem}.pg-card p{font-size:.92rem;margin:.35rem 0}
+    .pg-arch{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:.55rem;margin:1.3rem 0 1.7rem}
+    .pg-arch .item{border:1px solid var(--line);background:var(--surface);padding:1.05rem .7rem;text-align:center;border-radius:12px;font-size:.9rem;font-weight:750}
+    .pg-arch .item small{display:block;margin-top:.3rem;color:var(--muted);font-size:.73rem;font-weight:500}
+    .pg-arch .arrow{color:var(--primary);font-weight:800}
+    .pg-code{border:1px solid var(--ensino-line,var(--line));border-radius:12px;margin:1.05rem 0 1.3rem;overflow:hidden;background:var(--ensino-code-bg,#151a23);color:var(--ensino-code-text,#f1f5f9)}
+    .pg-code-label{padding:.55rem .95rem;background:var(--surface);border-bottom:1px solid var(--line);color:var(--muted);font-size:.75rem;font-weight:750}
+    .pg-code pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;background:transparent;color:inherit;white-space:pre;line-height:1.65;font-size:.9rem}
+    .pg-code code{color:inherit;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:none}
+    .pg-table-scroll{overflow:auto;border-radius:12px;border:1px solid var(--line);margin:1.1rem 0 1.4rem;background:var(--surface)}
+    .pg-table{border-collapse:collapse;width:100%;min-width:580px}
+    .pg-table th,.pg-table td{border-bottom:1px solid var(--line);text-align:left;padding:.66rem .88rem;vertical-align:top;font-size:.91rem}
+    .pg-table th{font-weight:750;background:var(--surface-soft)}.pg-table tr:last-child td{border-bottom:none}
+    .pg-table td{color:var(--muted)}.pg-table td:first-child{color:var(--text);font-weight:600}
+    .pg-note{border-left:3px solid var(--primary);background:var(--surface);border-radius:0 9px 9px 0;padding:.9rem 1.05rem;margin:1.1rem 0}
+    .pg-note strong{display:block;margin-bottom:.28rem}
+    .pg-note p{font-size:.93rem;margin:0;color:var(--muted)}
+    .pg-warning{border-left-color:#c37a2a}
+    .pg-links{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin:.85rem 0 1.2rem}
+    .pg-links a{display:inline-block;font-size:.92rem;text-decoration:underline;text-underline-offset:3px}
+    .pg-checklist{border:1px solid var(--line);background:var(--surface);padding:1rem 1.25rem;border-radius:12px;margin:1rem 0}
+    .pg-checklist label{display:flex;gap:.6rem;align-items:baseline;margin:.62rem 0;color:var(--text);font-size:.93rem}
+    .pg-checklist input{accent-color:var(--primary)}
+    .pg-footer{padding:1.6rem 0}
+    .pg-footer a{color:var(--primary)}
+    @media(max-width:1100px){.pg-toc-shell{position:static}}
+    @media(max-width:900px){.pg-grid{grid-template-columns:1fr}}
+    @media(max-width:700px){
+      .pg-hero{padding:2.55rem 0 2rem}
+      .pg-section{padding:2rem 0;scroll-margin-top:90px}
+      .pg-toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+      .pg-toc a{white-space:nowrap}
+      .pg-arch{grid-template-columns:1fr;gap:.35rem}
+      .pg-arch .arrow{transform:rotate(90deg);justify-self:center}
+      .pg-code pre{font-size:.81rem}
+    }
+    /* Menu colapsável com zoom: o cabeçalho não ocupa a tela inteira. */
+    @media(max-width:1080px){
+      body.tutorial-pg .site-header .nav-wrap{display:flex;flex-wrap:nowrap;align-items:center;position:relative;gap:12px;min-height:58px}
+      body.tutorial-pg .site-header .brand{min-width:0;max-width:calc(100% - 56px)}
+      body.tutorial-pg .site-header .brand strong{font-size:clamp(.95rem,2.4vw,1.12rem)}
+      body.tutorial-pg .site-header .nav-toggle{display:block!important;flex:0 0 44px;width:44px;height:44px;margin-left:auto;cursor:pointer}
+      body.tutorial-pg .site-header .main-nav{display:none!important;position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:110;max-height:calc(100dvh - 82px);overflow-y:auto;flex-direction:column;align-items:stretch;gap:.25rem;padding:.65rem;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+      body.tutorial-pg .site-header .main-nav.is-open{display:flex!important}
+    }
+  </style>
+</head>
+<body class="teaching-page teaching-lesson lesson-dml tutorial-pg">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+        <a href="../index.html">Página principal</a><a href="../aula-09.html">Aula 09</a><a href="#erros">Problemas comuns</a>
+        <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
+      </nav>
+    </div>
+  </header>
+  <main id="conteudo">
+    <section class="pg-hero">
+      <div class="container pg-body">
+        <p class="pg-kicker">Banco de Dados · Tutorial de laboratório · Rascunho</p>
+        <h1>PostgreSQL no Windows com Docker e pgAdmin 4</h1>
+        <p class="pg-lead">Preparar um servidor PostgreSQL local em contêiner, conectar-se pelo pgAdmin 4 e executar as primeiras consultas. Não é necessário instalar o servidor PostgreSQL diretamente no Windows.</p>
+        <div class="pg-tags"><span>Windows 11</span><span>Docker Desktop / WSL 2</span><span>PostgreSQL 18</span><span>pgAdmin 4</span><span>PowerShell</span></div>
+      </div>
+    </section>
+
+    <div class="pg-toc-shell"><nav class="container pg-toc" aria-label="Etapas do tutorial">
+      <a href="#objetivo">Visão</a><a href="#preparacao">Preparação</a><a href="#docker">Docker</a><a href="#compose">Servidor</a><a href="#pgadmin">pgAdmin</a><a href="#sql">Primeiro SQL</a><a href="#manutencao">Comandos</a><a href="#erros">Problemas</a>
+    </nav></div>
+
+    <section class="pg-section" id="objetivo"><div class="container pg-body">
+      <p class="pg-kicker">0 · Entenda a estrutura</p>
+      <h2>Quais ferramentas utilizaremos?</h2>
+      <p>O <strong>Docker Desktop</strong> executa o contêiner que contém o servidor <strong>PostgreSQL</strong>. O <strong>pgAdmin 4</strong> é o aplicativo gráfico instalado no Windows que se conecta ao servidor. Um volume Docker mantém os dados mesmo se o contêiner for parado ou recriado.</p>
+      <div class="pg-arch" aria-label="Arquitetura de conexão entre pgAdmin, PostgreSQL e volume de dados">
+        <div class="item">pgAdmin 4<small>Aplicativo no Windows</small></div><span class="arrow" aria-hidden="true">→</span>
+        <div class="item">PostgreSQL<small>Contêiner Docker · porta 5432</small></div><span class="arrow" aria-hidden="true">↔</span>
+        <div class="item">Volume de dados<small>Persistência gerenciada pelo Docker</small></div>
+      </div>
+      <div class="pg-grid">
+        <article class="pg-card"><strong>Ao final, você deverá conseguir</strong><p>Iniciar e parar o banco; registrar a conexão no pgAdmin; executar SQL e verificar que os dados permanecem após reiniciar o contêiner.</p></article>
+        <article class="pg-card"><strong>O que será instalado no Windows?</strong><p>Docker Desktop e pgAdmin 4. O PostgreSQL será obtido por imagem oficial, sem instalador nativo do servidor.</p></article>
+      </div>
+    </div></section>
+
+    <section class="pg-section" id="preparacao"><div class="container pg-body">
+      <p class="pg-kicker">1 · Antes de começar</p>
+      <h2>Verifique o Windows e o WSL 2</h2>
+      <p>Use preferencialmente <strong>Windows 11 de 64 bits</strong>, com virtualização habilitada e <strong>8 GB de RAM ou mais</strong>. Em outros sistemas, confira os requisitos atuais do Docker Desktop. Se estiver em um laboratório institucional, pode ser necessário solicitar a habilitação do WSL 2 à equipe de TI.</p>
+      <ol>
+        <li>Abra o <strong>PowerShell</strong> e verifique a instalação do WSL:</li>
+      </ol>
+      <div class="pg-code"><div class="pg-code-label">PowerShell · verificação</div><pre><code>wsl --version</code></pre></div>
+      <ol start="2">
+        <li>Se o WSL não estiver instalado, abra o <strong>PowerShell como administrador</strong> e execute:</li>
+      </ol>
+      <div class="pg-code"><div class="pg-code-label">PowerShell (administrador) · somente se necessário</div><pre><code>wsl --install</code></pre></div>
+      <p>Reinicie o computador, se solicitado. Para atualizar o WSL quando necessário:</p>
+      <div class="pg-code"><div class="pg-code-label">PowerShell (administrador)</div><pre><code>wsl --update</code></pre></div>
+      <div class="pg-note"><strong>Se o WSL já estiver funcionando</strong><p>Não há necessidade de reinstalá-lo. Verifique apenas a versão e prossiga para o Docker Desktop.</p></div>
+      <p>Referência oficial: <a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener noreferrer">requisitos e instalação do Docker Desktop no Windows</a>.</p>
+    </div></section>
+
+    <section class="pg-section" id="docker"><div class="container pg-body">
+      <p class="pg-kicker">2 · Instalação do Docker</p>
+      <h2>Instale e inicie o Docker Desktop</h2>
+      <ol>
+        <li>Baixe o <a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener noreferrer">Docker Desktop para Windows</a> no site oficial.</li>
+        <li>Execute o instalador. Utilize o backend <strong>WSL 2</strong>, quando solicitado.</li>
+        <li>Abra o <strong>Docker Desktop</strong> e aguarde o mecanismo de contêineres iniciar.</li>
+        <li>Abra o PowerShell e confirme a disponibilidade dos comandos:</li>
+      </ol>
+      <div class="pg-code"><div class="pg-code-label">PowerShell · verificação do ambiente</div><pre><code>docker --version
+docker compose version
+docker info</code></pre></div>
+      <p>O último comando deve retornar informações do servidor Docker. Se disser que não consegue se conectar ao Docker daemon, abra o Docker Desktop e verifique se o mecanismo está iniciado.</p>
+      <div class="pg-note"><strong>Importante</strong><p>Usaremos contêineres Linux com WSL 2. Você não precisa instalar uma distribuição Ubuntu separadamente para executar esses comandos no PowerShell.</p></div>
+    </div></section>
+
+    <section class="pg-section" id="compose"><div class="container pg-body">
+      <p class="pg-kicker">3 · Instalação do servidor</p>
+      <h2>Crie e inicie o PostgreSQL com Docker Compose</h2>
+      <p>O arquivo <code>compose.yaml</code> descreve qual imagem executar, a senha de laboratório, a porta de acesso e o volume persistente. Ele permite que os estudantes iniciem a mesma configuração.</p>
+      <div class="pg-links">
+        <a href="postgresql-windows/compose.yaml" download>Baixar compose.yaml</a>
+      </div>
+      <h3>3.1 · Prepare a pasta</h3>
+      <div class="pg-code"><div class="pg-code-label">PowerShell · criar a pasta do projeto</div><pre><code>New-Item -ItemType Directory -Force -Path "$HOME\postgres-laboratorio"
+Set-Location "$HOME\postgres-laboratorio"
+notepad compose.yaml</code></pre></div>
+      <p>Quando o Bloco de Notas abrir, cole o conteúdo abaixo e salve como <code>compose.yaml</code>. Confirme que o Windows não acrescentou a extensão <code>.txt</code>. Você também pode baixar o arquivo pronto acima e colocá-lo nessa pasta.</p>
+      <div class="pg-code"><div class="pg-code-label">compose.yaml · servidor PostgreSQL 18</div><pre><code>services:
+  db:
+    image: postgres:18
+    container_name: bd_postgres_aula
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aluno
+      POSTGRES_PASSWORD: "AulaBD2026_Local!"
+      POSTGRES_DB: laboratorio
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_dados:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aluno -d laboratorio"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  postgres_dados:</code></pre></div>
+      <div class="pg-note"><strong>Por que este volume?</strong><p>Na imagem oficial do PostgreSQL <strong>18</strong>, o volume persistente deve ser montado em <code>/var/lib/postgresql</code>. O caminho usado em versões antigas é diferente. Evite trocar a versão principal da imagem sem antes estudar a migração dos dados.</p></div>
+      <div class="pg-note pg-warning"><strong>Credenciais somente para laboratório</strong><p>A senha aparece no arquivo para facilitar a atividade local. A porta está limitada a <code>127.0.0.1</code>, não exposta deliberadamente à rede. Não reutilize essa senha ou este arquivo em produção.</p></div>
+      <h3>3.2 · Inicie e confira o serviço</h3>
+      <div class="pg-code"><div class="pg-code-label">PowerShell · execute dentro da pasta do compose.yaml</div><pre><code>docker compose config
+docker compose up -d
+docker compose ps</code></pre></div>
+      <p>O comando <code>up -d</code> inicia o contêiner em segundo plano. Na primeira execução, o Docker fará o download da imagem. Aguarde o serviço indicar <code>healthy</code> antes de conectar pelo pgAdmin.</p>
+      <div class="pg-code"><div class="pg-code-label">PowerShell · diagnóstico e conexão por linha de comando</div><pre><code>docker compose logs --tail=30 db
+docker compose exec db psql -U aluno -d laboratorio -c "SELECT current_database(), current_user;"</code></pre></div>
+      <p>Se a última consulta mostrar o banco <code>laboratorio</code> e o usuário <code>aluno</code>, o servidor está respondendo.</p>
+    </div></section>
+
+    <section class="pg-section" id="pgadmin"><div class="container pg-body">
+      <p class="pg-kicker">4 · Acesso gráfico</p>
+      <h2>Instale e conecte o pgAdmin 4</h2>
+      <p>O pgAdmin é uma ferramenta de administração gráfica desenvolvida para o PostgreSQL. Neste tutorial, instalaremos a versão para <strong>Windows</strong>, fora do Docker.</p>
+      <ol>
+        <li>Baixe o instalador pelo <a href="https://www.pgadmin.org/download/pgadmin-4-windows/" target="_blank" rel="noopener noreferrer">site oficial do pgAdmin 4</a> e conclua a instalação.</li>
+        <li>Abra o <strong>pgAdmin 4</strong>. Caso solicite uma <em>master password</em>, crie uma senha para proteger as conexões salvas no aplicativo. Ela é diferente da senha do banco.</li>
+        <li>No painel <strong>Servers</strong>, clique com o botão direito e escolha <strong>Register → Server…</strong>.</li>
+        <li>Na guia <strong>General</strong>, digite um nome para identificar o servidor. Na guia <strong>Connection</strong>, configure os campos abaixo.</li>
+      </ol>
+      <div class="pg-table-scroll"><table class="pg-table">
+        <thead><tr><th>Campo</th><th>Valor</th><th>Significado</th></tr></thead>
+        <tbody>
+          <tr><td>Name (General)</td><td>PostgreSQL — Laboratório</td><td>Nome visual escolhido por você.</td></tr>
+          <tr><td>Host name/address</td><td><code>127.0.0.1</code></td><td>Servidor acessível a partir do próprio Windows.</td></tr>
+          <tr><td>Port</td><td><code>5432</code></td><td>Porta publicada pelo Docker.</td></tr>
+          <tr><td>Maintenance database</td><td><code>laboratorio</code></td><td>Banco criado ao inicializar o contêiner.</td></tr>
+          <tr><td>Username</td><td><code>aluno</code></td><td>Usuário definido no arquivo Compose.</td></tr>
+          <tr><td>Password</td><td><code>AulaBD2026_Local!</code></td><td>Senha didática do PostgreSQL.</td></tr>
+        </tbody>
+      </table></div>
+      <ol start="5">
+        <li>Clique em <strong>Save</strong>. Expanda <strong>Servers → PostgreSQL — Laboratório → Databases → laboratorio → Schemas → public</strong>.</li>
+        <li>Selecione o banco <code>laboratorio</code> e abra <strong>Tools → Query Tool</strong> para executar SQL.</li>
+      </ol>
+      <div class="pg-note"><strong>Se o acesso falhar</strong><p>Confira primeiro o Docker Desktop e <code>docker compose ps</code>. O endereço <code>127.0.0.1</code> funciona porque o pgAdmin está instalado no mesmo Windows que publica a porta do contêiner.</p></div>
+    </div></section>
+
+    <section class="pg-section" id="sql"><div class="container pg-body">
+      <p class="pg-kicker">5 · Primeiro teste</p>
+      <h2>Crie uma tabela e execute consultas</h2>
+      <p>Comece conferindo a conexão. No <strong>Query Tool</strong>, selecione o texto e use o botão de execução (ícone de ▶) para rodar a instrução.</p>
+      <div class="pg-code"><div class="pg-code-label">SQL · confirme o servidor conectado</div><pre><code>SELECT current_database() AS banco,
+       current_user AS usuario,
+       version();</code></pre></div>
+      <p>Depois, use um exemplo simples relacionado à logística. Execute cada bloco uma vez, na ordem apresentada.</p>
+      <div class="pg-code"><div class="pg-code-label">SQL · crie a tabela</div><pre><code>CREATE TABLE centro_distribuicao (
+    id_centro INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(80) NOT NULL,
+    cidade VARCHAR(80) NOT NULL,
+    capacidade_diaria INTEGER NOT NULL CHECK (capacidade_diaria > 0)
+);</code></pre></div>
+      <div class="pg-code"><div class="pg-code-label">SQL · insira quatro registros</div><pre><code>INSERT INTO centro_distribuicao (nome, cidade, capacidade_diaria)
+VALUES
+    ('CD Curitiba Norte', 'Curitiba', 600),
+    ('CD Curitiba Sul', 'Curitiba', 800),
+    ('CD São José', 'São José dos Pinhais', 650),
+    ('CD Londrina', 'Londrina', 500);</code></pre></div>
+      <div class="pg-code"><div class="pg-code-label">SQL · consulte os registros</div><pre><code>SELECT id_centro, nome, cidade, capacidade_diaria
+FROM centro_distribuicao
+ORDER BY id_centro;</code></pre></div>
+      <p>O resultado deve apresentar os quatro centros cadastrados. No navegador de objetos do pgAdmin, clique com o botão direito em <strong>Tables</strong> e escolha <strong>Refresh</strong> se a nova tabela ainda não aparecer.</p>
+      <h3>Retomada da Aula 09: agregação e agrupamento</h3>
+      <div class="pg-code"><div class="pg-code-label">SQL · agrupar centros por cidade</div><pre><code>SELECT cidade,
+       COUNT(*) AS total_centros,
+       SUM(capacidade_diaria) AS capacidade_total
+FROM centro_distribuicao
+GROUP BY cidade
+ORDER BY capacidade_total DESC;</code></pre></div>
+      <div class="pg-table-scroll"><table class="pg-table">
+        <thead><tr><th>cidade</th><th>total_centros</th><th>capacidade_total</th></tr></thead>
+        <tbody><tr><td>Curitiba</td><td>2</td><td>1400</td></tr><tr><td>São José dos Pinhais</td><td>1</td><td>650</td></tr><tr><td>Londrina</td><td>1</td><td>500</td></tr></tbody>
+      </table></div>
+      <div class="pg-note"><strong>Arquivo SQL pronto</strong><p>Você também pode abrir o <a href="postgresql-windows/teste.sql">script completo de teste (.sql)</a> no Query Tool. Se já tiver criado a tabela, não execute novamente os comandos de criação e inserção: eles foram preparados para o primeiro teste.</p></div>
+    </div></section>
+
+    <section class="pg-section" id="manutencao"><div class="container pg-body">
+      <p class="pg-kicker">6 · Uso no dia a dia</p>
+      <h2>Parar, iniciar e preservar o banco</h2>
+      <p>Execute os comandos na mesma pasta que contém o <code>compose.yaml</code>.</p>
+      <div class="pg-table-scroll"><table class="pg-table">
+        <thead><tr><th>Comando</th><th>Efeito</th></tr></thead>
+        <tbody>
+          <tr><td><code>docker compose stop</code></td><td>Para o servidor sem remover o contêiner nem o volume.</td></tr>
+          <tr><td><code>docker compose start</code></td><td>Reinicia o contêiner já criado.</td></tr>
+          <tr><td><code>docker compose up -d</code></td><td>Cria ou inicia os serviços definidos no arquivo.</td></tr>
+          <tr><td><code>docker compose ps</code></td><td>Mostra o estado do serviço.</td></tr>
+          <tr><td><code>docker compose logs --tail=30 db</code></td><td>Exibe mensagens recentes do PostgreSQL.</td></tr>
+          <tr><td><code>docker compose down</code></td><td>Remove contêiner e rede, mas mantém o volume nomeado.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="pg-note pg-warning"><strong>Cuidado com docker compose down -v</strong><p>O parâmetro <code>-v</code> remove também o volume deste ambiente e <strong>apaga seus dados persistidos</strong>. Use somente se tiver certeza de que deseja reiniciar o laboratório do zero.</p></div>
+      <p>Teste a persistência: execute <code>docker compose stop</code>, depois <code>docker compose start</code>, reconecte no pgAdmin e consulte novamente <code>centro_distribuicao</code>.</p>
+    </div></section>
+
+    <section class="pg-section" id="erros"><div class="container pg-body">
+      <p class="pg-kicker">7 · Diagnóstico</p>
+      <h2>Problemas comuns e como verificar</h2>
+      <div class="pg-table-scroll"><table class="pg-table">
+        <thead><tr><th>Problema</th><th>O que verificar</th></tr></thead>
+        <tbody>
+          <tr><td><strong>docker não é reconhecido</strong></td><td>Confirme a instalação do Docker Desktop e abra um novo PowerShell.</td></tr>
+          <tr><td><strong>Cannot connect to Docker daemon</strong></td><td>Abra o Docker Desktop e aguarde o mecanismo iniciar. Verifique <code>docker info</code>.</td></tr>
+          <tr><td><strong>Erro de WSL 2 ou virtualização</strong></td><td>Confira <code>wsl --version</code>, as atualizações do WSL e a virtualização da máquina; em laboratório, solicite apoio da TI.</td></tr>
+          <tr><td><strong>Port is already allocated: 5432</strong></td><td>Outra aplicação está usando a porta. Altere apenas a porta à esquerda no Compose para <code>127.0.0.1:5433:5432</code> e configure a porta <code>5433</code> no pgAdmin.</td></tr>
+          <tr><td><strong>Connection refused no pgAdmin</strong></td><td>Verifique se o contêiner está em execução, se está saudável e se o host é <code>127.0.0.1</code>.</td></tr>
+          <tr><td><strong>Password authentication failed</strong></td><td>Confira usuário, senha e banco. Se o volume já foi inicializado antes com outra senha, mudar o Compose não altera a senha armazenada.</td></tr>
+          <tr><td><strong>relation ... already exists</strong></td><td>A tabela já foi criada. Não execute novamente o bloco <code>CREATE TABLE</code>; continue pela consulta.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Para diagnosticar, use primeiro <code>docker compose ps</code> e <code>docker compose logs --tail=30 db</code>. Evite apagar volumes como primeira tentativa de correção.</p>
+      <div class="pg-checklist"><strong>Checklist de conclusão</strong>
+        <label><input type="checkbox"> Docker Desktop responde a <code>docker info</code>.</label>
+        <label><input type="checkbox"> O contêiner PostgreSQL está em execução.</label>
+        <label><input type="checkbox"> O pgAdmin conecta ao banco <code>laboratorio</code>.</label>
+        <label><input type="checkbox"> A consulta lista os quatro centros de distribuição.</label>
+        <label><input type="checkbox"> Os dados permanecem após parar e iniciar o contêiner.</label>
+      </div>
+    </div></section>
+
+    <section class="pg-section" id="referencias"><div class="container pg-body">
+      <p class="pg-kicker">Documentação de referência</p>
+      <h2>Fontes oficiais</h2>
+      <ul>
+        <li><a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener noreferrer">Docker Desktop — instalação no Windows</a></li>
+        <li><a href="https://docs.docker.com/desktop/features/wsl/" target="_blank" rel="noopener noreferrer">Docker Desktop — integração com WSL 2</a></li>
+        <li><a href="https://hub.docker.com/_/postgres" target="_blank" rel="noopener noreferrer">Imagem oficial PostgreSQL — Docker Hub</a></li>
+        <li><a href="https://www.pgadmin.org/download/pgadmin-4-windows/" target="_blank" rel="noopener noreferrer">pgAdmin 4 — download para Windows</a></li>
+        <li><a href="https://www.pgadmin.org/docs/pgadmin4/9.19/connecting.html" target="_blank" rel="noopener noreferrer">pgAdmin 4 — conexão com servidor</a></li>
+      </ul>
+      <p class="pg-footer"><a href="../index.html">← Página principal da disciplina</a></p>
+    </div></section>
+  </main>
+  <footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Tutorial em revisão</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+</body>
+</html>
