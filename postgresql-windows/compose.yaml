@@ -1,0 +1,21 @@
+# Ambiente didático local — não use estas credenciais em produção.
+services:
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aluno
+      POSTGRES_PASSWORD: "AulaBD2026_Local!"
+      POSTGRES_DB: laboratorio
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_dados:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aluno -d laboratorio"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  postgres_dados:
