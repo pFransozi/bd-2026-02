@@ -273,7 +273,12 @@ ORDER BY s.nome;</code></pre></div>
           <p>Todos os resultados apresentados a seguir foram obtidos com a carga inicial da <a href="aula-08.html#ambiente">Aula 08</a>: 12 usuários, 11 salas e 20 reservas.</p>
         </div>
         <div class="schema-flow"><span>USUARIO</span><b>→</b><span>RESERVA</span><b>←</b><span>SALA</span><b>→</b><span>BLOCO</span></div>
-        <div class="callout"><strong>Preparação no Google Colab</strong><p>Execute as células 1, 2 e 3 da <a href="aula-08.html#ambiente">preparação da Aula 08</a>. Depois, passe cada consulta SQL desta aula à função <code>consultar(""" ... """)</code>. Se você alterou os registros, execute novamente a carga inicial antes de comparar os resultados.</p></div>
+        <div class="callout">
+          <strong>Laboratório da Aula 09 — preparação direta</strong>
+          <p><a href="https://colab.research.google.com/github/pFransozi/bd-2026-02/blob/main/Aula_09_Laboratorio_SQL.ipynb" target="_blank" rel="noopener noreferrer">Abrir o notebook no Google Colab →</a>. Execute a célula que cria e carrega o SQLite; a função <code>consultar(sql)</code> já estará disponível para exibir os resultados em tabelas.</p>
+          <p>Para experimentar os exemplos, envolva cada consulta SQL em <code>consultar(""" ... """)</code>. Reexecute a célula de inicialização para restaurar os dados originais.</p>
+          <p class="sql-note"><a href="Aula_09_Laboratorio_SQL.ipynb">Arquivo .ipynb</a> · <a href="aula-08.html#ambiente">Ver a carga original da Aula 08</a></p>
+        </div>
         <p class="sql-note">Os exemplos usam SQL compatível com o SQLite e mostram os dados retornados, sem a formatação de listas do Python.</p>
       </div></section>
 
@@ -328,6 +333,30 @@ WHERE id_bloco = 2;</code></pre></div>
         </div>
         <div class="lesson-block">
           <h3>4.1 · Quantas reservas existem em cada situação?</h3>
+          <p>Observe um recorte das cinco primeiras reservas. Primeiro vemos cada registro; depois, as linhas são reunidas por situação e contadas.</p>
+          <div class="example-compare">
+            <div class="result-box">
+              <div class="result-head"><strong>Antes · cinco registros individuais</strong><span>id_reserva 1 a 5</span></div>
+              <div class="result-scroll"><table class="result-table">
+                <thead><tr><th>id_reserva</th><th>situacao</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>ativa</td></tr><tr><td>2</td><td>ativa</td></tr>
+                  <tr><td>3</td><td>concluida</td></tr><tr><td>4</td><td>cancelada</td></tr>
+                  <tr><td>5</td><td>ativa</td></tr>
+                </tbody>
+              </table></div>
+            </div>
+            <div class="result-box">
+              <div class="result-head"><strong>Depois · grupos e contagens</strong><span>mesmo recorte</span></div>
+              <div class="result-scroll"><table class="result-table">
+                <thead><tr><th>situacao</th><th class="numeric">COUNT(*)</th></tr></thead>
+                <tbody><tr><td>ativa</td><td class="numeric">3</td></tr>
+                  <tr><td>cancelada</td><td class="numeric">1</td></tr>
+                  <tr><td>concluida</td><td class="numeric">1</td></tr></tbody>
+              </table></div>
+            </div>
+          </div>
+          <p class="sql-note">O recorte acima é apenas ilustrativo. A consulta a seguir não tem filtro por identificador: ela agrupa <strong>todas as 20 reservas</strong> do banco.</p>
           <div class="sql-block"><span class="sql-label">SQL · agrupamento por situação</span><pre><code>SELECT situacao, COUNT(*) AS total
 FROM reserva
 GROUP BY situacao
@@ -351,13 +380,40 @@ ORDER BY situacao;</code></pre></div>
             <thead><tr><th>situacao</th><th class="numeric">total</th></tr></thead>
             <tbody><tr><td>ativa</td><td class="numeric">7</td></tr><tr><td>concluida</td><td class="numeric">3</td></tr></tbody>
           </table></div></div>
-          <div class="schema-flow"><span>FROM</span><b>→</b><span>WHERE (linhas)</span><b>→</b><span>GROUP BY (grupos)</span><b>→</b><span>HAVING (grupos)</span><b>→</b><span>SELECT</span><b>→</b><span>ORDER BY</span></div>
+          <p class="sql-note"><strong>Ordem lógica de avaliação (simplificada):</strong> primeiro relacionamos e filtramos linhas; depois agrupamos, filtramos os grupos e montamos a saída.</p>
+          <div class="schema-flow"><span>FROM</span><b>→</b><span>JOIN / ON (se houver)</span><b>→</b><span>WHERE</span><b>→</b><span>GROUP BY</span><b>→</b><span>HAVING</span><b>→</b><span>SELECT</span><b>→</b><span>ORDER BY</span></div>
           <p class="sql-note">O agrupamento <code>cancelada</code> tinha duas reservas a partir de 12/10, por isso foi eliminado pelo <code>HAVING</code>.</p>
         </div>
         <div class="lesson-block">
-          <h3>4.3 · Agregação com JOIN: quais salas foram reservadas pelo menos duas vezes?</h3>
-          <p>O <code>JOIN</code> associa cada reserva à sua sala. O <code>GROUP BY</code> reúne as reservas da mesma sala; o <code>HAVING</code> mantém apenas os grupos que atendem à condição.</p>
-          <div class="sql-block"><span class="sql-label">SQL · junção, contagem e filtragem de grupos</span><pre><code>SELECT
+          <h3>4.3 · Contando reservas com LEFT JOIN</h3>
+          <p><strong>Etapa 1:</strong> liste todas as salas, inclusive aquelas que não possuem nenhuma reserva. O <code>LEFT JOIN</code> preserva essas salas; o <code>COUNT(r.id_reserva)</code> conta apenas as reservas realmente encontradas.</p>
+          <div class="sql-block"><span class="sql-label">SQL · todas as salas, inclusive as que não têm reservas</span><pre><code>SELECT
+    s.nome AS sala,
+    COUNT(r.id_reserva) AS total_reservas
+FROM sala AS s
+LEFT JOIN reserva AS r
+    ON r.id_sala = s.id_sala
+GROUP BY s.id_sala, s.nome
+ORDER BY total_reservas DESC, s.nome;</code></pre></div>
+          <div class="result-box"><div class="result-head"><strong>Resultado antes do HAVING</strong><span>11 salas</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th>sala</th><th class="numeric">total_reservas</th></tr></thead>
+            <tbody>
+              <tr><td>Sala Araucária</td><td class="numeric">3</td></tr>
+              <tr><td>Sala Horizonte</td><td class="numeric">3</td></tr>
+              <tr><td>Sala Ipê</td><td class="numeric">3</td></tr>
+              <tr><td>Laboratório Maker</td><td class="numeric">2</td></tr>
+              <tr><td>Sala Cedro</td><td class="numeric">2</td></tr>
+              <tr><td>Sala Gralha Azul</td><td class="numeric">2</td></tr>
+              <tr><td>Sala Inovação</td><td class="numeric">2</td></tr>
+              <tr><td>Laboratório Sul</td><td class="numeric">1</td></tr>
+              <tr><td>Sala Imbuia</td><td class="numeric">1</td></tr>
+              <tr><td>Sala Pinhão</td><td class="numeric">1</td></tr>
+              <tr><td><strong>Sala Jacarandá</strong></td><td class="numeric"><strong>0</strong></td></tr>
+            </tbody>
+          </table></div></div>
+          <div class="explain"><p>O valor <strong>zero</strong> é importante: a Sala Jacarandá existe na tabela <code>sala</code>, mas não possui correspondência em <code>reserva</code>. Nesse caso, <code>COUNT(*)</code> devolveria 1 para a linha preservada pelo <code>LEFT JOIN</code>, enquanto <code>COUNT(r.id_reserva)</code> devolve 0.</p></div>
+          <p><strong>Etapa 2:</strong> agora acrescente <code>HAVING</code> para mostrar somente as salas com pelo menos duas reservas.</p>
+          <div class="sql-block"><span class="sql-label">SQL · filtrando grupos depois da contagem</span><pre><code>SELECT
     s.nome AS sala,
     COUNT(r.id_reserva) AS total_reservas
 FROM sala AS s
@@ -366,7 +422,7 @@ LEFT JOIN reserva AS r
 GROUP BY s.id_sala, s.nome
 HAVING COUNT(r.id_reserva) >= 2
 ORDER BY total_reservas DESC, s.nome;</code></pre></div>
-          <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>7 salas</span></div><div class="result-scroll"><table class="result-table">
+          <div class="result-box"><div class="result-head"><strong>Resultado depois do HAVING</strong><span>7 salas</span></div><div class="result-scroll"><table class="result-table">
             <thead><tr><th>sala</th><th class="numeric">total_reservas</th></tr></thead>
             <tbody>
               <tr><td>Sala Araucária</td><td class="numeric">3</td></tr>
@@ -378,7 +434,7 @@ ORDER BY total_reservas DESC, s.nome;</code></pre></div>
               <tr><td>Sala Inovação</td><td class="numeric">2</td></tr>
             </tbody>
           </table></div></div>
-          <div class="explain"><p>Em um <code>LEFT JOIN</code>, prefira <code>COUNT(r.id_reserva)</code> quando quiser contar reservas reais: a Sala Jacarandá não possui reservas e teria contagem zero. <code>COUNT(*)</code> contaria a linha preservada pela junção.</p></div>
+          <p class="sql-note">Comparando as duas etapas, o <code>HAVING</code> removeu os quatro grupos com menos de duas reservas. O papel do <code>LEFT JOIN</code> ficou visível antes do filtro.</p>
         </div>
       </div></section>
 
@@ -436,6 +492,15 @@ ORDER BY u.nome;</code></pre></div>
             <tbody><tr><td>Beatriz Lima</td></tr><tr><td>Camila Freitas</td></tr><tr><td>Gustavo Neri</td></tr><tr><td>Larissa Moura</td></tr><tr><td>Marina Lopes</td></tr></tbody>
           </table></div></div>
           <p class="sql-note">Na versão com <code>EXISTS</code>, a condição <code>r.id_usuario = u.id_usuario</code> relaciona a subconsulta à linha da consulta externa. <code>SELECT 1</code> é usado porque interessa saber se existe ao menos uma linha, não recuperar suas colunas.</p>
+          <p><strong>Como interpretar a condição correlacionada?</strong> Para cada usuário considerado pela consulta externa, verificamos logicamente se existe ao menos uma reserva concluída associada ao seu identificador.</p>
+          <div class="result-box"><div class="result-head"><strong>Dois usuários da base para acompanhar o teste</strong><span>interpretação da condição</span></div><div class="result-scroll"><table class="result-table">
+            <thead><tr><th>u.nome</th><th class="numeric">u.id_usuario</th><th>Reserva concluída correspondente?</th><th>EXISTS</th></tr></thead>
+            <tbody>
+              <tr><td>Marina Lopes</td><td class="numeric">17</td><td>Sim, reserva 16</td><td>Verdadeiro — aparece</td></tr>
+              <tr><td>Pedro Alves</td><td class="numeric">130</td><td>Não existe</td><td>Falso — não aparece</td></tr>
+            </tbody>
+          </table></div></div>
+          <div class="explain"><p><strong>Diferença conceitual:</strong> o <code>IN</code> compara o identificador com o conjunto devolvido pela consulta interna. O <code>EXISTS</code> verifica a existência de uma linha que satisfaça a condição associada ao usuário externo. Esse é um modelo de interpretação; o SGBD pode otimizar a execução internamente.</p></div>
         </div>
         <div class="lesson-block">
           <h3>5.3 · NOT EXISTS: salas sem nenhuma reserva</h3>
@@ -459,22 +524,46 @@ ORDER BY s.nome;</code></pre></div>
           <p>Use a mesma base de dados da Aula 08. Para cada pergunta, identifique as tabelas e escreva uma consulta SQL. Confira se os resultados fazem sentido.</p>
         </div>
         <div class="practice-simple">
-          <article><strong>1 · Contagem</strong><p>Quantas reservas possuem uma observação preenchida? Use uma função de agregação e um alias claro.</p></article>
-          <article><strong>2 · Agrupamento</strong><p>Quantas reservas existem para cada usuário? Mostre o nome e inclua usuários que ainda não fizeram reservas.</p></article>
-          <article><strong>3 · HAVING</strong><p>Quais situações aparecem em pelo menos quatro reservas? Mostre a situação e a quantidade.</p></article>
-          <article><strong>4 · Subconsulta escalar</strong><p>Quais salas têm capacidade menor que a capacidade média de todas as salas? Ordene pela capacidade.</p></article>
-          <article><strong>5 · NOT EXISTS</strong><p>Quais usuários ainda não realizaram nenhuma reserva?</p></article>
+          <article>
+            <strong>1 · Consolidação · Funções</strong>
+            <p>Calcule a capacidade mínima, média e máxima das salas do Bloco C. Use nomes claros nas colunas.</p>
+            <p class="sql-note"><strong>Conferência:</strong> uma linha; média igual a 17.</p>
+          </article>
+          <article>
+            <strong>2 · Consolidação · JOIN + GROUP BY</strong>
+            <p>Quantas reservas cada usuário realizou? Apresente o nome e o total, incluindo quem não possui reservas.</p>
+            <p class="sql-note"><strong>Conferência:</strong> 12 usuários; Pedro Alves possui zero reservas.</p>
+          </article>
+          <article>
+            <strong>3 · Integração · JOIN + WHERE + HAVING</strong>
+            <p>Quais blocos possuem pelo menos três reservas <em>ativas</em>? Mostre o bloco e a quantidade, do maior para o menor total.</p>
+            <p class="sql-note"><strong>Conferência:</strong> três blocos no resultado.</p>
+          </article>
+          <article>
+            <strong>4 · Desafio · Subconsulta correlacionada</strong>
+            <p>Quais salas têm capacidade maior que a média das salas <em>do próprio bloco</em>? Mostre bloco, sala e capacidade.</p>
+            <p class="sql-note"><strong>Conferência:</strong> quatro salas, uma por bloco.</p>
+          </article>
+          <article>
+            <strong>5 · Desafio · EXISTS e NOT EXISTS</strong>
+            <p>Quais usuários possuem pelo menos uma reserva ativa, mas nenhuma reserva concluída? Mostre os nomes em ordem alfabética.</p>
+            <p class="sql-note"><strong>Conferência:</strong> seis usuários; Marina Lopes não deve aparecer.</p>
+          </article>
         </div>
         <div class="lesson-block" id="sintese">
-          <h3>Síntese da estrutura</h3>
-          <div class="sql-block"><span class="sql-label">Ordem de escrita das cláusulas usadas nesta aula</span><pre><code>SELECT coluna_agrupada, COUNT(*) AS total
+          <h3>Síntese: ordem de escrita e ordem lógica</h3>
+          <p>Escrevemos uma consulta começando por <code>SELECT</code>, mas a interpretação lógica dos seus dados começa pelas fontes indicadas em <code>FROM</code>. As duas sequências têm objetivos diferentes.</p>
+          <div class="sql-block"><span class="sql-label">Ordem de escrita das cláusulas SQL</span><pre><code>SELECT coluna_agrupada, COUNT(*) AS total
 FROM tabela
 JOIN outra_tabela ON condicao_de_juncao
 WHERE condicao_sobre_linhas
 GROUP BY coluna_agrupada
 HAVING COUNT(*) >= 2
 ORDER BY total DESC;</code></pre></div>
-          <p class="sql-note">Este último bloco é um modelo de estrutura, não uma consulta executável no banco de reservas. Subconsultas podem aparecer dentro de expressões como as condições do <code>WHERE</code>.</p>
+          <p class="sql-note">O bloco acima ilustra a <strong>ordem de escrita</strong>, não é uma consulta executável no banco de reservas.</p>
+          <p><strong>Ordem lógica de avaliação (simplificada):</strong></p>
+          <div class="schema-flow"><span>FROM</span><b>→</b><span>JOIN / ON</span><b>→</b><span>WHERE</span><b>→</b><span>GROUP BY</span><b>→</b><span>HAVING</span><b>→</b><span>SELECT</span><b>→</b><span>ORDER BY</span></div>
+          <p class="sql-note">Essa sequência explica o significado da consulta, mas <strong>não representa obrigatoriamente a ordem física</strong> escolhida pelo otimizador do SGBD. Subconsultas podem ser usadas dentro de expressões, como em <code>WHERE</code>.</p>
         </div>
         <div class="reference-brief">
           <strong>Referências de apoio:</strong> SILBERSCHATZ, KORTH e SUDARSHAN, <em>Database System Concepts</em>, 7. ed., cap. 3; ELMASRI e NAVATHE, <em>Sistemas de Banco de Dados</em>, 6. ed., caps. 4 e 5.
