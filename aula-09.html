@@ -207,7 +207,7 @@
 
       <div class="dml-toc-shell standard-toc">
         <nav class="container dml-toc" aria-label="Sumário da aula">
-          <a href="#visao">Visão</a><a href="#retomada">Retomada</a><a href="#dados">Dados</a><a href="#agregacao">Agregação</a><a href="#agrupamento">Agrupamento</a><a href="#subconsultas">Subconsultas</a><a href="#pratica">Prática</a>
+          <a href="#visao">Visão</a><a href="#retomada">Retomada</a><a href="#dados">Dados</a><a href="#agregacao">Agregação</a><a href="#agrupamento">Agrupamento</a><a href="#subconsultas">Subconsultas</a><a href="#sintese">Síntese</a>
         </nav>
       </div>
 
@@ -215,7 +215,7 @@
         <div class="dml-heading section-heading">
           <p class="dml-kicker eyebrow">Visão da aula</p>
           <h2>O que vamos desenvolver</h2>
-          <p>Vamos utilizar o mesmo sistema de reserva de salas, começando por uma revisão da estrutura das consultas e avançando apenas nos recursos essenciais que ainda faltam.</p>
+          <p>Vamos utilizar o mesmo sistema de reserva de salas, começando pela estrutura das consultas e avançando nos recursos essenciais. Após cada tópico, construiremos uma consulta em conjunto.</p>
         </div>
         <div class="overview-grid lesson-overview-grid">
           <article class="card"><span class="overview-icon">OBJ</span><h3>Objetivos de aprendizagem</h3>
@@ -307,6 +307,10 @@ FROM reserva;</code></pre></div>
             <tbody><tr><td class="numeric">20</td><td class="numeric">11</td><td class="numeric">11</td></tr></tbody>
           </table></div></div>
           <div class="explain"><p><code>COUNT(*)</code> conta 20 linhas. <code>COUNT(DISTINCT id_usuario)</code> conta 11 usuários diferentes. <code>COUNT(observacao)</code> não conta os nove registros em que a observação é <code>NULL</code>.</p></div>
+          <div class="topic-exercises" aria-label="Exercício de construção em aula">
+            <div class="topic-exercises-head"><strong>Exercício 1 · Construção em aula</strong></div>
+            <div class="topic-exercise"><p>Construa uma consulta SQL que informe a quantidade de reservas ativas e a quantidade de usuários distintos que possuem reservas nessa situação.</p></div>
+          </div>
         </div>
         <div class="lesson-block">
           <h3>3.2 · Qual é a capacidade das salas do Bloco B?</h3>
@@ -323,6 +327,10 @@ WHERE id_bloco = 2;</code></pre></div>
             <tbody><tr><td class="numeric">24</td><td class="numeric">8.0</td><td class="numeric">4</td><td class="numeric">14</td></tr></tbody>
           </table></div></div>
           <p class="sql-note">O <code>WHERE</code> seleciona as salas do Bloco B antes de as funções calcularem os resultados.</p>
+          <div class="topic-exercises" aria-label="Exercício de construção em aula">
+            <div class="topic-exercises-head"><strong>Exercício 2 · Construção em aula</strong></div>
+            <div class="topic-exercise"><p>Construa uma consulta SQL que calcule a soma, a média, a menor e a maior capacidade das salas do Bloco C.</p></div>
+          </div>
         </div>
       </div></section>
 
@@ -366,6 +374,10 @@ ORDER BY situacao;</code></pre></div>
             <tbody><tr><td>ativa</td><td class="numeric">12</td></tr><tr><td>cancelada</td><td class="numeric">3</td></tr><tr><td>concluida</td><td class="numeric">5</td></tr></tbody>
           </table></div></div>
           <div class="explain"><p>O banco continua com 20 reservas, mas o resultado agora tem uma linha para cada valor distinto de <code>situacao</code>. A coluna <code>total</code> indica o tamanho de cada grupo.</p></div>
+          <div class="topic-exercises" aria-label="Exercício de construção em aula">
+            <div class="topic-exercises-head"><strong>Exercício 3 · Construção em aula</strong></div>
+            <div class="topic-exercise"><p>Construa uma consulta SQL que agrupe as reservas por data e apresente quantas reservas ocorreram em cada dia, da data mais recente para a mais antiga.</p></div>
+          </div>
         </div>
         <div class="lesson-block">
           <h3>4.2 · A diferença entre WHERE e HAVING</h3>
@@ -383,6 +395,10 @@ ORDER BY situacao;</code></pre></div>
           <p class="sql-note"><strong>Ordem lógica de avaliação (simplificada):</strong> primeiro relacionamos e filtramos linhas; depois agrupamos, filtramos os grupos e montamos a saída.</p>
           <div class="schema-flow"><span>FROM</span><b>→</b><span>JOIN / ON (se houver)</span><b>→</b><span>WHERE</span><b>→</b><span>GROUP BY</span><b>→</b><span>HAVING</span><b>→</b><span>SELECT</span><b>→</b><span>ORDER BY</span></div>
           <p class="sql-note">O agrupamento <code>cancelada</code> tinha duas reservas a partir de 12/10, por isso foi eliminado pelo <code>HAVING</code>.</p>
+          <div class="topic-exercises" aria-label="Exercício de construção em aula">
+            <div class="topic-exercises-head"><strong>Exercício 4 · Construção em aula</strong></div>
+            <div class="topic-exercise"><p>Construa uma consulta SQL que considere apenas reservas a partir de <code>2026-10-10</code>, agrupe-as por situação e apresente somente os grupos com pelo menos três reservas.</p></div>
+          </div>
         </div>
         <div class="lesson-block">
           <h3>4.3 · Contando reservas com LEFT JOIN</h3>
@@ -435,6 +451,10 @@ ORDER BY total_reservas DESC, s.nome;</code></pre></div>
             </tbody>
           </table></div></div>
           <p class="sql-note">Comparando as duas etapas, o <code>HAVING</code> removeu os quatro grupos com menos de duas reservas. O papel do <code>LEFT JOIN</code> ficou visível antes do filtro.</p>
+          <div class="topic-exercises" aria-label="Exercício de construção em aula">
+            <div class="topic-exercises-head"><strong>Exercício 5 · Construção em aula</strong></div>
+            <div class="topic-exercise"><p>Construa uma consulta SQL que mostre o nome de cada usuário e sua quantidade de reservas, incluindo os usuários que ainda não realizaram nenhuma reserva.</p></div>
+          </div>
         </div>
       </div></section>
 
@@ -464,6 +484,10 @@ ORDER BY capacidade DESC, nome;</code></pre></div>
             </tbody>
           </table></div></div>
           <div class="explain"><p>A média calculada pela consulta interna é aproximadamente <strong>14,73</strong>. A consulta externa retorna somente as salas com capacidade superior a esse número.</p></div>
+          <div class="topic-exercises" aria-label="Exercício de construção em aula">
+            <div class="topic-exercises-head"><strong>Exercício 6 · Construção em aula</strong></div>
+            <div class="topic-exercise"><p>Construa uma consulta SQL que liste o nome e a capacidade das salas cuja capacidade seja inferior à média de todas as salas, ordenando da menor para a maior capacidade.</p></div>
+          </div>
         </div>
         <div class="lesson-block">
           <h3>5.2 · IN e EXISTS: usuários com reserva concluída</h3>
@@ -501,6 +525,10 @@ ORDER BY u.nome;</code></pre></div>
             </tbody>
           </table></div></div>
           <div class="explain"><p><strong>Diferença conceitual:</strong> o <code>IN</code> compara o identificador com o conjunto devolvido pela consulta interna. O <code>EXISTS</code> verifica a existência de uma linha que satisfaça a condição associada ao usuário externo. Esse é um modelo de interpretação; o SGBD pode otimizar a execução internamente.</p></div>
+          <div class="topic-exercises" aria-label="Exercício de construção em aula">
+            <div class="topic-exercises-head"><strong>Exercício 7 · Construção em aula</strong></div>
+            <div class="topic-exercise"><p>Construa duas consultas SQL equivalentes que listem os nomes dos usuários com pelo menos uma reserva ativa: uma utilizando <code>IN</code> e outra utilizando <code>EXISTS</code>.</p></div>
+          </div>
         </div>
         <div class="lesson-block">
           <h3>5.3 · NOT EXISTS: salas sem nenhuma reserva</h3>
@@ -515,42 +543,20 @@ WHERE NOT EXISTS (
 ORDER BY s.nome;</code></pre></div>
           <div class="result-box"><div class="result-head"><strong>Resultado da consulta</strong><span>1 sala</span></div><div class="result-scroll"><table class="result-table"><thead><tr><th>nome</th></tr></thead><tbody><tr><td>Sala Jacarandá</td></tr></tbody></table></div></div>
           <div class="explain"><p>Para a Sala Jacarandá, a subconsulta não encontra nenhuma reserva. Por isso, a linha é mantida pela condição <code>NOT EXISTS</code>.</p></div>
+          <div class="topic-exercises" aria-label="Exercício de construção em aula">
+            <div class="topic-exercises-head"><strong>Exercício 8 · Construção em aula</strong></div>
+            <div class="topic-exercise"><p>Construa uma consulta SQL com <code>NOT EXISTS</code> que liste, em ordem alfabética, os usuários que nunca realizaram nenhuma reserva.</p></div>
+          </div>
         </div>
       </div></section>
 
-      <section class="dml-section section-pad section-soft alt" id="pratica"><div class="container">
-        <div class="dml-heading section-heading"><p class="dml-kicker eyebrow">6 · Prática guiada</p>
-          <h2>Agora formule as consultas</h2>
-          <p>Use a mesma base de dados da Aula 08. Para cada pergunta, identifique as tabelas e escreva uma consulta SQL. Confira se os resultados fazem sentido.</p>
+      <section class="dml-section section-pad section-soft alt" id="sintese"><div class="container">
+        <div class="dml-heading section-heading">
+          <p class="dml-kicker eyebrow">Síntese</p>
+          <h2>Como uma consulta SQL é construída e interpretada</h2>
+          <p>Retome a ordem em que escrevemos as cláusulas e compare com a ordem lógica usada para interpretar a consulta.</p>
         </div>
-        <div class="practice-simple">
-          <article>
-            <strong>1 · Consolidação · Funções</strong>
-            <p>Calcule a capacidade mínima, média e máxima das salas do Bloco C. Use nomes claros nas colunas.</p>
-            <p class="sql-note"><strong>Conferência:</strong> uma linha; média igual a 17.</p>
-          </article>
-          <article>
-            <strong>2 · Consolidação · JOIN + GROUP BY</strong>
-            <p>Quantas reservas cada usuário realizou? Apresente o nome e o total, incluindo quem não possui reservas.</p>
-            <p class="sql-note"><strong>Conferência:</strong> 12 usuários; Pedro Alves possui zero reservas.</p>
-          </article>
-          <article>
-            <strong>3 · Integração · JOIN + WHERE + HAVING</strong>
-            <p>Quais blocos possuem pelo menos três reservas <em>ativas</em>? Mostre o bloco e a quantidade, do maior para o menor total.</p>
-            <p class="sql-note"><strong>Conferência:</strong> três blocos no resultado.</p>
-          </article>
-          <article>
-            <strong>4 · Desafio · Subconsulta correlacionada</strong>
-            <p>Quais salas têm capacidade maior que a média das salas <em>do próprio bloco</em>? Mostre bloco, sala e capacidade.</p>
-            <p class="sql-note"><strong>Conferência:</strong> quatro salas, uma por bloco.</p>
-          </article>
-          <article>
-            <strong>5 · Desafio · EXISTS e NOT EXISTS</strong>
-            <p>Quais usuários possuem pelo menos uma reserva ativa, mas nenhuma reserva concluída? Mostre os nomes em ordem alfabética.</p>
-            <p class="sql-note"><strong>Conferência:</strong> seis usuários; Marina Lopes não deve aparecer.</p>
-          </article>
-        </div>
-        <div class="lesson-block" id="sintese">
+        <div class="lesson-block">
           <h3>Síntese: ordem de escrita e ordem lógica</h3>
           <p>Escrevemos uma consulta começando por <code>SELECT</code>, mas a interpretação lógica dos seus dados começa pelas fontes indicadas em <code>FROM</code>. As duas sequências têm objetivos diferentes.</p>
           <div class="sql-block"><span class="sql-label">Ordem de escrita das cláusulas SQL</span><pre><code>SELECT coluna_agrupada, COUNT(*) AS total
