@@ -641,60 +641,27 @@ RETURNING id_reserva;</code></pre></div>
     
 
     <section class="sgbd-section" id="aplicacoes"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">5 · Usos e decisões de projeto</p><h2>Quando um SGBD é uma boa escolha?</h2>
-        <p>A decisão não depende apenas da quantidade de dados, mas das operações que o sistema precisa realizar e das garantias que deve preservar.</p>
+      <div class="sgbd-section-head">
+        <p class="sgbd-kicker">5 · Usos e decisões de projeto</p>
+        <h2>Quando um SGBD é uma boa escolha?</h2>
+        <p>Quando precisamos de mais do que armazenar registros: garantir operações corretas, coordenar acessos, recuperar informações e consultar dados com eficiência.</p>
       </div>
-
-      <h3>1. Quais requisitos devemos analisar?</h3>
-      <p>Antes de escolher uma tecnologia de armazenamento, precisamos compreender como os dados serão utilizados.</p>
-      <div class="sgbd-matrix sgbd-decision-table"><table>
-        <thead><tr><th>Aspecto</th><th>Pergunta que orienta a escolha</th></tr></thead>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Necessidade</th><th>O que o PostgreSQL oferece</th><th>Exemplo nas reservas de salas</th></tr></thead>
         <tbody>
-          <tr><td>Estrutura e relacionamentos</td><td>Existem entidades relacionadas e regras que não podem ser violadas?</td></tr>
-          <tr><td>Acessos simultâneos</td><td>Várias pessoas ou aplicações podem consultar e modificar os mesmos dados?</td></tr>
-          <tr><td>Operações críticas</td><td>Algumas alterações precisam ser confirmadas ou desfeitas em conjunto?</td></tr>
-          <tr><td>Segurança e recuperação</td><td>É necessário controlar permissões e recuperar dados após falhas ou erros?</td></tr>
-          <tr><td>Consultas e crescimento</td><td>O sistema precisa relacionar tabelas, consultar grandes volumes ou suportar aumento da carga?</td></tr>
+          <tr><td>Transações ACID</td><td><code>BEGIN</code>, <code>COMMIT</code> e <code>ROLLBACK</code> agrupam alterações e oferecem garantias transacionais.</td><td>Atualizar uma reserva e registrar operações relacionadas sem deixar alterações parciais.</td></tr>
+          <tr><td>Concorrência</td><td>MVCC, bloqueios e níveis de isolamento coordenam leituras e escritas simultâneas.</td><td>Dois usuários tentam reservar a mesma sala e horário; a restrição <code>UNIQUE</code> evita a duplicidade.</td></tr>
+          <tr><td>Integridade dos dados</td><td><code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>CHECK</code> e <code>UNIQUE</code> verificam as regras declaradas.</td><td>Impedir uma reserva para uma sala inexistente ou uma capacidade inválida.</td></tr>
+          <tr><td>Segurança e permissões</td><td>Papéis, autenticação, <code>GRANT</code> e <code>REVOKE</code> restringem operações.</td><td>Permitir que um perfil consulte salas, mas não modifique reservas.</td></tr>
+          <tr><td>Backup e recuperação</td><td>WAL, backups físicos e lógicos; com configuração adequada, recuperação por ponto no tempo.</td><td>Recuperar reservas após falha do servidor ou exclusão indevida.</td></tr>
+          <tr><td>Replicação e disponibilidade</td><td>Replicação física ou lógica e réplicas de leitura. Failover automatizado exige configuração e coordenação adicionais.</td><td>Distribuir consultas entre servidores e apoiar a continuidade do sistema.</td></tr>
+          <tr><td>Consultas SQL e análise de desempenho</td><td><code>JOIN</code>, agregações, índices, estatísticas e <code>EXPLAIN (ANALYZE, BUFFERS)</code> ajudam a consultar e investigar custos.</td><td>Listar salas mais reservadas e analisar um <code>SELECT</code> lento por sala e data.</td></tr>
+          <tr><td>Escalabilidade</td><td>Particionamento, execução paralela, buffers e manutenção com <code>VACUUM</code> e <code>ANALYZE</code>.</td><td>Sustentar consultas à medida que cresce o histórico de reservas.</td></tr>
         </tbody>
       </table></div>
-
-      <h3>2. Qual solução atende ao cenário?</h3>
-      <p>As alternativas abaixo não formam uma escala de qualidade. Cada uma atende a requisitos diferentes.</p>
-      <div class="sgbd-choice-grid">
-        <article class="sgbd-choice">
-          <h4>Arquivos CSV ou JSON</h4>
-          <p>Adequados para exportações, configurações e conjuntos simples de dados que não exigem operações concorrentes ou regras relacionais complexas.</p>
-          <p class="sgbd-choice-example"><strong>Exemplo:</strong> exportar um relatório de ocupação das salas.</p>
-        </article>
-        <article class="sgbd-choice">
-          <h4>SQLite</h4>
-          <p>SGBD relacional incorporado à aplicação. Oferece SQL, transações e restrições sem precisar de um servidor separado, sendo útil para aplicações locais.</p>
-          <p class="sgbd-choice-example"><strong>Exemplo:</strong> uma agenda de reservas usada em um único computador.</p>
-        </article>
-        <article class="sgbd-choice">
-          <h4>PostgreSQL</h4>
-          <p>SGBD cliente-servidor adequado a sistemas compartilhados com múltiplas conexões, controle de acesso, consultas complexas e requisitos de recuperação e administração.</p>
-          <p class="sgbd-choice-example"><strong>Exemplo:</strong> reservas utilizadas simultaneamente por diferentes setores.</p>
-        </article>
-      </div>
-      <div class="sgbd-emphasis"><p><strong>Critério de engenharia:</strong> escolher a solução conforme integridade, concorrência, segurança, desempenho, operação e custos de manutenção — não apenas pela popularidade da tecnologia.</p></div>
-
-      <h3>3. Aplicando a decisão ao sistema de reserva de salas</h3>
-      <p>Ao compartilhar salas entre setores, determinadas responsabilidades podem ser atribuídas ao SGBD, mas a aplicação e o projeto ainda precisam definir as regras específicas.</p>
-      <div class="sgbd-matrix sgbd-decision-table"><table>
-        <thead><tr><th>Necessidade</th><th>Recurso do SGBD</th><th>Decisão do projeto</th></tr></thead>
-        <tbody>
-          <tr><td>Relacionar reservas a salas e usuários existentes.</td><td>Chaves estrangeiras.</td><td>Definir os relacionamentos e o comportamento das exclusões.</td></tr>
-          <tr><td>Impedir reservas incompatíveis no mesmo horário.</td><td><code>UNIQUE</code> e controle de concorrência.</td><td>Definir os conflitos e se uma reserva cancelada libera o horário.</td></tr>
-          <tr><td>Atualizar dados relacionados de forma consistente.</td><td><code>COMMIT</code> e <code>ROLLBACK</code>.</td><td>Definir quais operações pertencem à mesma transação.</td></tr>
-          <tr><td>Permitir consulta sem autorizar alterações.</td><td>Papéis, <code>GRANT</code> e <code>REVOKE</code>.</td><td>Determinar perfis e privilégios de acesso.</td></tr>
-          <tr><td>Localizar reservas por sala e data rapidamente.</td><td>Índices, estatísticas e otimizador.</td><td>Analisar consultas reais e examinar planos com <code>EXPLAIN</code>.</td></tr>
-          <tr><td>Recuperar dados após falhas ou exclusões indevidas.</td><td>WAL, backup e restauração.</td><td>Definir retenção, periodicidade e procedimentos de recuperação.</td></tr>
-        </tbody>
-      </table></div>
-      <p class="sgbd-context-note">Requisitos semelhantes aparecem em comércio eletrônico (pedidos e estoque), saúde (atendimentos e permissões), educação (matrículas) e indústria (ordens de produção).</p>
-      <div class="sgbd-question"><strong>Questão final para discussão</strong>
-        <p>O que muda quando uma agenda individual de reservas passa a ser utilizada simultaneamente por vários setores? Quais mecanismos se tornam importantes?</p>
+      <p class="quiet">Nem todos os sistemas exigem todos esses mecanismos. Arquivos CSV e JSON podem atender a dados simples e exportações; o SQLite também oferece SQL e transações em aplicações locais. O PostgreSQL é especialmente adequado quando precisamos de um SGBD cliente-servidor com múltiplas conexões e administração centralizada.</p>
+      <div class="sgbd-question"><strong>Pergunta de análise</strong>
+        <p>Em um sistema de reservas acessado simultaneamente por vários setores, quais dessas necessidades são indispensáveis e quais poderiam surgir com o crescimento da aplicação?</p>
       </div>
     </div></section>
 
