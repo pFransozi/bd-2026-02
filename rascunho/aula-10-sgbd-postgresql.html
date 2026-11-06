@@ -342,7 +342,7 @@
       <div class="sgbd-matrix"><table>
         <thead><tr><th>Elemento</th><th>O que é</th><th>Exemplo no laboratório</th></tr></thead>
         <tbody>
-          <tr><td>Banco de dados</td><td>Conjunto organizado de informações persistentes, estruturadas em tabelas e relacionamentos para representar um domínio e permitir sua recuperação.</td><td>Banco que guarda oficinas e inscrições.</td></tr>
+          <tr><td>Banco de dados</td><td>Conjunto organizado de informações persistentes, estruturadas em tabelas e relacionamentos para representar um domínio e permitir sua recuperação.</td><td>Banco que armazena salas, usuários, blocos e reservas.</td></tr>
           <tr><td>SGBD</td><td>Software que gerencia o armazenamento e o acesso aos bancos de dados, executa consultas e controla integridade, transações e permissões.</td><td>Servidor PostgreSQL.</td></tr>
           <tr><td>SQL</td><td>Linguagem declarativa utilizada para criar estruturas, consultar e modificar dados; descreve a operação desejada, sem definir todos os passos de execução.</td><td><code>SELECT</code>, <code>UPDATE</code>, <code>CREATE TABLE</code>.</td></tr>
           <tr><td>Cliente</td><td>Programa usado para conectar-se ao SGBD, enviar comandos SQL e apresentar os resultados das operações.</td><td>DBeaver ou <code>psql</code>.</td></tr>
@@ -419,8 +419,8 @@
           <tr><td>Organização e metadados</td><td>Define como os dados são organizados logicamente em bancos, esquemas, tabelas e relacionamentos. O PostgreSQL mantém catálogos que descrevem essas estruturas, enquanto administra separadamente os arquivos e páginas em disco.</td><td><code>CREATE TABLE</code> define uma estrutura; <code>pg_catalog</code> e <code>information_schema</code> permitem consultar seus metadados.</td></tr>
           <tr><td>Consultas SQL</td><td>Recebe comandos que descrevem quais dados devem ser consultados ou modificados. Analisa a instrução, verifica referências e permissões, e executa as operações sem exigir que a aplicação manipule os arquivos diretamente.</td><td><code>SELECT</code> com <code>JOIN</code> combina tabelas; <code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> alteram registros.</td></tr>
           <tr><td>Integridade</td><td>Aplica regras declaradas no esquema para impedir registros incompatíveis, como identificadores duplicados, valores fora do domínio ou referências a entidades inexistentes. As regras de negócio precisam ser explicitamente modeladas.</td><td><code>UNIQUE</code> evita duplicidade; <code>CHECK</code> rejeita valores inválidos; <code>FOREIGN KEY</code> protege relacionamentos.</td></tr>
-          <tr><td>Transações ACID</td><td>Permite reunir várias alterações em uma única unidade de trabalho. A transação pode ser confirmada ou desfeita, enquanto o SGBD oferece garantias de atomicidade, consistência, isolamento e durabilidade conforme o esquema e as configurações.</td><td>Registrar uma inscrição e reduzir as vagas dentro de <code>BEGIN</code> ... <code>COMMIT</code>; utilizar <code>ROLLBACK</code> em caso de falha.</td></tr>
-          <tr><td>Controle de concorrência</td><td>Coordena leituras e escritas simultâneas para que diferentes usuários trabalhem sobre estados coerentes dos dados. O MVCC mantém versões de registros; bloqueios e níveis de isolamento tratam situações de conflito entre transações.</td><td>Duas sessões tentam atualizar a última vaga. O SGBD coordena as escritas; uma atualização condicional impede quantidade negativa.</td></tr>
+          <tr><td>Transações ACID</td><td>Permite reunir várias alterações em uma única unidade de trabalho. A transação pode ser confirmada ou desfeita, enquanto o SGBD oferece garantias de atomicidade, consistência, isolamento e durabilidade conforme o esquema e as configurações.</td><td>Registrar e atualizar uma reserva dentro de <code>BEGIN</code> ... <code>COMMIT</code>; utilizar <code>ROLLBACK</code> se a operação precisar ser desfeita.</td></tr>
+          <tr><td>Controle de concorrência</td><td>Coordena leituras e escritas simultâneas para que diferentes usuários trabalhem sobre estados coerentes dos dados. O MVCC mantém versões de registros; bloqueios e níveis de isolamento tratam situações de conflito entre transações.</td><td>Duas sessões tentam reservar a mesma sala no mesmo horário; a restrição <code>UNIQUE</code> e o controle de concorrência evitam dois registros incompatíveis.</td></tr>
           <tr><td>Segurança e permissões</td><td>Autentica conexões e controla quais operações cada papel pode realizar sobre os objetos do banco. Isso permite separar, por exemplo, perfis de consulta, atualização e administração, seguindo o princípio do menor privilégio.</td><td><code>CREATE ROLE</code>, <code>GRANT</code> e <code>REVOKE</code>; políticas de <em>Row-Level Security</em> quando é necessário restringir linhas.</td></tr>
           <tr><td>Índices e otimização</td><td>Mantém estruturas auxiliares para acelerar certos filtros, junções e ordenações. O planejador compara alternativas com base nas estatísticas e nos custos estimados; índices também ocupam espaço e exigem manutenção.</td><td>Índices <em>B-tree</em>, <em>GIN</em> ou <em>BRIN</em>; <code>EXPLAIN</code> permite verificar se o plano usa índice ou varredura sequencial.</td></tr>
           <tr><td>Backup e recuperação</td><td>Registra alterações no WAL para apoiar a recuperação após falhas e oferece recursos para restaurar cópias dos dados. Backup lógico, backup físico e recuperação para um ponto no tempo atendem a necessidades diferentes.</td><td><code>pg_dump</code> e <code>pg_restore</code> para backups lógicos; backup físico mais WAL arquivado para recuperação por ponto no tempo.</td></tr>
@@ -470,7 +470,7 @@
 <article class="sgbd-card"><span class="sgbd-number">06 · Retorno</span><h4>Linhas no Python</h4><p>O resultado volta ao programa, que pode recuperar uma linha com <code>fetchone()</code> ou todas as linhas restantes com <code>fetchall()</code>.</p></article>
 </div>
 <h3>Exemplo de uma consulta SQL executada pelo Python</h3>
-<p>Para conversar com o PostgreSQL, utilizaremos a biblioteca <strong>psycopg 3</strong>. O código abaixo consulta as oficinas com vagas disponíveis, após a criação da tabela <code>oficinas</code> no laboratório desta aula.</p>
+<p>Para conversar com o PostgreSQL, utilizaremos a biblioteca <strong>psycopg 3</strong>. O código abaixo consulta as salas com capacidade mínima de oito pessoas e identifica o bloco ao qual cada sala pertence.</p>
 <div class="sgbd-sql"><div class="label"><span>Instalação do driver</span><span>Terminal</span></div><pre><code>python -m pip install "psycopg[binary]"</code></pre></div>
 <div class="sgbd-sql"><div class="label"><span>Python · conexão, SELECT e retorno de linhas</span><span>psycopg 3</span></div><pre><code>import os
 import psycopg
@@ -485,18 +485,21 @@ with psycopg.connect(
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT titulo, vagas_disponiveis
-            FROM oficinas
-            WHERE vagas_disponiveis &gt;= %s
-            ORDER BY titulo
+            SELECT s.nome AS sala,
+                   b.nome_bloco AS bloco,
+                   s.capacidade
+            FROM sala AS s
+            JOIN bloco AS b ON b.id_bloco = s.id_bloco
+            WHERE s.capacidade &gt;= %s
+            ORDER BY s.nome
             """,
-            (1,)
+            (8,)
         )
 
-        for titulo, vagas in cur.fetchall():
-            print(f"{titulo}: {vagas} vaga(s)")</code></pre></div>
-<p class="quiet">A conexão usa as variáveis de ambiente <code>PGHOST</code>, <code>PGPORT</code>, <code>PGDATABASE</code>, <code>PGUSER</code> e <code>PGPASSWORD</code>. Ajuste esses valores ao seu ambiente, sem colocar senhas diretamente no código. É necessário executar antes a criação da tabela <code>oficinas</code> indicada no laboratório.</p>
-<div class="sgbd-emphasis"><p><strong>Por que <code>%s</code> e <code>(1,)</code>?</strong> O marcador <code>%s</code> representa um parâmetro SQL e <code>(1,)</code> é uma tupla Python com o valor enviado. Assim, os valores são separados do comando e não são concatenados à SQL, ajudando a prevenir injeção de SQL.</p></div>
+        for sala, bloco, capacidade in cur.fetchall():
+            print(f"{sala} ({bloco}): {capacidade} lugares")</code></pre></div>
+<p class="quiet">A conexão usa as variáveis de ambiente <code>PGHOST</code>, <code>PGPORT</code>, <code>PGDATABASE</code>, <code>PGUSER</code> e <code>PGPASSWORD</code>. Ajuste esses valores ao seu ambiente, sem colocar senhas diretamente no código. As tabelas <code>sala</code> e <code>bloco</code> são criadas no laboratório indicado adiante.</p>
+<div class="sgbd-emphasis"><p><strong>Por que <code>%s</code> e <code>(8,)</code>?</strong> O marcador <code>%s</code> representa um parâmetro SQL e <code>(8,)</code> é uma tupla Python com o valor mínimo de capacidade enviado. Assim, os valores são separados do comando e não são concatenados à SQL, ajudando a prevenir injeção de SQL.</p></div>
 <h3>Principais funções e métodos do psycopg</h3>
 <p>O driver oferece objetos de conexão e cursores. Os métodos abaixo são suficientes para iniciar a integração entre Python e PostgreSQL:</p>
 <div class="sgbd-matrix"><table>
@@ -543,8 +546,8 @@ with psycopg.connect(
       </table></div>
 
       <h3>4.1 · Integridade: impedir estados inválidos</h3>
-      <p>Ao definir uma coluna com <code>CHECK (vagas_disponiveis &gt;= 0)</code>, declaramos uma restrição que o PostgreSQL verifica quando dados são modificados. Uma chave estrangeira pode impedir que uma inscrição referencie uma oficina inexistente.</p>
-      <p>Entretanto, uma restrição de domínio não garante automaticamente regras mais amplas como “o mesmo participante não deve se inscrever duas vezes” ou “a inscrição e a redução de vagas precisam ser concluídas juntas”. Essas regras exigem decisões adicionais de modelagem e transações.</p>
+      <p>Ao definir <code>CHECK (capacidade &gt; 0)</code> na tabela <code>sala</code>, impedimos capacidades inválidas. Uma chave estrangeira na tabela <code>reserva</code> impede que uma reserva seja associada a um usuário ou a uma sala inexistente.</p>
+      <p>Outras regras exigem uma modelagem apropriada. Por exemplo, <code>UNIQUE (id_sala, data, hora_inicio)</code> impede que a mesma sala seja reservada duas vezes no mesmo horário, enquanto transações coordenam alterações que precisam ocorrer em conjunto.</p>
 
       <h3>4.2 · Transações: uma unidade lógica de trabalho</h3>
       <p>Uma transação pode reunir operações relacionadas. Se todas forem válidas, confirmamos; se ocorrer um erro e decidirmos cancelar, desfazemos a unidade de trabalho.</p>
@@ -554,29 +557,29 @@ with psycopg.connect(
       </div>
       <h4>As quatro propriedades ACID</h4>
       <div class="sgbd-matrix"><table>
-        <thead><tr><th>Propriedade</th><th>Significado didático</th><th>No exemplo das inscrições</th></tr></thead>
+        <thead><tr><th>Propriedade</th><th>Significado didático</th><th>No sistema de reservas</th></tr></thead>
         <tbody>
-          <tr><td>Atomicidade</td><td>As alterações da transação são confirmadas ou desfeitas como uma unidade.</td><td>Não registrar a inscrição sem a operação correspondente de vagas.</td></tr>
-          <tr><td>Consistência</td><td>Preservar os invariantes e restrições efetivamente declarados.</td><td>Uma vaga disponível não pode ficar negativa.</td></tr>
-          <tr><td>Isolamento</td><td>Controlar como transações concorrentes observam ou interferem nos dados.</td><td>Uma disputa por vaga precisa ter resultado controlado.</td></tr>
-          <tr><td>Durabilidade</td><td>Manter alterações confirmadas apesar de falhas, dentro das garantias configuradas.</td><td>Uma inscrição confirmada deve sobreviver a uma interrupção.</td></tr>
+          <tr><td>Atomicidade</td><td>As alterações da transação são confirmadas ou desfeitas como uma unidade.</td><td>Não confirmar alterações parciais de uma reserva.</td></tr>
+          <tr><td>Consistência</td><td>Preservar os invariantes e restrições efetivamente declarados.</td><td>Uma reserva deve referenciar uma sala existente e respeitar as restrições do esquema.</td></tr>
+          <tr><td>Isolamento</td><td>Controlar como transações concorrentes observam ou interferem nos dados.</td><td>Duas tentativas simultâneas de reservar o mesmo horário precisam ser coordenadas.</td></tr>
+          <tr><td>Durabilidade</td><td>Manter alterações confirmadas apesar de falhas, dentro das garantias configuradas.</td><td>Uma reserva confirmada deve permanecer registrada após uma falha.</td></tr>
         </tbody>
       </table></div>
 
       <h3>4.3 · Índices e processamento de consultas</h3>
       <p>Um índice é uma estrutura auxiliar utilizada para localizar registros com menos trabalho em determinadas consultas. Ele pode acelerar filtros seletivos, mas ocupa espaço e precisa ser mantido quando os dados mudam.</p>
       <div class="sgbd-sql"><div class="label"><span>Observar o plano antes de otimizar</span><span>SQL</span></div><pre><code>EXPLAIN
-SELECT *
-FROM oficinas
-WHERE titulo = 'Introdução ao Arduino';</code></pre></div>
+SELECT id_sala, nome, capacidade
+FROM sala
+WHERE id_sala = 118;</code></pre></div>
       <p>Um plano com <code>Seq Scan</code> percorre a tabela; um plano com <code>Index Scan</code> ou <code>Bitmap Index Scan</code> usa um índice. Em uma tabela muito pequena, a varredura sequencial pode ser a melhor escolha, mesmo com índice disponível.</p>
       <div class="sgbd-emphasis"><p><strong>Importante:</strong> o custo mostrado pelo <code>EXPLAIN</code> é uma estimativa em unidades internas, não uma medida direta de milissegundos. Já <code>EXPLAIN ANALYZE</code> executa a consulta e informa tempos observados.</p></div>
 
       <h3>4.4 · Segurança: autenticação e autorização</h3>
       <p>Autenticação responde <em>“quem está tentando acessar?”</em>. Autorização responde <em>“o que essa identidade pode fazer?”</em>. O PostgreSQL oferece papéis, políticas de acesso e privilégios sobre bancos, esquemas, tabelas e outros objetos.</p>
-      <div class="sgbd-sql"><div class="label"><span>Exemplo conceitual · requer papel criado e privilégios adequados</span><span>SQL</span></div><pre><code>GRANT SELECT ON oficinas TO papel_consulta;
+      <div class="sgbd-sql"><div class="label"><span>Exemplo conceitual · requer papel criado e privilégios adequados</span><span>SQL</span></div><pre><code>GRANT SELECT ON sala, reserva TO papel_consulta;
 REVOKE INSERT, UPDATE, DELETE
-ON oficinas FROM papel_consulta;</code></pre><div class="note">Os comandos ilustram autorização. Não execute sem antes criar o papel e conhecer as permissões do ambiente.</div></div>
+ON sala, reserva FROM papel_consulta;</code></pre><div class="note">Os comandos ilustram autorização. Não execute sem antes criar o papel e conhecer as permissões do ambiente.</div></div>
       <p>O SGBD pode restringir operações, mas a segurança do sistema também depende da aplicação, da rede, das credenciais e das práticas de desenvolvimento.</p>
 
       <h3>4.5 · Recuperação: falha de servidor não é o mesmo que exclusão indevida</h3>
@@ -599,32 +602,35 @@ ON oficinas FROM papel_consulta;</code></pre><div class="note">Os comandos ilust
       </div>
       <h3>MVCC: múltiplas versões dos dados</h3>
       <p>O <strong>MVCC</strong> (<em>Multiversion Concurrency Control</em>) permite que leituras trabalhem com visões consistentes de versões dos registros. Em muitas situações, leituras comuns não bloqueiam operações de escrita, e escritas não bloqueiam essas leituras.</p>
-      <p>Isso não significa ausência de bloqueios. Duas transações que tentam atualizar a mesma linha podem precisar esperar uma pela outra. A visibilidade de cada alteração também depende do nível de isolamento.</p>
+      <p>Isso não significa ausência de bloqueios. Duas transações que tentam registrar reservas incompatíveis podem precisar esperar uma pela outra. A visibilidade de cada alteração também depende do nível de isolamento.</p>
       <div class="sgbd-flow">
         <div class="sgbd-flow-row">
-          <div class="sgbd-flow-node"><strong>Transação A</strong><small>Tenta atualizar uma vaga</small></div>
+          <div class="sgbd-flow-node"><strong>Transação A</strong><small>Reserva a Sala Jacarandá às 14h</small></div>
           <span class="sgbd-flow-arrow">↔</span>
-          <div class="sgbd-flow-node"><strong>PostgreSQL</strong><small>Versões + bloqueios + isolamento</small></div>
+          <div class="sgbd-flow-node"><strong>PostgreSQL</strong><small>Versões + bloqueios + restrições</small></div>
           <span class="sgbd-flow-arrow">↔</span>
-          <div class="sgbd-flow-node"><strong>Transação B</strong><small>Tenta atualizar a mesma vaga</small></div>
+          <div class="sgbd-flow-node"><strong>Transação B</strong><small>Tenta reservar a mesma sala e horário</small></div>
         </div>
-        <p class="sgbd-caption">O gerenciamento de concorrência combina visibilidade de versões e coordenação de conflitos.</p>
+        <p class="sgbd-caption">O gerenciamento de concorrência combina visibilidade de versões, coordenação de conflitos e verificação das restrições.</p>
       </div>
-      <h3>O erro de separar verificação e atualização</h3>
-      <div class="sgbd-sql"><div class="label"><span>Estratégia frágil · duas operações independentes</span><span>Exemplo</span></div><pre><code>SELECT vagas_disponiveis
-FROM oficinas
-WHERE id = 1;
+      <h3>O erro de separar verificação e reserva</h3>
+      <div class="sgbd-sql"><div class="label"><span>Estratégia frágil · verificação seguida de uma operação independente</span><span>Exemplo</span></div><pre><code>SELECT COUNT(*) AS reservas_existentes
+FROM reserva
+WHERE id_sala = 403
+  AND data = DATE '2026-11-12'
+  AND hora_inicio = TIME '14:00';
 
--- A aplicação decide, depois, se fará UPDATE.</code></pre></div>
-      <p>Se duas aplicações lerem uma vaga antes de atualizar, ambas podem considerar que a inscrição é possível. A decisão baseada numa leitura antiga não deve ser tratada como garantia de reserva.</p>
-      <h3>Uma atualização condicional</h3>
-      <div class="sgbd-sql"><div class="label"><span>Reserva de vaga · condição verificada na operação de escrita</span><span>SQL</span></div><pre><code>UPDATE oficinas
-SET vagas_disponiveis = vagas_disponiveis - 1
-WHERE id = 1
-  AND vagas_disponiveis &gt; 0
-RETURNING vagas_disponiveis;</code></pre></div>
-      <p>A instrução reduz a quantidade somente quando a condição é satisfeita. Sob o nível padrão <code>READ COMMITTED</code>, se outra transação tiver atualizado a mesma linha, a segunda atualização poderá esperar e reavaliar a condição depois da conclusão da primeira.</p>
-      <div class="sgbd-emphasis"><p>Uma atualização condicional protege a quantidade de vagas, mas <strong>não basta para representar uma inscrição completa</strong>. Se o sistema também grava um registro de participante, ambas as operações devem pertencer a uma transação coerente.</p></div>
+-- A aplicação decide, depois, se fará INSERT.</code></pre></div>
+      <p>Se duas aplicações consultarem o horário ao mesmo tempo, ambas poderão encontrar zero reservas. Essa leitura, isoladamente, não garante exclusividade: outra transação pode registrar uma reserva antes da inserção.</p>
+      <h3>Uma inserção protegida pela restrição de unicidade</h3>
+      <div class="sgbd-sql"><div class="label"><span>Reserva de sala · conflito verificado pelo SGBD</span><span>SQL</span></div><pre><code>INSERT INTO reserva
+    (id_reserva, id_usuario, id_sala, data, hora_inicio)
+VALUES
+    (30, 17, 403, DATE '2026-11-12', TIME '14:00')
+ON CONFLICT (id_sala, data, hora_inicio) DO NOTHING
+RETURNING id_reserva;</code></pre></div>
+      <p>A restrição <code>UNIQUE (id_sala, data, hora_inicio)</code> impede a duplicidade mesmo sob acessos simultâneos. Com <code>ON CONFLICT DO NOTHING</code>, a operação não insere a linha conflitante; se não houver reserva possível, <code>RETURNING</code> não devolve registros.</p>
+      <div class="sgbd-emphasis"><p><strong>A verificação de disponibilidade não substitui a restrição do banco.</strong> Neste modelo, a unicidade vale para qualquer situação da reserva, inclusive <code>cancelada</code>; permitir reutilização de horários cancelados exigiria uma regra de integridade diferente.</p></div>
     </div></section>
 
     <section class="sgbd-section alt" id="laboratorio"><div class="sgbd-container">
@@ -633,130 +639,203 @@ RETURNING vagas_disponiveis;</code></pre></div>
       </div>
       <div class="sgbd-question"><strong>Preparação e segurança</strong><p>Execute o script somente em um <strong>banco de laboratório descartável</strong>. Os comandos <code>DROP TABLE</code> removem estruturas preexistentes com esses nomes no esquema atual.</p></div>
       <h3>Experimento 1 · Estrutura e integridade</h3>
-      <p>Crie duas tabelas: uma representa oficinas com vagas; outra registra participantes inscritos. As restrições garantem algumas propriedades estruturais.</p>
-      <div class="sgbd-sql"><div class="label"><span>Passo 1 · Preparação das tabelas</span><span>Executar uma vez</span></div><pre><code>DROP TABLE IF EXISTS inscricoes;
-DROP TABLE IF EXISTS oficinas;
+      <p>Crie as tabelas <code>usuario</code>, <code>telefone_usuario</code>, <code>bloco</code>, <code>sala</code> e <code>reserva</code>. Os relacionamentos, a capacidade das salas e a exclusividade do horário serão controlados por restrições.</p>
+      <div class="sgbd-sql"><div class="label"><span>Passo 1 · Estrutura e dados para os experimentos</span><span>Executar uma vez</span></div><pre><code>DROP TABLE IF EXISTS reserva;
+DROP TABLE IF EXISTS telefone_usuario;
+DROP TABLE IF EXISTS sala;
+DROP TABLE IF EXISTS usuario;
+DROP TABLE IF EXISTS bloco;
 
-CREATE TABLE oficinas (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL UNIQUE,
-    vagas_disponiveis INTEGER NOT NULL
-        CHECK (vagas_disponiveis &gt;= 0)
+CREATE TABLE usuario (
+    id_usuario INTEGER PRIMARY KEY,
+    nome VARCHAR(120) NOT NULL
 );
 
-CREATE TABLE inscricoes (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    oficina_id INTEGER NOT NULL REFERENCES oficinas(id),
-    participante VARCHAR(100) NOT NULL,
-    criado_em TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE (oficina_id, participante)
+CREATE TABLE telefone_usuario (
+    id_usuario INTEGER NOT NULL
+        REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    telefone VARCHAR(20) NOT NULL,
+    PRIMARY KEY (id_usuario, telefone)
 );
 
-INSERT INTO oficinas (titulo, vagas_disponiveis)
-VALUES ('Introdução ao Arduino', 1);
+CREATE TABLE bloco (
+    id_bloco INTEGER PRIMARY KEY,
+    nome_bloco VARCHAR(60) NOT NULL UNIQUE
+);
 
-SELECT * FROM oficinas;</code></pre></div>
-      <p>Verifique o valor inicial: a oficina possui <strong>uma vaga</strong>. Agora tente criar um registro inválido.</p>
-      <div class="sgbd-sql"><div class="label"><span>Passo 2 · Teste de restrição</span><span>Erro esperado</span></div><pre><code>INSERT INTO oficinas (titulo, vagas_disponiveis)
-VALUES ('Teste de restrição', -1);</code></pre><div class="note">O SGBD rejeita a inserção porque o valor viola a restrição <code>CHECK</code>.</div></div>
-      <details class="sgbd-details"><summary>O que o experimento demonstra?</summary><p>O banco verifica uma regra declarada no esquema independentemente da interface que enviou o comando. A aplicação também pode validar dados, mas a restrição mantém a regra na camada de persistência.</p></details>
+CREATE TABLE sala (
+    id_sala INTEGER PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    capacidade INTEGER NOT NULL CHECK (capacidade &gt; 0),
+    id_bloco INTEGER NOT NULL
+        REFERENCES bloco(id_bloco) ON DELETE RESTRICT
+);
+
+CREATE TABLE reserva (
+    id_reserva INTEGER PRIMARY KEY,
+    id_usuario INTEGER NOT NULL
+        REFERENCES usuario(id_usuario) ON DELETE RESTRICT,
+    id_sala INTEGER NOT NULL
+        REFERENCES sala(id_sala) ON DELETE RESTRICT,
+    data DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    situacao VARCHAR(12) NOT NULL DEFAULT 'ativa'
+        CHECK (situacao IN ('ativa', 'cancelada', 'concluida')),
+    observacao TEXT,
+    UNIQUE (id_sala, data, hora_inicio)
+);
+
+INSERT INTO usuario (id_usuario, nome) VALUES
+    (8, 'Larissa Moura'),
+    (17, 'Marina Lopes'),
+    (42, 'Gustavo Neri'),
+    (55, 'Ana Souza');
+
+INSERT INTO telefone_usuario (id_usuario, telefone)
+VALUES (17, '41987651223'), (42, '41984327710');
+
+INSERT INTO bloco (id_bloco, nome_bloco) VALUES
+    (1, 'Bloco A'), (2, 'Bloco B'),
+    (3, 'Bloco C'), (4, 'Bloco D');
+
+INSERT INTO sala (id_sala, nome, capacidade, id_bloco) VALUES
+    (118, 'Sala Araucária', 8, 1),
+    (204, 'Sala Ipê', 6, 2),
+    (305, 'Sala Horizonte', 10, 3),
+    (403, 'Sala Jacarandá', 18, 4);
+
+INSERT INTO reserva
+    (id_reserva, id_usuario, id_sala,
+     data, hora_inicio, situacao, observacao)
+VALUES
+    (1, 17, 204, '2026-10-08', '18:30',
+     'ativa', 'Reunião de projeto'),
+    (2, 42, 118, '2026-10-08', '19:00',
+     'ativa', NULL),
+    (3, 8, 305, '2026-10-09', '18:30',
+     'concluida', 'Apresentação'),
+    (4, 55, 118, '2026-10-09', '20:00',
+     'cancelada', NULL);
+
+SELECT s.nome, s.capacidade, b.nome_bloco
+FROM sala AS s
+JOIN bloco AS b ON b.id_bloco = s.id_bloco
+ORDER BY s.nome;</code></pre></div>
+      <p>Confira as salas e os blocos. Agora tente inserir uma sala com capacidade inválida para observar o SGBD rejeitando uma operação.</p>
+      <div class="sgbd-sql"><div class="label"><span>Passo 2 · Teste de restrição</span><span>Erro esperado</span></div><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
+VALUES (999, 'Sala Impossível', -3, 1);</code></pre><div class="note">O PostgreSQL rejeita a inserção porque a capacidade viola a restrição <code>CHECK (capacidade &gt; 0)</code>. Execute o próximo experimento em uma transação válida.</div></div>
+      <details class="sgbd-details"><summary>O que o experimento demonstra?</summary><p>A restrição é verificada pelo SGBD independentemente do programa que envia o comando. A aplicação também pode validar dados, mas a integridade declarada no banco protege os registros persistentes.</p></details>
 
       <h3>Experimento 2 · ROLLBACK e COMMIT</h3>
-      <p>Vamos modificar temporariamente as vagas e depois desfazer a transação.</p>
+      <p>Altere temporariamente a situação de uma reserva e depois desfaça a transação.</p>
       <div class="sgbd-sql"><div class="label"><span>Passo 3 · Executar o bloco completo</span><span>Transação</span></div><pre><code>BEGIN;
 
-UPDATE oficinas
-SET vagas_disponiveis = 0
-WHERE id = 1;
+UPDATE reserva
+SET situacao = 'cancelada'
+WHERE id_reserva = 1;
 
-SELECT id, titulo, vagas_disponiveis
-FROM oficinas;
+SELECT id_reserva, situacao
+FROM reserva
+WHERE id_reserva = 1;
 
 ROLLBACK;
 
-SELECT id, titulo, vagas_disponiveis
-FROM oficinas;</code></pre></div>
-      <p>Antes do <code>ROLLBACK</code>, a própria conexão observa a alteração. Depois, volta a observar a quantidade inicial de uma vaga. Com <code>COMMIT</code>, as alterações seriam confirmadas.</p>
-      <details class="sgbd-details"><summary>Qual a diferença entre desfazer e confirmar?</summary><p>O <code>ROLLBACK</code> cancela as alterações não confirmadas da transação. O <code>COMMIT</code> confirma a transação. Isso não significa que o banco possa desfazer qualquer ação arbitrária já confirmada somente com <code>ROLLBACK</code>.</p></details>
+SELECT id_reserva, situacao
+FROM reserva
+WHERE id_reserva = 1;</code></pre></div>
+      <p>Antes do <code>ROLLBACK</code>, a própria conexão observa <code>cancelada</code>. Depois, a situação volta a ser <code>ativa</code>. Substituir o <code>ROLLBACK</code> por <code>COMMIT</code> confirmaria a alteração.</p>
+      <details class="sgbd-details"><summary>Qual a diferença entre desfazer e confirmar?</summary><p>O <code>ROLLBACK</code> cancela as alterações não confirmadas da transação. O <code>COMMIT</code> confirma a transação. Uma alteração já confirmada não é desfeita simplesmente executando um <code>ROLLBACK</code> posterior.</p></details>
 
-      <h3>Experimento 3 · Duas conexões disputando a mesma vaga</h3>
-      <p>Abra <strong>duas conexões distintas</strong> ao mesmo banco no DBeaver (sessões A e B) ou dois terminais <code>psql</code>. Execute cada bloco separadamente e na ordem indicada. Se usar DBeaver, verifique a configuração de autocommit: os comandos explícitos <code>BEGIN</code>/<code>COMMIT</code> precisam permanecer na mesma conexão.</p>
+      <h3>Experimento 3 · Duas conexões disputando o mesmo horário</h3>
+      <p>Abra <strong>duas conexões distintas</strong> ao mesmo banco (sessões A e B) no DBeaver ou dois terminais <code>psql</code>. Os comandos devem permanecer na mesma conexão durante cada transação. No DBeaver, confira a configuração de autocommit e mantenha a transação aberta até sua confirmação ou cancelamento.</p>
       <div class="sgbd-grid">
         <div class="sgbd-session">
-          <h3>Sessão A · Primeiro participante</h3>
-          <p>Inicia uma transação, consome a vaga e registra a inscrição, mas ainda <strong>não confirma</strong>.</p>
+          <h3>Sessão A · Primeira reserva</h3>
+          <p>Registra a Sala Jacarandá para um horário ainda disponível, mas <strong>não confirma</strong> a transação.</p>
           <div class="sgbd-sql"><div class="label"><span>Executar primeiro</span></div><pre><code>BEGIN;
 
-UPDATE oficinas
-SET vagas_disponiveis =
-    vagas_disponiveis - 1
-WHERE id = 1
-  AND vagas_disponiveis &gt; 0
-RETURNING vagas_disponiveis;
-
-INSERT INTO inscricoes
-    (oficina_id, participante)
-VALUES (1, 'Ana');
+INSERT INTO reserva
+    (id_reserva, id_usuario, id_sala,
+     data, hora_inicio, observacao)
+VALUES
+    (21, 17, 403, DATE '2026-11-12',
+     TIME '14:00', 'Reunião de projeto');
 
 -- Não executar COMMIT ainda.</code></pre></div>
         </div>
         <div class="sgbd-session">
-          <h3>Sessão B · Segundo participante</h3>
-          <p>Com A ainda aberta, B tenta consumir a mesma vaga e deverá aguardar o término da operação conflitante.</p>
+          <h3>Sessão B · Reserva concorrente</h3>
+          <p>Com A ainda aberta, outra pessoa tenta reservar <strong>a mesma sala, data e horário</strong>.</p>
           <div class="sgbd-sql"><div class="label"><span>Executar depois de A</span></div><pre><code>BEGIN;
 
-UPDATE oficinas
-SET vagas_disponiveis =
-    vagas_disponiveis - 1
-WHERE id = 1
-  AND vagas_disponiveis &gt; 0
-RETURNING vagas_disponiveis;
+INSERT INTO reserva
+    (id_reserva, id_usuario, id_sala,
+     data, hora_inicio, observacao)
+VALUES
+    (22, 42, 403, DATE '2026-11-12',
+     TIME '14:00', 'Reunião de equipe');
 
--- Aguardar a sessão A.</code></pre></div>
+-- Aguardar a conclusão da sessão A.</code></pre></div>
         </div>
       </div>
       <ol class="sgbd-step-list">
         <li>Na sessão A, execute <code>COMMIT;</code>.</li>
-        <li>Observe a sessão B: no isolamento padrão <code>READ COMMITTED</code>, a condição é reavaliada e o <code>UPDATE</code> retorna <strong>zero linhas</strong>.</li>
-        <li>Na sessão B, execute <code>ROLLBACK;</code>. Como não conseguiu a vaga, B não deve inserir uma inscrição.</li>
-        <li>Confirme o estado final com a consulta abaixo em qualquer conexão.</li>
+        <li>Observe a sessão B: ao prosseguir, o PostgreSQL rejeita a inserção conflitante pela restrição <code>UNIQUE (id_sala, data, hora_inicio)</code>.</li>
+        <li>Na sessão B, execute <code>ROLLBACK;</code> para encerrar a transação que apresentou erro.</li>
+        <li>Confirme o resultado final com a consulta abaixo em qualquer conexão.</li>
       </ol>
-      <div class="sgbd-sql"><div class="label"><span>Passo final · Conferência</span><span>SQL</span></div><pre><code>SELECT o.titulo,
-       o.vagas_disponiveis,
-       COUNT(i.id) AS inscritos
-FROM oficinas AS o
-LEFT JOIN inscricoes AS i
-       ON i.oficina_id = o.id
-GROUP BY o.id, o.titulo, o.vagas_disponiveis;</code></pre></div>
-      <details class="sgbd-details"><summary>Resultado esperado e interpretação</summary><p>A oficina deve apresentar <strong>zero vagas disponíveis e uma inscrição</strong>. O mecanismo combina atualização condicional, bloqueios de linha e transação. O exemplo pressupõe que os passos foram executados na ordem indicada, no banco de teste recém-preparado.</p></details>
+      <div class="sgbd-sql"><div class="label"><span>Passo final · Conferência</span><span>SQL</span></div><pre><code>SELECT r.id_reserva,
+       u.nome AS usuario,
+       s.nome AS sala,
+       r.data,
+       r.hora_inicio
+FROM reserva AS r
+JOIN usuario AS u ON u.id_usuario = r.id_usuario
+JOIN sala AS s ON s.id_sala = r.id_sala
+WHERE r.id_sala = 403
+  AND r.data = DATE '2026-11-12'
+  AND r.hora_inicio = TIME '14:00';</code></pre></div>
+      <details class="sgbd-details"><summary>Resultado esperado e interpretação</summary><p>O resultado deve mostrar <strong>uma única reserva</strong>, de Marina Lopes para a Sala Jacarandá, em 12/11/2026 às 14h. A tentativa concorrente foi rejeitada porque as duas linhas teriam a mesma combinação de sala, data e horário. O experimento pressupõe a carga inicial deste laboratório.</p></details>
 
       <h3>Experimento 4 · Por que um índice pode modificar o plano?</h3>
-      <p>Para não tirar conclusões de uma tabela com apenas uma linha, crie uma tabela separada de teste com 100 mil registros sintéticos. Compare o plano de execução antes e depois de criar um índice.</p>
-      <div class="sgbd-sql"><div class="label"><span>Comparação de planos em dados artificiais</span><span>SQL</span></div><pre><code>DROP TABLE IF EXISTS leituras_teste;
+      <p>Uma tabela com poucas reservas não permite observar claramente o impacto de índices. Por isso, vamos criar uma tabela auxiliar de teste com 100 mil registros sintéticos, simulando consultas por sala e data.</p>
+      <div class="sgbd-sql"><div class="label"><span>Comparação de planos em dados artificiais</span><span>SQL</span></div><pre><code>DROP TABLE IF EXISTS reservas_desempenho;
 
-CREATE TABLE leituras_teste (
+CREATE TABLE reservas_desempenho (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    codigo INTEGER NOT NULL
+    id_sala INTEGER NOT NULL,
+    data DATE NOT NULL
 );
 
-INSERT INTO leituras_teste (codigo)
-SELECT g % 1000
+INSERT INTO reservas_desempenho (id_sala, data)
+SELECT
+    CASE g % 4
+        WHEN 0 THEN 118
+        WHEN 1 THEN 204
+        WHEN 2 THEN 305
+        ELSE 403
+    END,
+    DATE '2026-01-01' + (g % 365)
 FROM generate_series(1, 100000) AS g;
 
-ANALYZE leituras_teste;
+ANALYZE reservas_desempenho;
 
 EXPLAIN (ANALYZE, BUFFERS)
-SELECT * FROM leituras_teste
-WHERE codigo = 867;
+SELECT *
+FROM reservas_desempenho
+WHERE id_sala = 204
+  AND data = DATE '2026-10-08';
 
-CREATE INDEX idx_leituras_codigo
-ON leituras_teste (codigo);
+CREATE INDEX idx_reservas_desempenho_sala_data
+ON reservas_desempenho (id_sala, data);
 
-ANALYZE leituras_teste;
+ANALYZE reservas_desempenho;
 
 EXPLAIN (ANALYZE, BUFFERS)
-SELECT * FROM leituras_teste
-WHERE codigo = 867;</code></pre></div>
+SELECT *
+FROM reservas_desempenho
+WHERE id_sala = 204
+  AND data = DATE '2026-10-08';</code></pre></div>
       <p>Compare o tipo de varredura, o número estimado e efetivo de linhas, o tempo observado e a utilização dos buffers. Não compare apenas o tempo de duas execuções isoladas: cache, ambiente e planejamento podem variar.</p>
       <div class="sgbd-question"><strong>Questão de interpretação</strong><p>Por que um índice pode acelerar uma consulta e, ao mesmo tempo, aumentar o custo de inserções ou atualizações?</p><p>O índice é uma estrutura adicional que precisa ser mantida, mas pode reduzir o trabalho de localização em determinadas consultas.</p></div>
     </div></section>
@@ -779,16 +858,16 @@ WHERE codigo = 867;</code></pre></div>
       <p>Um CSV local pode atender a uma análise pontual, e um JSON pode servir como arquivo de configuração. Se os dados forem poucos, estáticos, sem acessos simultâneos e sem requisitos transacionais, um SGBD servidor pode introduzir complexidade desnecessária.</p>
       <div class="sgbd-emphasis"><p><strong>Critério de engenharia:</strong> selecionar uma solução pela necessidade do sistema — não apenas pela popularidade da ferramenta.</p></div>
 
-      <h3>Atividade de consolidação · Reservas de equipamentos industriais</h3>
-      <p>Uma empresa compartilha instrumentos de medição entre setores. O sistema permite agendar horários, registrar manutenção e consultar disponibilidade.</p>
+      <h3>Atividade de consolidação · Sistema de reserva de salas</h3>
+      <p>Uma aplicação permite consultar salas, verificar horários, registrar e cancelar reservas. Usuários distintos podem acessar o sistema simultaneamente, e somente pessoas autorizadas devem modificar os registros.</p>
       <p>Para cada situação, identifique o mecanismo do SGBD mais relevante e explique o que ainda precisará ser definido pelo projetista.</p>
       <div class="sgbd-checklist">
-        <details class="sgbd-details"><summary>1. Uma reserva não pode apontar para equipamento inexistente.</summary><p>Integridade referencial: chave estrangeira entre reserva e equipamento. A modelagem deve declarar corretamente o relacionamento.</p></details>
-        <details class="sgbd-details"><summary>2. Duas pessoas tentam reservar o mesmo equipamento para o mesmo horário.</summary><p>Concorrência e transações. É preciso modelar a restrição de conflito temporal e implementá-la com uma estratégia segura, como restrições apropriadas ou bloqueios transacionais.</p></details>
-        <details class="sgbd-details"><summary>3. Um usuário consulta dados, mas não pode excluir equipamentos.</summary><p>Autorização: roles e privilégios. A aplicação também deve proteger seus fluxos de acesso.</p></details>
-        <details class="sgbd-details"><summary>4. O servidor desliga inesperadamente depois de uma confirmação.</summary><p>Durabilidade e recuperação: mecanismos de WAL. A garantia depende de configuração, persistência e condições de infraestrutura.</p></details>
-        <details class="sgbd-details"><summary>5. Uma consulta por equipamento e período está lenta.</summary><p>Planejamento e otimização: analisar o plano, as estatísticas e índices adequados; primeiro compreender o padrão de consulta e os dados.</p></details>
-        <details class="sgbd-details"><summary>6. Uma pessoa apaga registros e a exclusão é replicada.</summary><p>Backups e, se configurada, recuperação por ponto no tempo. Réplica não é sinônimo de backup.</p></details>
+        <details class="sgbd-details"><summary>1. Uma reserva não pode referenciar uma sala inexistente.</summary><p>Integridade referencial: chave estrangeira de <code>reserva.id_sala</code> para <code>sala.id_sala</code>.</p></details>
+        <details class="sgbd-details"><summary>2. Dois usuários tentam reservar a mesma sala para a mesma data e horário.</summary><p>Concorrência e integridade: a restrição <code>UNIQUE (id_sala, data, hora_inicio)</code> impede a duplicidade. A aplicação precisa tratar adequadamente o conflito.</p></details>
+        <details class="sgbd-details"><summary>3. Uma pessoa pode consultar salas, mas não alterar reservas.</summary><p>Autorização: papéis e privilégios podem conceder acesso de leitura sem permitir inserção, atualização ou exclusão.</p></details>
+        <details class="sgbd-details"><summary>4. O servidor desliga inesperadamente depois da confirmação de uma reserva.</summary><p>Durabilidade e recuperação: o WAL e as configurações de persistência sustentam a recuperação de transações confirmadas.</p></details>
+        <details class="sgbd-details"><summary>5. A consulta de reservas por sala e data está lenta.</summary><p>Planejamento e otimização: analisar o <code>EXPLAIN</code>, as estatísticas e índices adequados à combinação de sala e data.</p></details>
+        <details class="sgbd-details"><summary>6. Reservas são excluídas indevidamente e a exclusão chega às réplicas.</summary><p>Backups e, se configurada, recuperação por ponto no tempo. Replicação não substitui uma estratégia de restauração.</p></details>
       </div>
       <div class="sgbd-question"><strong>Questão final para discussão</strong><p>Qual é a diferença entre armazenar dados e administrá-los com garantias de integridade, isolamento, segurança e recuperação?</p></div>
     </div></section>
