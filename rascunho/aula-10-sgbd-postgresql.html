@@ -90,14 +90,14 @@
     .sgbd-case{margin-top:1.1rem}
     .sgbd-case h3{margin:.1rem 0 .5rem}
     .sgbd-case p{margin:.4rem 0;color:var(--muted)}
-    .sgbd-session{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:1rem}
-    .sgbd-session h3{margin:0 0 .35rem;font-size:1rem}
-    .sgbd-session p{margin:.25rem 0 .6rem;color:var(--muted);font-size:.87rem}
-    .sgbd-session .sgbd-sql{margin:.55rem 0}
-    .sgbd-session .sgbd-sql pre{font-size:.82rem;padding:.8rem}
-    .sgbd-step-list{list-style:none;counter-reset:passo;padding:0;display:grid;gap:.5rem}
-    .sgbd-step-list>li{counter-increment:passo;border:1px solid var(--line);border-radius:11px;padding:.85rem 1rem;background:var(--surface)}
-    .sgbd-step-list>li:before{content:counter(passo, decimal-leading-zero);color:var(--primary);font-weight:800;margin-right:.7rem}
+    
+    
+    
+    
+    
+    
+    
+    
     .sgbd-details{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:.9rem 1.1rem;margin:.65rem 0}
     .sgbd-details summary{cursor:pointer;font-weight:700;list-style:auto}
     .sgbd-details[open] summary{margin-bottom:.5rem}
@@ -181,7 +181,7 @@
         <a href="../aula-09.html">Aula 09</a>
         <a href="#arquitetura">Arquitetura</a>
         <a href="#funcionalidades">Funcionalidades</a>
-        <a href="#laboratorio">Laboratório</a>
+        
         <a href="#sintese">Síntese</a>
         <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false">
           <span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span>
@@ -209,11 +209,11 @@
       </div>
     </section>
 
-    <div class="sgbd-draft-note"><div class="sgbd-container"><p><strong>Versão de trabalho.</strong> Material em revisão docente, não incluído na lista de aulas oficiais. Os exemplos SQL destinam-se a um banco de laboratório descartável.</p></div></div>
+    <div class="sgbd-draft-note"><div class="sgbd-container"><p><strong>Versão de trabalho.</strong> Material em revisão docente, não incluído na lista de aulas oficiais. Os comandos SQL apresentados são exemplos ilustrativos e devem ser testados em ambiente apropriado.</p></div></div>
 
     <div class="sgbd-toc-shell">
       <nav class="sgbd-container sgbd-toc" aria-label="Seções da aula">
-        <a href="#visao">Objetivos</a><a href="#conceitos">Conceitos</a><a href="#arquitetura">Arquitetura</a><a href="#funcionalidades">Funções</a><a href="#concorrencia">Concorrência</a><a href="#laboratorio">Prática</a><a href="#aplicacoes">Aplicações</a><a href="#sintese">Síntese</a>
+        <a href="#visao">Objetivos</a><a href="#conceitos">Conceitos</a><a href="#arquitetura">Arquitetura</a><a href="#funcionalidades">Funções</a><a href="#concorrencia">Concorrência</a><a href="#aplicacoes">Aplicações</a><a href="#sintese">Síntese</a>
       </nav>
     </div>
 
@@ -334,7 +334,7 @@
 </svg>
       </figure>
       <div class="sgbd-matrix"><table>
-        <thead><tr><th>Elemento</th><th>O que é</th><th>Exemplo no laboratório</th></tr></thead>
+        <thead><tr><th>Elemento</th><th>O que é</th><th>Exemplo</th></tr></thead>
         <tbody>
           <tr><td>Banco de dados</td><td>Conjunto organizado de informações persistentes, estruturadas em tabelas e relacionamentos para representar um domínio e permitir sua recuperação.</td><td>Banco que armazena salas, usuários, blocos e reservas.</td></tr>
           <tr><td>SGBD</td><td>Software que gerencia o armazenamento e o acesso aos bancos de dados, executa consultas e controla integridade, transações e permissões.</td><td>Servidor PostgreSQL.</td></tr>
@@ -492,7 +492,7 @@ with psycopg.connect(
 
         for sala, bloco, capacidade in cur.fetchall():
             print(f"{sala} ({bloco}): {capacidade} lugares")</code></pre></div>
-<p class="quiet">A conexão usa as variáveis de ambiente <code>PGHOST</code>, <code>PGPORT</code>, <code>PGDATABASE</code>, <code>PGUSER</code> e <code>PGPASSWORD</code>. Ajuste esses valores ao seu ambiente, sem colocar senhas diretamente no código. As tabelas <code>sala</code> e <code>bloco</code> são criadas no laboratório indicado adiante.</p>
+<p class="quiet">A conexão usa as variáveis de ambiente <code>PGHOST</code>, <code>PGPORT</code>, <code>PGDATABASE</code>, <code>PGUSER</code> e <code>PGPASSWORD</code>. Ajuste esses valores ao seu ambiente, sem colocar senhas diretamente no código. O exemplo pressupõe um banco PostgreSQL em que as tabelas <code>sala</code> e <code>bloco</code> já existam e contenham registros.</p>
 <div class="sgbd-emphasis"><p><strong>Por que <code>%s</code> e <code>(8,)</code>?</strong> O marcador <code>%s</code> representa um parâmetro SQL e <code>(8,)</code> é uma tupla Python com o valor mínimo de capacidade enviado. Assim, os valores são separados do comando e não são concatenados à SQL, ajudando a prevenir injeção de SQL.</p></div>
 <h3>Principais funções e métodos do psycopg</h3>
 <p>O driver oferece objetos de conexão e cursores. Os métodos abaixo são suficientes para iniciar a integração entre Python e PostgreSQL:</p>
@@ -627,215 +627,10 @@ RETURNING id_reserva;</code></pre></div>
       <div class="sgbd-emphasis"><p><strong>A verificação de disponibilidade não substitui a restrição do banco.</strong> Neste modelo, a unicidade vale para qualquer situação da reserva, inclusive <code>cancelada</code>; permitir reutilização de horários cancelados exigiria uma regra de integridade diferente.</p></div>
     </div></section>
 
-    <section class="sgbd-section alt" id="laboratorio"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">5 · Laboratório guiado</p><h2>Observe o SGBD protegendo as operações</h2>
-        <p>Estas demonstrações usam sintaxe do PostgreSQL, não do SQLite. Abra uma conexão no DBeaver ou no <code>psql</code> com um banco de testes em que seja permitido criar e apagar tabelas.</p>
-      </div>
-      <div class="sgbd-question"><strong>Preparação e segurança</strong><p>Execute o script somente em um <strong>banco de laboratório descartável</strong>. Os comandos <code>DROP TABLE</code> removem estruturas preexistentes com esses nomes no esquema atual.</p></div>
-      <h3>Experimento 1 · Estrutura e integridade</h3>
-      <p>Crie as tabelas <code>usuario</code>, <code>telefone_usuario</code>, <code>bloco</code>, <code>sala</code> e <code>reserva</code>. Os relacionamentos, a capacidade das salas e a exclusividade do horário serão controlados por restrições.</p>
-      <div class="sgbd-sql"><div class="label"><span>Passo 1 · Estrutura e dados para os experimentos</span><span>Executar uma vez</span></div><pre><code>DROP TABLE IF EXISTS reserva;
-DROP TABLE IF EXISTS telefone_usuario;
-DROP TABLE IF EXISTS sala;
-DROP TABLE IF EXISTS usuario;
-DROP TABLE IF EXISTS bloco;
-
-CREATE TABLE usuario (
-    id_usuario INTEGER PRIMARY KEY,
-    nome VARCHAR(120) NOT NULL
-);
-
-CREATE TABLE telefone_usuario (
-    id_usuario INTEGER NOT NULL
-        REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-    telefone VARCHAR(20) NOT NULL,
-    PRIMARY KEY (id_usuario, telefone)
-);
-
-CREATE TABLE bloco (
-    id_bloco INTEGER PRIMARY KEY,
-    nome_bloco VARCHAR(60) NOT NULL UNIQUE
-);
-
-CREATE TABLE sala (
-    id_sala INTEGER PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    capacidade INTEGER NOT NULL CHECK (capacidade &gt; 0),
-    id_bloco INTEGER NOT NULL
-        REFERENCES bloco(id_bloco) ON DELETE RESTRICT
-);
-
-CREATE TABLE reserva (
-    id_reserva INTEGER PRIMARY KEY,
-    id_usuario INTEGER NOT NULL
-        REFERENCES usuario(id_usuario) ON DELETE RESTRICT,
-    id_sala INTEGER NOT NULL
-        REFERENCES sala(id_sala) ON DELETE RESTRICT,
-    data DATE NOT NULL,
-    hora_inicio TIME NOT NULL,
-    situacao VARCHAR(12) NOT NULL DEFAULT 'ativa'
-        CHECK (situacao IN ('ativa', 'cancelada', 'concluida')),
-    observacao TEXT,
-    UNIQUE (id_sala, data, hora_inicio)
-);
-
-INSERT INTO usuario (id_usuario, nome) VALUES
-    (8, 'Larissa Moura'),
-    (17, 'Marina Lopes'),
-    (42, 'Gustavo Neri'),
-    (55, 'Ana Souza');
-
-INSERT INTO telefone_usuario (id_usuario, telefone)
-VALUES (17, '41987651223'), (42, '41984327710');
-
-INSERT INTO bloco (id_bloco, nome_bloco) VALUES
-    (1, 'Bloco A'), (2, 'Bloco B'),
-    (3, 'Bloco C'), (4, 'Bloco D');
-
-INSERT INTO sala (id_sala, nome, capacidade, id_bloco) VALUES
-    (118, 'Sala Araucária', 8, 1),
-    (204, 'Sala Ipê', 6, 2),
-    (305, 'Sala Horizonte', 10, 3),
-    (403, 'Sala Jacarandá', 18, 4);
-
-INSERT INTO reserva
-    (id_reserva, id_usuario, id_sala,
-     data, hora_inicio, situacao, observacao)
-VALUES
-    (1, 17, 204, '2026-10-08', '18:30',
-     'ativa', 'Reunião de projeto'),
-    (2, 42, 118, '2026-10-08', '19:00',
-     'ativa', NULL),
-    (3, 8, 305, '2026-10-09', '18:30',
-     'concluida', 'Apresentação'),
-    (4, 55, 118, '2026-10-09', '20:00',
-     'cancelada', NULL);
-
-SELECT s.nome, s.capacidade, b.nome_bloco
-FROM sala AS s
-JOIN bloco AS b ON b.id_bloco = s.id_bloco
-ORDER BY s.nome;</code></pre></div>
-      <p>Confira as salas e os blocos. Agora tente inserir uma sala com capacidade inválida para observar o SGBD rejeitando uma operação.</p>
-      <div class="sgbd-sql"><div class="label"><span>Passo 2 · Teste de restrição</span><span>Erro esperado</span></div><pre><code>INSERT INTO sala (id_sala, nome, capacidade, id_bloco)
-VALUES (999, 'Sala Impossível', -3, 1);</code></pre><div class="note">O PostgreSQL rejeita a inserção porque a capacidade viola a restrição <code>CHECK (capacidade &gt; 0)</code>. Execute o próximo experimento em uma transação válida.</div></div>
-      <details class="sgbd-details"><summary>O que o experimento demonstra?</summary><p>A restrição é verificada pelo SGBD independentemente do programa que envia o comando. A aplicação também pode validar dados, mas a integridade declarada no banco protege os registros persistentes.</p></details>
-
-      <h3>Experimento 2 · ROLLBACK e COMMIT</h3>
-      <p>Altere temporariamente a situação de uma reserva e depois desfaça a transação.</p>
-      <div class="sgbd-sql"><div class="label"><span>Passo 3 · Executar o bloco completo</span><span>Transação</span></div><pre><code>BEGIN;
-
-UPDATE reserva
-SET situacao = 'cancelada'
-WHERE id_reserva = 1;
-
-SELECT id_reserva, situacao
-FROM reserva
-WHERE id_reserva = 1;
-
-ROLLBACK;
-
-SELECT id_reserva, situacao
-FROM reserva
-WHERE id_reserva = 1;</code></pre></div>
-      <p>Antes do <code>ROLLBACK</code>, a própria conexão observa <code>cancelada</code>. Depois, a situação volta a ser <code>ativa</code>. Substituir o <code>ROLLBACK</code> por <code>COMMIT</code> confirmaria a alteração.</p>
-      <details class="sgbd-details"><summary>Qual a diferença entre desfazer e confirmar?</summary><p>O <code>ROLLBACK</code> cancela as alterações não confirmadas da transação. O <code>COMMIT</code> confirma a transação. Uma alteração já confirmada não é desfeita simplesmente executando um <code>ROLLBACK</code> posterior.</p></details>
-
-      <h3>Experimento 3 · Duas conexões disputando o mesmo horário</h3>
-      <p>Abra <strong>duas conexões distintas</strong> ao mesmo banco (sessões A e B) no DBeaver ou dois terminais <code>psql</code>. Os comandos devem permanecer na mesma conexão durante cada transação. No DBeaver, confira a configuração de autocommit e mantenha a transação aberta até sua confirmação ou cancelamento.</p>
-      <div class="sgbd-grid">
-        <div class="sgbd-session">
-          <h3>Sessão A · Primeira reserva</h3>
-          <p>Registra a Sala Jacarandá para um horário ainda disponível, mas <strong>não confirma</strong> a transação.</p>
-          <div class="sgbd-sql"><div class="label"><span>Executar primeiro</span></div><pre><code>BEGIN;
-
-INSERT INTO reserva
-    (id_reserva, id_usuario, id_sala,
-     data, hora_inicio, observacao)
-VALUES
-    (21, 17, 403, DATE '2026-11-12',
-     TIME '14:00', 'Reunião de projeto');
-
--- Não executar COMMIT ainda.</code></pre></div>
-        </div>
-        <div class="sgbd-session">
-          <h3>Sessão B · Reserva concorrente</h3>
-          <p>Com A ainda aberta, outra pessoa tenta reservar <strong>a mesma sala, data e horário</strong>.</p>
-          <div class="sgbd-sql"><div class="label"><span>Executar depois de A</span></div><pre><code>BEGIN;
-
-INSERT INTO reserva
-    (id_reserva, id_usuario, id_sala,
-     data, hora_inicio, observacao)
-VALUES
-    (22, 42, 403, DATE '2026-11-12',
-     TIME '14:00', 'Reunião de equipe');
-
--- Aguardar a conclusão da sessão A.</code></pre></div>
-        </div>
-      </div>
-      <ol class="sgbd-step-list">
-        <li>Na sessão A, execute <code>COMMIT;</code>.</li>
-        <li>Observe a sessão B: ao prosseguir, o PostgreSQL rejeita a inserção conflitante pela restrição <code>UNIQUE (id_sala, data, hora_inicio)</code>.</li>
-        <li>Na sessão B, execute <code>ROLLBACK;</code> para encerrar a transação que apresentou erro.</li>
-        <li>Confirme o resultado final com a consulta abaixo em qualquer conexão.</li>
-      </ol>
-      <div class="sgbd-sql"><div class="label"><span>Passo final · Conferência</span><span>SQL</span></div><pre><code>SELECT r.id_reserva,
-       u.nome AS usuario,
-       s.nome AS sala,
-       r.data,
-       r.hora_inicio
-FROM reserva AS r
-JOIN usuario AS u ON u.id_usuario = r.id_usuario
-JOIN sala AS s ON s.id_sala = r.id_sala
-WHERE r.id_sala = 403
-  AND r.data = DATE '2026-11-12'
-  AND r.hora_inicio = TIME '14:00';</code></pre></div>
-      <details class="sgbd-details"><summary>Resultado esperado e interpretação</summary><p>O resultado deve mostrar <strong>uma única reserva</strong>, de Marina Lopes para a Sala Jacarandá, em 12/11/2026 às 14h. A tentativa concorrente foi rejeitada porque as duas linhas teriam a mesma combinação de sala, data e horário. O experimento pressupõe a carga inicial deste laboratório.</p></details>
-
-      <h3>Experimento 4 · Por que um índice pode modificar o plano?</h3>
-      <p>Uma tabela com poucas reservas não permite observar claramente o impacto de índices. Por isso, vamos criar uma tabela auxiliar de teste com 100 mil registros sintéticos, simulando consultas por sala e data.</p>
-      <div class="sgbd-sql"><div class="label"><span>Comparação de planos em dados artificiais</span><span>SQL</span></div><pre><code>DROP TABLE IF EXISTS reservas_desempenho;
-
-CREATE TABLE reservas_desempenho (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_sala INTEGER NOT NULL,
-    data DATE NOT NULL
-);
-
-INSERT INTO reservas_desempenho (id_sala, data)
-SELECT
-    CASE g % 4
-        WHEN 0 THEN 118
-        WHEN 1 THEN 204
-        WHEN 2 THEN 305
-        ELSE 403
-    END,
-    DATE '2026-01-01' + (g % 365)
-FROM generate_series(1, 100000) AS g;
-
-ANALYZE reservas_desempenho;
-
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT *
-FROM reservas_desempenho
-WHERE id_sala = 204
-  AND data = DATE '2026-10-08';
-
-CREATE INDEX idx_reservas_desempenho_sala_data
-ON reservas_desempenho (id_sala, data);
-
-ANALYZE reservas_desempenho;
-
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT *
-FROM reservas_desempenho
-WHERE id_sala = 204
-  AND data = DATE '2026-10-08';</code></pre></div>
-      <p>Compare o tipo de varredura, o número estimado e efetivo de linhas, o tempo observado e a utilização dos buffers. Não compare apenas o tempo de duas execuções isoladas: cache, ambiente e planejamento podem variar.</p>
-      <div class="sgbd-question"><strong>Questão de interpretação</strong><p>Por que um índice pode acelerar uma consulta e, ao mesmo tempo, aumentar o custo de inserções ou atualizações?</p><p>O índice é uma estrutura adicional que precisa ser mantida, mas pode reduzir o trabalho de localização em determinadas consultas.</p></div>
-    </div></section>
+    
 
     <section class="sgbd-section" id="aplicacoes"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">6 · Usos e decisões de projeto</p><h2>Quando um SGBD é uma boa escolha?</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">5 · Usos e decisões de projeto</p><h2>Quando um SGBD é uma boa escolha?</h2>
         <p>Não basta perguntar se há muitos dados. É necessário avaliar requisitos de integridade, concorrência, consultas, segurança e continuidade do serviço.</p>
       </div>
       <div class="sgbd-matrix"><table>
@@ -867,7 +662,7 @@ WHERE id_sala = 204
     </div></section>
 
     <section class="sgbd-section alt" id="sintese"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">7 · Síntese</p><h2>O papel do SGBD na arquitetura do software</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">6 · Síntese</p><h2>O papel do SGBD na arquitetura do software</h2>
         <p>O PostgreSQL não é apenas um programa capaz de executar <code>SELECT</code>. Ele coordena a interpretação dos comandos, o armazenamento físico, as operações concorrentes e os mecanismos que tornam os dados utilizáveis de forma confiável.</p>
       </div>
       <figure class="sgbd-flow">
