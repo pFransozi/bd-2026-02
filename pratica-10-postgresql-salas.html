@@ -298,76 +298,134 @@ VALUES
 </div></section>
 <section class="pg-section" id="parte2"><div class="container pg-body"><p class="pg-kicker">2 · Como o SGBD garante consistência</p><h2>Parte 2 · Observar o trabalho do SGBD <small>50 minutos</small></h2>
 
-<section class="task" id="e4"><div class="task-h"><span class="step">04</span><h3>Consultar dados e metadados</h3></div><div class="purpose"><strong>Conceito:</strong> a cláusula <code>JOIN</code> combina linhas de tabelas relacionadas; <code>information_schema</code> permite consultar a descrição dos objetos do banco, não os dados de negócio.</div><p><strong>Onde executar:</strong> Query Tool do banco <code>pratica_salas</code>. Agora vamos recuperar informações relacionadas e examinar os metadados que o próprio PostgreSQL mantém.</p>
-<div class="guided"><h4>Como ler as consultas</h4><ol><li>Na primeira consulta, <code>FROM sala AS s</code> escolhe a tabela de origem.</li><li><code>JOIN bloco AS b ON b.id_bloco = s.id_bloco</code> encontra o bloco de cada sala.</li><li><code>ORDER BY s.id_sala</code> organiza a apresentação. Ele não altera a ordem física das linhas no banco.</li><li>Na segunda consulta, observe que as informações do usuário e da sala vêm de tabelas diferentes.</li></ol></div><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT s.id_sala, s.nome AS sala, b.nome_bloco AS bloco, s.capacidade
+<section class="task" id="e4"><div class="task-h"><span class="step">04</span><h3>Consultar salas, reservas e estrutura das tabelas</h3></div>
+<p><strong>Onde executar:</strong> Query Tool do banco <code>pratica_salas</code>.</p>
+<p><strong>1.</strong> Execute uma consulta que relacione cada sala ao seu bloco:</p>
+<div class="codebox"><div class="codebar"><span>SQL · listar salas e blocos</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT s.id_sala, s.nome AS sala,
+       b.nome_bloco AS bloco, s.capacidade
 FROM sala AS s
 JOIN bloco AS b ON b.id_bloco = s.id_bloco
-ORDER BY s.id_sala;</code></pre></div><p>Agora relacione <code>reserva</code>, <code>sala</code> e <code>usuario</code> para mostrar data, horário, sala, solicitante e finalidade.</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT r.data_reserva, r.hora_inicio,
+ORDER BY s.id_sala;</code></pre></div>
+<p>Na aba <strong>Data Output</strong>, identifique a coluna <code>bloco</code>. Ela foi obtida da tabela <code>bloco</code> por meio do <code>JOIN</code>. O resultado deve ter <strong>4 linhas</strong>.</p>
+<p><strong>2.</strong> Agora inclua <code>WHERE</code> antes de <code>ORDER BY</code> e consulte apenas salas com capacidade de pelo menos 30 lugares:</p>
+<div class="codebox"><div class="codebar"><span>SQL · filtrar capacidade</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT s.nome AS sala, s.capacidade
+FROM sala AS s
+WHERE s.capacidade &gt;= 30
+ORDER BY s.nome;</code></pre></div>
+<p>O resultado deve mostrar <strong>3 salas</strong>. O <code>Laboratório 202</code> não aparece porque tem capacidade 24.</p>
+<p><strong>3.</strong> Execute uma consulta que combina três tabelas para mostrar as reservas iniciais:</p>
+<div class="codebox"><div class="codebar"><span>SQL · reservas com nomes</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT r.data_reserva, r.hora_inicio,
        s.nome AS sala, u.nome AS solicitante, r.finalidade
 FROM reserva AS r
 JOIN sala AS s ON s.id_sala = r.id_sala
 JOIN usuario AS u ON u.id_usuario = r.id_usuario
-ORDER BY r.data_reserva, r.hora_inicio, s.nome;</code></pre></div><p>Inspecione como o próprio SGBD descreve suas estruturas:</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT table_name, column_name, data_type
+ORDER BY r.data_reserva, r.hora_inicio, s.nome;</code></pre></div>
+<p>Confira as <strong>4 reservas</strong>. Os nomes das salas e dos usuários não estão gravados na tabela <code>reserva</code>; foram recuperados pelas chaves estrangeiras.</p>
+<p><strong>4.</strong> Por último, veja como o PostgreSQL descreve a própria tabela <code>reserva</code>:</p>
+<div class="codebox"><div class="codebar"><span>SQL · metadados</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT column_name, data_type
 FROM information_schema.columns
 WHERE table_schema = 'public'
   AND table_name = 'reserva'
-ORDER BY ordinal_position;</code></pre></div><div class="guided"><h4>Sua vez · pequena alteração na consulta</h4><p>Retorne à primeira consulta e adicione uma condição <code>WHERE s.capacidade &gt;= 30</code> antes do <code>ORDER BY</code>. Quantas salas permanecem? Explique por que <code>Laboratório 202</code> não aparece.</p></div><div class="checkpoint"><h4>O que conferir</h4><p>A primeira consulta retorna <strong>4 salas</strong>; a segunda retorna <strong>4 reservas</strong>, inicialmente. Na terceira consulta, a coluna <code>table_name</code> deve mostrar <code>reserva</code>, e a listagem deve incluir <code>id_reserva</code>, <code>id_sala</code> e <code>id_usuario</code>.</p></div><p><strong>Questão 4.</strong> Por que a aplicação não precisa armazenar o nome da sala dentro de cada reserva?</p>
+ORDER BY ordinal_position;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta de metadados deve listar as colunas da tabela <code>reserva</code>, como <code>id_reserva</code>, <code>id_sala</code>, <code>id_usuario</code> e <code>hora_inicio</code>. O <code>information_schema</code> mostra informações sobre as estruturas, não as reservas cadastradas.</p></div>
 </section>
-<section class="task" id="e5"><div class="task-h"><span class="step">05</span><h3>Provocar três violações de integridade</h3></div><div class="purpose"><strong>Conceito:</strong> regras de integridade declaradas no esquema continuam valendo para qualquer cliente: pgAdmin, Python ou outro programa.</div><p><strong>Onde executar:</strong> Query Tool. Você vai provocar três tentativas de inserção <strong>intencionalmente inválidas</strong>. O objetivo é entender qual regra do banco as impede.</p>
-<div class="guided"><h4>Execute com atenção</h4><ol><li>Leia cada tentativa e antecipe a regra que será violada.</li><li>Execute somente <strong>uma instrução INSERT por vez</strong>, observe a aba de mensagens e anote a restrição indicada.</li><li>Se surgir <code>current transaction is aborted</code> ao prosseguir, execute <code>ROLLBACK;</code> isoladamente para encerrar a transação com erro.</li><li>Faça a consulta de contagem no final e compare com a contagem inicial.</li></ol></div><div class="codebox"><div class="codebar"><span>SQL · teste A</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- A: capacidade inválida (CHECK)
-INSERT INTO sala (id_bloco, nome, capacidade)
-VALUES (1, 'Sala impossível', -5);</code></pre></div><div class="codebox"><div class="codebar"><span>SQL · teste B</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- B: usuário inexistente (FOREIGN KEY)
-INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
-VALUES (1, 999, DATE '2026-11-12', TIME '12:00', 'Teste de referência');</code></pre></div><div class="codebox"><div class="codebar"><span>SQL · teste C</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- C: sala já reservada no mesmo horário (UNIQUE)
-INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
-VALUES (1, 2, DATE '2026-11-12', TIME '08:00', 'Reserva conflitante');</code></pre></div><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT COUNT(*) AS total_reservas FROM reserva;</code></pre></div><table class="example-table"><thead><tr><th>Tentativa</th><th>O que o PostgreSQL deve impedir</th><th>Tipo do erro</th></tr></thead><tbody>
-<tr><td>A · capacidade -5</td><td>Sala fora do intervalo permitido.</td><td><code>CHECK</code> · SQLSTATE 23514</td></tr>
-<tr><td>B · usuário 999</td><td>Reserva que referencia usuário inexistente.</td><td><code>FOREIGN KEY</code> · SQLSTATE 23503</td></tr>
-<tr><td>C · horário ocupado</td><td>Duas reservas na mesma sala, data e hora.</td><td><code>UNIQUE</code> · SQLSTATE 23505</td></tr>
-</tbody></table><div class="checkpoint"><h4>O que conferir</h4><p>As três instruções falham <strong>como planejado</strong>. O total continua em <strong>4 reservas</strong> neste ponto. A rejeição é um comportamento desejado do SGBD, não uma falha da instalação.</p></div><p><strong>Questão 5.</strong> Para cada tentativa, registre a restrição violada e explique que inconsistência seria criada se ela não existisse.</p>
+<section class="task" id="e5"><div class="task-h"><span class="step">05</span><h3>Observar como o PostgreSQL rejeita dados inválidos</h3></div>
+<p><strong>Onde executar:</strong> Query Tool. Cada tentativa abaixo é <strong>intencionalmente inválida</strong>. Execute os comandos <strong>separadamente</strong> e leia a mensagem na guia <strong>Messages</strong>.</p>
+<div class="notice"><strong>Uma mensagem de erro é esperada.</strong> Não altere o comando para fazê-lo passar. Nesta etapa, a rejeição demonstra que as restrições funcionam. Se aparecer <code>current transaction is aborted</code>, execute <code>ROLLBACK;</code> em separado antes de continuar.</div>
+<p><strong>1. Teste de capacidade:</strong> tente cadastrar uma sala com capacidade negativa.</p>
+<div class="codebox"><div class="codebar"><span>SQL · teste A · CHECK</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO sala (id_bloco, nome, capacidade)
+VALUES (1, 'Sala impossível', -5);</code></pre></div>
+<p>Observe a indicação de <code>check constraint</code> na mensagem. A tabela <code>sala</code> possui a condição <code>capacidade BETWEEN 1 AND 80</code>.</p>
+<p><strong>2. Teste de chave estrangeira:</strong> tente cadastrar uma reserva associada ao usuário 999, que não existe.</p>
+<div class="codebox"><div class="codebar"><span>SQL · teste B · FOREIGN KEY</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (1, 999, DATE '2026-11-12', TIME '12:00', 'Teste de referência');</code></pre></div>
+<p>Observe a mensagem indicando que a chave não está presente na tabela <code>usuario</code>.</p>
+<p><strong>3. Teste de duplicidade:</strong> tente reservar a sala 1 no mesmo dia e horário de uma reserva já cadastrada.</p>
+<div class="codebox"><div class="codebar"><span>SQL · teste C · UNIQUE</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (1, 2, DATE '2026-11-12', TIME '08:00', 'Reserva conflitante');</code></pre></div>
+<p>Observe a restrição <code>uq_sala_horario</code>, que impede repetir a combinação sala, data e horário.</p>
+<p><strong>4.</strong> Execute a consulta para conferir que nenhum dos testes inválidos criou registros:</p>
+<div class="codebox"><div class="codebar"><span>SQL · conferir total</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT COUNT(*) AS total_reservas FROM reserva;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O total ainda deve ser <strong>4 reservas</strong>. Os erros correspondem, na ordem, a <code>CHECK</code>, <code>FOREIGN KEY</code> e <code>UNIQUE</code>. Essas regras são verificadas pelo PostgreSQL, não pela interface do pgAdmin.</p></div>
 </section>
-<section class="task" id="e6"><div class="task-h"><span class="step">06</span><h3>Desfazer e confirmar alterações com transações</h3></div><div class="purpose"><strong>Conceito:</strong> <code>BEGIN</code> inicia uma transação; o que foi alterado nessa transação pode ser desfeito com <code>ROLLBACK</code> ou confirmado com <code>COMMIT</code>.</div><p><strong>Onde executar:</strong> Query Tool. Vamos alterar temporariamente a capacidade de uma sala, verificar o valor e decidir entre desfazer (<code>ROLLBACK</code>) ou confirmar (<code>COMMIT</code>).</p>
-<div class="guided"><h4>Execute cada linha separadamente</h4><ol><li>Consulte a capacidade da sala 1: inicialmente deve ser <strong>36</strong>.</li><li>Execute <code>BEGIN;</code> e, depois, o <code>UPDATE</code> para 50.</li><li>Execute o <code>SELECT</code> antes do <code>ROLLBACK</code>: na <strong>mesma sessão</strong> deve aparecer 50.</li><li>Execute <code>ROLLBACK;</code> e consulte novamente: deve retornar para 36.</li><li>Agora execute o segundo bloco, confirmando com <code>COMMIT;</code>. O novo valor deve permanecer em 40.</li></ol><p class="smallnote">Selecione uma instrução de cada vez no editor. Executar o bloco inteiro sem observar os resultados intermediários reduz o valor do experimento.</p></div>
-<div class="predict"><h4>Previsão</h4><p>Se você atualizar para 50 e executar <code>ROLLBACK</code>, a sala fica com 50 ou 36 lugares? E depois de executar <code>COMMIT</code>, o que muda?</p></div><div class="codebox"><div class="codebar"><span>SQL · ROLLBACK</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- A: desfazer a mudança
-SELECT capacidade FROM sala WHERE id_sala = 1;
-BEGIN;
-UPDATE sala SET capacidade = 50 WHERE id_sala = 1;
-SELECT capacidade FROM sala WHERE id_sala = 1;
-ROLLBACK;
-SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div><div class="codebox"><div class="codebar"><span>SQL · COMMIT</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- B: confirmar a mudança
-BEGIN;
+<section class="task" id="e6"><div class="task-h"><span class="step">06</span><h3>Desfazer e confirmar uma alteração</h3></div>
+<p><strong>Onde executar:</strong> Query Tool, <strong>na mesma aba</strong> durante toda a etapa. Execute cada comando isoladamente, observando os valores antes de seguir.</p>
+<p><strong>1.</strong> Consulte a capacidade atual da sala 1:</p>
+<div class="codebox"><div class="codebar"><span>SQL · valor inicial</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT id_sala, nome, capacidade
+FROM sala WHERE id_sala = 1;</code></pre></div>
+<p>O valor inicial deve ser <strong>36</strong>.</p>
+<p><strong>2.</strong> Inicie uma transação:</p>
+<div class="codebox"><div class="codebar"><span>SQL · iniciar transação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>BEGIN;</code></pre></div>
+<p><strong>3.</strong> Altere temporariamente a capacidade para 50 e consulte novamente:</p>
+<div class="codebox"><div class="codebar"><span>SQL · alterar e observar</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>UPDATE sala SET capacidade = 50 WHERE id_sala = 1;
+
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
+<p>O resultado na mesma sessão deve ser <strong>50</strong>. Essa mudança ainda não foi confirmada.</p>
+<p><strong>4.</strong> Desfaça a alteração e consulte mais uma vez:</p>
+<div class="codebox"><div class="codebar"><span>SQL · desfazer</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>ROLLBACK;
+
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
+<p>O valor deve voltar para <strong>36</strong>.</p>
+<p><strong>5.</strong> Inicie uma nova transação, atualize a capacidade para 40 e confirme:</p>
+<div class="codebox"><div class="codebar"><span>SQL · confirmar</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>BEGIN;
 UPDATE sala SET capacidade = 40 WHERE id_sala = 1;
 COMMIT;
-SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><table class="example-table"><thead><tr><th>Momento</th><th>Capacidade da sala 1</th></tr></thead><tbody><tr><td>Antes de alterar</td><td>36</td></tr><tr><td>Dentro da transação, após <code>UPDATE</code></td><td>50</td></tr><tr><td>Após <code>ROLLBACK</code></td><td>36</td></tr><tr><td>Após a segunda alteração e <code>COMMIT</code></td><td>40</td></tr></tbody></table><p>Uma transação enxerga as próprias alterações antes da confirmação. Isso não implica que outras sessões já possam observá-las.</p></div><p><strong>Questão 6.</strong> Relacione o comportamento observado às propriedades de atomicidade e durabilidade (ACID). Por que uma consulta dentro da própria transação enxerga uma alteração ainda não confirmada?</p></section>
-<section class="task" id="e7"><div class="task-h"><span class="step">07</span><h3>Investigar índices e planejamento de consulta</h3></div><div class="purpose"><strong>Conceito:</strong> índices podem tornar algumas buscas mais eficientes. O planejador pode escolher entre varrer a tabela (<code>Seq Scan</code>) ou utilizar um índice (<code>Index Scan</code>), considerando o custo estimado.</div><p><strong>Onde executar:</strong> Query Tool. Vamos inspecionar uma estrutura auxiliar usada pelo PostgreSQL e observar como ele decide executar uma consulta.</p>
-<div class="guided"><h4>O que investigar</h4><ol><li>Execute a consulta em <code>pg_indexes</code> e procure os índices gerados para a chave primária e para <code>uq_sala_horario</code>.</li><li>Execute a consulta com <code>EXPLAIN</code> e procure o operador de acesso escolhido.</li><li>Execute a consulta de privilégios e observe a identidade conectada.</li></ol></div><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT indexname, indexdef
+
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A sequência observada deve ser <strong>36 → 50 → 36 → 40</strong>. <code>ROLLBACK</code> desfez a alteração não confirmada; <code>COMMIT</code> confirmou a segunda alteração. Se executar tudo de uma só vez, você perde a oportunidade de observar os estados intermediários.</p></div>
+</section>
+<section class="task" id="e7"><div class="task-h"><span class="step">07</span><h3>Visualizar índices, plano de execução e permissões</h3></div>
+<p><strong>Onde executar:</strong> Query Tool do banco <code>pratica_salas</code>.</p>
+<p><strong>1.</strong> Descubra quais índices o PostgreSQL mantém para a tabela <code>reserva</code>:</p>
+<div class="codebox"><div class="codebar"><span>SQL · consultar índices</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT indexname, indexdef
 FROM pg_indexes
-WHERE schemaname = 'public' AND tablename = 'reserva'
-ORDER BY indexname;</code></pre></div><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>EXPLAIN
+WHERE schemaname = 'public'
+  AND tablename = 'reserva'
+ORDER BY indexname;</code></pre></div>
+<p>Localize o índice da chave primária e o associado à restrição <code>uq_sala_horario</code>.</p>
+<p><strong>2.</strong> Peça ao PostgreSQL para mostrar o plano que escolheria para localizar uma reserva específica:</p>
+<div class="codebox"><div class="codebar"><span>SQL · observar plano</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>EXPLAIN
 SELECT id_reserva, id_usuario
 FROM reserva
 WHERE id_sala = 1
   AND data_reserva = DATE '2026-11-12'
-  AND hora_inicio = TIME '08:00';</code></pre></div><p><strong>Observação de segurança:</strong> verifique quem está conectado e quais privilégios essa identidade possui. No ambiente didático, o usuário <code>aluno</code> administra o banco; em produção, uma aplicação deveria receber somente os privilégios de que precisa.</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT current_user AS usuario_conectado,
+  AND hora_inicio = TIME '08:00';</code></pre></div>
+<p>Leia a primeira coluna do resultado. Ela pode indicar <code>Seq Scan</code> (varredura sequencial) ou <code>Index Scan</code> (acesso por índice). Com tão poucos registros, é normal o otimizador escolher <code>Seq Scan</code>.</p>
+<p><strong>3.</strong> Verifique o usuário conectado e seus privilégios básicos na tabela:</p>
+<div class="codebox"><div class="codebar"><span>SQL · consultar permissões</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT current_user AS usuario_conectado,
        has_table_privilege(current_user, 'reserva', 'SELECT') AS pode_consultar,
-       has_table_privilege(current_user, 'reserva', 'INSERT') AS pode_inserir;</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><p>O banco possui índices associados à <strong>PRIMARY KEY</strong> e à restrição <strong>UNIQUE</strong>. O plano pode mostrar <code>Seq Scan</code> porque existem pouquíssimas linhas: um índice disponível não significa que seja a melhor estratégia para toda consulta.</p><p><code>EXPLAIN</code> sem <code>ANALYZE</code> mostra o plano estimado e <strong>não executa</strong> o <code>SELECT</code> para obter os registros.</p></div><p><strong>Questão 7.</strong> O que significam <code>Seq Scan</code> e <code>Index Scan</code>? O comando <code>EXPLAIN</code> está executando a consulta ou apenas mostrando o plano estimado? Por que usuários diferentes podem receber permissões diferentes?</p></section>
-<section class="task" id="e8"><div class="task-h"><span class="step">08</span><h3>Simular dois usuários tentando a mesma reserva</h3></div><div class="purpose"><strong>Conceito:</strong> um <code>SELECT</code> anterior pode indicar que um horário está livre, mas não o protege contra outra reserva inserida logo depois. A restrição <code>UNIQUE</code> deve continuar valendo sob concorrência.</div><p><strong>Onde executar:</strong> duas janelas de <em>Query Tool</em> do mesmo banco, correspondentes a <strong>duas sessões diferentes</strong>. O objetivo é simular uma situação real: dois pedidos de reserva concorrentes.</p>
-<div class="important"><strong>Antes de iniciar:</strong> confira se o horário sala 2, 20/11/2026 às 15:00 ainda está livre. Não repita esse teste com a mesma combinação após concluí-lo: uma das sessões terá criado a reserva.</div>
-<div class="guided"><h4>Organize as duas sessões</h4><ol><li>Abra o Query Tool de <code>pratica_salas</code> em duas abas ou janelas separadas: <strong>A</strong> e <strong>B</strong>.</li><li>Execute <code>SELECT pg_backend_pid();</code> nas duas. Os números devem ser <strong>diferentes</strong>.</li><li>Na sessão <strong>A</strong>, execute <code>BEGIN;</code> e o <code>INSERT</code>. <strong>Não</strong> execute <code>COMMIT</code> ainda.</li><li>Na sessão <strong>B</strong>, execute também <code>BEGIN;</code> e tente o <code>INSERT</code> conflitante. Ele provavelmente ficará aguardando.</li><li>Volte para <strong>A</strong> e execute <code>COMMIT;</code>. A instrução de <strong>B</strong> deve terminar com uma violação de unicidade.</li><li>Em <strong>B</strong>, execute <code>ROLLBACK;</code> e só então faça o <code>SELECT</code> de conferência.</li></ol></div>
-<div class="codebox"><div class="codebar"><span>SQL · conexão A</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>BEGIN;
+       has_table_privilege(current_user, 'reserva', 'INSERT') AS pode_inserir;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Você deverá encontrar índices para <code>PRIMARY KEY</code> e <code>UNIQUE</code>. O <code>EXPLAIN</code> apresenta o <strong>plano estimado</strong>: ele não executa a consulta para recuperar as linhas. Os resultados de privilégios indicam o que o usuário atual está autorizado a fazer.</p></div>
+</section>
+<section class="task" id="e8"><div class="task-h"><span class="step">08</span><h3>Usar duas sessões para observar um conflito</h3></div>
+<p><strong>Onde executar:</strong> dois Query Tools do mesmo banco <code>pratica_salas</code>. Este teste precisa de <strong>duas conexões diferentes</strong>; identificaremos cada uma como <strong>A</strong> e <strong>B</strong>.</p>
+<div class="important"><strong>Antes de começar:</strong> esta demonstração deve ser feita uma única vez com a sala 2, no dia 20/11/2026, às 15:00. Caso você já tenha reservado esse horário, escolha outra combinação livre e use-a em ambas as sessões.</div>
+<p><strong>1.</strong> Abra duas abas independentes de Query Tool. Na primeira, escreva mentalmente “A”; na segunda, “B”. Em cada uma, execute:</p>
+<div class="codebox"><div class="codebar"><span>SQL · identificar cada sessão</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT pg_backend_pid() AS minha_sessao;</code></pre></div>
+<p>Os números exibidos devem ser <strong>diferentes</strong>. Caso sejam iguais, abra um novo Query Tool que utilize outra conexão antes de continuar.</p>
+<p><strong>2.</strong> Na <strong>sessão A</strong>, execute o bloco abaixo. Não execute <code>COMMIT</code> ainda.</p>
+<div class="codebox"><div class="codebar"><span>Sessão A · criar reserva sem confirmar</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>BEGIN;
+
 INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
-VALUES (2, 1, DATE '2026-11-20', TIME '15:00', 'Solicitação A');
--- Não confirme ainda.</code></pre></div><div class="codebox"><div class="codebar"><span>SQL · conexão B</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>BEGIN;
+VALUES (2, 1, DATE '2026-11-20', TIME '15:00', 'Solicitação A');</code></pre></div>
+<p><strong>3.</strong> Alterne para a <strong>sessão B</strong> e execute uma reserva para o mesmo horário, mas em nome de outro usuário:</p>
+<div class="codebox"><div class="codebar"><span>Sessão B · tentar a mesma reserva</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>BEGIN;
+
 INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
-VALUES (2, 2, DATE '2026-11-20', TIME '15:00', 'Solicitação B');
--- Aguarde o professor orientar a confirmação da conexão A.</code></pre></div>
-<div class="guided"><h4>Encerramento, sem misturar as sessões</h4><p><strong>Na sessão A:</strong> execute <code>COMMIT;</code>. <strong>Na sessão B:</strong> quando a tentativa falhar, execute <code>ROLLBACK;</code>. Depois execute a consulta abaixo em qualquer sessão.</p></div>
-<div class="codebox"><div class="codebar"><span>SQL · conferir o resultado final (após A e B)</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT id_reserva, id_usuario, id_sala, data_reserva, hora_inicio
+VALUES (2, 2, DATE '2026-11-20', TIME '15:00', 'Solicitação B');</code></pre></div>
+<p>O comando da sessão B poderá ficar <strong>aguardando</strong>. Isso é parte do teste: o PostgreSQL precisa saber se a primeira transação será confirmada ou desfeita.</p>
+<p><strong>4.</strong> Volte à <strong>sessão A</strong> e execute:</p>
+<div class="codebox"><div class="codebar"><span>Sessão A · confirmar</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>COMMIT;</code></pre></div>
+<p><strong>5.</strong> Na sessão B, verifique que a tentativa termina com erro de unicidade. Depois encerre a transação que falhou:</p>
+<div class="codebox"><div class="codebar"><span>Sessão B · encerrar após a rejeição</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>ROLLBACK;</code></pre></div>
+<p><strong>6.</strong> Em qualquer sessão, execute a consulta final:</p>
+<div class="codebox"><div class="codebar"><span>SQL · conferir a reserva final</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT id_reserva, id_usuario, id_sala, data_reserva, hora_inicio
 FROM reserva
 WHERE id_sala = 2
   AND data_reserva = DATE '2026-11-20'
   AND hora_inicio = TIME '15:00';</code></pre></div>
-<div class="checkpoint"><h4>O que conferir</h4><p>Deve existir <strong>uma única reserva</strong> para aquela combinação. A segunda tentativa esperou a decisão da primeira e não conseguiu violar <code>UNIQUE</code>. Não foi o pgAdmin que resolveu o conflito; foi o PostgreSQL.</p></div><p><strong>Questão 8.</strong> Por que consultar previamente se o horário está livre não é suficiente para impedir conflitos entre duas aplicações simultâneas? Identifique o papel da restrição de unicidade.</p></section>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O resultado deve ter <strong>apenas uma reserva</strong>, cadastrada pela sessão A. A restrição <code>UNIQUE</code>, combinada com o controle de concorrência do servidor, impediu duas gravações conflitantes. A partir desta etapa, o banco terá normalmente <strong>5 reservas</strong>.</p></div>
+</section>
 
 </div></section>
 <section class="pg-section" id="parte3"><div class="container pg-body"><p class="pg-kicker">3 · Aplicação Python conectada ao PostgreSQL</p><h2>Parte 3 · Utilizar o mesmo banco em Python <small>50 minutos</small></h2>
