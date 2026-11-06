@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rascunho da Aula 10 de Banco de Dados: o papel do SGBD, arquitetura do PostgreSQL, processamento de consultas, armazenamento, integridade, transações, MVCC, segurança, recuperação e aplicações.">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Aula 10 (rascunho) · O SGBD por dentro | Banco de Dados</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <script defer src="../script.js"></script>
+  <script defer src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <style>
+    .lesson-sgbd{background:var(--bg);color:var(--text)}
+    .lesson-sgbd .sgbd-container{width:min(calc(100% - 2.2rem),1050px);margin-inline:auto}
+    .lesson-sgbd .site-header .nav-wrap{min-height:60px;gap:1rem}
+    .lesson-sgbd .site-header .brand-mark{width:36px;border-radius:10px}
+    .lesson-sgbd .site-header .brand strong{font-size:1rem}
+    .lesson-sgbd .site-header .brand small{font-size:.68rem}
+    .lesson-sgbd .site-header .main-nav{gap:.85rem}
+    .lesson-sgbd .site-header .main-nav a{font-size:.83rem}
+    .lesson-sgbd .site-header .theme-toggle{font-size:.78rem;min-height:34px;padding:.35rem .55rem}
+    .sgbd-hero{padding:3.2rem 0 2.9rem;background:radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--primary) 7%,transparent),transparent 35rem),var(--bg)}
+    .sgbd-hero-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(245px,.65fr);align-items:center;gap:2rem}
+    .sgbd-kicker{margin:0 0 .65rem;color:var(--primary);font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;font-weight:800}
+    .sgbd-hero h1{margin:0;font-size:clamp(2.2rem,4.5vw,3.65rem);line-height:1.06;letter-spacing:-.045em}
+    .sgbd-hero .lead{max-width:780px;margin:1.05rem 0 1rem;font-size:1.07rem;line-height:1.68;color:var(--muted)}
+    .sgbd-tags{display:flex;flex-wrap:wrap;gap:.42rem;margin-top:1.2rem}
+    .sgbd-tags span{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.26rem .68rem;font-size:.76rem;color:var(--muted)}
+    .sgbd-guide{padding:1.25rem;border:1px solid var(--line);border-radius:15px;background:var(--surface);box-shadow:var(--shadow)}
+    .sgbd-guide strong{font-size:.79rem;color:var(--primary);letter-spacing:.05em;text-transform:uppercase}
+    .sgbd-guide p{font-size:1.05rem;font-weight:650;line-height:1.45;margin:.5rem 0 0}
+    .sgbd-draft-note{margin:0;padding:.65rem 0;border-block:1px dashed var(--line);background:var(--surface-soft)}
+    .sgbd-draft-note p{margin:0;font-size:.85rem;color:var(--muted)}
+    .sgbd-toc-shell{position:sticky;top:60px;z-index:70;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 96%,transparent);backdrop-filter:blur(10px)}
+    .sgbd-toc{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:.5rem 0}
+    .sgbd-toc a{padding:.36rem .61rem;text-decoration:none;font-size:.8rem;font-weight:650;color:var(--muted);border-radius:8px;border:1px solid transparent}
+    .sgbd-toc a:hover,.sgbd-toc a:focus-visible{background:var(--surface);border-color:var(--line);color:var(--primary)}
+    .sgbd-section{padding:3rem 0;scroll-margin-top:135px}
+    .sgbd-section.alt{background:var(--surface-soft)}
+    .sgbd-section-head{max-width:850px;margin:0 0 1.55rem;text-align:left}
+    .sgbd-section-head .sgbd-kicker{margin-bottom:.25rem}
+    .sgbd-section-head h2{font-size:clamp(1.65rem,3vw,2.3rem);margin:0;line-height:1.17;letter-spacing:-.035em}
+    .sgbd-section-head p{margin:.72rem 0 0;color:var(--muted);line-height:1.7}
+    .sgbd-section p,.sgbd-section li{line-height:1.7}
+    .sgbd-section .quiet{color:var(--muted)}
+    .sgbd-section h3{font-size:1.23rem;letter-spacing:-.02em;line-height:1.25;margin:1.85rem 0 .55rem}
+    .sgbd-section h4{font-size:1rem;margin:1rem 0 .3rem}
+    .sgbd-section a:not(.plain-link){color:var(--primary)}
+    .sgbd-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+    .sgbd-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .sgbd-card,.sgbd-question,.sgbd-case{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:1.2rem}
+    .sgbd-card h3,.sgbd-card h4{margin:.05rem 0 .5rem}
+    .sgbd-card p{margin:.3rem 0 .45rem;color:var(--muted)}
+    .sgbd-card ul{margin:.5rem 0 0;padding-left:1.15rem}
+    .sgbd-number{font-size:.76rem;letter-spacing:.06em;color:var(--primary);font-weight:800}
+    .sgbd-question{margin:1.4rem 0;border-left:3px solid var(--primary);border-radius:0 12px 12px 0;background:color-mix(in srgb,var(--primary) 4%,var(--surface))}
+    .sgbd-question strong{display:block;margin-bottom:.25rem;color:var(--primary);font-size:.87rem}
+    .sgbd-question p{margin:.15rem 0}
+    .sgbd-question p:last-child{color:var(--muted)}
+    .sgbd-flow{border:1px solid var(--line);border-radius:14px;padding:1rem;margin:1.1rem 0;background:var(--surface)}
+    .sgbd-flow-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem}
+    .sgbd-flow-node{padding:.65rem .84rem;border:1px solid var(--line);background:var(--surface-soft);border-radius:10px;text-align:center;min-width:120px;flex:1}
+    .sgbd-flow-node strong,.sgbd-flow-node small{display:block}
+    .sgbd-flow-node strong{font-size:.88rem}.sgbd-flow-node small{font-size:.76rem;color:var(--muted)}
+    .sgbd-flow-arrow{color:var(--primary);font-weight:850;font-size:1.1rem}
+    .sgbd-flow figcaption,.sgbd-flow .sgbd-caption{margin-top:.8rem;font-size:.8rem;color:var(--muted);text-align:center}
+    .sgbd-stack{display:grid;gap:.6rem;margin:.8rem 0}
+    .sgbd-stack .stage{display:grid;grid-template-columns:52px 1fr;gap:.8rem;align-items:start;border:1px solid var(--line);border-radius:12px;padding:.85rem;background:var(--surface)}
+    .sgbd-stack .stage .order{display:grid;place-items:center;border-radius:9px;background:var(--surface-soft);font-size:.9rem;font-weight:850;color:var(--primary);min-height:40px}
+    .sgbd-stack .stage strong{display:block;margin-bottom:.15rem}
+    .sgbd-stack .stage p{margin:0;font-size:.9rem;color:var(--muted)}
+    .sgbd-matrix{overflow-x:auto;margin:1.1rem 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+    .sgbd-matrix table{width:100%;min-width:620px;border-collapse:collapse}
+    .sgbd-matrix th,.sgbd-matrix td{padding:.8rem .95rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:.9rem}
+    .sgbd-matrix th{background:color-mix(in srgb,var(--primary) 5%,var(--surface));font-weight:750}
+    .sgbd-matrix td{color:var(--muted)}
+    .sgbd-matrix td:first-child{font-weight:650;color:var(--text)}
+    .sgbd-matrix tr:last-child td{border-bottom:0}
+    .sgbd-sql{overflow:hidden;margin:1.1rem 0;border:1px solid var(--line);border-radius:12px;background:var(--ensino-code-bg,#101725)}
+    .sgbd-sql .label{display:flex;justify-content:space-between;gap:.6rem;align-items:center;padding:.5rem .8rem;background:var(--surface);border-bottom:1px solid var(--line);font-size:.76rem;color:var(--muted);font-weight:650}
+    .lesson-sgbd .sgbd-sql pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;background:transparent!important;color:var(--ensino-code-text,#eff4ff)!important;border:0!important;box-shadow:none!important;font-size:.9rem;line-height:1.6;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .lesson-sgbd .sgbd-sql code{background:transparent!important;color:inherit!important;padding:0!important;border:0!important;font-family:inherit!important}
+    .sgbd-sql .note{padding:.72rem .9rem;background:var(--surface);color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+    .sgbd-emphasis{padding:.9rem 1rem;margin:1.25rem 0;border-left:3px solid var(--primary);background:color-mix(in srgb,var(--primary) 5%,var(--surface));border-radius:0 10px 10px 0}
+    .sgbd-emphasis p{margin:0}
+    .sgbd-small-list{margin:.5rem 0 0;padding-left:1.2rem}
+    .sgbd-small-list li{margin:.35rem 0}
+    .sgbd-case{margin-top:1.1rem}
+    .sgbd-case h3{margin:.1rem 0 .5rem}
+    .sgbd-case p{margin:.4rem 0;color:var(--muted)}
+    .sgbd-session{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:1rem}
+    .sgbd-session h3{margin:0 0 .35rem;font-size:1rem}
+    .sgbd-session p{margin:.25rem 0 .6rem;color:var(--muted);font-size:.87rem}
+    .sgbd-session .sgbd-sql{margin:.55rem 0}
+    .sgbd-session .sgbd-sql pre{font-size:.82rem;padding:.8rem}
+    .sgbd-step-list{list-style:none;counter-reset:passo;padding:0;display:grid;gap:.5rem}
+    .sgbd-step-list>li{counter-increment:passo;border:1px solid var(--line);border-radius:11px;padding:.85rem 1rem;background:var(--surface)}
+    .sgbd-step-list>li:before{content:counter(passo, decimal-leading-zero);color:var(--primary);font-weight:800;margin-right:.7rem}
+    .sgbd-details{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:.9rem 1.1rem;margin:.65rem 0}
+    .sgbd-details summary{cursor:pointer;font-weight:700;list-style:auto}
+    .sgbd-details[open] summary{margin-bottom:.5rem}
+    .sgbd-details p{color:var(--muted);margin:.4rem 0}
+    .sgbd-timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem;margin:1.2rem 0}
+    .sgbd-timeline>div{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:.95rem}
+    .sgbd-timeline strong{display:block;font-size:.8rem;color:var(--primary)}
+    .sgbd-timeline span{display:block;margin-top:.25rem;font-size:.84rem;color:var(--muted)}
+    .sgbd-footer-refs{font-size:.86rem;color:var(--muted);line-height:1.8}
+    .sgbd-bottom-nav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:1.8rem 0 0}
+    .sgbd-bottom-nav a{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.68rem .9rem;background:var(--surface);text-decoration:none;font-weight:700;font-size:.89rem}
+    .sgbd-checklist{display:grid;gap:.7rem}
+    .sgbd-checklist .sgbd-card p{margin:.1rem 0}
+    .sgbd-draft-questions{font-size:.88rem;border-top:1px solid var(--line);padding-top:1rem;margin-top:1.5rem}
+    .sgbd-draft-questions strong{font-weight:750}
+    @media(max-width:1080px){
+      body.lesson-sgbd .site-header .nav-wrap{display:flex;flex-wrap:nowrap;position:relative;align-items:center;gap:10px;min-height:58px}
+      body.lesson-sgbd .site-header .brand{min-width:0;max-width:calc(100% - 54px)}
+      body.lesson-sgbd .site-header .brand strong{font-size:clamp(.9rem,2.5vw,1rem);line-height:1.15}
+      body.lesson-sgbd .site-header .nav-toggle{display:block!important;flex:0 0 44px;width:44px;height:44px;margin-left:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer}
+      body.lesson-sgbd .site-header .main-nav{display:none!important;position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:150;flex-direction:column;align-items:stretch;gap:4px;padding:10px;max-height:calc(100dvh - 84px);overflow-y:auto;width:100%;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}
+      body.lesson-sgbd .site-header .main-nav.is-open{display:flex!important}
+      body.lesson-sgbd .site-header .main-nav a{display:block;padding:.58rem .65rem;font-size:.9rem}
+      body.lesson-sgbd .site-header .main-nav a[href^="#"]{display:none}
+      body.lesson-sgbd .site-header .main-nav .theme-toggle{align-self:flex-start;margin:.3rem}
+    }
+    @media(max-width:900px){
+      .sgbd-hero-grid{grid-template-columns:1fr}
+      .sgbd-toc-shell{position:static}
+      .sgbd-grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .sgbd-timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media(max-width:640px){
+      .sgbd-hero{padding:2.5rem 0 2rem}
+      .sgbd-section{padding:2.25rem 0;scroll-margin-top:72px}
+      .sgbd-grid,.sgbd-grid.three{grid-template-columns:1fr}
+      .sgbd-flow-row{flex-direction:column}
+      .sgbd-flow-node{min-width:0;width:100%}
+      .sgbd-flow-arrow{transform:rotate(90deg)}
+      .sgbd-toc{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap}
+      .sgbd-timeline{grid-template-columns:1fr}
+      .sgbd-hero h1{font-size:clamp(2.05rem,8vw,2.8rem)}
+      .sgbd-matrix table{min-width:570px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
+</head>
+<body class="teaching-page teaching-lesson lesson-sgbd">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Banco de Dados — página principal">
+        <span class="brand-mark" aria-hidden="true">BD</span>
+        <span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false">
+        <span class="sr-only">Abrir menu</span><span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+        <a href="../index.html">Página principal</a>
+        <a href="../aula-09.html">Aula 09</a>
+        <a href="#arquitetura">Arquitetura</a>
+        <a href="#funcionalidades">Funcionalidades</a>
+        <a href="#laboratorio">Laboratório</a>
+        <a href="#sintese">Síntese</a>
+        <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false">
+          <span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="standard-shell standard-page-grid">
+  <main id="conteudo">
+    <section class="sgbd-hero">
+      <div class="sgbd-container sgbd-hero-grid">
+        <div>
+          <p class="sgbd-kicker">Aula 10 · Rascunho para avaliação</p>
+          <h1>O SGBD por dentro: o que o PostgreSQL faz além de executar SQL?</h1>
+          <p class="lead">Já aprendemos a modelar dados e a formular consultas. Agora vamos examinar o sistema responsável por executá-las: como ele recebe pedidos, encontra registros, controla acessos simultâneos e protege as informações contra erros e falhas.</p>
+          <div class="sgbd-tags">
+            <span>SGBD</span><span>PostgreSQL 18</span><span>Arquitetura</span><span>Transações</span><span>MVCC</span><span>Índices</span><span>Segurança</span><span>Recuperação</span>
+          </div>
+        </div>
+        <aside class="sgbd-guide" aria-label="Pergunta orientadora">
+          <strong>Pergunta-guia</strong>
+          <p>Se uma aplicação consegue gravar dados em arquivos, por que precisamos de um sistema gerenciador de banco de dados?</p>
+        </aside>
+      </div>
+    </section>
+
+    <div class="sgbd-draft-note"><div class="sgbd-container"><p><strong>Versão de trabalho.</strong> Material em revisão docente, não incluído na lista de aulas oficiais. Os exemplos SQL destinam-se a um banco de laboratório descartável.</p></div></div>
+
+    <div class="sgbd-toc-shell">
+      <nav class="sgbd-container sgbd-toc" aria-label="Seções da aula">
+        <a href="#visao">Objetivos</a><a href="#problema">Problema inicial</a><a href="#conceitos">Conceitos</a><a href="#arquitetura">Arquitetura</a><a href="#funcionalidades">Funções</a><a href="#concorrencia">Concorrência</a><a href="#laboratorio">Prática</a><a href="#aplicacoes">Aplicações</a><a href="#sintese">Síntese</a>
+      </nav>
+    </div>
+
+    <section class="sgbd-section alt" id="visao"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">Visão da aula</p><h2>O que o estudante deverá compreender</h2>
+        <p>O foco não é memorizar comandos ou administrar um servidor completo. É reconhecer as responsabilidades de um SGBD e relacioná-las a requisitos de sistemas reais.</p>
+      </div>
+      <div class="sgbd-grid">
+        <article class="sgbd-card"><h3>Objetivos de aprendizagem</h3>
+          <ul class="sgbd-small-list">
+            <li>Diferenciar dados, banco de dados, SGBD, SQL e cliente de banco.</li>
+            <li>Descrever a arquitetura cliente-servidor do PostgreSQL.</li>
+            <li>Explicar o percurso de uma consulta: análise, planejamento, execução e retorno.</li>
+            <li>Identificar as funções de integridade, transações, concorrência, segurança e recuperação.</li>
+            <li>Justificar quando um SGBD é adequado a determinado sistema.</li>
+          </ul>
+        </article>
+        <article class="sgbd-card"><h3>Competências e habilidades</h3>
+          <p><strong>C2 · H6/H8:</strong> compreender recursos necessários à construção e à manutenção confiável de software.</p>
+          <p><strong>C3 · H9/H10:</strong> identificar requisitos de armazenamento e analisar opções tecnológicas.</p>
+          <p><strong>C10 · H34:</strong> comunicar o funcionamento de um SGBD com precisão.</p>
+          <p><strong>C11 · H36/H38:</strong> aplicar mecanismos de integridade e transações em soluções práticas.</p>
+        </article>
+      </div>
+      <div class="sgbd-timeline" aria-label="Previsão didática do encontro">
+        <div><strong>0–45 min</strong><span>Problema, conceitos e comparação com arquivos</span></div>
+        <div><strong>45–110 min</strong><span>Arquitetura, execução e armazenamento</span></div>
+        <div><strong>110–170 min</strong><span>Integridade, transações, concorrência e segurança</span></div>
+        <div><strong>170–240 min</strong><span>Demonstrações, aplicações e síntese</span></div>
+      </div>
+    </div></section>
+
+    <section class="sgbd-section" id="problema"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">1 · Situação-problema</p><h2>Duas pessoas, uma única vaga</h2>
+        <p>Uma instituição oferece oficinas com quantidade limitada de participantes. Há apenas uma vaga disponível. Duas pessoas tentam se inscrever no mesmo instante.</p>
+      </div>
+      <div class="sgbd-flow">
+        <div class="sgbd-flow-row">
+          <div class="sgbd-flow-node"><strong>Usuário A</strong><small>Consulta: 1 vaga</small></div>
+          <span class="sgbd-flow-arrow">↓</span>
+          <div class="sgbd-flow-node"><strong>Arquivo de vagas</strong><small>Disponível = 1</small></div>
+          <span class="sgbd-flow-arrow">↑</span>
+          <div class="sgbd-flow-node"><strong>Usuário B</strong><small>Consulta: 1 vaga</small></div>
+        </div>
+        <p class="sgbd-caption">Se ambos consultarem o mesmo valor e depois gravarem de forma independente, o sistema poderá aceitar inscrições incompatíveis com a capacidade.</p>
+      </div>
+      <p>Com um arquivo CSV, seria possível desenvolver o sistema. Entretanto, a aplicação precisaria implementar e testar os mecanismos para coordenar acessos, impedir estados inválidos, recuperar operações incompletas e definir permissões.</p>
+      <p>O SGBD oferece infraestrutura especializada para resolver boa parte desses problemas. Ele não adivinha as regras do domínio: o projetista precisa informar quais restrições devem existir e como as operações serão agrupadas.</p>
+      <div class="sgbd-question"><strong>Antes de continuar</strong><p>Quais responsabilidades seriam necessárias além de “salvar e ler registros”?</p><p>Liste pelo menos três: por exemplo, impedir duas vendas incompatíveis, desfazer uma operação incompleta ou restringir o acesso a dados pessoais.</p></div>
+    </div></section>
+
+    <section class="sgbd-section alt" id="conceitos"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">2 · Conceitos fundamentais</p><h2>O banco de dados não é o SGBD</h2>
+        <p>Embora os termos sejam usados informalmente como sinônimos, eles designam elementos diferentes da arquitetura.</p>
+      </div>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Elemento</th><th>O que é</th><th>Exemplo no laboratório</th></tr></thead>
+        <tbody>
+          <tr><td>Banco de dados</td><td>Coleção organizada de dados e estruturas relacionadas a uma finalidade.</td><td>Banco que guarda oficinas e inscrições.</td></tr>
+          <tr><td>SGBD</td><td>Software que administra persistência, consultas, acesso, transações e integridade.</td><td>Servidor PostgreSQL.</td></tr>
+          <tr><td>SQL</td><td>Linguagem declarativa para definir e operar sobre dados relacionais.</td><td><code>SELECT</code>, <code>UPDATE</code>, <code>CREATE TABLE</code>.</td></tr>
+          <tr><td>Cliente</td><td>Programa que se conecta ao servidor e envia comandos.</td><td>DBeaver ou <code>psql</code>.</td></tr>
+          <tr><td>Driver</td><td>Biblioteca por meio da qual uma aplicação se comunica com o servidor.</td><td><code>psycopg</code> em Python.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Por que o PostgreSQL é chamado objeto-relacional?</h3>
+      <p>Seu fundamento continua sendo o modelo relacional, com tabelas, chaves, SQL e restrições. Além disso, ele oferece tipos de dados extensíveis, funções definidas pelo usuário, estruturas complexas e mecanismos de extensão. Um exemplo é o suporte a <code>JSONB</code>; outro é o uso de extensões como PostGIS para dados geoespaciais.</p>
+      <p>Portanto, “objeto-relacional” não significa que o PostgreSQL substitui a modelagem relacional por classes de uma linguagem de programação.</p>
+      <h3>O que um SGBD acrescenta a um conjunto de arquivos?</h3>
+      <div class="sgbd-grid three">
+        <article class="sgbd-card"><div class="sgbd-number">DADOS</div><h4>Estrutura e consulta</h4><p>Descreve relações, mantém metadados, oferece SQL e índices.</p></article>
+        <article class="sgbd-card"><div class="sgbd-number">CORREÇÃO</div><h4>Integridade e transações</h4><p>Valida restrições e coordena alterações de uma unidade de trabalho.</p></article>
+        <article class="sgbd-card"><div class="sgbd-number">OPERAÇÃO</div><h4>Segurança e recuperação</h4><p>Controla privilégios e oferece mecanismos de resistência a falhas.</p></article>
+      </div>
+      <div class="sgbd-emphasis"><p><strong>Ideia central:</strong> o SQL expressa o que a aplicação solicita; o PostgreSQL implementa os mecanismos necessários para realizar a solicitação dentro das garantias configuradas.</p></div>
+    </div></section>
+
+    <section class="sgbd-section" id="arquitetura"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">3 · Arquitetura e processamento</p><h2>O que acontece entre executar um SELECT e receber o resultado?</h2>
+        <p>O DBeaver não procura os dados diretamente nos arquivos do banco. Ele envia uma solicitação ao servidor, que decide como atendê-la.</p>
+      </div>
+      <figure class="sgbd-flow">
+        <div class="sgbd-flow-row">
+          <div class="sgbd-flow-node"><strong>Aplicação</strong><small>Requisito do usuário</small></div>
+          <span class="sgbd-flow-arrow">→</span>
+          <div class="sgbd-flow-node"><strong>Cliente / driver</strong><small>DBeaver, psql, psycopg</small></div>
+          <span class="sgbd-flow-arrow">→</span>
+          <div class="sgbd-flow-node"><strong>PostgreSQL</strong><small>Servidor, processos e conexões</small></div>
+          <span class="sgbd-flow-arrow">↔</span>
+          <div class="sgbd-flow-node"><strong>Dados persistentes</strong><small>Tabelas, índices e WAL</small></div>
+        </div>
+        <figcaption>Arquitetura cliente-servidor, representada de forma simplificada. O servidor executa SQL e coordena o acesso às estruturas armazenadas.</figcaption>
+      </figure>
+
+      <div class="sgbd-sql"><div class="label"><span>Consulta-exemplo</span><span>SQL · PostgreSQL</span></div><pre><code>SELECT nome, email
+FROM clientes
+WHERE cidade = 'Curitiba';</code></pre></div>
+
+      <div class="sgbd-stack">
+        <div class="stage"><div class="order">01</div><div><strong>Receber, interpretar e analisar</strong><p>O servidor recebe a consulta, verifica sua estrutura e resolve nomes e tipos de objetos. As permissões também precisam ser respeitadas.</p></div></div>
+        <div class="stage"><div class="order">02</div><div><strong>Reescrever e planejar</strong><p>O PostgreSQL pode transformar a consulta e avalia estratégias de execução. Por exemplo, considera acesso sequencial ou por índice, estimando custos.</p></div></div>
+        <div class="stage"><div class="order">03</div><div><strong>Executar</strong><p>O executor percorre o plano, acessa páginas e buffers, verifica a visibilidade das versões das linhas e aplica as operações necessárias.</p></div></div>
+        <div class="stage"><div class="order">04</div><div><strong>Retornar o resultado</strong><p>As linhas resultantes são enviadas ao cliente, que as apresenta em uma tabela ou as entrega à aplicação.</p></div></div>
+      </div>
+      <h3>Como os dados são armazenados?</h3>
+      <p>A aplicação vê tabelas, colunas e registros. Internamente, o PostgreSQL organiza informações em arquivos e páginas de dados, utiliza memória compartilhada para armazenar páginas em buffer e mantém estruturas auxiliares, como índices e registros de WAL.</p>
+      <div class="sgbd-grid">
+        <article class="sgbd-card"><h4>Visão lógica</h4><p><strong>Banco → esquema → tabela → linha/coluna.</strong> É a visão utilizada para modelar e consultar os dados.</p></article>
+        <article class="sgbd-card"><h4>Visão física</h4><p><strong>Páginas → arquivos → índices e buffers.</strong> É a organização que o SGBD administra para realizar as operações.</p></article>
+      </div>
+      <p class="quiet">Essa separação é uma forma de independência de dados: aplicações normalmente não precisam conhecer a posição física de cada registro.</p>
+      <div class="sgbd-question"><strong>Pergunta de análise</strong><p>Se duas consultas devolvem o mesmo conjunto de registros, elas precisam executar exatamente o mesmo percurso físico?</p><p>Não. O planejador pode selecionar estratégias distintas, influenciadas por dados, estatísticas e índices disponíveis.</p></div>
+    </div></section>
+
+    <section class="sgbd-section alt" id="funcionalidades"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">4 · Funcionalidades essenciais</p><h2>Que problemas cada mecanismo resolve?</h2>
+        <p>Vamos relacionar os recursos do PostgreSQL a necessidades concretas de Engenharia de Software.</p>
+      </div>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Função do SGBD</th><th>Problema resolvido</th><th>Recursos observáveis</th></tr></thead>
+        <tbody>
+          <tr><td>Definição e manipulação</td><td>Organizar estruturas e alterar dados de maneira controlada.</td><td>SQL, esquemas, tabelas, <code>INSERT</code>, <code>UPDATE</code>.</td></tr>
+          <tr><td>Integridade</td><td>Evitar valores inválidos e referências inconsistentes.</td><td><code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>CHECK</code>, <code>UNIQUE</code>.</td></tr>
+          <tr><td>Transações</td><td>Confirmar ou desfazer um conjunto de operações.</td><td><code>BEGIN</code>, <code>COMMIT</code>, <code>ROLLBACK</code>.</td></tr>
+          <tr><td>Concorrência</td><td>Coordenar acessos simultâneos à mesma informação.</td><td>MVCC, bloqueios e níveis de isolamento.</td></tr>
+          <tr><td>Otimização</td><td>Escolher estratégias eficientes para recuperar dados.</td><td>Índices, estatísticas, <code>EXPLAIN</code>.</td></tr>
+          <tr><td>Segurança</td><td>Limitar quem pode consultar e modificar objetos.</td><td>Roles, autenticação, <code>GRANT</code>, <code>REVOKE</code>.</td></tr>
+          <tr><td>Recuperação</td><td>Restabelecer estado consistente após falhas e restaurar cópias.</td><td>WAL, backups físicos e lógicos.</td></tr>
+          <tr><td>Automação e extensão</td><td>Reutilizar operações e ampliar recursos do banco.</td><td>Views, funções, procedimentos, triggers, extensões.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>4.1 · Integridade: impedir estados inválidos</h3>
+      <p>Ao definir uma coluna com <code>CHECK (vagas_disponiveis &gt;= 0)</code>, declaramos uma restrição que o PostgreSQL verifica quando dados são modificados. Uma chave estrangeira pode impedir que uma inscrição referencie uma oficina inexistente.</p>
+      <p>Entretanto, uma restrição de domínio não garante automaticamente regras mais amplas como “o mesmo participante não deve se inscrever duas vezes” ou “a inscrição e a redução de vagas precisam ser concluídas juntas”. Essas regras exigem decisões adicionais de modelagem e transações.</p>
+
+      <h3>4.2 · Transações: uma unidade lógica de trabalho</h3>
+      <p>Uma transação pode reunir operações relacionadas. Se todas forem válidas, confirmamos; se ocorrer um erro e decidirmos cancelar, desfazemos a unidade de trabalho.</p>
+      <div class="sgbd-grid">
+        <article class="sgbd-card"><h4><code>COMMIT</code></h4><p>Confirma as alterações da transação, tornando-as permanentes segundo as garantias configuradas.</p></article>
+        <article class="sgbd-card"><h4><code>ROLLBACK</code></h4><p>Desfaz as alterações não confirmadas da transação.</p></article>
+      </div>
+      <h4>As quatro propriedades ACID</h4>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Propriedade</th><th>Significado didático</th><th>No exemplo das inscrições</th></tr></thead>
+        <tbody>
+          <tr><td>Atomicidade</td><td>As alterações da transação são confirmadas ou desfeitas como uma unidade.</td><td>Não registrar a inscrição sem a operação correspondente de vagas.</td></tr>
+          <tr><td>Consistência</td><td>Preservar os invariantes e restrições efetivamente declarados.</td><td>Uma vaga disponível não pode ficar negativa.</td></tr>
+          <tr><td>Isolamento</td><td>Controlar como transações concorrentes observam ou interferem nos dados.</td><td>Uma disputa por vaga precisa ter resultado controlado.</td></tr>
+          <tr><td>Durabilidade</td><td>Manter alterações confirmadas apesar de falhas, dentro das garantias configuradas.</td><td>Uma inscrição confirmada deve sobreviver a uma interrupção.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>4.3 · Índices e processamento de consultas</h3>
+      <p>Um índice é uma estrutura auxiliar utilizada para localizar registros com menos trabalho em determinadas consultas. Ele pode acelerar filtros seletivos, mas ocupa espaço e precisa ser mantido quando os dados mudam.</p>
+      <div class="sgbd-sql"><div class="label"><span>Observar o plano antes de otimizar</span><span>SQL</span></div><pre><code>EXPLAIN
+SELECT *
+FROM oficinas
+WHERE titulo = 'Introdução ao Arduino';</code></pre></div>
+      <p>Um plano com <code>Seq Scan</code> percorre a tabela; um plano com <code>Index Scan</code> ou <code>Bitmap Index Scan</code> usa um índice. Em uma tabela muito pequena, a varredura sequencial pode ser a melhor escolha, mesmo com índice disponível.</p>
+      <div class="sgbd-emphasis"><p><strong>Importante:</strong> o custo mostrado pelo <code>EXPLAIN</code> é uma estimativa em unidades internas, não uma medida direta de milissegundos. Já <code>EXPLAIN ANALYZE</code> executa a consulta e informa tempos observados.</p></div>
+
+      <h3>4.4 · Segurança: autenticação e autorização</h3>
+      <p>Autenticação responde <em>“quem está tentando acessar?”</em>. Autorização responde <em>“o que essa identidade pode fazer?”</em>. O PostgreSQL oferece papéis, políticas de acesso e privilégios sobre bancos, esquemas, tabelas e outros objetos.</p>
+      <div class="sgbd-sql"><div class="label"><span>Exemplo conceitual · requer papel criado e privilégios adequados</span><span>SQL</span></div><pre><code>GRANT SELECT ON oficinas TO papel_consulta;
+REVOKE INSERT, UPDATE, DELETE
+ON oficinas FROM papel_consulta;</code></pre><div class="note">Os comandos ilustram autorização. Não execute sem antes criar o papel e conhecer as permissões do ambiente.</div></div>
+      <p>O SGBD pode restringir operações, mas a segurança do sistema também depende da aplicação, da rede, das credenciais e das práticas de desenvolvimento.</p>
+
+      <h3>4.5 · Recuperação: falha de servidor não é o mesmo que exclusão indevida</h3>
+      <p>O PostgreSQL utiliza <strong>WAL</strong> (<em>Write-Ahead Logging</em>) para registrar modificações antes de sua efetivação nos arquivos de dados. Após determinadas falhas, esses registros permitem refazer alterações necessárias à recuperação.</p>
+      <div class="sgbd-grid three">
+        <article class="sgbd-card"><h4>WAL</h4><p>Fundamenta a recuperação de alterações após interrupções e pode apoiar recuperação por ponto no tempo quando há arquivamento configurado.</p></article>
+        <article class="sgbd-card"><h4>Backup</h4><p>Cópia para restauração: por exemplo, exportação lógica com <code>pg_dump</code> e restauração com <code>pg_restore</code>.</p></article>
+        <article class="sgbd-card"><h4>Replicação</h4><p>Manutenção de cópias em outras instâncias para disponibilidade ou distribuição de leituras. Não substitui necessariamente backups.</p></article>
+      </div>
+      <div class="sgbd-question"><strong>Discussão</strong><p>Se um operador excluir registros por engano e essa exclusão for replicada, ter uma réplica basta para recuperar os registros?</p><p>Não necessariamente. Uma estratégia de restauração precisa considerar backups e, quando pertinente, recuperação por ponto no tempo.</p></div>
+
+      <h3>4.6 · Recursos para além da SQL básica</h3>
+      <p><strong>Views</strong> permitem reutilizar consultas; <strong>materialized views</strong> armazenam resultados que precisam ser atualizados; <strong>functions</strong> e <strong>procedures</strong> organizam rotinas; <strong>triggers</strong> reagem a eventos. O PostgreSQL também suporta tipos como <code>JSONB</code> e extensões especializadas.</p>
+      <p>O objetivo não é colocar toda a lógica de negócio dentro do banco. A decisão depende de requisitos de integridade, manutenção, desempenho e divisão de responsabilidades da aplicação.</p>
+    </div></section>
+
+    <section class="sgbd-section" id="concorrencia"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">5 · Concorrência</p><h2>Por que várias pessoas podem consultar e atualizar ao mesmo tempo?</h2>
+        <p>Em um sistema web, requisições chegam simultaneamente. O PostgreSQL precisa coordenar esse trabalho sem tornar todas as operações uma única fila.</p>
+      </div>
+      <h3>MVCC: múltiplas versões dos dados</h3>
+      <p>O <strong>MVCC</strong> (<em>Multiversion Concurrency Control</em>) permite que leituras trabalhem com visões consistentes de versões dos registros. Em muitas situações, leituras comuns não bloqueiam operações de escrita, e escritas não bloqueiam essas leituras.</p>
+      <p>Isso não significa ausência de bloqueios. Duas transações que tentam atualizar a mesma linha podem precisar esperar uma pela outra. A visibilidade de cada alteração também depende do nível de isolamento.</p>
+      <div class="sgbd-flow">
+        <div class="sgbd-flow-row">
+          <div class="sgbd-flow-node"><strong>Transação A</strong><small>Tenta atualizar uma vaga</small></div>
+          <span class="sgbd-flow-arrow">↔</span>
+          <div class="sgbd-flow-node"><strong>PostgreSQL</strong><small>Versões + bloqueios + isolamento</small></div>
+          <span class="sgbd-flow-arrow">↔</span>
+          <div class="sgbd-flow-node"><strong>Transação B</strong><small>Tenta atualizar a mesma vaga</small></div>
+        </div>
+        <p class="sgbd-caption">O gerenciamento de concorrência combina visibilidade de versões e coordenação de conflitos.</p>
+      </div>
+      <h3>O erro de separar verificação e atualização</h3>
+      <div class="sgbd-sql"><div class="label"><span>Estratégia frágil · duas operações independentes</span><span>Exemplo</span></div><pre><code>SELECT vagas_disponiveis
+FROM oficinas
+WHERE id = 1;
+
+-- A aplicação decide, depois, se fará UPDATE.</code></pre></div>
+      <p>Se duas aplicações lerem uma vaga antes de atualizar, ambas podem considerar que a inscrição é possível. A decisão baseada numa leitura antiga não deve ser tratada como garantia de reserva.</p>
+      <h3>Uma atualização condicional</h3>
+      <div class="sgbd-sql"><div class="label"><span>Reserva de vaga · condição verificada na operação de escrita</span><span>SQL</span></div><pre><code>UPDATE oficinas
+SET vagas_disponiveis = vagas_disponiveis - 1
+WHERE id = 1
+  AND vagas_disponiveis &gt; 0
+RETURNING vagas_disponiveis;</code></pre></div>
+      <p>A instrução reduz a quantidade somente quando a condição é satisfeita. Sob o nível padrão <code>READ COMMITTED</code>, se outra transação tiver atualizado a mesma linha, a segunda atualização poderá esperar e reavaliar a condição depois da conclusão da primeira.</p>
+      <div class="sgbd-emphasis"><p>Uma atualização condicional protege a quantidade de vagas, mas <strong>não basta para representar uma inscrição completa</strong>. Se o sistema também grava um registro de participante, ambas as operações devem pertencer a uma transação coerente.</p></div>
+    </div></section>
+
+    <section class="sgbd-section alt" id="laboratorio"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">6 · Laboratório guiado</p><h2>Observe o SGBD protegendo as operações</h2>
+        <p>Estas demonstrações usam sintaxe do PostgreSQL, não do SQLite. Abra uma conexão no DBeaver ou no <code>psql</code> com um banco de testes em que seja permitido criar e apagar tabelas.</p>
+      </div>
+      <div class="sgbd-question"><strong>Preparação e segurança</strong><p>Execute o script somente em um <strong>banco de laboratório descartável</strong>. Os comandos <code>DROP TABLE</code> removem estruturas preexistentes com esses nomes no esquema atual.</p></div>
+      <h3>Experimento 1 · Estrutura e integridade</h3>
+      <p>Crie duas tabelas: uma representa oficinas com vagas; outra registra participantes inscritos. As restrições garantem algumas propriedades estruturais.</p>
+      <div class="sgbd-sql"><div class="label"><span>Passo 1 · Preparação das tabelas</span><span>Executar uma vez</span></div><pre><code>DROP TABLE IF EXISTS inscricoes;
+DROP TABLE IF EXISTS oficinas;
+
+CREATE TABLE oficinas (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL UNIQUE,
+    vagas_disponiveis INTEGER NOT NULL
+        CHECK (vagas_disponiveis &gt;= 0)
+);
+
+CREATE TABLE inscricoes (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    oficina_id INTEGER NOT NULL REFERENCES oficinas(id),
+    participante VARCHAR(100) NOT NULL,
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (oficina_id, participante)
+);
+
+INSERT INTO oficinas (titulo, vagas_disponiveis)
+VALUES ('Introdução ao Arduino', 1);
+
+SELECT * FROM oficinas;</code></pre></div>
+      <p>Verifique o valor inicial: a oficina possui <strong>uma vaga</strong>. Agora tente criar um registro inválido.</p>
+      <div class="sgbd-sql"><div class="label"><span>Passo 2 · Teste de restrição</span><span>Erro esperado</span></div><pre><code>INSERT INTO oficinas (titulo, vagas_disponiveis)
+VALUES ('Teste de restrição', -1);</code></pre><div class="note">O SGBD rejeita a inserção porque o valor viola a restrição <code>CHECK</code>.</div></div>
+      <details class="sgbd-details"><summary>O que o experimento demonstra?</summary><p>O banco verifica uma regra declarada no esquema independentemente da interface que enviou o comando. A aplicação também pode validar dados, mas a restrição mantém a regra na camada de persistência.</p></details>
+
+      <h3>Experimento 2 · ROLLBACK e COMMIT</h3>
+      <p>Vamos modificar temporariamente as vagas e depois desfazer a transação.</p>
+      <div class="sgbd-sql"><div class="label"><span>Passo 3 · Executar o bloco completo</span><span>Transação</span></div><pre><code>BEGIN;
+
+UPDATE oficinas
+SET vagas_disponiveis = 0
+WHERE id = 1;
+
+SELECT id, titulo, vagas_disponiveis
+FROM oficinas;
+
+ROLLBACK;
+
+SELECT id, titulo, vagas_disponiveis
+FROM oficinas;</code></pre></div>
+      <p>Antes do <code>ROLLBACK</code>, a própria conexão observa a alteração. Depois, volta a observar a quantidade inicial de uma vaga. Com <code>COMMIT</code>, as alterações seriam confirmadas.</p>
+      <details class="sgbd-details"><summary>Qual a diferença entre desfazer e confirmar?</summary><p>O <code>ROLLBACK</code> cancela as alterações não confirmadas da transação. O <code>COMMIT</code> confirma a transação. Isso não significa que o banco possa desfazer qualquer ação arbitrária já confirmada somente com <code>ROLLBACK</code>.</p></details>
+
+      <h3>Experimento 3 · Duas conexões disputando a mesma vaga</h3>
+      <p>Abra <strong>duas conexões distintas</strong> ao mesmo banco no DBeaver (sessões A e B) ou dois terminais <code>psql</code>. Execute cada bloco separadamente e na ordem indicada. Se usar DBeaver, verifique a configuração de autocommit: os comandos explícitos <code>BEGIN</code>/<code>COMMIT</code> precisam permanecer na mesma conexão.</p>
+      <div class="sgbd-grid">
+        <div class="sgbd-session">
+          <h3>Sessão A · Primeiro participante</h3>
+          <p>Inicia uma transação, consome a vaga e registra a inscrição, mas ainda <strong>não confirma</strong>.</p>
+          <div class="sgbd-sql"><div class="label"><span>Executar primeiro</span></div><pre><code>BEGIN;
+
+UPDATE oficinas
+SET vagas_disponiveis =
+    vagas_disponiveis - 1
+WHERE id = 1
+  AND vagas_disponiveis &gt; 0
+RETURNING vagas_disponiveis;
+
+INSERT INTO inscricoes
+    (oficina_id, participante)
+VALUES (1, 'Ana');
+
+-- Não executar COMMIT ainda.</code></pre></div>
+        </div>
+        <div class="sgbd-session">
+          <h3>Sessão B · Segundo participante</h3>
+          <p>Com A ainda aberta, B tenta consumir a mesma vaga e deverá aguardar o término da operação conflitante.</p>
+          <div class="sgbd-sql"><div class="label"><span>Executar depois de A</span></div><pre><code>BEGIN;
+
+UPDATE oficinas
+SET vagas_disponiveis =
+    vagas_disponiveis - 1
+WHERE id = 1
+  AND vagas_disponiveis &gt; 0
+RETURNING vagas_disponiveis;
+
+-- Aguardar a sessão A.</code></pre></div>
+        </div>
+      </div>
+      <ol class="sgbd-step-list">
+        <li>Na sessão A, execute <code>COMMIT;</code>.</li>
+        <li>Observe a sessão B: no isolamento padrão <code>READ COMMITTED</code>, a condição é reavaliada e o <code>UPDATE</code> retorna <strong>zero linhas</strong>.</li>
+        <li>Na sessão B, execute <code>ROLLBACK;</code>. Como não conseguiu a vaga, B não deve inserir uma inscrição.</li>
+        <li>Confirme o estado final com a consulta abaixo em qualquer conexão.</li>
+      </ol>
+      <div class="sgbd-sql"><div class="label"><span>Passo final · Conferência</span><span>SQL</span></div><pre><code>SELECT o.titulo,
+       o.vagas_disponiveis,
+       COUNT(i.id) AS inscritos
+FROM oficinas AS o
+LEFT JOIN inscricoes AS i
+       ON i.oficina_id = o.id
+GROUP BY o.id, o.titulo, o.vagas_disponiveis;</code></pre></div>
+      <details class="sgbd-details"><summary>Resultado esperado e interpretação</summary><p>A oficina deve apresentar <strong>zero vagas disponíveis e uma inscrição</strong>. O mecanismo combina atualização condicional, bloqueios de linha e transação. O exemplo pressupõe que os passos foram executados na ordem indicada, no banco de teste recém-preparado.</p></details>
+
+      <h3>Experimento 4 · Por que um índice pode modificar o plano?</h3>
+      <p>Para não tirar conclusões de uma tabela com apenas uma linha, crie uma tabela separada de teste com 100 mil registros sintéticos. Compare o plano de execução antes e depois de criar um índice.</p>
+      <div class="sgbd-sql"><div class="label"><span>Comparação de planos em dados artificiais</span><span>SQL</span></div><pre><code>DROP TABLE IF EXISTS leituras_teste;
+
+CREATE TABLE leituras_teste (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    codigo INTEGER NOT NULL
+);
+
+INSERT INTO leituras_teste (codigo)
+SELECT g % 1000
+FROM generate_series(1, 100000) AS g;
+
+ANALYZE leituras_teste;
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT * FROM leituras_teste
+WHERE codigo = 867;
+
+CREATE INDEX idx_leituras_codigo
+ON leituras_teste (codigo);
+
+ANALYZE leituras_teste;
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT * FROM leituras_teste
+WHERE codigo = 867;</code></pre></div>
+      <p>Compare o tipo de varredura, o número estimado e efetivo de linhas, o tempo observado e a utilização dos buffers. Não compare apenas o tempo de duas execuções isoladas: cache, ambiente e planejamento podem variar.</p>
+      <div class="sgbd-question"><strong>Questão de interpretação</strong><p>Por que um índice pode acelerar uma consulta e, ao mesmo tempo, aumentar o custo de inserções ou atualizações?</p><p>O índice é uma estrutura adicional que precisa ser mantida, mas pode reduzir o trabalho de localização em determinadas consultas.</p></div>
+    </div></section>
+
+    <section class="sgbd-section" id="aplicacoes"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">7 · Usos e decisões de projeto</p><h2>Quando um SGBD é uma boa escolha?</h2>
+        <p>Não basta perguntar se há muitos dados. É necessário avaliar requisitos de integridade, concorrência, consultas, segurança e continuidade do serviço.</p>
+      </div>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Contexto</th><th>O que precisa ser administrado</th><th>Mecanismos especialmente importantes</th></tr></thead>
+        <tbody>
+          <tr><td>Comércio eletrônico</td><td>Pedidos, estoque e registros de pagamento.</td><td>Transações, concorrência e integridade.</td></tr>
+          <tr><td>Hospital</td><td>Pacientes, atendimentos e acesso por perfis.</td><td>Controle de acesso, integridade e auditoria.</td></tr>
+          <tr><td>Instituição de ensino</td><td>Matrículas, turmas, notas e históricos.</td><td>Relacionamentos, restrições e consultas.</td></tr>
+          <tr><td>Indústria</td><td>Equipamentos, ordens e histórico de manutenção.</td><td>Persistência, disponibilidade e relatórios.</td></tr>
+          <tr><td>Aplicação web</td><td>Usuários, conteúdo e operações simultâneas.</td><td>Conexões, consultas, transações e permissões.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Quando um arquivo simples pode ser suficiente?</h3>
+      <p>Um CSV local pode atender a uma análise pontual, e um JSON pode servir como arquivo de configuração. Se os dados forem poucos, estáticos, sem acessos simultâneos e sem requisitos transacionais, um SGBD servidor pode introduzir complexidade desnecessária.</p>
+      <div class="sgbd-emphasis"><p><strong>Critério de engenharia:</strong> selecionar uma solução pela necessidade do sistema — não apenas pela popularidade da ferramenta.</p></div>
+
+      <h3>Atividade de consolidação · Reservas de equipamentos industriais</h3>
+      <p>Uma empresa compartilha instrumentos de medição entre setores. O sistema permite agendar horários, registrar manutenção e consultar disponibilidade.</p>
+      <p>Para cada situação, identifique o mecanismo do SGBD mais relevante e explique o que ainda precisará ser definido pelo projetista.</p>
+      <div class="sgbd-checklist">
+        <details class="sgbd-details"><summary>1. Uma reserva não pode apontar para equipamento inexistente.</summary><p>Integridade referencial: chave estrangeira entre reserva e equipamento. A modelagem deve declarar corretamente o relacionamento.</p></details>
+        <details class="sgbd-details"><summary>2. Duas pessoas tentam reservar o mesmo equipamento para o mesmo horário.</summary><p>Concorrência e transações. É preciso modelar a restrição de conflito temporal e implementá-la com uma estratégia segura, como restrições apropriadas ou bloqueios transacionais.</p></details>
+        <details class="sgbd-details"><summary>3. Um usuário consulta dados, mas não pode excluir equipamentos.</summary><p>Autorização: roles e privilégios. A aplicação também deve proteger seus fluxos de acesso.</p></details>
+        <details class="sgbd-details"><summary>4. O servidor desliga inesperadamente depois de uma confirmação.</summary><p>Durabilidade e recuperação: mecanismos de WAL. A garantia depende de configuração, persistência e condições de infraestrutura.</p></details>
+        <details class="sgbd-details"><summary>5. Uma consulta por equipamento e período está lenta.</summary><p>Planejamento e otimização: analisar o plano, as estatísticas e índices adequados; primeiro compreender o padrão de consulta e os dados.</p></details>
+        <details class="sgbd-details"><summary>6. Uma pessoa apaga registros e a exclusão é replicada.</summary><p>Backups e, se configurada, recuperação por ponto no tempo. Réplica não é sinônimo de backup.</p></details>
+      </div>
+      <div class="sgbd-question"><strong>Questão final para discussão</strong><p>Qual é a diferença entre armazenar dados e administrá-los com garantias de integridade, isolamento, segurança e recuperação?</p></div>
+    </div></section>
+
+    <section class="sgbd-section alt" id="sintese"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">8 · Síntese</p><h2>O papel do SGBD na arquitetura do software</h2>
+        <p>O PostgreSQL não é apenas um programa capaz de executar <code>SELECT</code>. Ele coordena a interpretação dos comandos, o armazenamento físico, as operações concorrentes e os mecanismos que tornam os dados utilizáveis de forma confiável.</p>
+      </div>
+      <figure class="sgbd-flow">
+        <div class="sgbd-flow-row">
+          <div class="sgbd-flow-node"><strong>Aplicação</strong><small>Requisitos e regras de negócio</small></div>
+          <span class="sgbd-flow-arrow">→</span>
+          <div class="sgbd-flow-node"><strong>SQL</strong><small>Operações solicitadas</small></div>
+          <span class="sgbd-flow-arrow">→</span>
+          <div class="sgbd-flow-node"><strong>PostgreSQL</strong><small>Execução + garantias declaradas</small></div>
+          <span class="sgbd-flow-arrow">→</span>
+          <div class="sgbd-flow-node"><strong>Dados</strong><small>Persistência e recuperação</small></div>
+        </div>
+        <figcaption>O SGBD oferece mecanismos, mas a correção do sistema também depende da modelagem, das operações da aplicação e das decisões de implantação.</figcaption>
+      </figure>
+      <div class="sgbd-grid">
+        <article class="sgbd-card"><h4>O SGBD faz</h4><p>Executa consultas, verifica restrições declaradas, controla transações, gerencia concorrência, administra permissões e oferece recuperação.</p></article>
+        <article class="sgbd-card"><h4>O projeto precisa definir</h4><p>Regras do domínio, esquema e índices, transações corretas, políticas de acesso, estratégias de backup e requisitos de operação.</p></article>
+      </div>
+      <h3>Referências de apoio</h3>
+      <p class="sgbd-footer-refs">SILBERSCHATZ, A.; KORTH, H.; SUDARSHAN, S. <em>Database System Concepts</em>, 7. ed., especialmente os capítulos 1, 14–19. ELMASRI, R.; NAVATHE, S. <em>Sistemas de Banco de Dados</em>, partes sobre introdução, armazenamento, transações, concorrência e recuperação. Documentação oficial do <a href="https://www.postgresql.org/docs/18/tutorial-arch.html" target="_blank" rel="noopener">PostgreSQL 18 — arquitetura</a>, <a href="https://www.postgresql.org/docs/18/mvcc-intro.html" target="_blank" rel="noopener">MVCC</a>, <a href="https://www.postgresql.org/docs/18/using-explain.html" target="_blank" rel="noopener">EXPLAIN</a>, <a href="https://www.postgresql.org/docs/18/wal-intro.html" target="_blank" rel="noopener">WAL</a> e <a href="https://www.postgresql.org/docs/18/backup.html" target="_blank" rel="noopener">backup e restauração</a>.</p>
+      <div class="sgbd-draft-questions"><strong>Para revisão docente:</strong> verificar a profundidade da seção de arquitetura, a duração do experimento de duas sessões e se os conceitos de segurança/recuperação merecem um encontro próprio.</div>
+      <nav class="sgbd-bottom-nav" aria-label="Navegação da aula">
+        <a href="../aula-09.html">← Aula 09</a>
+        <a href="../index.html">Página principal da disciplina</a>
+        <a href="#inicio">Voltar ao início ↑</a>
+      </nav>
+    </div></section>
+  </main>
+  </div>
+  <footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Rascunho de aula</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+</body>
+</html>
