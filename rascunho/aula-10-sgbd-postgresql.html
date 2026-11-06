@@ -118,7 +118,14 @@
     .sgbd-concept-map{margin:1.05rem 0 1.6rem;padding:1rem;border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden}
     .sgbd-concept-map img,.sgbd-concept-map svg{display:block;width:100%;max-width:100%;height:auto;margin:0 auto}
     @media(max-width:640px){.sgbd-concept-map{padding:.35rem;border-radius:11px}}
-        @media(max-width:1080px){
+    
+    /* Diagrama conceitual dos mecanismos do SGBD e tabela associada */
+    .sgbd-layer-figure{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem;margin:1.1rem 0 1.4rem;overflow:hidden}
+    .sgbd-layer-figure svg{display:block;width:100%;max-width:1080px;height:auto;margin:0 auto}
+    .sgbd-layer-figure figcaption{margin:.7rem auto 0;max-width:900px;font-size:.83rem;color:#5d6b82;line-height:1.6}
+    .sgbd-layer-table{margin-top:1.15rem}
+    @media(max-width:650px){.sgbd-layer-figure{overflow-x:auto;padding:.5rem}.sgbd-layer-figure svg{min-width:770px}.sgbd-layer-figure figcaption{min-width:0}}
+    @media(max-width:1080px){
       body.lesson-sgbd .site-header .nav-wrap{display:flex;flex-wrap:nowrap;position:relative;align-items:center;gap:10px;min-height:58px}
       body.lesson-sgbd .site-header .brand{min-width:0;max-width:calc(100% - 54px)}
       body.lesson-sgbd .site-header .brand strong{font-size:clamp(.9rem,2.5vw,1rem);line-height:1.15}
@@ -338,11 +345,73 @@
       <p>Seu fundamento continua sendo o modelo relacional, com tabelas, chaves, SQL e restrições. Além disso, ele oferece tipos de dados extensíveis, funções definidas pelo usuário, estruturas complexas e mecanismos de extensão. Um exemplo é o suporte a <code>JSONB</code>; outro é o uso de extensões como PostGIS para dados geoespaciais.</p>
       <p>Portanto, “objeto-relacional” não significa que o PostgreSQL substitui a modelagem relacional por classes de uma linguagem de programação.</p>
       <h3>O que um SGBD acrescenta a um conjunto de arquivos?</h3>
-      <div class="sgbd-grid three">
-        <article class="sgbd-card"><div class="sgbd-number">DADOS</div><h4>Estrutura e consulta</h4><p>Descreve relações, mantém metadados, oferece SQL e índices.</p></article>
-        <article class="sgbd-card"><div class="sgbd-number">CORREÇÃO</div><h4>Integridade e transações</h4><p>Valida restrições e coordena alterações de uma unidade de trabalho.</p></article>
-        <article class="sgbd-card"><div class="sgbd-number">OPERAÇÃO</div><h4>Segurança e recuperação</h4><p>Controla privilégios e oferece mecanismos de resistência a falhas.</p></article>
-      </div>
+      <p>Os arquivos armazenam os dados, mas o gerenciamento confiável exige mecanismos adicionais. No PostgreSQL, essas responsabilidades são concentradas no SGBD, que coordena como as informações são organizadas, consultadas, protegidas e recuperadas.</p>
+      <figure id="camadas-sgbd" class="sgbd-layer-figure" aria-label="Diagrama dos arquivos de dados encapsulados pelas funcionalidades do PostgreSQL">
+        <svg viewBox="0 0 1080 735" width="1080" height="735" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="titulo-camadas-sgbd descricao-camadas-sgbd">
+<title id="titulo-camadas-sgbd">Funcionalidades agregadas pelo SGBD ao armazenamento de dados</title>
+<desc id="descricao-camadas-sgbd">No centro estão os arquivos de dados representados por documentos com tabelas. Um contorno indica a camada do PostgreSQL, Sistema Gerenciador de Banco de Dados. Ao redor, oito módulos: organização e metadados, consultas SQL, integridade, transações ACID, controle de concorrência, segurança e permissões, índices e otimização, backup e recuperação.</desc>
+<rect width="1080" height="735" fill="#ffffff"/>
+<rect x="19" y="85" width="1042" height="626" rx="40" fill="#f2f8ff" stroke="#32699c" stroke-width="4"/>
+<rect x="360" y="29" width="360" height="96" rx="22" fill="#215889"/>
+<text x="540" y="70" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="31" font-weight="750" fill="#fff">SGBD · PostgreSQL</text>
+<text x="540" y="100" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="17" fill="#e1f0ff">Camada de gerenciamento</text>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<path d="M353 206 H381 V298 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M353 336 H381 V365 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M353 466 H381 V433 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M353 596 H381 V505 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 206 H699 V298 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 336 H699 V365 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 466 H699 V433 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 596 H699 V505 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<g class="feature-card-svg"><rect x="48" y="157" width="305" height="99" rx="17" fill="#e7f3ff" stroke="#3d77ac" stroke-width="2.2"/><circle cx="83" cy="206" r="23" fill="white" stroke="#3d77ac" stroke-width="2"/><text x="83" y="214" text-anchor="middle" font-size="22" fill="#3d77ac" font-weight="800">01</text><text x="128" y="202" font-size="23" font-weight="700" fill="#162e4e">Organização e</text>
+<text x="128" y="230" font-size="23" font-weight="700" fill="#162e4e">metadados</text></g>
+<g class="feature-card-svg"><rect x="48" y="287" width="305" height="99" rx="17" fill="#e9f5eb" stroke="#589568" stroke-width="2.2"/><circle cx="83" cy="336" r="23" fill="white" stroke="#589568" stroke-width="2"/><text x="83" y="344" text-anchor="middle" font-size="22" fill="#589568" font-weight="800">02</text><text x="128" y="346" font-size="23" font-weight="700" fill="#162e4e">Consultas SQL</text></g>
+<g class="feature-card-svg"><rect x="48" y="417" width="305" height="99" rx="17" fill="#eeeafa" stroke="#7160ae" stroke-width="2.2"/><circle cx="83" cy="466" r="23" fill="white" stroke="#7160ae" stroke-width="2"/><text x="83" y="474" text-anchor="middle" font-size="22" fill="#7160ae" font-weight="800">03</text><text x="128" y="476" font-size="23" font-weight="700" fill="#162e4e">Integridade</text></g>
+<g class="feature-card-svg"><rect x="48" y="547" width="305" height="99" rx="17" fill="#e7f3ff" stroke="#3d77ac" stroke-width="2.2"/><circle cx="83" cy="596" r="23" fill="white" stroke="#3d77ac" stroke-width="2"/><text x="83" y="604" text-anchor="middle" font-size="22" fill="#3d77ac" font-weight="800">04</text><text x="128" y="606" font-size="23" font-weight="700" fill="#162e4e">Transações ACID</text></g>
+<g class="feature-card-svg"><rect x="727" y="157" width="305" height="99" rx="17" fill="#eeeafa" stroke="#7160ae" stroke-width="2.2"/><circle cx="762" cy="206" r="23" fill="white" stroke="#7160ae" stroke-width="2"/><text x="762" y="214" text-anchor="middle" font-size="22" fill="#7160ae" font-weight="800">05</text><text x="807" y="202" font-size="23" font-weight="700" fill="#162e4e">Controle de</text>
+<text x="807" y="230" font-size="23" font-weight="700" fill="#162e4e">concorrência</text></g>
+<g class="feature-card-svg"><rect x="727" y="287" width="305" height="99" rx="17" fill="#e9f5eb" stroke="#589568" stroke-width="2.2"/><circle cx="762" cy="336" r="23" fill="white" stroke="#589568" stroke-width="2"/><text x="762" y="344" text-anchor="middle" font-size="22" fill="#589568" font-weight="800">06</text><text x="807" y="332" font-size="23" font-weight="700" fill="#162e4e">Segurança e</text>
+<text x="807" y="360" font-size="23" font-weight="700" fill="#162e4e">permissões</text></g>
+<g class="feature-card-svg"><rect x="727" y="417" width="305" height="99" rx="17" fill="#e7f3ff" stroke="#3d77ac" stroke-width="2.2"/><circle cx="762" cy="466" r="23" fill="white" stroke="#3d77ac" stroke-width="2"/><text x="762" y="474" text-anchor="middle" font-size="22" fill="#3d77ac" font-weight="800">07</text><text x="807" y="462" font-size="23" font-weight="700" fill="#162e4e">Índices e</text>
+<text x="807" y="490" font-size="23" font-weight="700" fill="#162e4e">otimização</text></g>
+<g class="feature-card-svg"><rect x="727" y="547" width="305" height="99" rx="17" fill="#eeeafa" stroke="#7160ae" stroke-width="2.2"/><circle cx="762" cy="596" r="23" fill="white" stroke="#7160ae" stroke-width="2"/><text x="762" y="604" text-anchor="middle" font-size="22" fill="#7160ae" font-weight="800">08</text><text x="807" y="592" font-size="23" font-weight="700" fill="#162e4e">Backup e</text>
+<text x="807" y="620" font-size="23" font-weight="700" fill="#162e4e">recuperação</text></g>
+<rect x="404" y="272" width="272" height="277" rx="23" fill="#fff" stroke="#225480" stroke-width="3.5"/>
+<text x="540" y="311" text-anchor="middle" font-size="26" font-weight="750" fill="#152d4d">Arquivos de dados</text>
+<text x="540" y="337" text-anchor="middle" font-size="16" fill="#64778e">Dados persistentes</text>
+<g fill="#f5fbff" stroke="#1e5d96" stroke-width="3.5" stroke-linejoin="round">
+<path d="M450 362 H512 L529 378 V490 H450 Z"/>
+<path d="M512 362 V379 H529"/>
+<path d="M552 362 H615 L630 378 V490 H552 Z"/>
+<path d="M615 362 V379 H630"/>
+</g>
+<g stroke="#4b88bf" stroke-width="2.5" fill="none">
+<rect x="463" y="402" width="51" height="54" rx="2"/>
+<path d="M463 420 H514 M463 438 H514 M480 402 V456 M497 402 V456"/>
+<rect x="564" y="402" width="51" height="54" rx="2"/>
+<path d="M564 420 H615 M564 438 H615 M581 402 V456 M598 402 V456"/>
+</g>
+<rect x="494" y="437" width="90" height="79" rx="9" fill="#e0f0ff" stroke="#1e5d96" stroke-width="3.5"/>
+<rect x="511" y="456" width="56" height="42" rx="2" fill="#fff" stroke="#4b88bf" stroke-width="2.5"/>
+<path d="M511 470 H567 M511 484 H567 M530 456 V498 M548 456 V498" stroke="#4b88bf" stroke-width="2"/>
+</g>
+</svg>
+        <figcaption>Representação conceitual: os arquivos de dados aparecem no centro, enquanto a camada do SGBD reúne mecanismos que administram seu uso. Não é um diagrama da organização interna dos processos do PostgreSQL.</figcaption>
+      </figure>
+      <div class="sgbd-matrix sgbd-layer-table"><table>
+        <thead><tr><th>Funcionalidade</th><th>O que o SGBD acrescenta</th><th>Exemplo no PostgreSQL</th></tr></thead>
+        <tbody>
+          <tr><td>Organização e metadados</td><td>Mantém a definição de bancos, tabelas, colunas, tipos e relacionamentos, separando a visão lógica dos arquivos físicos.</td><td>Esquemas e catálogos do sistema.</td></tr>
+          <tr><td>Consultas SQL</td><td>Interpreta comandos para localizar, inserir, atualizar e excluir registros sem exigir manipulação direta dos arquivos.</td><td><code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>.</td></tr>
+          <tr><td>Integridade</td><td>Verifica restrições declaradas para reduzir inconsistências, valores inválidos e referências inexistentes.</td><td><code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>CHECK</code>.</td></tr>
+          <tr><td>Transações ACID</td><td>Agrupa operações que devem ser confirmadas ou desfeitas de maneira coordenada.</td><td><code>BEGIN</code>, <code>COMMIT</code>, <code>ROLLBACK</code>.</td></tr>
+          <tr><td>Controle de concorrência</td><td>Coordena operações simultâneas e a visibilidade dos dados entre diferentes transações.</td><td>MVCC, bloqueios e isolamento.</td></tr>
+          <tr><td>Segurança e permissões</td><td>Controla quem pode acessar objetos do banco e quais operações pode realizar.</td><td>Roles, <code>GRANT</code>, <code>REVOKE</code>.</td></tr>
+          <tr><td>Índices e otimização</td><td>Utiliza estruturas auxiliares e planos de execução para reduzir o custo de determinadas consultas.</td><td>Índices B-tree e <code>EXPLAIN</code>.</td></tr>
+          <tr><td>Backup e recuperação</td><td>Oferece mecanismos para recuperar o banco após falhas e restaurar cópias, conforme a estratégia adotada.</td><td>WAL, <code>pg_dump</code>, <code>pg_restore</code>.</td></tr>
+        </tbody>
+      </table></div>
       <div class="sgbd-emphasis"><p><strong>Ideia central:</strong> o SQL expressa o que a aplicação solicita; o PostgreSQL implementa os mecanismos necessários para realizar a solicitação dentro das garantias configuradas.</p></div>
     </div></section>
 
