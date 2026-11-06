@@ -181,37 +181,54 @@ body.pratica-pg { background:var(--bg);color:var(--text) }
 <article class="pg-card"><strong>Parte 3 · Python</strong><p>Preparar os arquivos, conectar com psycopg, consultar registros e testar novas reservas.</p></article>
 <article class="pg-card"><strong>Tempo de referência</strong><p>Três blocos de aproximadamente 30, 50 e 50 minutos. Prossiga somente após conferir o resultado de cada etapa.</p></article>
 </div>
-<div class="guide-banner"><strong>Já instalou o PostgreSQL na aula anterior?</strong>
-<p>Utilize o mesmo Docker Desktop e o mesmo servidor PostgreSQL 18. Se precisar retomar a instalação ou a conexão com o pgAdmin, consulte o guia utilizado em sala.</p>
-<a href="guia-postgresql-windows.html">Revisar o tutorial de PostgreSQL no Windows →</a></div>
-<div class="notice"><strong>Importante:</strong> vamos criar o banco <code>pratica_salas</code>. O banco <code>laboratorio</code> do tutorial anterior deve permanecer intacto. Não remova o volume Docker e não reinstale o servidor.</div>
+<div class="guide-banner"><strong>Antes de começar: qual instalação você utilizou?</strong>
+<p>A prática funciona com o PostgreSQL instalado diretamente no Windows ou com um servidor executado em contêiner. Utilize <strong>somente o guia correspondente ao seu ambiente</strong>:</p>
+<div class="quick-links"><a href="guia-postgresql-windows-nativo.html">Instalação nativa (sem Docker) →</a><a href="guia-postgresql-windows.html">Instalação com Docker →</a></div>
+<p>Ambos os roteiros preparam o usuário <code>aluno</code> e o banco <code>laboratorio</code>.</p></div>
+<div class="notice"><strong>Importante:</strong> vamos criar o banco <code>pratica_salas</code>. O banco <code>laboratorio</code> criado no guia anterior deve permanecer intacto. Não desinstale o servidor nem apague seus dados.</div>
 <div class="objective"><strong>Como acompanhar:</strong> em cada etapa, identifique o programa indicado (<strong>PowerShell</strong>, <strong>pgAdmin</strong> ou <strong>Python</strong>), execute os comandos na ordem apresentada e leia a caixa <strong>“Confira antes de avançar”</strong>. Em algumas etapas, uma mensagem de erro será o resultado esperado.</div>
 <p><a href="aula-10.html">Rever os conceitos da Aula 10 →</a></p>
 </div></section>
 <section class="pg-section" id="parte1"><div class="container pg-body"><p class="pg-kicker">1 · Primeiro contato com o pgAdmin</p><h2>Parte 1 · Conhecer o ambiente e preparar o banco <small>30 minutos</small></h2>
 
-<section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Ligar o PostgreSQL e conferir o servidor</h3></div>
-<p><strong>Onde executar:</strong> Docker Desktop e PowerShell do Windows.</p>
-<div class="guided"><h4>Faça nesta ordem</h4><ol>
+<section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Conferir o PostgreSQL antes de começar</h3></div>
+<p><strong>Onde executar:</strong> servidor PostgreSQL e pgAdmin 4. Use <strong>apenas um</strong> dos dois procedimentos abaixo, conforme o guia de instalação que você seguiu.</p>
+<details open><summary>Instalação nativa do Windows (sem Docker)</summary>
+<ol>
+<li>Abra o <strong>PowerShell</strong> e confira o serviço instalado:</li>
+</ol>
+<div class="codebox"><div class="codebar"><span>PowerShell · conferir o serviço do PostgreSQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>Get-Service | Where-Object { $_.Name -like "postgresql*" }</code></pre></div>
+<ol start="2">
+<li>O serviço deverá estar com estado <code>Running</code> (em execução). Caso não esteja, abra <code>services.msc</code> e inicie o serviço PostgreSQL, se tiver permissão.</li>
+<li>Abra o <strong>pgAdmin 4</strong> e conecte-se ao servidor configurado no <a href="guia-postgresql-windows-nativo.html">guia de instalação nativa</a>, utilizando o usuário <code>aluno</code>.</li>
+</ol>
+</details>
+<details><summary>Instalação com Docker Desktop</summary>
+<ol>
 <li>Abra o <strong>Docker Desktop</strong> e espere o serviço iniciar.</li>
-<li>Abra o <strong>PowerShell</strong>.</li>
-<li>Entre na pasta usada no tutorial anterior, onde está o arquivo <code>compose.yaml</code>. Execute:</li>
-</ol></div>
-<div class="codebox"><div class="codebar"><span>PowerShell · entrar na pasta</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Set-Location "$HOME\postgres-laboratorio"</code></pre></div>
-<p><strong>4.</strong> Confira o estado do contêiner. A coluna de estado deve indicar que o serviço está em execução.</p>
-<div class="codebox"><div class="codebar"><span>PowerShell · verificar o serviço</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>docker compose ps</code></pre></div>
-<p><strong>5.</strong> Se estiver parado, inicie o PostgreSQL e execute novamente a conferência:</p>
-<div class="codebox"><div class="codebar"><span>PowerShell · somente se necessário</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>docker compose up -d
+<li>Abra o PowerShell e entre na pasta onde foi criado o arquivo <code>compose.yaml</code>:</li>
+</ol>
+<div class="codebox"><div class="codebar"><span>PowerShell · pasta do laboratório</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>Set-Location "$HOME\postgres-laboratorio"
 docker compose ps</code></pre></div>
-<p><strong>6.</strong> Confirme que o próprio servidor responde à consulta:</p>
-<div class="codebox"><div class="codebar"><span>PowerShell · teste de conexão</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>docker compose exec db psql -U aluno -d laboratorio -c "SELECT current_database(), current_user;"</code></pre></div>
-<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta deve indicar <code>laboratorio</code> como banco e <code>aluno</code> como usuário. O Docker executa o servidor; o pgAdmin será utilizado como cliente nas próximas etapas. Se o comando não funcionar, consulte a seção de diagnóstico do <a href="guia-postgresql-windows.html">tutorial de instalação</a>.</p></div>
+<ol start="3">
+<li>Se o servidor estiver parado, execute:</li>
+</ol>
+<div class="codebox"><div class="codebar"><span>PowerShell · iniciar contêiner se necessário</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>docker compose up -d</code></pre></div>
+<ol start="4">
+<li>Abra o pgAdmin 4 e conecte-se ao servidor configurado no <a href="guia-postgresql-windows.html">guia de instalação com Docker</a>, utilizando o usuário <code>aluno</code>.</li>
+</ol>
+</details>
+<p><strong>Verificação comum aos dois ambientes:</strong> no pgAdmin, selecione o banco <code>laboratorio</code>, abra <strong>Tools → Query Tool</strong> e execute:</p>
+<div class="codebox"><div class="codebar"><span>SQL · confirmar banco, usuário e porta</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT current_database() AS banco,
+       current_user AS usuario,
+       inet_server_port() AS porta;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O resultado deve indicar banco <code>laboratorio</code> e usuário <code>aluno</code>. A porta poderá ser <code>5432</code> ou <code>5433</code>, conforme a instalação. Anote-a para configurar o Python posteriormente.</p></div>
 </section>
 <section class="task" id="e2"><div class="task-h"><span class="step">02</span><h3>Criar um banco de dados pelo pgAdmin</h3></div>
 <p><strong>Onde executar:</strong> interface do pgAdmin 4 e Query Tool.</p>
 <div class="guided"><h4>Faça nesta ordem</h4><ol>
 <li>Abra o <strong>pgAdmin 4</strong>.</li>
-<li>No painel lateral, expanda <strong>Servers → PostgreSQL — Laboratório</strong> (o nome pode variar se você o cadastrou de outra forma).</li>
+<li>No painel lateral, expanda a conexão do servidor que você preparou: <strong>PostgreSQL — Laboratório</strong> ou <strong>PostgreSQL — Laboratório (nativo)</strong>. Confirme que a conexão usa o usuário <code>aluno</code>.</li>
 <li>Clique com o botão direito em <strong>Databases → Create → Database…</strong>.</li>
 <li>Na janela que abrir, preencha <strong>Database</strong> com <code>pratica_salas</code> e <strong>Owner</strong> com <code>aluno</code>.</li>
 <li>Clique em <strong>Save</strong>. Se o novo banco não aparecer, clique com o botão direito em <strong>Databases → Refresh</strong>.</li>
@@ -450,7 +467,7 @@ py --version</code></pre></div>
 <p><strong>7.</strong> Crie um arquivo chamado <code>.env</code> a partir do exemplo:</p>
 <div class="codebox"><div class="codebar"><span>PowerShell · preparar configuração</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Copy-Item env-exemplo.txt .env
 notepad .env</code></pre></div>
-<p>No Bloco de Notas, confira se os campos correspondem à instalação realizada no tutorial: <code>PGHOST=127.0.0.1</code>, <code>PGDATABASE=pratica_salas</code>, <code>PGUSER=aluno</code> e a porta publicada pelo Docker (normalmente <code>5432</code>). Salve e feche.</p>
+<p>No Bloco de Notas, confira se os campos correspondem à instalação realizada no tutorial: <code>PGHOST=127.0.0.1</code>, <code>PGDATABASE=pratica_salas</code>, <code>PGUSER=aluno</code> e a porta escolhida no seu servidor PostgreSQL (<code>5432</code> ou <code>5433</code>). Salve e feche.</p>
 <div class="notice"><strong>Credenciais de laboratório:</strong> o arquivo <code>.env</code> possui a senha local de teste. Não envie esse arquivo ao GitHub nem reutilize a senha em outros sistemas.</div>
 <p><strong>8.</strong> Execute a aplicação no mesmo PowerShell:</p>
 <div class="codebox"><div class="codebar"><span>PowerShell · iniciar a aplicação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe app_salas.py</code></pre></div>
@@ -519,14 +536,14 @@ resultado = cur.fetchone()</code></pre></div>
 <div class="trouble" id="ajuda">
 <h3>Se algo não funcionar: diagnóstico rápido</h3>
 <table><thead><tr><th>Sintoma</th><th>O que verificar</th></tr></thead><tbody>
-<tr><td><code>connection refused</code> no pgAdmin/Python</td><td>Docker Desktop iniciado, <code>docker compose ps</code> e porta <code>5432</code> (ou <code>5433</code>).</td></tr>
+<tr><td><code>connection refused</code> no pgAdmin/Python</td><td>Confirme se o servidor está ativo (serviço do Windows ou Docker), a porta <code>5432</code>/<code>5433</code> e o banco <code>pratica_salas</code>.</td></tr>
 <tr><td><code>relation ... already exists</code></td><td>O script de criação já foi executado. Não o rode novamente; prossiga às consultas.</td></tr>
 <tr><td><code>relation ... does not exist</code></td><td>Confirme se o Query Tool está em <code>pratica_salas</code> e se o script foi executado.</td></tr>
 <tr><td><code>current transaction is aborted</code></td><td>Uma operação anterior falhou dentro da transação. Execute <code>ROLLBACK;</code> separadamente.</td></tr>
 <tr><td><code>ModuleNotFoundError</code> no Python</td><td>Execute o Python do ambiente <code>.venv</code> e confirme a instalação das dependências.</td></tr>
 <tr><td>Uma sessão ficou aguardando no teste 08</td><td>Isso pode ser o bloqueio esperado. Finalize a transação A com <code>COMMIT;</code> e depois trate B.</td></tr>
 </tbody></table>
-<p class="smallnote">Para problemas de WSL, Docker Desktop, criação do contêiner e conexão do pgAdmin, consulte o <a href="https://pfransozi.github.io/bd-2026-02/guia-postgresql-windows.html" rel="noopener noreferrer" target="_blank">tutorial de instalação que utilizamos na aula anterior</a>.</p>
+<p class="smallnote">Para problemas de instalação e conexão, consulte o guia correspondente: <a href="guia-postgresql-windows-nativo.html">instalação nativa no Windows</a> ou <a href="guia-postgresql-windows.html">instalação com Docker</a>.</p>
 </div>
 
 </div></section>
@@ -553,23 +570,34 @@ resultado = cur.fetchone()</code></pre></div>
 </div></section>
 <section class="pg-section" id="extra"><div class="container pg-body">
 <p class="pg-kicker">5 · Opcional</p><h2>Conferir a persistência após reiniciar o servidor</h2>
-<p>Este procedimento é opcional e deve ser realizado somente após finalizar os testes anteriores.</p>
+<p>Depois de concluir os testes anteriores e encerrar a aplicação Python, você pode reiniciar o servidor para confirmar que as tabelas não dependem de manter o pgAdmin aberto. Use <strong>somente o procedimento correspondente à sua instalação</strong>.</p>
+<details><summary>Se instalou o PostgreSQL diretamente no Windows</summary>
 <ol>
-<li>Feche a aplicação Python (opção <code>0</code>) e volte ao PowerShell.</li>
-<li>Entre na pasta que contém o <code>compose.yaml</code> e execute <code>docker compose stop</code>.</li>
-<li>Reinicie o mesmo serviço com <code>docker compose start</code>.</li>
-<li>Abra novamente o pgAdmin e execute a consulta de contagem no banco <code>pratica_salas</code>.</li>
+<li>Feche a aplicação Python (opção <code>0</code>).</li>
+<li>Abra a ferramenta <strong>Serviços</strong> com <code>services.msc</code>.</li>
+<li>Localize o serviço do PostgreSQL e, se tiver permissão, use <strong>Reiniciar</strong>.</li>
+<li>Abra novamente o pgAdmin, conecte-se ao banco <code>pratica_salas</code> e execute a consulta de conferência da etapa final.</li>
 </ol>
-<div class="codebox"><div class="codebar"><span>PowerShell · parar e iniciar o PostgreSQL</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Set-Location "$HOME\postgres-laboratorio"
+</details>
+<details><summary>Se utilizou o Docker Desktop</summary>
+<ol>
+<li>Feche a aplicação Python (opção <code>0</code>).</li>
+<li>Abra o PowerShell na pasta do arquivo <code>compose.yaml</code> e execute:</li>
+</ol>
+<div class="codebox"><div class="codebar"><span>PowerShell · parar e reiniciar o contêiner</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>Set-Location "$HOME\postgres-laboratorio"
 docker compose stop
 docker compose start</code></pre></div>
-<div class="important"><strong>Não execute <code>docker compose down -v</code>.</strong> Esse comando pode remover o volume de dados utilizado neste laboratório.</div>
-<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Após reiniciar o contêiner, as tabelas e reservas devem continuar armazenadas. A persistência depende do volume configurado no tutorial; isso não substitui uma política de backup para recuperar exclusões acidentais.</p></div>
+<ol start="3">
+<li>Reconecte o pgAdmin ao banco <code>pratica_salas</code> e faça a mesma consulta de conferência.</li>
+</ol>
+<div class="important"><strong>Não execute <code>docker compose down -v</code>.</strong> Esse comando pode remover o volume do laboratório.</div>
+</details>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Os registros confirmados devem continuar presentes após a reinicialização do servidor. Reiniciar um serviço não é um procedimento de backup; mantenha cópias dos dados importantes.</p></div>
 </div></section>
 <section class="pg-section" id="desafio"><div class="container pg-body">
 <p class="pg-kicker">6 · Material de apoio</p><h2>Para consultar durante a prática</h2>
 <div class="pg-grid">
-<article class="pg-card"><strong>Instalação e conexão</strong><p><a href="guia-postgresql-windows.html">Guia PostgreSQL no Windows</a> — Docker Desktop, pgAdmin e solução de problemas.</p></article>
+<article class="pg-card"><strong>Instalação e conexão</strong><p><a href="guia-postgresql-windows-nativo.html">Guia sem Docker</a> ou <a href="guia-postgresql-windows.html">guia com Docker</a>. Selecione o procedimento da sua instalação.</p></article>
 <article class="pg-card"><strong>Conteúdo da disciplina</strong><p><a href="aula-10.html">Aula 10: o SGBD por dentro</a> — integridade, transações, índices e arquitetura.</p></article>
 <article class="pg-card"><strong>Script SQL</strong><p><a href="pratica-10/01_banco_salas.sql" download>Baixar 01_banco_salas.sql</a> — mesmas tabelas e dados da etapa 3.</p></article>
 <article class="pg-card"><strong>Aplicação Python</strong><p><a href="pratica-10/app_salas.py" download>Baixar app_salas.py</a> e <a href="pratica-10/env-exemplo.txt" download>configuração de exemplo</a>.</p></article>
