@@ -171,85 +171,82 @@ body.pratica-pg { background:var(--bg);color:var(--text) }
 <div class="pg-toc-shell"><nav class="container pg-toc" aria-label="Etapas da prática">
 <a href="#objetivo">Contexto</a><a href="#parte1">pgAdmin</a><a href="#e3">Tabelas</a><a href="#parte2">SGBD</a><a href="#e8">Concorrência</a><a href="#parte3">Python</a><a href="#sintese">Síntese</a><a href="#extra">Extensão</a><a href="#ajuda">Diagnóstico</a>
 </nav></div>
-<section class="pg-section" id="objetivo"><div class="container pg-body"><p class="pg-kicker">0 · Antes de começar</p><h2>Contexto, objetivos e preparação</h2>
-<div class="intro">
-<p><strong>Situação-problema.</strong> A equipe de apoio de uma instituição precisa registrar salas, pessoas e reservas. Duas pessoas não podem usar a mesma sala no mesmo horário. Seu objetivo é descobrir <em>como o PostgreSQL protege essas regras</em> e depois verificar se as mesmas garantias continuam válidas quando uma aplicação Python solicita uma reserva.</p>
-<div class="meta"><span>PostgreSQL 18 + pgAdmin 4</span><span>Python + psycopg 3</span><span>≈ 130 minutos</span><span>Individual ou em dupla</span></div>
-<div class="objective"><strong>Ao concluir, você deverá conseguir:</strong> identificar o cliente, o servidor e o banco; implementar tabelas e chaves; verificar restrições e transações; interpretar índices e concorrência; executar SQL a partir de uma aplicação.</div>
-<p class="notice"><strong>Atenção:</strong> o tutorial anterior criou o banco <code>laboratorio</code>. Nesta prática será criado <code>pratica_salas</code> no <strong>mesmo PostgreSQL</strong>. Não apague o banco anterior nem remova o volume Docker.</p>
-<div aria-label="Fluxo da prática" class="concept-flow"><b>pgAdmin (cliente)</b><span>→ SQL →</span><b>PostgreSQL (SGBD)</b><span>← driver psycopg ←</span><b>Aplicação Python</b></div>
-<div class="scenario">
-<h3>Regras do sistema que vamos construir</h3>
-<ol>
-<li>Cada <strong>bloco</strong> possui várias <strong>salas</strong>.</li>
-<li>Cada <strong>reserva</strong> indica exatamente uma sala, um usuário, uma data e um horário.</li>
-<li>Uma reserva representa um intervalo de <strong>uma hora</strong>, com início em hora cheia, das 08h às 21h.</li>
-<li>A combinação <strong>sala + data + horário</strong> não pode se repetir.</li>
-</ol>
-<p class="smallnote">Este é um modelo didático, não um sistema institucional completo. Regras como cancelamentos, conflitos entre intervalos de durações diferentes e verificação de sala inativa exigiriam decisões adicionais.</p>
+<section class="pg-section" id="objetivo"><div class="container pg-body">
+<p class="pg-kicker">0 · Orientações iniciais</p>
+<h2>Preparação para a prática</h2>
+<p>Este material é um <strong>roteiro de execução</strong>. Você utilizará primeiro o pgAdmin para criar e consultar tabelas, observará mecanismos do PostgreSQL e, ao final, executará uma aplicação Python conectada ao mesmo banco.</p>
+<div class="pg-grid">
+<article class="pg-card"><strong>Parte 1 · pgAdmin</strong><p>Conferir a conexão, criar um banco próprio, construir quatro tabelas e cadastrar registros iniciais.</p></article>
+<article class="pg-card"><strong>Parte 2 · Recursos do SGBD</strong><p>Consultas, restrições, transações, índices e dois acessos simultâneos.</p></article>
+<article class="pg-card"><strong>Parte 3 · Python</strong><p>Preparar os arquivos, conectar com psycopg, consultar registros e testar novas reservas.</p></article>
+<article class="pg-card"><strong>Tempo de referência</strong><p>Três blocos de aproximadamente 30, 50 e 50 minutos. Prossiga somente após conferir o resultado de cada etapa.</p></article>
 </div>
-<details class="method"><summary>Como utilizar este roteiro (orientações para a execução)</summary>
-
-<ol>
-<li>Leia o objetivo da etapa e, antes de rodar o SQL, tente prever o resultado.</li>
-<li>Execute os comandos <strong>no ambiente indicado</strong>: PowerShell, pgAdmin ou terminal Python.</li>
-<li>Compare o retorno com o quadro <strong>“O que conferir”</strong>. Um erro previsto em um teste de restrição é um resultado correto.</li>
-<li>Responda à pergunta final da etapa com base no que observou, não apenas na definição teórica.</li>
-</ol>
-<p class="smallnote"><strong>No pgAdmin:</strong> conecte-se ao banco correto, abra <em>Tools → Query Tool</em>, selecione apenas o SQL que deseja executar e clique em ▶ (ou use F5). Em testes de transação, execute cada comando separadamente para observar os estados intermediários.</p>
-</details>
-</div>
-
+<div class="guide-banner"><strong>Já instalou o PostgreSQL na aula anterior?</strong>
+<p>Utilize o mesmo Docker Desktop e o mesmo servidor PostgreSQL 18. Se precisar retomar a instalação ou a conexão com o pgAdmin, consulte o guia utilizado em sala.</p>
+<a href="guia-postgresql-windows.html">Revisar o tutorial de PostgreSQL no Windows →</a></div>
+<div class="notice"><strong>Importante:</strong> vamos criar o banco <code>pratica_salas</code>. O banco <code>laboratorio</code> do tutorial anterior deve permanecer intacto. Não remova o volume Docker e não reinstale o servidor.</div>
+<div class="objective"><strong>Como acompanhar:</strong> em cada etapa, identifique o programa indicado (<strong>PowerShell</strong>, <strong>pgAdmin</strong> ou <strong>Python</strong>), execute os comandos na ordem apresentada e leia a caixa <strong>“Confira antes de avançar”</strong>. Em algumas etapas, uma mensagem de erro será o resultado esperado.</div>
+<p><a href="aula-10.html">Rever os conceitos da Aula 10 →</a></p>
 </div></section>
 <section class="pg-section" id="parte1"><div class="container pg-body"><p class="pg-kicker">1 · Primeiro contato com o pgAdmin</p><h2>Parte 1 · Conhecer o ambiente e preparar o banco <small>30 minutos</small></h2>
 
-<section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Retomar o servidor PostgreSQL</h3></div><div class="purpose"><strong>Por que começar aqui?</strong> Antes de investigar tabelas, precisamos saber se o serviço está ativo. O pgAdmin, sozinho, não é o servidor PostgreSQL.</div><p><strong>Onde executar:</strong> PowerShell do Windows. O PostgreSQL que você montou na semana anterior continua dentro do Docker; você <strong>não</strong> precisa instalar outro servidor.</p>
-<div class="guided"><h4>Faça nesta ordem</h4><ol><li>Abra o Docker Desktop e confirme que o mecanismo iniciou.</li><li>Abra o PowerShell e entre na pasta do <code>compose.yaml</code>.</li><li>Execute <code>docker compose ps</code>. Se o serviço não estiver ativo, execute o comando <code>up -d</code> do bloco.</li><li>Execute o teste <code>psql</code> ao final e observe o banco e o usuário retornados.</li></ol></div><div class="codebox"><div class="codebar"><span>PowerShell</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>Set-Location "$HOME\postgres-laboratorio"
-docker compose ps
-
-# Se estiver parado:
-docker compose up -d
-
-# Verifique se o PostgreSQL responde:
-docker compose exec db psql -U aluno -d laboratorio -c "SELECT current_database(), current_user;"</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><p>Na consulta de teste, as colunas devem indicar <code>laboratorio</code> e <code>aluno</code>. Se aparecer <code>connection refused</code>, retome a seção “Problemas comuns” do <a href="https://pfransozi.github.io/bd-2026-02/guia-postgresql-windows.html" rel="noopener noreferrer" target="_blank">guia de instalação</a> antes de prosseguir.</p></div><p><strong>Questão 1.</strong> O pgAdmin armazena diretamente os dados das tabelas? Explique onde o servidor está executando e qual é a função do cliente.</p></section>
-<section class="task" id="e2"><div class="task-h"><span class="step">02</span><h3>Criar um banco próprio para a atividade</h3></div><div class="purpose"><strong>Conceito:</strong> o servidor PostgreSQL pode gerenciar vários bancos. Um banco contém esquemas, que por sua vez organizam tabelas e outros objetos.</div><p><strong>Onde executar:</strong> interface do pgAdmin e seu <em>Query Tool</em>. Agora vamos criar um banco separado para não modificar as tabelas feitas no tutorial anterior.</p>
-<div class="guided"><h4>Passo a passo na interface</h4><ol><li>Abra o pgAdmin e expanda <strong>Servers → PostgreSQL — Laboratório</strong>.</li><li>Clique com o botão direito em <strong>Databases → Create → Database…</strong>.</li><li>Preencha <strong>Database</strong> com <code>pratica_salas</code> e <strong>Owner</strong> com <code>aluno</code>.</li><li>Clique em <strong>Save</strong>. Se não aparecer na árvore, clique em <strong>Refresh</strong>.</li><li>Selecione <strong>pratica_salas</strong>, abra <strong>Tools → Query Tool</strong> e execute o <code>SELECT</code> abaixo.</li></ol></div>
-<table><thead><tr><th>Campo</th><th>Valor</th></tr></thead><tbody><tr><td>Database</td><td><code>pratica_salas</code></td></tr><tr><td>Owner</td><td><code>aluno</code></td></tr></tbody></table>
-<p>Salve, atualize <em>Databases</em> se necessário e abra <em>Query Tool</em> especificamente no banco <code>pratica_salas</code>. Execute:</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT current_database() AS banco,
-       current_user AS usuario,
-       pg_backend_pid() AS sessao;</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><table class="example-table"><thead><tr><th>banco</th><th>usuario</th><th>sessao</th></tr></thead><tbody><tr><td><code>pratica_salas</code></td><td><code>aluno</code></td><td>um número de sessão, variável</td></tr></tbody></table><p>Se a coluna <code>banco</code> mostrar <code>laboratorio</code>, você abriu o Query Tool no banco incorreto. Selecione o banco certo antes de criar tabelas.</p></div><p><strong>Questão 2.</strong> Qual é a diferença entre criar um novo banco de dados e criar uma tabela dentro de um banco existente?</p></section>
-<section class="task" id="e3"><div class="task-h"><span class="step">03</span><h3>Criar o modelo e inserir dados iniciais</h3></div><div class="purpose"><strong>Por que quatro tabelas?</strong> Uma reserva <em>referencia</em> uma sala e uma pessoa. Não precisamos repetir o nome de cada sala ou usuário em todas as reservas — as chaves estrangeiras permitem relacionar os registros.</div><p><strong>Onde executar:</strong> Query Tool de <code>pratica_salas</code>. Vamos transformar as regras do cenário em quatro tabelas relacionadas e inserir dados fictícios para os próximos testes.</p>
-<div class="guided"><h4>Antes de executar</h4><ol><li>Na área de arquivos do pacote, localize <a download="" href="pratica-10/01_banco_salas.sql"><code>01_banco_salas.sql</code></a>.</li><li>No Query Tool, use <strong>Open File</strong> (ícone de pasta) para abrir o script.</li><li>Leia o primeiro <code>CREATE TABLE</code>: identifique a chave primária e os campos obrigatórios.</li><li>Execute o arquivo <strong>uma única vez</strong>. Observe a última consulta de contagem.</li><li>Atualize <strong>Schemas → public → Tables</strong> e abra as quatro tabelas na árvore.</li></ol></div>
-<div class="predict"><h4>Antes de rodar, formule uma hipótese</h4><p>Uma reserva com <code>id_sala = 999</code> poderia ser cadastrada? E duas reservas na mesma sala, mesma data e mesma hora? Procure no script as regras que determinam essas respostas.</p></div>
-<p>Essas tabelas representam o seguinte recorte do domínio:</p>
-<div aria-label="Bloco um para muitas salas; sala e usuário um para muitas reservas" class="diagram" role="img"><span>bloco</span><i>1 → N</i><span>sala</span><i>1 → N</i><span>reserva</span><i>N ← 1</i><span>usuario</span></div>
-<p>Para compreender a implementação, observe <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>UNIQUE</code>, <code>CHECK</code> e <code>GENERATED ALWAYS AS IDENTITY</code>.</p><details><summary>Ver o script SQL completo</summary><div class="codebox"><div class="codebar"><span>SQL · criação e carga inicial</span><a class="code-download" download="" href="pratica-10/01_banco_salas.sql">Baixar arquivo</a><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- Aula 10 - Prática guiada: Sistema de Reserva de Salas
--- Execute uma única vez, no Query Tool conectado ao banco pratica_salas.
--- Não execute no banco laboratorio: o banco da prática é separado.
-
-CREATE TABLE bloco (
+<section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Ligar o PostgreSQL e conferir o servidor</h3></div>
+<p><strong>Onde executar:</strong> Docker Desktop e PowerShell do Windows.</p>
+<div class="guided"><h4>Faça nesta ordem</h4><ol>
+<li>Abra o <strong>Docker Desktop</strong> e espere o serviço iniciar.</li>
+<li>Abra o <strong>PowerShell</strong>.</li>
+<li>Entre na pasta usada no tutorial anterior, onde está o arquivo <code>compose.yaml</code>. Execute:</li>
+</ol></div>
+<div class="codebox"><div class="codebar"><span>PowerShell · entrar na pasta</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Set-Location "$HOME\postgres-laboratorio"</code></pre></div>
+<p><strong>4.</strong> Confira o estado do contêiner. A coluna de estado deve indicar que o serviço está em execução.</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · verificar o serviço</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>docker compose ps</code></pre></div>
+<p><strong>5.</strong> Se estiver parado, inicie o PostgreSQL e execute novamente a conferência:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · somente se necessário</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>docker compose up -d
+docker compose ps</code></pre></div>
+<p><strong>6.</strong> Confirme que o próprio servidor responde à consulta:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · teste de conexão</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>docker compose exec db psql -U aluno -d laboratorio -c "SELECT current_database(), current_user;"</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta deve indicar <code>laboratorio</code> como banco e <code>aluno</code> como usuário. O Docker executa o servidor; o pgAdmin será utilizado como cliente nas próximas etapas. Se o comando não funcionar, consulte a seção de diagnóstico do <a href="guia-postgresql-windows.html">tutorial de instalação</a>.</p></div>
+</section>
+<section class="task" id="e2"><div class="task-h"><span class="step">02</span><h3>Criar um banco de dados pelo pgAdmin</h3></div>
+<p><strong>Onde executar:</strong> interface do pgAdmin 4 e Query Tool.</p>
+<div class="guided"><h4>Faça nesta ordem</h4><ol>
+<li>Abra o <strong>pgAdmin 4</strong>.</li>
+<li>No painel lateral, expanda <strong>Servers → PostgreSQL — Laboratório</strong> (o nome pode variar se você o cadastrou de outra forma).</li>
+<li>Clique com o botão direito em <strong>Databases → Create → Database…</strong>.</li>
+<li>Na janela que abrir, preencha <strong>Database</strong> com <code>pratica_salas</code> e <strong>Owner</strong> com <code>aluno</code>.</li>
+<li>Clique em <strong>Save</strong>. Se o novo banco não aparecer, clique com o botão direito em <strong>Databases → Refresh</strong>.</li>
+<li>Selecione <strong>pratica_salas</strong> e abra <strong>Tools → Query Tool</strong>. Confirme o nome do banco na aba do editor.</li>
+<li>Execute somente o código abaixo no Query Tool (botão ▶ ou tecla F5).</li>
+</ol></div>
+<div class="codebox"><div class="codebar"><span>pgAdmin · Query Tool · conferir conexão</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT current_database() AS banco,
+       current_user AS usuario;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Na área <strong>Data Output</strong>, deve aparecer <code>pratica_salas</code> na coluna <code>banco</code> e <code>aluno</code> na coluna <code>usuario</code>. Se aparecer <code>laboratorio</code>, abra o Query Tool no banco correto antes de continuar.</p></div>
+</section>
+<section class="task" id="e3"><div class="task-h"><span class="step">03</span><h3>Criar as tabelas e inserir os primeiros registros</h3></div>
+<p><strong>Onde executar:</strong> Query Tool do banco <code>pratica_salas</code>. Você criará as tabelas <code>bloco</code>, <code>sala</code>, <code>usuario</code> e <code>reserva</code>, nesta ordem.</p>
+<div class="diagram" aria-label="Relações entre as quatro tabelas"><span>bloco</span><i>1 → N</i><span>sala</span><i>1 → N</i><span>reserva</span><i>N ← 1</i><span>usuario</span></div>
+<p><strong>1.</strong> Abra uma nova consulta e crie a tabela <code>bloco</code>. Observe que <code>id_bloco</code> será preenchido automaticamente pelo PostgreSQL.</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · SQL · tabela bloco</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE bloco (
     id_bloco INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome_bloco VARCHAR(60) NOT NULL UNIQUE
-);
-
-CREATE TABLE sala (
+);</code></pre></div>
+<p><strong>2.</strong> Crie a tabela <code>sala</code>. O campo <code>id_bloco</code> faz a ligação com a tabela anterior. A restrição <code>CHECK</code> permite capacidades entre 1 e 80.</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · SQL · tabela sala</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE sala (
     id_sala INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_bloco INTEGER NOT NULL REFERENCES bloco (id_bloco),
     nome VARCHAR(60) NOT NULL,
     capacidade INTEGER NOT NULL CHECK (capacidade BETWEEN 1 AND 80),
     ativa BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT uq_sala_bloco UNIQUE (id_bloco, nome)
-);
-
-CREATE TABLE usuario (
+);</code></pre></div>
+<p><strong>3.</strong> Crie <code>usuario</code>. O <code>UNIQUE</code> evita dois registros com o mesmo e-mail.</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · SQL · tabela usuario</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE usuario (
     id_usuario INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE
-);
-
--- Uma reserva ocupa exatamente um horário de 1 hora, iniciando em hora cheia.
--- Este modelo simplificado não contempla reservas de duração variável.
-CREATE TABLE reserva (
+);</code></pre></div>
+<p><strong>4.</strong> Crie <code>reserva</code>. Cada registro apontará para uma sala e um usuário. O sistema considerará horários de uma hora, começando em hora cheia entre 08:00 e 21:00.</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · SQL · tabela reserva</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE reserva (
     id_reserva INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_sala INTEGER NOT NULL REFERENCES sala (id_sala),
     id_usuario INTEGER NOT NULL REFERENCES usuario (id_usuario),
@@ -264,9 +261,9 @@ CREATE TABLE reserva (
         AND EXTRACT(SECOND FROM hora_inicio) = 0
     ),
     CONSTRAINT uq_sala_horario UNIQUE (id_sala, data_reserva, hora_inicio)
-);
-
-INSERT INTO bloco (nome_bloco)
+);</code></pre></div>
+<p><strong>5.</strong> No painel lateral do pgAdmin, clique com o botão direito em <strong>Schemas → public → Tables → Refresh</strong>. Confira se as quatro tabelas aparecem. Depois insira dois blocos e quatro salas:</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · SQL · inserir blocos e salas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO bloco (nome_bloco)
 VALUES ('Bloco A'), ('Bloco B');
 
 INSERT INTO sala (id_bloco, nome, capacidade, ativa)
@@ -274,9 +271,9 @@ VALUES
     (1, 'Laboratório 101', 36, TRUE),
     (1, 'Sala 102', 45, TRUE),
     (2, 'Sala 201', 30, TRUE),
-    (2, 'Laboratório 202', 24, TRUE);
-
-INSERT INTO usuario (nome, email)
+    (2, 'Laboratório 202', 24, TRUE);</code></pre></div>
+<p><strong>6.</strong> Insira três usuários e quatro reservas iniciais:</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · SQL · inserir usuários e reservas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO usuario (nome, email)
 VALUES
     ('Ana Martins', 'ana.martins@exemplo.edu'),
     ('Bruno Costa', 'bruno.costa@exemplo.edu'),
@@ -287,24 +284,15 @@ VALUES
     (1, 1, DATE '2026-11-12', TIME '08:00', 'Aula de Banco de Dados'),
     (2, 2, DATE '2026-11-12', TIME '08:00', 'Projeto de Software'),
     (1, 3, DATE '2026-11-12', TIME '10:00', 'Monitoria'),
-    (3, 2, DATE '2026-11-13', TIME '14:00', 'Reunião de projeto');
-
--- Conferência: deverão existir 2 blocos, 4 salas, 3 usuários e 4 reservas.
-SELECT
+    (3, 2, DATE '2026-11-13', TIME '14:00', 'Reunião de projeto');</code></pre></div>
+<p><strong>7.</strong> Conte os registros cadastrados:</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · SQL · conferir a carga</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT
     (SELECT COUNT(*) FROM bloco) AS blocos,
     (SELECT COUNT(*) FROM sala) AS salas,
     (SELECT COUNT(*) FROM usuario) AS usuarios,
-    (SELECT COUNT(*) FROM reserva) AS reservas;</code></pre></div></details><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT
-    (SELECT COUNT(*) FROM bloco) AS blocos,
-    (SELECT COUNT(*) FROM sala) AS salas,
-    (SELECT COUNT(*) FROM usuario) AS usuarios,
-    (SELECT COUNT(*) FROM reserva) AS reservas;</code></pre></div><table class="example-table"><thead><tr><th>Recurso SQL</th><th>Por que está no modelo?</th></tr></thead><tbody>
-<tr><td><code>PRIMARY KEY</code></td><td>Identifica cada registro de forma única.</td></tr>
-<tr><td><code>REFERENCES</code></td><td>Define a chave estrangeira para uma tabela existente.</td></tr>
-<tr><td><code>UNIQUE</code></td><td>Impede duplicações, como duas reservas para o mesmo horário.</td></tr>
-<tr><td><code>CHECK</code></td><td>Valida valores, como capacidade positiva e hora cheia.</td></tr>
-<tr><td><code>GENERATED ... AS IDENTITY</code></td><td>Deixa o PostgreSQL gerar os identificadores.</td></tr>
-</tbody></table><div class="checkpoint"><h4>O que conferir</h4><p>O script deve deixar <strong>2 blocos, 4 salas, 3 usuários e 4 reservas</strong>. Se surgir <code>relation already exists</code>, provavelmente o script já foi executado; não repita as inserções. Continue somente com as consultas.</p></div><p><strong>Questão 3.</strong> Por que <code>reserva</code> contém duas chaves estrangeiras? Qual regra é implementada por <code>UNIQUE (id_sala, data_reserva, hora_inicio)</code>?</p>
+    (SELECT COUNT(*) FROM reserva) AS reservas;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O resultado deve ser <strong>2 blocos, 4 salas, 3 usuários e 4 reservas</strong>. Se alguma instrução acusar <code>relation already exists</code> ou e-mail duplicado, não execute novamente a carga: ela pode já ter sido realizada. Use a consulta de contagem para verificar o estado atual.</p></div>
+<p class="smallnote"><strong>Arquivo de apoio:</strong> <a href="pratica-10/01_banco_salas.sql" download>baixar o SQL completo</a>. O arquivo contém os mesmos comandos acima; <strong>não o execute novamente</strong> se já criou as tabelas e inseriu os dados manualmente.</p>
 </section>
 
 </div></section>
