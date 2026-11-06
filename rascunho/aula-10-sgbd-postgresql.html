@@ -133,6 +133,17 @@
   .sgbd-select-steps .sgbd-card{padding:1.05rem}
   .sgbd-select-steps .sgbd-card h4{margin:.3rem 0 .25rem}
   .sgbd-select-steps .sgbd-card p{margin:.25rem 0}
+
+    /* Comparação de alternativas de armazenamento */
+    .sgbd-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem;margin:1.1rem 0 1.25rem}
+    .sgbd-choice{display:flex;flex-direction:column;min-width:0;padding:1.05rem;border:1px solid var(--line);border-radius:13px;background:var(--surface)}
+    .sgbd-choice h4{font-size:1.07rem;margin:0 0 .55rem;line-height:1.3}
+    .sgbd-choice p{font-size:.9rem;color:var(--muted);line-height:1.6;margin:0 0 .75rem}
+    .sgbd-choice .sgbd-choice-example{margin:auto 0 0;border-top:1px solid var(--line);padding-top:.65rem}
+    .sgbd-choice-example strong{color:var(--text);font-weight:700}
+    .sgbd-context-note{font-size:.94rem;color:var(--muted)}
+    .sgbd-decision-table td{line-height:1.55}
+    @media(max-width:850px){.sgbd-choice-grid{grid-template-columns:1fr}}
     @media(max-width:1080px){
       body.lesson-sgbd .site-header .nav-wrap{display:flex;flex-wrap:nowrap;position:relative;align-items:center;gap:10px;min-height:58px}
       body.lesson-sgbd .site-header .brand{min-width:0;max-width:calc(100% - 54px)}
@@ -631,34 +642,60 @@ RETURNING id_reserva;</code></pre></div>
 
     <section class="sgbd-section" id="aplicacoes"><div class="sgbd-container">
       <div class="sgbd-section-head"><p class="sgbd-kicker">5 · Usos e decisões de projeto</p><h2>Quando um SGBD é uma boa escolha?</h2>
-        <p>Não basta perguntar se há muitos dados. É necessário avaliar requisitos de integridade, concorrência, consultas, segurança e continuidade do serviço.</p>
+        <p>A decisão não depende apenas da quantidade de dados, mas das operações que o sistema precisa realizar e das garantias que deve preservar.</p>
       </div>
-      <div class="sgbd-matrix"><table>
-        <thead><tr><th>Contexto</th><th>O que precisa ser administrado</th><th>Mecanismos especialmente importantes</th></tr></thead>
+
+      <h3>1. Quais requisitos devemos analisar?</h3>
+      <p>Antes de escolher uma tecnologia de armazenamento, precisamos compreender como os dados serão utilizados.</p>
+      <div class="sgbd-matrix sgbd-decision-table"><table>
+        <thead><tr><th>Aspecto</th><th>Pergunta que orienta a escolha</th></tr></thead>
         <tbody>
-          <tr><td>Comércio eletrônico</td><td>Pedidos, estoque e registros de pagamento.</td><td>Transações, concorrência e integridade.</td></tr>
-          <tr><td>Hospital</td><td>Pacientes, atendimentos e acesso por perfis.</td><td>Controle de acesso, integridade e auditoria.</td></tr>
-          <tr><td>Instituição de ensino</td><td>Matrículas, turmas, notas e históricos.</td><td>Relacionamentos, restrições e consultas.</td></tr>
-          <tr><td>Indústria</td><td>Equipamentos, ordens e histórico de manutenção.</td><td>Persistência, disponibilidade e relatórios.</td></tr>
-          <tr><td>Aplicação web</td><td>Usuários, conteúdo e operações simultâneas.</td><td>Conexões, consultas, transações e permissões.</td></tr>
+          <tr><td>Estrutura e relacionamentos</td><td>Existem entidades relacionadas e regras que não podem ser violadas?</td></tr>
+          <tr><td>Acessos simultâneos</td><td>Várias pessoas ou aplicações podem consultar e modificar os mesmos dados?</td></tr>
+          <tr><td>Operações críticas</td><td>Algumas alterações precisam ser confirmadas ou desfeitas em conjunto?</td></tr>
+          <tr><td>Segurança e recuperação</td><td>É necessário controlar permissões e recuperar dados após falhas ou erros?</td></tr>
+          <tr><td>Consultas e crescimento</td><td>O sistema precisa relacionar tabelas, consultar grandes volumes ou suportar aumento da carga?</td></tr>
         </tbody>
       </table></div>
-      <h3>Quando um arquivo simples pode ser suficiente?</h3>
-      <p>Um CSV local pode atender a uma análise pontual, e um JSON pode servir como arquivo de configuração. Se os dados forem poucos, estáticos, sem acessos simultâneos e sem requisitos transacionais, um SGBD servidor pode introduzir complexidade desnecessária.</p>
-      <div class="sgbd-emphasis"><p><strong>Critério de engenharia:</strong> selecionar uma solução pela necessidade do sistema — não apenas pela popularidade da ferramenta.</p></div>
 
-      <h3>Atividade de consolidação · Sistema de reserva de salas</h3>
-      <p>Uma aplicação permite consultar salas, verificar horários, registrar e cancelar reservas. Usuários distintos podem acessar o sistema simultaneamente, e somente pessoas autorizadas devem modificar os registros.</p>
-      <p>Para cada situação, identifique o mecanismo do SGBD mais relevante e explique o que ainda precisará ser definido pelo projetista.</p>
-      <div class="sgbd-checklist">
-        <details class="sgbd-details"><summary>1. Uma reserva não pode referenciar uma sala inexistente.</summary><p>Integridade referencial: chave estrangeira de <code>reserva.id_sala</code> para <code>sala.id_sala</code>.</p></details>
-        <details class="sgbd-details"><summary>2. Dois usuários tentam reservar a mesma sala para a mesma data e horário.</summary><p>Concorrência e integridade: a restrição <code>UNIQUE (id_sala, data, hora_inicio)</code> impede a duplicidade. A aplicação precisa tratar adequadamente o conflito.</p></details>
-        <details class="sgbd-details"><summary>3. Uma pessoa pode consultar salas, mas não alterar reservas.</summary><p>Autorização: papéis e privilégios podem conceder acesso de leitura sem permitir inserção, atualização ou exclusão.</p></details>
-        <details class="sgbd-details"><summary>4. O servidor desliga inesperadamente depois da confirmação de uma reserva.</summary><p>Durabilidade e recuperação: o WAL e as configurações de persistência sustentam a recuperação de transações confirmadas.</p></details>
-        <details class="sgbd-details"><summary>5. A consulta de reservas por sala e data está lenta.</summary><p>Planejamento e otimização: analisar o <code>EXPLAIN</code>, as estatísticas e índices adequados à combinação de sala e data.</p></details>
-        <details class="sgbd-details"><summary>6. Reservas são excluídas indevidamente e a exclusão chega às réplicas.</summary><p>Backups e, se configurada, recuperação por ponto no tempo. Replicação não substitui uma estratégia de restauração.</p></details>
+      <h3>2. Qual solução atende ao cenário?</h3>
+      <p>As alternativas abaixo não formam uma escala de qualidade. Cada uma atende a requisitos diferentes.</p>
+      <div class="sgbd-choice-grid">
+        <article class="sgbd-choice">
+          <h4>Arquivos CSV ou JSON</h4>
+          <p>Adequados para exportações, configurações e conjuntos simples de dados que não exigem operações concorrentes ou regras relacionais complexas.</p>
+          <p class="sgbd-choice-example"><strong>Exemplo:</strong> exportar um relatório de ocupação das salas.</p>
+        </article>
+        <article class="sgbd-choice">
+          <h4>SQLite</h4>
+          <p>SGBD relacional incorporado à aplicação. Oferece SQL, transações e restrições sem precisar de um servidor separado, sendo útil para aplicações locais.</p>
+          <p class="sgbd-choice-example"><strong>Exemplo:</strong> uma agenda de reservas usada em um único computador.</p>
+        </article>
+        <article class="sgbd-choice">
+          <h4>PostgreSQL</h4>
+          <p>SGBD cliente-servidor adequado a sistemas compartilhados com múltiplas conexões, controle de acesso, consultas complexas e requisitos de recuperação e administração.</p>
+          <p class="sgbd-choice-example"><strong>Exemplo:</strong> reservas utilizadas simultaneamente por diferentes setores.</p>
+        </article>
       </div>
-      <div class="sgbd-question"><strong>Questão final para discussão</strong><p>Qual é a diferença entre armazenar dados e administrá-los com garantias de integridade, isolamento, segurança e recuperação?</p></div>
+      <div class="sgbd-emphasis"><p><strong>Critério de engenharia:</strong> escolher a solução conforme integridade, concorrência, segurança, desempenho, operação e custos de manutenção — não apenas pela popularidade da tecnologia.</p></div>
+
+      <h3>3. Aplicando a decisão ao sistema de reserva de salas</h3>
+      <p>Ao compartilhar salas entre setores, determinadas responsabilidades podem ser atribuídas ao SGBD, mas a aplicação e o projeto ainda precisam definir as regras específicas.</p>
+      <div class="sgbd-matrix sgbd-decision-table"><table>
+        <thead><tr><th>Necessidade</th><th>Recurso do SGBD</th><th>Decisão do projeto</th></tr></thead>
+        <tbody>
+          <tr><td>Relacionar reservas a salas e usuários existentes.</td><td>Chaves estrangeiras.</td><td>Definir os relacionamentos e o comportamento das exclusões.</td></tr>
+          <tr><td>Impedir reservas incompatíveis no mesmo horário.</td><td><code>UNIQUE</code> e controle de concorrência.</td><td>Definir os conflitos e se uma reserva cancelada libera o horário.</td></tr>
+          <tr><td>Atualizar dados relacionados de forma consistente.</td><td><code>COMMIT</code> e <code>ROLLBACK</code>.</td><td>Definir quais operações pertencem à mesma transação.</td></tr>
+          <tr><td>Permitir consulta sem autorizar alterações.</td><td>Papéis, <code>GRANT</code> e <code>REVOKE</code>.</td><td>Determinar perfis e privilégios de acesso.</td></tr>
+          <tr><td>Localizar reservas por sala e data rapidamente.</td><td>Índices, estatísticas e otimizador.</td><td>Analisar consultas reais e examinar planos com <code>EXPLAIN</code>.</td></tr>
+          <tr><td>Recuperar dados após falhas ou exclusões indevidas.</td><td>WAL, backup e restauração.</td><td>Definir retenção, periodicidade e procedimentos de recuperação.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="sgbd-context-note">Requisitos semelhantes aparecem em comércio eletrônico (pedidos e estoque), saúde (atendimentos e permissões), educação (matrículas) e indústria (ordens de produção).</p>
+      <div class="sgbd-question"><strong>Questão final para discussão</strong>
+        <p>O que muda quando uma agenda individual de reservas passa a ser utilizada simultaneamente por vários setores? Quais mecanismos se tornam importantes?</p>
+      </div>
     </div></section>
 
     <section class="sgbd-section alt" id="sintese"><div class="sgbd-container">
