@@ -125,6 +125,14 @@
     .sgbd-layer-figure figcaption{margin:.7rem auto 0;max-width:900px;font-size:.83rem;color:#5d6b82;line-height:1.6}
     .sgbd-layer-table{margin-top:1.15rem}
     @media(max-width:650px){.sgbd-layer-figure{overflow-x:auto;padding:.5rem}.sgbd-layer-figure svg{min-width:770px}.sgbd-layer-figure figcaption{min-width:0}}
+
+  /* Fluxo visual de SELECT e explicação da biblioteca psycopg */
+  .sgbd-select-figure{max-width:780px;margin:1rem auto 1.55rem;padding:1rem;border:1px solid var(--line);border-radius:16px;background:#fff}
+  .sgbd-select-figure svg{display:block;width:100%;max-width:610px;height:auto;margin:0 auto}
+  .sgbd-select-figure figcaption{font-size:.83rem;color:#63758b;margin:.6rem 0 0;line-height:1.55;text-align:center}
+  .sgbd-select-steps .sgbd-card{padding:1.05rem}
+  .sgbd-select-steps .sgbd-card h4{margin:.3rem 0 .25rem}
+  .sgbd-select-steps .sgbd-card p{margin:.25rem 0}
     @media(max-width:1080px){
       body.lesson-sgbd .site-header .nav-wrap{display:flex;flex-wrap:nowrap;position:relative;align-items:center;gap:10px;min-height:58px}
       body.lesson-sgbd .site-header .brand{min-width:0;max-width:calc(100% - 54px)}
@@ -425,31 +433,87 @@
 
     <section class="sgbd-section" id="arquitetura"><div class="sgbd-container">
       <div class="sgbd-section-head"><p class="sgbd-kicker">2 · Arquitetura e processamento</p><h2>O que acontece entre executar um SELECT e receber o resultado?</h2>
-        <p>O DBeaver não procura os dados diretamente nos arquivos do banco. Ele envia uma solicitação ao servidor, que decide como atendê-la.</p>
+        <p>Assim como o DBeaver, uma aplicação Python não consulta os arquivos do banco diretamente. Ela utiliza um driver para enviar SQL ao PostgreSQL, que interpreta, planeja e executa a instrução antes de devolver os resultados.</p>
       </div>
-      <figure class="sgbd-flow">
-        <div class="sgbd-flow-row">
-          <div class="sgbd-flow-node"><strong>Aplicação</strong><small>Requisito do usuário</small></div>
-          <span class="sgbd-flow-arrow">→</span>
-          <div class="sgbd-flow-node"><strong>Cliente / driver</strong><small>DBeaver, psql, psycopg</small></div>
-          <span class="sgbd-flow-arrow">→</span>
-          <div class="sgbd-flow-node"><strong>PostgreSQL</strong><small>Servidor, processos e conexões</small></div>
-          <span class="sgbd-flow-arrow">↔</span>
-          <div class="sgbd-flow-node"><strong>Dados persistentes</strong><small>Tabelas, índices e WAL</small></div>
-        </div>
-        <figcaption>Arquitetura cliente-servidor, representada de forma simplificada. O servidor executa SQL e coordena o acesso às estruturas armazenadas.</figcaption>
-      </figure>
+      <figure id="fluxo-select" class="sgbd-select-figure">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 1170" width="940" height="1170" role="img" aria-labelledby="flux-title flux-desc">
+<title id="flux-title">Fluxo de uma consulta SELECT no PostgreSQL</title>
+<desc id="flux-desc">Fluxo vertical: aplicação Python, driver psycopg, comando SELECT, servidor PostgreSQL com análise, planejamento, execução e acesso a dados, resultado e retorno ao Python.</desc>
+<defs><marker id="flux-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5L1 9Z" fill="#1A568E"/></marker></defs>
+<rect x="215" y="30" width="510" height="76" rx="18" fill="#E9F4FF" stroke="#327AB4" stroke-width="3"/><text x="470" y="78" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="32" font-weight="700" fill="#193558">Aplicação Python</text>
+<path d="M470 109V141" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="215" y="152" width="510" height="76" rx="18" fill="#E9F4FF" stroke="#327AB4" stroke-width="3"/><text x="470" y="200" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#193558">psycopg (driver)</text>
+<path d="M470 231V263" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="215" y="274" width="510" height="76" rx="18" fill="#F0E7FD" stroke="#7352B5" stroke-width="3"/><text x="470" y="322" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#4D317F">SQL · SELECT</text>
+<path d="M470 353V392" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="200" y="407" width="540" height="501" rx="23" fill="#F8F2FF" stroke="#7352B5" stroke-width="3"/>
+<text x="470" y="453" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="34" font-weight="700" fill="#4D317F">PostgreSQL (SGBD)</text>
+<text x="470" y="480" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18" font-weight="700" fill="#725C9B">Processamento da consulta</text>
+<rect x="270" y="502" width="400" height="80" rx="14" fill="#F4EEFF" stroke="#B49ADB" stroke-width="3"/><text x="470" y="552" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#51378A">Análise e validação</text><circle cx="307" cy="542" r="22" fill="#EEE0FA" stroke="#8F72BF" stroke-width="2"/><text x="307" y="550" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#6947A7">1</text><path d="M470 585V598" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="270" y="606" width="400" height="80" rx="14" fill="#F4EEFF" stroke="#B49ADB" stroke-width="3"/><text x="470" y="656" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#51378A">Planejador / otimizador</text><circle cx="307" cy="646" r="22" fill="#EEE0FA" stroke="#8F72BF" stroke-width="2"/><text x="307" y="654" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#6947A7">2</text><path d="M470 689V702" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="270" y="710" width="400" height="80" rx="14" fill="#F4EEFF" stroke="#B49ADB" stroke-width="3"/><text x="470" y="760" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#51378A">Executor</text><circle cx="307" cy="750" r="22" fill="#EEE0FA" stroke="#8F72BF" stroke-width="2"/><text x="307" y="758" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#6947A7">3</text><path d="M470 793V806" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="270" y="814" width="400" height="80" rx="14" fill="#F4EEFF" stroke="#B49ADB" stroke-width="3"/><text x="470" y="864" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#51378A">Tabelas, índices e buffers</text><circle cx="307" cy="854" r="22" fill="#EEE0FA" stroke="#8F72BF" stroke-width="2"/><text x="307" y="862" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#6947A7">4</text>
+<path d="M470 911V947" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="215" y="959" width="510" height="74" rx="18" fill="#E3F7E8" stroke="#2E8851" stroke-width="3"/><text x="470" y="1005" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#24633C">Resultado da consulta</text>
+<path d="M470 1036V1069" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="215" y="1081" width="510" height="74" rx="18" fill="#E9F4FF" stroke="#327AB4" stroke-width="3"/><text x="470" y="1128" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#193558">Retorno ao Python</text>
+</svg>
+  <figcaption>Fluxo conceitual da execução de uma consulta SQL por uma aplicação Python. A ordem é didática e não descreve todos os detalhes físicos do PostgreSQL.</figcaption>
+</figure>
+<h3>As etapas do processo</h3>
+<div class="sgbd-grid sgbd-select-steps">
+<article class="sgbd-card"><span class="sgbd-number">01 · Conexão</span><h4>Python e psycopg</h4><p>O código utiliza <code>psycopg.connect()</code> para abrir uma conexão. O driver implementa a comunicação entre a aplicação e o servidor.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">02 · Envio</span><h4>SQL parametrizada</h4><p>O cursor envia a instrução com <code>execute(sql, params)</code>. Parâmetros são passados separadamente do texto SQL.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">03 · Análise</span><h4>Interpretação e validação</h4><p>O PostgreSQL verifica sintaxe, referências a objetos, tipos e permissões necessárias.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">04 · Planejamento</span><h4>Estratégia de execução</h4><p>O otimizador compara planos e estima custos, podendo escolher varredura sequencial, índices e diferentes algoritmos de junção.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">05 · Execução</span><h4>Acesso aos dados</h4><p>O executor acessa buffers, páginas e índices, considera a visibilidade das versões e produz os registros solicitados.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">06 · Retorno</span><h4>Linhas no Python</h4><p>O resultado volta ao programa, que pode recuperar uma linha com <code>fetchone()</code> ou todas as linhas restantes com <code>fetchall()</code>.</p></article>
+</div>
+<h3>Exemplo de uma consulta SQL executada pelo Python</h3>
+<p>Para conversar com o PostgreSQL, utilizaremos a biblioteca <strong>psycopg 3</strong>. O código abaixo consulta as oficinas com vagas disponíveis, após a criação da tabela <code>oficinas</code> no laboratório desta aula.</p>
+<div class="sgbd-sql"><div class="label"><span>Instalação do driver</span><span>Terminal</span></div><pre><code>python -m pip install "psycopg[binary]"</code></pre></div>
+<div class="sgbd-sql"><div class="label"><span>Python · conexão, SELECT e retorno de linhas</span><span>psycopg 3</span></div><pre><code>import os
+import psycopg
 
-      <div class="sgbd-sql"><div class="label"><span>Consulta-exemplo</span><span>SQL · PostgreSQL</span></div><pre><code>SELECT nome, email
-FROM clientes
-WHERE cidade = 'Curitiba';</code></pre></div>
+with psycopg.connect(
+    host=os.getenv("PGHOST", "localhost"),
+    port=int(os.getenv("PGPORT", "5432")),
+    dbname=os.getenv("PGDATABASE", "postgres"),
+    user=os.getenv("PGUSER", "postgres"),
+    password=os.getenv("PGPASSWORD"),
+) as conn:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT titulo, vagas_disponiveis
+            FROM oficinas
+            WHERE vagas_disponiveis &gt;= %s
+            ORDER BY titulo
+            """,
+            (1,)
+        )
 
-      <div class="sgbd-stack">
-        <div class="stage"><div class="order">01</div><div><strong>Receber, interpretar e analisar</strong><p>O servidor recebe a consulta, verifica sua estrutura e resolve nomes e tipos de objetos. As permissões também precisam ser respeitadas.</p></div></div>
-        <div class="stage"><div class="order">02</div><div><strong>Reescrever e planejar</strong><p>O PostgreSQL pode transformar a consulta e avalia estratégias de execução. Por exemplo, considera acesso sequencial ou por índice, estimando custos.</p></div></div>
-        <div class="stage"><div class="order">03</div><div><strong>Executar</strong><p>O executor percorre o plano, acessa páginas e buffers, verifica a visibilidade das versões das linhas e aplica as operações necessárias.</p></div></div>
-        <div class="stage"><div class="order">04</div><div><strong>Retornar o resultado</strong><p>As linhas resultantes são enviadas ao cliente, que as apresenta em uma tabela ou as entrega à aplicação.</p></div></div>
-      </div>
+        for titulo, vagas in cur.fetchall():
+            print(f"{titulo}: {vagas} vaga(s)")</code></pre></div>
+<p class="quiet">A conexão usa as variáveis de ambiente <code>PGHOST</code>, <code>PGPORT</code>, <code>PGDATABASE</code>, <code>PGUSER</code> e <code>PGPASSWORD</code>. Ajuste esses valores ao seu ambiente, sem colocar senhas diretamente no código. É necessário executar antes a criação da tabela <code>oficinas</code> indicada no laboratório.</p>
+<div class="sgbd-emphasis"><p><strong>Por que <code>%s</code> e <code>(1,)</code>?</strong> O marcador <code>%s</code> representa um parâmetro SQL e <code>(1,)</code> é uma tupla Python com o valor enviado. Assim, os valores são separados do comando e não são concatenados à SQL, ajudando a prevenir injeção de SQL.</p></div>
+<h3>Principais funções e métodos do psycopg</h3>
+<p>O driver oferece objetos de conexão e cursores. Os métodos abaixo são suficientes para iniciar a integração entre Python e PostgreSQL:</p>
+<div class="sgbd-matrix"><table>
+<thead><tr><th>Função ou método</th><th>O que faz</th><th>Quando utilizar</th></tr></thead>
+<tbody>
+<tr><td><code>psycopg.connect()</code></td><td>Estabelece a conexão com o servidor PostgreSQL.</td><td>Início do acesso ao banco de dados.</td></tr>
+<tr><td><code>conn.cursor()</code></td><td>Cria um cursor para enviar comandos e ler resultados.</td><td>Antes de executar operações SQL.</td></tr>
+<tr><td><code>cur.execute(sql, params)</code></td><td>Executa uma instrução SQL, opcionalmente com valores parametrizados.</td><td>Consultas e modificações de registros.</td></tr>
+<tr><td><code>cur.fetchone()</code></td><td>Lê a próxima linha do resultado, ou <code>None</code> ao terminarem as linhas.</td><td>Obter um registro por vez.</td></tr>
+<tr><td><code>cur.fetchmany(n)</code> / <code>cur.fetchall()</code></td><td>Recupera várias linhas ou todas as restantes; resultados grandes exigem atenção à memória.</td><td>Obter conjuntos de registros.</td></tr>
+<tr><td><code>conn.commit()</code> / <code>conn.rollback()</code></td><td>Confirmam ou desfazem uma transação não confirmada.</td><td>Operações que modificam dados.</td></tr>
+<tr><td><code>close()</code> / <code>with</code></td><td>Encerram os objetos ou gerenciam automaticamente o fechamento de cursores e conexões.</td><td>Evitar recursos abertos desnecessariamente.</td></tr>
+</tbody>
+</table></div>
+<p class="quiet">No exemplo, os blocos <code>with</code> encerram os recursos. A conexão confirma uma transação bem-sucedida ou realiza <code>rollback</code> diante de uma exceção. Em consultas simples, não é necessário chamar <code>commit()</code> manualmente.</p>
+
+
       <h3>Como os dados são armazenados?</h3>
       <p>A aplicação vê tabelas, colunas e registros. Internamente, o PostgreSQL organiza informações em arquivos e páginas de dados, utiliza memória compartilhada para armazenar páginas em buffer e mantém estruturas auxiliares, como índices e registros de WAL.</p>
       <div class="sgbd-grid">
