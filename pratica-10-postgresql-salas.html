@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Prática guiada de PostgreSQL 18, pgAdmin 4 e Python com psycopg 3. Exercícios de integridade, transações, concorrência e reserva de salas.">
+  <title>Prática Guiada 10 · PostgreSQL e Reserva de Salas | Banco de Dados</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <style>
+    body.tutorial-pg{background:var(--bg);color:var(--text)}
+    .pg-hero{padding:3.4rem 0 2.8rem;border-bottom:1px solid var(--line);background:var(--bg)}
+    .pg-kicker{margin:0 0 .6rem;color:var(--primary);font-size:.78rem;font-weight:800;letter-spacing:.065em;text-transform:uppercase}
+    .pg-hero h1{font-size:clamp(2.25rem,4.4vw,4rem);line-height:1.07;letter-spacing:-.04em;margin:0;max-width:850px}
+    .pg-lead{max-width:800px;margin:1rem 0 1.1rem;color:var(--muted);font-size:1.075rem;line-height:1.65}
+    .pg-tags{display:flex;flex-wrap:wrap;gap:.48rem}.pg-tags span{border:1px solid var(--line);border-radius:8px;padding:.34rem .58rem;color:var(--muted);background:var(--surface);font-size:.82rem}
+    .pg-toc-shell{position:sticky;top:72px;z-index:45;border-bottom:1px solid var(--line);background:var(--surface)}
+    .pg-toc{display:flex;flex-wrap:wrap;gap:.35rem;padding:.58rem 0}.pg-toc a{color:var(--muted);text-decoration:none;font-size:.82rem;padding:.46rem .65rem;border-radius:8px}
+    .pg-toc a:hover,.pg-toc a:focus-visible{background:var(--surface-soft);color:var(--text)}
+    .pg-section{padding:2.75rem 0;scroll-margin-top:145px;border-bottom:1px solid var(--line)}
+    .pg-section:nth-of-type(even){background:var(--surface-soft)}
+    .pg-body{max-width:1010px}
+    .pg-section h2{margin:.1rem 0 .8rem;font-size:clamp(1.55rem,2.9vw,2.2rem);line-height:1.15;letter-spacing:-.025em}
+    .pg-section h3{margin:1.55rem 0 .6rem;font-size:1.13rem}
+    .pg-section p,.pg-section li{line-height:1.64;color:var(--muted)}
+    .pg-section p{margin:.6rem 0 1.05rem}
+    .pg-section code:not(pre code){font-family:ui-monospace,Consolas,monospace;font-size:.92em}
+    .pg-section ol,.pg-section ul{padding-left:1.4rem}
+    .pg-section li{margin:.43rem 0}
+    .pg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0 1.45rem}
+    .pg-card{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:1.05rem 1.1rem}
+    .pg-card strong{display:block;margin-bottom:.3rem}.pg-card p{font-size:.92rem;margin:.35rem 0}
+    .pg-arch{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:.55rem;margin:1.3rem 0 1.7rem}
+    .pg-arch .item{border:1px solid var(--line);background:var(--surface);padding:1.05rem .7rem;text-align:center;border-radius:12px;font-size:.9rem;font-weight:750}
+    .pg-arch .item small{display:block;margin-top:.3rem;color:var(--muted);font-size:.73rem;font-weight:500}
+    .pg-arch .arrow{color:var(--primary);font-weight:800}
+    .pg-code{border:1px solid var(--ensino-line,var(--line));border-radius:12px;margin:1.05rem 0 1.3rem;overflow:hidden;background:var(--ensino-code-bg,#151a23);color:var(--ensino-code-text,#f1f5f9)}
+    .pg-code-label{padding:.55rem .95rem;background:var(--surface);border-bottom:1px solid var(--line);color:var(--muted);font-size:.75rem;font-weight:750}
+    .pg-code pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;background:transparent;color:inherit;white-space:pre;line-height:1.65;font-size:.9rem}
+    .pg-code code{color:inherit;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:none}
+    .pg-table-scroll{overflow:auto;border-radius:12px;border:1px solid var(--line);margin:1.1rem 0 1.4rem;background:var(--surface)}
+    .pg-table{border-collapse:collapse;width:100%;min-width:580px}
+    .pg-table th,.pg-table td{border-bottom:1px solid var(--line);text-align:left;padding:.66rem .88rem;vertical-align:top;font-size:.91rem}
+    .pg-table th{font-weight:750;background:var(--surface-soft)}.pg-table tr:last-child td{border-bottom:none}
+    .pg-table td{color:var(--muted)}.pg-table td:first-child{color:var(--text);font-weight:600}
+    .pg-note{border-left:3px solid var(--primary);background:var(--surface);border-radius:0 9px 9px 0;padding:.9rem 1.05rem;margin:1.1rem 0}
+    .pg-note strong{display:block;margin-bottom:.28rem}
+    .pg-note p{font-size:.93rem;margin:0;color:var(--muted)}
+    .pg-warning{border-left-color:#c37a2a}
+    .pg-links{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin:.85rem 0 1.2rem}
+    .pg-links a{display:inline-block;font-size:.92rem;text-decoration:underline;text-underline-offset:3px}
+    .pg-checklist{border:1px solid var(--line);background:var(--surface);padding:1rem 1.25rem;border-radius:12px;margin:1rem 0}
+    .pg-checklist label{display:flex;gap:.6rem;align-items:baseline;margin:.62rem 0;color:var(--text);font-size:.93rem}
+    .pg-checklist input{accent-color:var(--primary)}
+    .pg-footer{padding:1.6rem 0}
+    .pg-footer a{color:var(--primary)}
+    @media(max-width:1100px){.pg-toc-shell{position:static}}
+    @media(max-width:900px){.pg-grid{grid-template-columns:1fr}}
+    @media(max-width:700px){
+      .pg-hero{padding:2.55rem 0 2rem}
+      .pg-section{padding:2rem 0;scroll-margin-top:90px}
+      .pg-toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+      .pg-toc a{white-space:nowrap}
+      .pg-arch{grid-template-columns:1fr;gap:.35rem}
+      .pg-arch .arrow{transform:rotate(90deg);justify-self:center}
+      .pg-code pre{font-size:.81rem}
+    }
+    /* Menu colapsável com zoom: o cabeçalho não ocupa a tela inteira. */
+    @media(max-width:1080px){
+      body.tutorial-pg .site-header .nav-wrap{display:flex;flex-wrap:nowrap;align-items:center;position:relative;gap:12px;min-height:58px}
+      body.tutorial-pg .site-header .brand{min-width:0;max-width:calc(100% - 56px)}
+      body.tutorial-pg .site-header .brand strong{font-size:clamp(.95rem,2.4vw,1.12rem)}
+      body.tutorial-pg .site-header .nav-toggle{display:block!important;flex:0 0 44px;width:44px;height:44px;margin-left:auto;cursor:pointer}
+      body.tutorial-pg .site-header .main-nav{display:none!important;position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:110;max-height:calc(100dvh - 82px);overflow-y:auto;flex-direction:column;align-items:stretch;gap:.25rem;padding:.65rem;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+      body.tutorial-pg .site-header .main-nav.is-open{display:flex!important}
+    }
+  </style>
+<style>
+/* Prática 10: extensão do mesmo sistema visual do tutorial PostgreSQL. */
+body.pratica-pg { background:var(--bg);color:var(--text) }
+.pratica-pg .pg-hero{padding:3.35rem 0 2.5rem}
+.pratica-pg .pg-hero h1{max-width:920px}
+.pratica-pg .pg-toc-shell{top:60px}
+.pratica-pg .pg-toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+.pratica-pg .pg-toc a{white-space:nowrap;flex:none}
+.pratica-pg .pg-section{scroll-margin-top:140px}
+.pratica-pg .pg-section:nth-of-type(even){background:var(--surface-soft)}
+.pratica-pg .pg-section h2 small{display:block;margin-top:.3rem;font-size:.86rem;font-weight:500;color:var(--muted);letter-spacing:0}
+.pratica-pg .guide-banner,.pratica-pg .intro,.pratica-pg .scenario,.pratica-pg .method,.pratica-pg .trouble,.pratica-pg .wrapup,.pratica-pg .output,.pratica-pg .refs{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:1.2rem 1.35rem;margin:1rem 0 1.4rem}
+.pratica-pg .guide-banner{border-left:3px solid var(--primary)}
+.pratica-pg .guide-banner strong{display:block;margin:.05rem 0 .2rem}
+.pratica-pg .guide-banner p{margin:.35rem 0 .7rem}
+.pratica-pg .guide-banner a,.pratica-pg .quick-links a{font-weight:750}
+.pratica-pg .quick-links{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0}
+.pratica-pg .intro{border:none;background:transparent;padding:0}
+.pratica-pg .intro p:first-child{margin-top:0}
+.pratica-pg .meta,.pratica-pg .concept-flow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:1rem 0}
+.pratica-pg .meta span,.pratica-pg .concept-flow b{display:inline-block;border:1px solid var(--line);background:var(--surface);border-radius:8px;color:var(--muted);font-size:.83rem;font-weight:650;padding:.35rem .65rem}
+.pratica-pg .concept-flow span{font-size:.83rem;color:var(--muted)}
+.pratica-pg .objective,.pratica-pg .notice,.pratica-pg .purpose,.pratica-pg .guided,.pratica-pg .predict,.pratica-pg .checkpoint,.pratica-pg .important,.pratica-pg .hint,.pratica-pg .nav-tip{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem;margin:1rem 0}
+.pratica-pg .objective,.pratica-pg .checkpoint,.pratica-pg .purpose{border-left:3px solid var(--primary)}
+.pratica-pg .guided{background:var(--surface-soft)}
+.pratica-pg .important,.pratica-pg .notice{border-left:3px solid #ba9547}
+.pratica-pg .predict{border-style:dashed}
+.pratica-pg .guided h4,.pratica-pg .predict h4,.pratica-pg .checkpoint h4{margin:.05rem 0 .4rem;font-size:.95rem;color:var(--text)}
+.pratica-pg .guided p,.pratica-pg .predict p,.pratica-pg .checkpoint p{margin:.4rem 0}
+.pratica-pg .scenario h3,.pratica-pg .method h3,.pratica-pg .trouble h3{margin:.05rem 0 .6rem}
+.pratica-pg .task{scroll-margin-top:150px;border:1px solid var(--line);border-radius:13px;background:var(--surface);margin:1.25rem 0 1.5rem;padding:1.45rem 1.55rem}
+.pratica-pg .task-h{display:flex;align-items:center;gap:.7rem;margin:0 0 .85rem}
+.pratica-pg .task-h h3{margin:0;font-size:1.17rem}
+.pratica-pg .step{display:inline-grid;place-items:center;flex:none;width:2.5rem;height:2.5rem;border:1px solid var(--line);background:var(--surface-soft);color:var(--primary);font-weight:800;border-radius:9px}
+.pratica-pg .task h4{font-size:1rem;margin:1.15rem 0 .5rem}
+.pratica-pg .task p,.pratica-pg .task li{line-height:1.7}
+.pratica-pg .task p{margin:.65rem 0 1rem}
+.pratica-pg table{width:100%;border-collapse:collapse;margin:1.05rem 0;font-size:.9rem}
+.pratica-pg th,.pratica-pg td{border:1px solid var(--line);padding:.57rem .68rem;text-align:left;vertical-align:top}
+.pratica-pg th{background:var(--surface-soft);color:var(--text)}
+.pratica-pg td{color:var(--muted)}
+.pratica-pg .codebox{border:1px solid var(--ensino-line,var(--line));border-radius:12px;margin:1rem 0 1.3rem;overflow:hidden;background:var(--ensino-code-bg,#151a23);color:var(--ensino-code-text,#f1f5f9)}
+.pratica-pg .codebar{padding:.48rem .95rem;background:var(--surface);border-bottom:1px solid var(--line);color:var(--muted);font-size:.78rem;font-weight:750;display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
+.pratica-pg .codebar .copy{margin-left:auto;background:var(--surface-soft);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:.2rem .65rem;font-size:.78rem;cursor:pointer}
+.pratica-pg .codebar .copy:hover{border-color:var(--primary)}
+.pratica-pg .codebox pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;white-space:pre;color:inherit;background:transparent;font-size:.87rem;line-height:1.65}
+.pratica-pg .codebox pre code{font:inherit;background:none;color:inherit;padding:0;border:0;white-space:inherit}
+.pratica-pg .code-download{margin-left:.2rem;font-size:.78rem}
+.pratica-pg code:not(pre code){font-family:ui-monospace,Consolas,monospace;font-size:.91em}
+.pratica-pg .diagram{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center;justify-content:center;padding:1rem;border:1px solid var(--line);border-radius:9px;background:var(--surface-soft)}
+.pratica-pg .diagram span{border:1px solid var(--line);border-radius:7px;padding:.6rem;background:var(--surface);font-weight:700}
+.pratica-pg .diagram i{color:var(--muted);font-size:.86rem}
+.pratica-pg .concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin:1rem 0}
+.pratica-pg .concept{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:.85rem 1rem}
+.pratica-pg .concept b{display:block;margin-bottom:.2rem}
+.pratica-pg .concept p{font-size:.91rem;margin:0}
+.pratica-pg details{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:1.1rem 0;padding:0 1rem}
+.pratica-pg details summary{cursor:pointer;font-weight:700;padding:.65rem .1rem}
+.pratica-pg details[open] summary{border-bottom:1px solid var(--line)}
+.pratica-pg .prompt{border-top:1px solid var(--line);padding-top:1rem;margin-top:1.2rem}
+.pratica-pg .smallnote,.pratica-pg .mini-outcome{font-size:.9rem;color:var(--muted)}
+.pratica-pg .checklist{list-style:none;padding-left:0!important}
+.pratica-pg .checklist li{margin:.45rem 0}
+.pratica-pg .checklist input{margin-right:.45rem;accent-color:var(--primary)}
+.pratica-pg .refs{font-size:.9rem;color:var(--muted)}
+.pratica-pg .output{border-left:3px solid var(--primary)}
+.pratica-pg .pg-footer{margin-top:2rem}
+@media(max-width:700px){.pratica-pg .task{padding:1rem}.pratica-pg .intro,.pratica-pg .guide-banner{padding:1rem}.pratica-pg .intro{padding:0}.pratica-pg .concept-grid{grid-template-columns:1fr}.pratica-pg .pg-section{padding:2.15rem 0}.pratica-pg .pg-toc-shell{top:60px}.pratica-pg .task table{display:block;overflow-x:auto}}
+@media print{.pratica-pg .site-header,.pratica-pg .pg-toc-shell,.pratica-pg .copy{display:none!important}.pratica-pg .task{break-inside:avoid}.pratica-pg .codebox pre{white-space:pre-wrap}.pratica-pg .codebox,.pratica-pg .codebox pre,.pratica-pg .codebox code{background:#fff!important;color:#000!important}}
+</style>
+</head>
+<body class="teaching-page teaching-lesson lesson-dml tutorial-pg pratica-pg">
+<a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+<header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+<a href="index.html">Página principal</a><a href="aula-10.html">Aula 10</a><a href="guia-postgresql-windows.html">Tutorial PostgreSQL</a><a href="#parte3">Python</a>
+<button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
+</nav>
+    </div>
+  </header>
+<main id="conteudo">
+<section class="pg-hero"><div class="container pg-body">
+<p class="pg-kicker">Banco de Dados · Aula 10 · Prática guiada</p>
+<h1>PostgreSQL: do SGBD à aplicação</h1>
+<p class="pg-lead">Prática integrada no domínio de reserva de salas. Comece pelo pgAdmin, investigue como o SGBD protege os dados e utilize as mesmas tabelas em uma aplicação Python.</p>
+<div class="pg-tags"><span>PostgreSQL 18</span><span>pgAdmin 4</span><span>Integridade</span><span>Transações</span><span>Concorrência</span><span>Python + psycopg 3</span></div>
+</div></section>
+<div class="pg-toc-shell"><nav class="container pg-toc" aria-label="Etapas da prática">
+<a href="#objetivo">Contexto</a><a href="#parte1">pgAdmin</a><a href="#e3">Tabelas</a><a href="#parte2">SGBD</a><a href="#e8">Concorrência</a><a href="#parte3">Python</a><a href="#sintese">Síntese</a><a href="#extra">Extensão</a><a href="#ajuda">Diagnóstico</a>
+</nav></div>
+<section class="pg-section" id="objetivo"><div class="container pg-body"><p class="pg-kicker">0 · Antes de começar</p><h2>Contexto, objetivos e preparação</h2>
+<div class="intro">
+<p><strong>Situação-problema.</strong> A equipe de apoio de uma instituição precisa registrar salas, pessoas e reservas. Duas pessoas não podem usar a mesma sala no mesmo horário. Seu objetivo é descobrir <em>como o PostgreSQL protege essas regras</em> e depois verificar se as mesmas garantias continuam válidas quando uma aplicação Python solicita uma reserva.</p>
+<div class="meta"><span>PostgreSQL 18 + pgAdmin 4</span><span>Python + psycopg 3</span><span>≈ 130 minutos</span><span>Individual ou em dupla</span></div>
+<div class="objective"><strong>Ao concluir, você deverá conseguir:</strong> identificar o cliente, o servidor e o banco; implementar tabelas e chaves; verificar restrições e transações; interpretar índices e concorrência; executar SQL a partir de uma aplicação.</div>
+<p class="notice"><strong>Atenção:</strong> o tutorial anterior criou o banco <code>laboratorio</code>. Nesta prática será criado <code>pratica_salas</code> no <strong>mesmo PostgreSQL</strong>. Não apague o banco anterior nem remova o volume Docker.</p>
+<div aria-label="Fluxo da prática" class="concept-flow"><b>pgAdmin (cliente)</b><span>→ SQL →</span><b>PostgreSQL (SGBD)</b><span>← driver psycopg ←</span><b>Aplicação Python</b></div>
+<div class="scenario">
+<h3>Regras do sistema que vamos construir</h3>
+<ol>
+<li>Cada <strong>bloco</strong> possui várias <strong>salas</strong>.</li>
+<li>Cada <strong>reserva</strong> indica exatamente uma sala, um usuário, uma data e um horário.</li>
+<li>Uma reserva representa um intervalo de <strong>uma hora</strong>, com início em hora cheia, das 08h às 21h.</li>
+<li>A combinação <strong>sala + data + horário</strong> não pode se repetir.</li>
+</ol>
+<p class="smallnote">Este é um modelo didático, não um sistema institucional completo. Regras como cancelamentos, conflitos entre intervalos de durações diferentes e verificação de sala inativa exigiriam decisões adicionais.</p>
+</div>
+<details class="method"><summary>Como utilizar este roteiro (orientações para a execução)</summary>
+
+<ol>
+<li>Leia o objetivo da etapa e, antes de rodar o SQL, tente prever o resultado.</li>
+<li>Execute os comandos <strong>no ambiente indicado</strong>: PowerShell, pgAdmin ou terminal Python.</li>
+<li>Compare o retorno com o quadro <strong>“O que conferir”</strong>. Um erro previsto em um teste de restrição é um resultado correto.</li>
+<li>Responda à pergunta final da etapa com base no que observou, não apenas na definição teórica.</li>
+</ol>
+<p class="smallnote"><strong>No pgAdmin:</strong> conecte-se ao banco correto, abra <em>Tools → Query Tool</em>, selecione apenas o SQL que deseja executar e clique em ▶ (ou use F5). Em testes de transação, execute cada comando separadamente para observar os estados intermediários.</p>
+</details>
+</div>
+
+</div></section>
+<section class="pg-section" id="parte1"><div class="container pg-body"><p class="pg-kicker">1 · Primeiro contato com o pgAdmin</p><h2>Parte 1 · Conhecer o ambiente e preparar o banco <small>30 minutos</small></h2>
+
+<section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Retomar o servidor PostgreSQL</h3></div><div class="purpose"><strong>Por que começar aqui?</strong> Antes de investigar tabelas, precisamos saber se o serviço está ativo. O pgAdmin, sozinho, não é o servidor PostgreSQL.</div><p><strong>Onde executar:</strong> PowerShell do Windows. O PostgreSQL que você montou na semana anterior continua dentro do Docker; você <strong>não</strong> precisa instalar outro servidor.</p>
+<div class="guided"><h4>Faça nesta ordem</h4><ol><li>Abra o Docker Desktop e confirme que o mecanismo iniciou.</li><li>Abra o PowerShell e entre na pasta do <code>compose.yaml</code>.</li><li>Execute <code>docker compose ps</code>. Se o serviço não estiver ativo, execute o comando <code>up -d</code> do bloco.</li><li>Execute o teste <code>psql</code> ao final e observe o banco e o usuário retornados.</li></ol></div><div class="codebox"><div class="codebar"><span>PowerShell</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>Set-Location "$HOME\postgres-laboratorio"
+docker compose ps
+
+# Se estiver parado:
+docker compose up -d
+
+# Verifique se o PostgreSQL responde:
+docker compose exec db psql -U aluno -d laboratorio -c "SELECT current_database(), current_user;"</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><p>Na consulta de teste, as colunas devem indicar <code>laboratorio</code> e <code>aluno</code>. Se aparecer <code>connection refused</code>, retome a seção “Problemas comuns” do <a href="https://pfransozi.github.io/bd-2026-02/guia-postgresql-windows.html" rel="noopener noreferrer" target="_blank">guia de instalação</a> antes de prosseguir.</p></div><p><strong>Questão 1.</strong> O pgAdmin armazena diretamente os dados das tabelas? Explique onde o servidor está executando e qual é a função do cliente.</p></section>
+<section class="task" id="e2"><div class="task-h"><span class="step">02</span><h3>Criar um banco próprio para a atividade</h3></div><div class="purpose"><strong>Conceito:</strong> o servidor PostgreSQL pode gerenciar vários bancos. Um banco contém esquemas, que por sua vez organizam tabelas e outros objetos.</div><p><strong>Onde executar:</strong> interface do pgAdmin e seu <em>Query Tool</em>. Agora vamos criar um banco separado para não modificar as tabelas feitas no tutorial anterior.</p>
+<div class="guided"><h4>Passo a passo na interface</h4><ol><li>Abra o pgAdmin e expanda <strong>Servers → PostgreSQL — Laboratório</strong>.</li><li>Clique com o botão direito em <strong>Databases → Create → Database…</strong>.</li><li>Preencha <strong>Database</strong> com <code>pratica_salas</code> e <strong>Owner</strong> com <code>aluno</code>.</li><li>Clique em <strong>Save</strong>. Se não aparecer na árvore, clique em <strong>Refresh</strong>.</li><li>Selecione <strong>pratica_salas</strong>, abra <strong>Tools → Query Tool</strong> e execute o <code>SELECT</code> abaixo.</li></ol></div>
+<table><thead><tr><th>Campo</th><th>Valor</th></tr></thead><tbody><tr><td>Database</td><td><code>pratica_salas</code></td></tr><tr><td>Owner</td><td><code>aluno</code></td></tr></tbody></table>
+<p>Salve, atualize <em>Databases</em> se necessário e abra <em>Query Tool</em> especificamente no banco <code>pratica_salas</code>. Execute:</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT current_database() AS banco,
+       current_user AS usuario,
+       pg_backend_pid() AS sessao;</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><table class="example-table"><thead><tr><th>banco</th><th>usuario</th><th>sessao</th></tr></thead><tbody><tr><td><code>pratica_salas</code></td><td><code>aluno</code></td><td>um número de sessão, variável</td></tr></tbody></table><p>Se a coluna <code>banco</code> mostrar <code>laboratorio</code>, você abriu o Query Tool no banco incorreto. Selecione o banco certo antes de criar tabelas.</p></div><p><strong>Questão 2.</strong> Qual é a diferença entre criar um novo banco de dados e criar uma tabela dentro de um banco existente?</p></section>
+<section class="task" id="e3"><div class="task-h"><span class="step">03</span><h3>Criar o modelo e inserir dados iniciais</h3></div><div class="purpose"><strong>Por que quatro tabelas?</strong> Uma reserva <em>referencia</em> uma sala e uma pessoa. Não precisamos repetir o nome de cada sala ou usuário em todas as reservas — as chaves estrangeiras permitem relacionar os registros.</div><p><strong>Onde executar:</strong> Query Tool de <code>pratica_salas</code>. Vamos transformar as regras do cenário em quatro tabelas relacionadas e inserir dados fictícios para os próximos testes.</p>
+<div class="guided"><h4>Antes de executar</h4><ol><li>Na área de arquivos do pacote, localize <a download="" href="pratica-10/01_banco_salas.sql"><code>01_banco_salas.sql</code></a>.</li><li>No Query Tool, use <strong>Open File</strong> (ícone de pasta) para abrir o script.</li><li>Leia o primeiro <code>CREATE TABLE</code>: identifique a chave primária e os campos obrigatórios.</li><li>Execute o arquivo <strong>uma única vez</strong>. Observe a última consulta de contagem.</li><li>Atualize <strong>Schemas → public → Tables</strong> e abra as quatro tabelas na árvore.</li></ol></div>
+<div class="predict"><h4>Antes de rodar, formule uma hipótese</h4><p>Uma reserva com <code>id_sala = 999</code> poderia ser cadastrada? E duas reservas na mesma sala, mesma data e mesma hora? Procure no script as regras que determinam essas respostas.</p></div>
+<p>Essas tabelas representam o seguinte recorte do domínio:</p>
+<div aria-label="Bloco um para muitas salas; sala e usuário um para muitas reservas" class="diagram" role="img"><span>bloco</span><i>1 → N</i><span>sala</span><i>1 → N</i><span>reserva</span><i>N ← 1</i><span>usuario</span></div>
+<p>Para compreender a implementação, observe <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>UNIQUE</code>, <code>CHECK</code> e <code>GENERATED ALWAYS AS IDENTITY</code>.</p><details><summary>Ver o script SQL completo</summary><div class="codebox"><div class="codebar"><span>SQL · criação e carga inicial</span><a class="code-download" download="" href="pratica-10/01_banco_salas.sql">Baixar arquivo</a><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- Aula 10 - Prática guiada: Sistema de Reserva de Salas
+-- Execute uma única vez, no Query Tool conectado ao banco pratica_salas.
+-- Não execute no banco laboratorio: o banco da prática é separado.
+
+CREATE TABLE bloco (
+    id_bloco INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome_bloco VARCHAR(60) NOT NULL UNIQUE
+);
+
+CREATE TABLE sala (
+    id_sala INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_bloco INTEGER NOT NULL REFERENCES bloco (id_bloco),
+    nome VARCHAR(60) NOT NULL,
+    capacidade INTEGER NOT NULL CHECK (capacidade BETWEEN 1 AND 80),
+    ativa BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT uq_sala_bloco UNIQUE (id_bloco, nome)
+);
+
+CREATE TABLE usuario (
+    id_usuario INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(120) NOT NULL UNIQUE
+);
+
+-- Uma reserva ocupa exatamente um horário de 1 hora, iniciando em hora cheia.
+-- Este modelo simplificado não contempla reservas de duração variável.
+CREATE TABLE reserva (
+    id_reserva INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_sala INTEGER NOT NULL REFERENCES sala (id_sala),
+    id_usuario INTEGER NOT NULL REFERENCES usuario (id_usuario),
+    data_reserva DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    finalidade VARCHAR(160) NOT NULL,
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT ck_reserva_hora CHECK (
+        hora_inicio &gt;= TIME '08:00'
+        AND hora_inicio &lt; TIME '22:00'
+        AND EXTRACT(MINUTE FROM hora_inicio) = 0
+        AND EXTRACT(SECOND FROM hora_inicio) = 0
+    ),
+    CONSTRAINT uq_sala_horario UNIQUE (id_sala, data_reserva, hora_inicio)
+);
+
+INSERT INTO bloco (nome_bloco)
+VALUES ('Bloco A'), ('Bloco B');
+
+INSERT INTO sala (id_bloco, nome, capacidade, ativa)
+VALUES
+    (1, 'Laboratório 101', 36, TRUE),
+    (1, 'Sala 102', 45, TRUE),
+    (2, 'Sala 201', 30, TRUE),
+    (2, 'Laboratório 202', 24, TRUE);
+
+INSERT INTO usuario (nome, email)
+VALUES
+    ('Ana Martins', 'ana.martins@exemplo.edu'),
+    ('Bruno Costa', 'bruno.costa@exemplo.edu'),
+    ('Carla Souza', 'carla.souza@exemplo.edu');
+
+INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES
+    (1, 1, DATE '2026-11-12', TIME '08:00', 'Aula de Banco de Dados'),
+    (2, 2, DATE '2026-11-12', TIME '08:00', 'Projeto de Software'),
+    (1, 3, DATE '2026-11-12', TIME '10:00', 'Monitoria'),
+    (3, 2, DATE '2026-11-13', TIME '14:00', 'Reunião de projeto');
+
+-- Conferência: deverão existir 2 blocos, 4 salas, 3 usuários e 4 reservas.
+SELECT
+    (SELECT COUNT(*) FROM bloco) AS blocos,
+    (SELECT COUNT(*) FROM sala) AS salas,
+    (SELECT COUNT(*) FROM usuario) AS usuarios,
+    (SELECT COUNT(*) FROM reserva) AS reservas;</code></pre></div></details><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT
+    (SELECT COUNT(*) FROM bloco) AS blocos,
+    (SELECT COUNT(*) FROM sala) AS salas,
+    (SELECT COUNT(*) FROM usuario) AS usuarios,
+    (SELECT COUNT(*) FROM reserva) AS reservas;</code></pre></div><table class="example-table"><thead><tr><th>Recurso SQL</th><th>Por que está no modelo?</th></tr></thead><tbody>
+<tr><td><code>PRIMARY KEY</code></td><td>Identifica cada registro de forma única.</td></tr>
+<tr><td><code>REFERENCES</code></td><td>Define a chave estrangeira para uma tabela existente.</td></tr>
+<tr><td><code>UNIQUE</code></td><td>Impede duplicações, como duas reservas para o mesmo horário.</td></tr>
+<tr><td><code>CHECK</code></td><td>Valida valores, como capacidade positiva e hora cheia.</td></tr>
+<tr><td><code>GENERATED ... AS IDENTITY</code></td><td>Deixa o PostgreSQL gerar os identificadores.</td></tr>
+</tbody></table><div class="checkpoint"><h4>O que conferir</h4><p>O script deve deixar <strong>2 blocos, 4 salas, 3 usuários e 4 reservas</strong>. Se surgir <code>relation already exists</code>, provavelmente o script já foi executado; não repita as inserções. Continue somente com as consultas.</p></div><p><strong>Questão 3.</strong> Por que <code>reserva</code> contém duas chaves estrangeiras? Qual regra é implementada por <code>UNIQUE (id_sala, data_reserva, hora_inicio)</code>?</p>
+</section>
+
+</div></section>
+<section class="pg-section" id="parte2"><div class="container pg-body"><p class="pg-kicker">2 · Como o SGBD garante consistência</p><h2>Parte 2 · Observar o trabalho do SGBD <small>50 minutos</small></h2>
+
+<section class="task" id="e4"><div class="task-h"><span class="step">04</span><h3>Consultar dados e metadados</h3></div><div class="purpose"><strong>Conceito:</strong> a cláusula <code>JOIN</code> combina linhas de tabelas relacionadas; <code>information_schema</code> permite consultar a descrição dos objetos do banco, não os dados de negócio.</div><p><strong>Onde executar:</strong> Query Tool do banco <code>pratica_salas</code>. Agora vamos recuperar informações relacionadas e examinar os metadados que o próprio PostgreSQL mantém.</p>
+<div class="guided"><h4>Como ler as consultas</h4><ol><li>Na primeira consulta, <code>FROM sala AS s</code> escolhe a tabela de origem.</li><li><code>JOIN bloco AS b ON b.id_bloco = s.id_bloco</code> encontra o bloco de cada sala.</li><li><code>ORDER BY s.id_sala</code> organiza a apresentação. Ele não altera a ordem física das linhas no banco.</li><li>Na segunda consulta, observe que as informações do usuário e da sala vêm de tabelas diferentes.</li></ol></div><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT s.id_sala, s.nome AS sala, b.nome_bloco AS bloco, s.capacidade
+FROM sala AS s
+JOIN bloco AS b ON b.id_bloco = s.id_bloco
+ORDER BY s.id_sala;</code></pre></div><p>Agora relacione <code>reserva</code>, <code>sala</code> e <code>usuario</code> para mostrar data, horário, sala, solicitante e finalidade.</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT r.data_reserva, r.hora_inicio,
+       s.nome AS sala, u.nome AS solicitante, r.finalidade
+FROM reserva AS r
+JOIN sala AS s ON s.id_sala = r.id_sala
+JOIN usuario AS u ON u.id_usuario = r.id_usuario
+ORDER BY r.data_reserva, r.hora_inicio, s.nome;</code></pre></div><p>Inspecione como o próprio SGBD descreve suas estruturas:</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT table_name, column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = 'public'
+  AND table_name = 'reserva'
+ORDER BY ordinal_position;</code></pre></div><div class="guided"><h4>Sua vez · pequena alteração na consulta</h4><p>Retorne à primeira consulta e adicione uma condição <code>WHERE s.capacidade &gt;= 30</code> antes do <code>ORDER BY</code>. Quantas salas permanecem? Explique por que <code>Laboratório 202</code> não aparece.</p></div><div class="checkpoint"><h4>O que conferir</h4><p>A primeira consulta retorna <strong>4 salas</strong>; a segunda retorna <strong>4 reservas</strong>, inicialmente. Na terceira consulta, a coluna <code>table_name</code> deve mostrar <code>reserva</code>, e a listagem deve incluir <code>id_reserva</code>, <code>id_sala</code> e <code>id_usuario</code>.</p></div><p><strong>Questão 4.</strong> Por que a aplicação não precisa armazenar o nome da sala dentro de cada reserva?</p>
+</section>
+<section class="task" id="e5"><div class="task-h"><span class="step">05</span><h3>Provocar três violações de integridade</h3></div><div class="purpose"><strong>Conceito:</strong> regras de integridade declaradas no esquema continuam valendo para qualquer cliente: pgAdmin, Python ou outro programa.</div><p><strong>Onde executar:</strong> Query Tool. Você vai provocar três tentativas de inserção <strong>intencionalmente inválidas</strong>. O objetivo é entender qual regra do banco as impede.</p>
+<div class="guided"><h4>Execute com atenção</h4><ol><li>Leia cada tentativa e antecipe a regra que será violada.</li><li>Execute somente <strong>uma instrução INSERT por vez</strong>, observe a aba de mensagens e anote a restrição indicada.</li><li>Se surgir <code>current transaction is aborted</code> ao prosseguir, execute <code>ROLLBACK;</code> isoladamente para encerrar a transação com erro.</li><li>Faça a consulta de contagem no final e compare com a contagem inicial.</li></ol></div><div class="codebox"><div class="codebar"><span>SQL · teste A</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- A: capacidade inválida (CHECK)
+INSERT INTO sala (id_bloco, nome, capacidade)
+VALUES (1, 'Sala impossível', -5);</code></pre></div><div class="codebox"><div class="codebar"><span>SQL · teste B</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- B: usuário inexistente (FOREIGN KEY)
+INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (1, 999, DATE '2026-11-12', TIME '12:00', 'Teste de referência');</code></pre></div><div class="codebox"><div class="codebar"><span>SQL · teste C</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- C: sala já reservada no mesmo horário (UNIQUE)
+INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (1, 2, DATE '2026-11-12', TIME '08:00', 'Reserva conflitante');</code></pre></div><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT COUNT(*) AS total_reservas FROM reserva;</code></pre></div><table class="example-table"><thead><tr><th>Tentativa</th><th>O que o PostgreSQL deve impedir</th><th>Tipo do erro</th></tr></thead><tbody>
+<tr><td>A · capacidade -5</td><td>Sala fora do intervalo permitido.</td><td><code>CHECK</code> · SQLSTATE 23514</td></tr>
+<tr><td>B · usuário 999</td><td>Reserva que referencia usuário inexistente.</td><td><code>FOREIGN KEY</code> · SQLSTATE 23503</td></tr>
+<tr><td>C · horário ocupado</td><td>Duas reservas na mesma sala, data e hora.</td><td><code>UNIQUE</code> · SQLSTATE 23505</td></tr>
+</tbody></table><div class="checkpoint"><h4>O que conferir</h4><p>As três instruções falham <strong>como planejado</strong>. O total continua em <strong>4 reservas</strong> neste ponto. A rejeição é um comportamento desejado do SGBD, não uma falha da instalação.</p></div><p><strong>Questão 5.</strong> Para cada tentativa, registre a restrição violada e explique que inconsistência seria criada se ela não existisse.</p>
+</section>
+<section class="task" id="e6"><div class="task-h"><span class="step">06</span><h3>Desfazer e confirmar alterações com transações</h3></div><div class="purpose"><strong>Conceito:</strong> <code>BEGIN</code> inicia uma transação; o que foi alterado nessa transação pode ser desfeito com <code>ROLLBACK</code> ou confirmado com <code>COMMIT</code>.</div><p><strong>Onde executar:</strong> Query Tool. Vamos alterar temporariamente a capacidade de uma sala, verificar o valor e decidir entre desfazer (<code>ROLLBACK</code>) ou confirmar (<code>COMMIT</code>).</p>
+<div class="guided"><h4>Execute cada linha separadamente</h4><ol><li>Consulte a capacidade da sala 1: inicialmente deve ser <strong>36</strong>.</li><li>Execute <code>BEGIN;</code> e, depois, o <code>UPDATE</code> para 50.</li><li>Execute o <code>SELECT</code> antes do <code>ROLLBACK</code>: na <strong>mesma sessão</strong> deve aparecer 50.</li><li>Execute <code>ROLLBACK;</code> e consulte novamente: deve retornar para 36.</li><li>Agora execute o segundo bloco, confirmando com <code>COMMIT;</code>. O novo valor deve permanecer em 40.</li></ol><p class="smallnote">Selecione uma instrução de cada vez no editor. Executar o bloco inteiro sem observar os resultados intermediários reduz o valor do experimento.</p></div>
+<div class="predict"><h4>Previsão</h4><p>Se você atualizar para 50 e executar <code>ROLLBACK</code>, a sala fica com 50 ou 36 lugares? E depois de executar <code>COMMIT</code>, o que muda?</p></div><div class="codebox"><div class="codebar"><span>SQL · ROLLBACK</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- A: desfazer a mudança
+SELECT capacidade FROM sala WHERE id_sala = 1;
+BEGIN;
+UPDATE sala SET capacidade = 50 WHERE id_sala = 1;
+SELECT capacidade FROM sala WHERE id_sala = 1;
+ROLLBACK;
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div><div class="codebox"><div class="codebar"><span>SQL · COMMIT</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>-- B: confirmar a mudança
+BEGIN;
+UPDATE sala SET capacidade = 40 WHERE id_sala = 1;
+COMMIT;
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><table class="example-table"><thead><tr><th>Momento</th><th>Capacidade da sala 1</th></tr></thead><tbody><tr><td>Antes de alterar</td><td>36</td></tr><tr><td>Dentro da transação, após <code>UPDATE</code></td><td>50</td></tr><tr><td>Após <code>ROLLBACK</code></td><td>36</td></tr><tr><td>Após a segunda alteração e <code>COMMIT</code></td><td>40</td></tr></tbody></table><p>Uma transação enxerga as próprias alterações antes da confirmação. Isso não implica que outras sessões já possam observá-las.</p></div><p><strong>Questão 6.</strong> Relacione o comportamento observado às propriedades de atomicidade e durabilidade (ACID). Por que uma consulta dentro da própria transação enxerga uma alteração ainda não confirmada?</p></section>
+<section class="task" id="e7"><div class="task-h"><span class="step">07</span><h3>Investigar índices e planejamento de consulta</h3></div><div class="purpose"><strong>Conceito:</strong> índices podem tornar algumas buscas mais eficientes. O planejador pode escolher entre varrer a tabela (<code>Seq Scan</code>) ou utilizar um índice (<code>Index Scan</code>), considerando o custo estimado.</div><p><strong>Onde executar:</strong> Query Tool. Vamos inspecionar uma estrutura auxiliar usada pelo PostgreSQL e observar como ele decide executar uma consulta.</p>
+<div class="guided"><h4>O que investigar</h4><ol><li>Execute a consulta em <code>pg_indexes</code> e procure os índices gerados para a chave primária e para <code>uq_sala_horario</code>.</li><li>Execute a consulta com <code>EXPLAIN</code> e procure o operador de acesso escolhido.</li><li>Execute a consulta de privilégios e observe a identidade conectada.</li></ol></div><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT indexname, indexdef
+FROM pg_indexes
+WHERE schemaname = 'public' AND tablename = 'reserva'
+ORDER BY indexname;</code></pre></div><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>EXPLAIN
+SELECT id_reserva, id_usuario
+FROM reserva
+WHERE id_sala = 1
+  AND data_reserva = DATE '2026-11-12'
+  AND hora_inicio = TIME '08:00';</code></pre></div><p><strong>Observação de segurança:</strong> verifique quem está conectado e quais privilégios essa identidade possui. No ambiente didático, o usuário <code>aluno</code> administra o banco; em produção, uma aplicação deveria receber somente os privilégios de que precisa.</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT current_user AS usuario_conectado,
+       has_table_privilege(current_user, 'reserva', 'SELECT') AS pode_consultar,
+       has_table_privilege(current_user, 'reserva', 'INSERT') AS pode_inserir;</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><p>O banco possui índices associados à <strong>PRIMARY KEY</strong> e à restrição <strong>UNIQUE</strong>. O plano pode mostrar <code>Seq Scan</code> porque existem pouquíssimas linhas: um índice disponível não significa que seja a melhor estratégia para toda consulta.</p><p><code>EXPLAIN</code> sem <code>ANALYZE</code> mostra o plano estimado e <strong>não executa</strong> o <code>SELECT</code> para obter os registros.</p></div><p><strong>Questão 7.</strong> O que significam <code>Seq Scan</code> e <code>Index Scan</code>? O comando <code>EXPLAIN</code> está executando a consulta ou apenas mostrando o plano estimado? Por que usuários diferentes podem receber permissões diferentes?</p></section>
+<section class="task" id="e8"><div class="task-h"><span class="step">08</span><h3>Simular dois usuários tentando a mesma reserva</h3></div><div class="purpose"><strong>Conceito:</strong> um <code>SELECT</code> anterior pode indicar que um horário está livre, mas não o protege contra outra reserva inserida logo depois. A restrição <code>UNIQUE</code> deve continuar valendo sob concorrência.</div><p><strong>Onde executar:</strong> duas janelas de <em>Query Tool</em> do mesmo banco, correspondentes a <strong>duas sessões diferentes</strong>. O objetivo é simular uma situação real: dois pedidos de reserva concorrentes.</p>
+<div class="important"><strong>Antes de iniciar:</strong> confira se o horário sala 2, 20/11/2026 às 15:00 ainda está livre. Não repita esse teste com a mesma combinação após concluí-lo: uma das sessões terá criado a reserva.</div>
+<div class="guided"><h4>Organize as duas sessões</h4><ol><li>Abra o Query Tool de <code>pratica_salas</code> em duas abas ou janelas separadas: <strong>A</strong> e <strong>B</strong>.</li><li>Execute <code>SELECT pg_backend_pid();</code> nas duas. Os números devem ser <strong>diferentes</strong>.</li><li>Na sessão <strong>A</strong>, execute <code>BEGIN;</code> e o <code>INSERT</code>. <strong>Não</strong> execute <code>COMMIT</code> ainda.</li><li>Na sessão <strong>B</strong>, execute também <code>BEGIN;</code> e tente o <code>INSERT</code> conflitante. Ele provavelmente ficará aguardando.</li><li>Volte para <strong>A</strong> e execute <code>COMMIT;</code>. A instrução de <strong>B</strong> deve terminar com uma violação de unicidade.</li><li>Em <strong>B</strong>, execute <code>ROLLBACK;</code> e só então faça o <code>SELECT</code> de conferência.</li></ol></div>
+<div class="codebox"><div class="codebar"><span>SQL · conexão A</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>BEGIN;
+INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (2, 1, DATE '2026-11-20', TIME '15:00', 'Solicitação A');
+-- Não confirme ainda.</code></pre></div><div class="codebox"><div class="codebar"><span>SQL · conexão B</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>BEGIN;
+INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (2, 2, DATE '2026-11-20', TIME '15:00', 'Solicitação B');
+-- Aguarde o professor orientar a confirmação da conexão A.</code></pre></div>
+<div class="guided"><h4>Encerramento, sem misturar as sessões</h4><p><strong>Na sessão A:</strong> execute <code>COMMIT;</code>. <strong>Na sessão B:</strong> quando a tentativa falhar, execute <code>ROLLBACK;</code>. Depois execute a consulta abaixo em qualquer sessão.</p></div>
+<div class="codebox"><div class="codebar"><span>SQL · conferir o resultado final (após A e B)</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT id_reserva, id_usuario, id_sala, data_reserva, hora_inicio
+FROM reserva
+WHERE id_sala = 2
+  AND data_reserva = DATE '2026-11-20'
+  AND hora_inicio = TIME '15:00';</code></pre></div>
+<div class="checkpoint"><h4>O que conferir</h4><p>Deve existir <strong>uma única reserva</strong> para aquela combinação. A segunda tentativa esperou a decisão da primeira e não conseguiu violar <code>UNIQUE</code>. Não foi o pgAdmin que resolveu o conflito; foi o PostgreSQL.</p></div><p><strong>Questão 8.</strong> Por que consultar previamente se o horário está livre não é suficiente para impedir conflitos entre duas aplicações simultâneas? Identifique o papel da restrição de unicidade.</p></section>
+
+</div></section>
+<section class="pg-section" id="parte3"><div class="container pg-body"><p class="pg-kicker">3 · Aplicação Python conectada ao PostgreSQL</p><h2>Parte 3 · Utilizar o mesmo banco em Python <small>50 minutos</small></h2>
+
+<section class="task" id="e9"><div class="task-h"><span class="step">09</span><h3>Preparar o ambiente Python</h3></div><div class="purpose"><strong>Conceito:</strong> o Python não abre arquivos internos do banco. Ele usa o driver <code>psycopg</code> para enviar SQL pela conexão com o servidor; o arquivo <code>.env</code> fornece os parâmetros da conexão.</div><p><strong>Onde executar:</strong> PowerShell, na pasta que contém os arquivos extraídos do pacote. Você vai preparar um pequeno programa de terminal que utiliza <code>psycopg</code> para conversar com o PostgreSQL.</p>
+<div class="guided"><h4>Passo a passo</h4><ol><li>Extraia o pacote da prática para uma pasta. Mantenha <a download="" href="pratica-10/app_salas.py"><code>app_salas.py</code></a> e <a download="" href="pratica-10/env-exemplo.txt"><code>env-exemplo.txt</code></a> no <strong>mesmo diretório</strong>.</li><li>Abra o PowerShell <strong>nessa pasta</strong> (no Explorador, use “Abrir no Terminal”).</li><li>Verifique a versão do Python e crie um ambiente virtual <code>.venv</code>.</li><li>Instale as duas dependências no ambiente virtual e copie o arquivo de configuração.</li><li>Execute a aplicação. Se necessário, edite <code>PGPORT</code> no <code>.env</code> para combinar com a porta que você configurou no Docker.</li></ol></div><div class="codebox"><div class="codebar"><span>PowerShell</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>py --version
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install "psycopg[binary]" python-dotenv
+Copy-Item env-exemplo.txt .env
+.\.venv\Scripts\python.exe app_salas.py</code></pre></div><p>Se <code>py</code> não estiver disponível, use <code>python</code> nos dois primeiros comandos. O ambiente virtual mantém as bibliotecas desta prática separadas de outras instalações. O arquivo <code>.env</code> contém as credenciais didáticas do servidor local e <strong>não deve ser publicado</strong> em um repositório.</p><details><summary>Ver o exemplo de configuração .env</summary><div class="codebox"><div class="codebar"><span>Arquivo · env-exemplo.txt</span><a class="code-download" download="" href="pratica-10/env-exemplo.txt">Baixar arquivo</a><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code># Configuração de laboratório local, igual à do tutorial da disciplina.
+# Copie este arquivo com o nome .env e ajuste apenas se necessário.
+# NÃO utilize essas credenciais em um banco de produção nem publique o .env.
+PGHOST=127.0.0.1
+PGPORT=5432
+PGDATABASE=pratica_salas
+PGUSER=aluno
+PGPASSWORD=AulaBD2026_Local!</code></pre></div></details><div class="checkpoint"><h4>O que conferir</h4><p>Ao executar o programa, aparece um menu com as opções <strong>1 — Listar salas</strong>, <strong>2 — Listar usuários</strong>, <strong>3 — Listar reservas</strong>, <strong>4 — Criar reserva</strong> e <strong>0 — Sair</strong>. Se ocorrer erro de conexão, confira <code>PGHOST</code>, <code>PGPORT</code>, <code>PGDATABASE</code>, <code>PGUSER</code> e <code>PGPASSWORD</code>.</p></div><p><strong>Questão 9.</strong> Qual parte do programa identifica o servidor de banco? Qual biblioteca atua como driver?</p></section>
+<section class="task" id="e10"><div class="task-h"><span class="step">10</span><h3>Executar consultas a partir da aplicação</h3></div><div class="purpose"><strong>Conceito:</strong> o cliente muda, mas o banco e suas regras permanecem. A função <code>conectar()</code> estabelece a conexão; <code>cursor.execute()</code> envia a SQL e <code>fetchall()</code> lê o resultado.</div><p><strong>Onde executar:</strong> menu da aplicação Python; use o pgAdmin apenas para comparar os resultados. As duas ferramentas consultarão o mesmo banco <code>pratica_salas</code>.</p>
+<div class="guided"><h4>Observe em três etapas</h4><ol><li>Selecione a opção <strong>1</strong> e confira as quatro salas listadas.</li><li>Selecione a opção <strong>2</strong> e confira os três usuários.</li><li>Selecione a opção <strong>3</strong> e compare o total de reservas com o resultado no pgAdmin.</li><li>Abra <code>app_salas.py</code> e localize a função <code>listar_reservas()</code>. Identifique qual parte do SQL realiza o <code>JOIN</code>.</li></ol></div>
+<p>Compare uma das consultas Python com sua versão executada no pgAdmin. O resultado muda porque o cliente mudou?</p><details><summary>Consultar o código-fonte completo da aplicação</summary><div class="codebox"><div class="codebar"><span>Python · psycopg 3</span><a class="code-download" download="" href="pratica-10/app_salas.py">Baixar arquivo</a><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>"""Aula 10: pequeno cliente de reservas com PostgreSQL e psycopg 3.
+
+Pré-requisitos: executar 01_banco_salas.sql em pratica_salas e preparar .env.
+"""
+
+from datetime import date, time
+from os import getenv
+
+import psycopg
+from dotenv import load_dotenv
+from psycopg.errors import CheckViolation, ForeignKeyViolation
+
+load_dotenv()
+
+
+def conectar():
+    """O driver abre uma conexão com o servidor PostgreSQL."""
+    return psycopg.connect(
+        host=getenv("PGHOST", "127.0.0.1"),
+        port=int(getenv("PGPORT", "5432")),
+        dbname=getenv("PGDATABASE", "pratica_salas"),
+        user=getenv("PGUSER", "aluno"),
+        password=getenv("PGPASSWORD"),
+    )
+
+
+def listar_salas():
+    with conectar() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT s.id_sala, b.nome_bloco, s.nome, s.capacidade
+                FROM sala AS s
+                JOIN bloco AS b ON b.id_bloco = s.id_bloco
+                WHERE s.ativa = TRUE
+                ORDER BY s.id_sala
+            """)
+            linhas = cur.fetchall()
+
+    print("\nSALAS ATIVAS")
+    for identificador, bloco, nome, capacidade in linhas:
+        print(f"{identificador}: {nome} ({bloco}) - {capacidade} lugares")
+
+
+def listar_usuarios():
+    with conectar() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id_usuario, nome FROM usuario ORDER BY id_usuario")
+            linhas = cur.fetchall()
+
+    print("\nUSUÁRIOS")
+    for identificador, nome in linhas:
+        print(f"{identificador}: {nome}")
+
+
+def listar_reservas():
+    with conectar() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
+                       s.nome, u.nome, r.finalidade
+                FROM reserva AS r
+                JOIN sala AS s ON s.id_sala = r.id_sala
+                JOIN usuario AS u ON u.id_usuario = r.id_usuario
+                ORDER BY r.data_reserva, r.hora_inicio, r.id_reserva
+            """)
+            linhas = cur.fetchall()
+
+    print("\nRESERVAS CADASTRADAS")
+    if not linhas:
+        print("Nenhuma reserva cadastrada.")
+    for identificador, data, hora, sala, usuario, finalidade in linhas:
+        print(f"#{identificador} | {data} {hora:%H:%M} | {sala} | {usuario} | {finalidade}")
+
+
+def criar_reserva():
+    print("\nNOVA RESERVA (horários de 1 hora, em hora cheia)")
+    try:
+        id_usuario = int(input("ID do usuário: ").strip())
+        id_sala = int(input("ID da sala: ").strip())
+        data = date.fromisoformat(input("Data (AAAA-MM-DD): ").strip())
+        hora = time.fromisoformat(input("Hora (HH:MM): ").strip())
+        finalidade = input("Finalidade: ").strip()
+        if not finalidade:
+            print("Informe uma finalidade.")
+            return
+    except ValueError:
+        print("Dados inválidos. Verifique os IDs, a data e a hora.")
+        return
+
+    try:
+        with conectar() as conn:
+            with conn.cursor() as cur:
+                # %s e a tupla de valores evitam concatenar dados à SQL.
+                cur.execute("""
+                    INSERT INTO reserva
+                        (id_usuario, id_sala, data_reserva, hora_inicio, finalidade)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (id_sala, data_reserva, hora_inicio)
+                    DO NOTHING
+                    RETURNING id_reserva
+                """, (id_usuario, id_sala, data, hora, finalidade))
+                resultado = cur.fetchone()
+        # Ao sair do `with` sem erro, psycopg confirma a transação.
+        if resultado is None:
+            print("Horário indisponível: a sala já está reservada nesse período.")
+        else:
+            print(f"Reserva confirmada. ID: {resultado[0]}")
+    except ForeignKeyViolation:
+        print("Reserva rejeitada: sala ou usuário inexistente (FOREIGN KEY).")
+    except CheckViolation:
+        print("Reserva rejeitada: use hora cheia entre 08:00 e 21:00 (CHECK).")
+
+
+def main():
+    while True:
+        print("\n=== SISTEMA DE RESERVA DE SALAS ===")
+        print("1 - Listar salas")
+        print("2 - Listar usuários")
+        print("3 - Listar reservas")
+        print("4 - Criar reserva")
+        print("0 - Sair")
+        opcao = input("Opção: ").strip()
+        if opcao == "0":
+            print("Encerrado.")
+            break
+        try:
+            if opcao == "1":
+                listar_salas()
+            elif opcao == "2":
+                listar_usuarios()
+            elif opcao == "3":
+                listar_reservas()
+            elif opcao == "4":
+                criar_reserva()
+            else:
+                print("Escolha uma opção de 0 a 4.")
+        except psycopg.Error as exc:
+            print(f"Falha de banco de dados ({type(exc).__name__}).")
+            print("Confira o servidor, o banco e as configurações do .env.")
+
+
+if __name__ == "__main__":
+    main()</code></pre></div></details><table class="example-table"><thead><tr><th>Elemento do Python</th><th>O que faz</th></tr></thead><tbody><tr><td><code>psycopg.connect(...)</code></td><td>Abre a conexão com o PostgreSQL.</td></tr><tr><td><code>conn.cursor()</code></td><td>Cria o objeto por onde executamos operações.</td></tr><tr><td><code>cur.execute(SQL)</code></td><td>Envia a instrução SQL ao servidor.</td></tr><tr><td><code>cur.fetchall()</code></td><td>Recebe as linhas restantes do resultado.</td></tr></tbody></table><div class="checkpoint"><h4>O que conferir</h4><p>Os registros vistos no terminal também existem no pgAdmin. Isso demonstra que a aplicação não tem um “banco próprio”: ela acessa <strong>o mesmo PostgreSQL</strong> por outro cliente.</p></div><p><strong>Questão 10.</strong> Percorra o fluxo: teclado → Python → driver → PostgreSQL → consulta SQL → linhas devolvidas. Qual componente realmente lê as tabelas e executa o plano?</p>
+</section>
+<section class="task" id="e11"><div class="task-h"><span class="step">11</span><h3>Cadastrar uma reserva e testar um conflito real</h3></div><div class="purpose"><strong>Conceito:</strong> a aplicação utiliza valores parametrizados (<code>%s</code>) e <code>ON CONFLICT ... DO NOTHING</code>. Mesmo que dois clientes tentem o mesmo horário, a restrição <code>UNIQUE</code> continua sendo aplicada no servidor.</div><p><strong>Onde executar:</strong> aplicação Python; depois consulte o resultado no pgAdmin. Você vai registrar uma reserva válida e, em seguida, tentar duas operações inválidas para observar a proteção do banco.</p>
+<div class="guided"><h4>Três tentativas, três resultados</h4><ol><li>Use a opção <strong>4</strong> e cadastre os valores indicados na tabela. Registre o identificador retornado.</li><li>Repita o cadastro com <strong>usuário 2</strong>, mantendo a mesma sala, data e horário. O sistema deve informar que o horário está ocupado e não criar outra linha.</li><li>Tente reservar a sala 4 para <strong>09:30</strong> na mesma data. O <code>CHECK</code> deve rejeitar o horário fracionado.</li><li>Volte à opção <strong>3</strong> e consulte o banco pelo pgAdmin usando o SQL fornecido.</li></ol></div>
+<table><thead><tr><th>Campo</th><th>Valor</th></tr></thead><tbody>
+<tr><td>ID usuário</td><td><code>1</code></td></tr><tr><td>ID sala</td><td><code>4</code></td></tr>
+<tr><td>Data</td><td><code>2026-11-21</code></td></tr><tr><td>Hora</td><td><code>09:00</code></td></tr><tr><td>Finalidade</td><td>Estudo em grupo</td></tr>
+</tbody></table>
+<p>Repita a mesma reserva para outro usuário, mantendo sala, data e horário. Depois tente reservar a sala 4 às <code>09:30</code>. Observe as duas mensagens de rejeição.</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
+       s.nome AS sala, u.nome AS solicitante
+FROM reserva AS r
+JOIN sala AS s ON s.id_sala = r.id_sala
+JOIN usuario AS u ON u.id_usuario = r.id_usuario
+WHERE r.id_sala = 4 AND r.data_reserva = DATE '2026-11-21';</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><table class="example-table"><thead><tr><th>Tentativa</th><th>Retorno previsto</th><th>Recurso envolvido</th></tr></thead><tbody><tr><td>Reserva válida às 09:00</td><td>Reserva confirmada, com ID gerado.</td><td><code>INSERT</code> + transação confirmada</td></tr><tr><td>Mesmo horário, outro usuário</td><td>Horário indisponível; nenhuma linha nova.</td><td><code>UNIQUE</code> + <code>ON CONFLICT DO NOTHING</code></td></tr><tr><td>Reserva às 09:30</td><td>Reserva rejeitada.</td><td><code>CHECK</code></td></tr></tbody></table><p><strong>Diferença importante:</strong> no pgAdmin, o teste de duplicidade produziu um erro. A aplicação trata o mesmo conflito com <code>DO NOTHING</code>, recebendo um resultado vazio de <code>RETURNING</code> e exibindo uma mensagem amigável. Em ambos os casos, o SGBD impede a duplicidade.</p></div><p><strong>Questão 11.</strong> Localize no código o uso de <code>%s</code> e da tupla de parâmetros. Por que os dados do usuário não são concatenados diretamente ao texto SQL?</p></section>
+<div class="trouble" id="ajuda">
+<h3>Se algo não funcionar: diagnóstico rápido</h3>
+<table><thead><tr><th>Sintoma</th><th>O que verificar</th></tr></thead><tbody>
+<tr><td><code>connection refused</code> no pgAdmin/Python</td><td>Docker Desktop iniciado, <code>docker compose ps</code> e porta <code>5432</code> (ou <code>5433</code>).</td></tr>
+<tr><td><code>relation ... already exists</code></td><td>O script de criação já foi executado. Não o rode novamente; prossiga às consultas.</td></tr>
+<tr><td><code>relation ... does not exist</code></td><td>Confirme se o Query Tool está em <code>pratica_salas</code> e se o script foi executado.</td></tr>
+<tr><td><code>current transaction is aborted</code></td><td>Uma operação anterior falhou dentro da transação. Execute <code>ROLLBACK;</code> separadamente.</td></tr>
+<tr><td><code>ModuleNotFoundError</code> no Python</td><td>Execute o Python do ambiente <code>.venv</code> e confirme a instalação das dependências.</td></tr>
+<tr><td>Uma sessão ficou aguardando no teste 08</td><td>Isso pode ser o bloqueio esperado. Finalize a transação A com <code>COMMIT;</code> e depois trate B.</td></tr>
+</tbody></table>
+<p class="smallnote">Para problemas de WSL, Docker Desktop, criação do contêiner e conexão do pgAdmin, consulte o <a href="https://pfransozi.github.io/bd-2026-02/guia-postgresql-windows.html" rel="noopener noreferrer" target="_blank">tutorial de instalação que utilizamos na aula anterior</a>.</p>
+</div>
+
+</div></section>
+<section class="pg-section" id="sintese"><div class="container pg-body"><p class="pg-kicker">4 · Verificação da aprendizagem</p><h2>Síntese · O que a prática demonstrou? <small>5 minutos</small></h2>
+
+<div class="wrapup"><p>Registre respostas curtas para as questões a seguir, usando exemplos observados na prática:</p>
+<ol><li>Qual é a diferença entre banco, SGBD, cliente e driver?</li>
+<li>Quais inconsistências foram impedidas pelas restrições do esquema?</li>
+<li>O que <code>COMMIT</code> e <code>ROLLBACK</code> demonstraram?</li>
+<li>Como o SGBD coordenou duas tentativas de gravar a mesma reserva?</li>
+<li>O que mudou — e o que permaneceu igual — ao substituir o pgAdmin pelo programa Python?</li></ol>
+<h3>Checklist de conclusão</h3>
+<ul class="checklist">
+<li><label><input type="checkbox"/> Consegui identificar servidor PostgreSQL, banco e cliente.</label></li>
+<li><label><input type="checkbox"/> Criei e consultei as quatro tabelas relacionadas.</label></li>
+<li><label><input type="checkbox"/> Observei erros esperados de <code>CHECK</code>, <code>FOREIGN KEY</code> e <code>UNIQUE</code>.</label></li>
+<li><label><input type="checkbox"/> Testei <code>ROLLBACK</code> e <code>COMMIT</code>.</label></li>
+<li><label><input type="checkbox"/> Observei um conflito entre duas sessões.</label></li>
+<li><label><input type="checkbox"/> Cadastrei uma reserva pelo Python e a encontrei no pgAdmin.</label></li>
+</ul>
+<p class="smallnote">Ao responder às questões, use evidências: uma linha retornada, o nome da restrição, uma alteração desfeita ou um registro confirmado. O importante é explicar o comportamento observado.</p>
+</div>
+<div class="output"><strong>Produto da prática</strong> · Banco <code>pratica_salas</code> com quatro tabelas, evidências dos testes de integridade e transações, aplicação Python funcionando e respostas fundamentadas às questões de verificação.</div>
+
+</div></section>
+<section class="pg-section" id="extra"><div class="container pg-body"><p class="pg-kicker">5 · Para aprofundar</p><h2>Extensão opcional · Backup e recuperação <small>15–20 minutos</small></h2>
+
+<p>No pgAdmin, selecione <code>pratica_salas</code> e abra <em>Backup…</em>. Escolha um arquivo de destino e formato <em>Custom</em>, gere o backup e identifique onde ele foi salvo. <strong>Não exclua o banco</strong> para testar a restauração durante esta prática. Discuta como uma cópia lógica poderia ser restaurada em outro banco.</p>
+<p>Experimento de persistência: no PowerShell, execute <code>docker compose stop</code> e depois <code>docker compose start</code>. Reconecte o pgAdmin e consulte novamente as reservas. Não utilize <code>docker compose down -v</code>.</p>
+<p><strong>Discussão:</strong> por que a persistência do volume e o WAL não substituem um backup contra exclusão acidental dos dados?</p>
+
+</div></section>
+<section class="pg-section" id="desafio"><div class="container pg-body"><p class="pg-kicker">6 · Desafio adicional</p><h2>Desafio adicional</h2>
+
+<p>Implemente uma consulta que liste as <strong>salas livres em uma data e horário informados</strong>. Uma possibilidade é partir de <code>sala</code> e usar <code>NOT EXISTS</code> contra <code>reserva</code>. Reutilize a mesma consulta, parametrizada, no Python. Não altere as restrições do banco para resolver o desafio.</p>
+<div class="refs"><strong>Material de apoio:</strong> <a href="https://pfransozi.github.io/bd-2026-02/guia-postgresql-windows.html">Tutorial PostgreSQL no Windows</a> · <a href="aula-10.html">Aula 10 — O SGBD por dentro</a> · <a href="https://www.postgresql.org/docs/18/">Documentação PostgreSQL 18</a> · <a href="https://www.psycopg.org/psycopg3/docs/">Documentação psycopg 3</a></div>
+</div></section>
+</main>
+<footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Prática Guiada 10</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+<script>
+(function () {
+  async function copyText(value) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+    const box = document.createElement('textarea');
+    box.value = value;
+    box.setAttribute('readonly', '');
+    box.style.position = 'fixed';
+    box.style.left = '-9999px';
+    document.body.appendChild(box);
+    box.select();
+    const ok = document.execCommand('copy');
+    box.remove();
+    return ok;
+  }
+  document.querySelectorAll('.codebox .copy').forEach(button => {
+    button.addEventListener('click', async () => {
+      const text = button.closest('.codebox').querySelector('pre code').textContent;
+      try {
+        const ok = await copyText(text);
+        button.textContent = ok ? 'Copiado' : 'Selecione e copie o código';
+      } catch (error) {
+        button.textContent = 'Selecione e copie o código';
+      }
+      window.setTimeout(() => { button.textContent = 'Copiar'; }, 1800);
+    });
+  });
+})();
+</script>
+</body></html>
