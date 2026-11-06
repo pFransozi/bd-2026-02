@@ -521,7 +521,7 @@ with psycopg.connect(
         <article class="sgbd-card"><h4>Visão física</h4><p><strong>Páginas → arquivos → índices e buffers.</strong> É a organização que o SGBD administra para realizar as operações.</p></article>
       </div>
       <p class="quiet">Essa separação é uma forma de independência de dados: aplicações normalmente não precisam conhecer a posição física de cada registro.</p>
-      <div class="sgbd-question"><strong>Pergunta de análise</strong><p>Se duas consultas devolvem o mesmo conjunto de registros, elas precisam executar exatamente o mesmo percurso físico?</p><p>Não. O planejador pode selecionar estratégias distintas, influenciadas por dados, estatísticas e índices disponíveis.</p></div>
+      <div class="sgbd-question"><strong>Pergunta de análise</strong><p>Se duas consultas devolvem o mesmo conjunto de registros, elas precisam executar exatamente o mesmo percurso físico?</p><p>Não. O PostgreSQL estima o custo das alternativas usando <strong>estatísticas das tabelas</strong> (atualizadas pelo <code>ANALYZE</code>), <strong>índices disponíveis</strong> e estratégias como <strong>varredura sequencial ou por índice</strong>, diferentes algoritmos de <code>JOIN</code> e, quando adequado, <strong>execução paralela</strong>. O comando <code>EXPLAIN</code> mostra o plano escolhido.</p></div>
     </div></section>
 
     <section class="sgbd-section alt" id="funcionalidades"><div class="sgbd-container">
