@@ -224,7 +224,7 @@
 
     <div class="sgbd-toc-shell">
       <nav class="sgbd-container sgbd-toc" aria-label="Seções da aula">
-        <a href="#visao">Objetivos</a><a href="#problema">Problema inicial</a><a href="#conceitos">Conceitos</a><a href="#arquitetura">Arquitetura</a><a href="#funcionalidades">Funções</a><a href="#concorrencia">Concorrência</a><a href="#laboratorio">Prática</a><a href="#aplicacoes">Aplicações</a><a href="#sintese">Síntese</a>
+        <a href="#visao">Objetivos</a><a href="#conceitos">Conceitos</a><a href="#arquitetura">Arquitetura</a><a href="#funcionalidades">Funções</a><a href="#concorrencia">Concorrência</a><a href="#laboratorio">Prática</a><a href="#aplicacoes">Aplicações</a><a href="#sintese">Síntese</a>
       </nav>
     </div>
 
@@ -250,40 +250,19 @@
         </article>
       </div>
       <div class="sgbd-timeline" aria-label="Previsão didática do encontro">
-        <div><strong>0–45 min</strong><span>Problema, conceitos e comparação com arquivos</span></div>
+        <div><strong>0–45 min</strong><span>Conceitos e comparação com arquivos</span></div>
         <div><strong>45–110 min</strong><span>Arquitetura, execução e armazenamento</span></div>
         <div><strong>110–170 min</strong><span>Integridade, transações, concorrência e segurança</span></div>
         <div><strong>170–240 min</strong><span>Demonstrações, aplicações e síntese</span></div>
       </div>
     </div></section>
 
-    <section class="sgbd-section" id="problema"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">1 · Situação-problema</p><h2>Duas pessoas, uma única vaga</h2>
-        <p>Uma instituição oferece oficinas com quantidade limitada de participantes. Há apenas uma vaga disponível. Duas pessoas tentam se inscrever no mesmo instante.</p>
-      </div>
-      <div class="sgbd-flow">
-        <div class="sgbd-flow-row">
-          <div class="sgbd-flow-node"><strong>Usuário A</strong><small>Consulta: 1 vaga</small></div>
-          <span class="sgbd-flow-arrow">↓</span>
-          <div class="sgbd-flow-node"><strong>Arquivo de vagas</strong><small>Disponível = 1</small></div>
-          <span class="sgbd-flow-arrow">↑</span>
-          <div class="sgbd-flow-node"><strong>Usuário B</strong><small>Consulta: 1 vaga</small></div>
-        </div>
-        <p class="sgbd-caption">Se ambos consultarem o mesmo valor e depois gravarem de forma independente, o sistema poderá aceitar inscrições incompatíveis com a capacidade.</p>
-      </div>
-      <p>Com um arquivo CSV, seria possível desenvolver o sistema. Entretanto, a aplicação precisaria implementar e testar os mecanismos para coordenar acessos, impedir estados inválidos, recuperar operações incompletas e definir permissões.</p>
-      <p>O SGBD oferece infraestrutura especializada para resolver boa parte desses problemas. Ele não adivinha as regras do domínio: o projetista precisa informar quais restrições devem existir e como as operações serão agrupadas.</p>
-      <div class="sgbd-question"><strong>Antes de continuar</strong><p>Quais responsabilidades seriam necessárias além de “salvar e ler registros”?</p><p>Liste pelo menos três: por exemplo, impedir duas vendas incompatíveis, desfazer uma operação incompleta ou restringir o acesso a dados pessoais.</p></div>
-    </div></section>
-
     <section class="sgbd-section alt" id="conceitos"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">2 · Conceitos fundamentais</p><h2>O banco de dados não é o SGBD</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">1 · Conceitos fundamentais</p><h2>O banco de dados não é o SGBD</h2>
         <p>Embora os termos sejam usados informalmente como sinônimos, eles designam elementos diferentes da arquitetura.</p>
       </div>
 
-      <h3 id="mapa-componentes">Como esses cinco elementos se relacionam?</h3>
-      <p class="sgbd-concept-intro">O mesmo servidor pode receber comandos de uma ferramenta utilizada diretamente por uma pessoa ou de uma aplicação que usa um driver.</p>
-      <figure class="sgbd-concept-map" aria-labelledby="mapa-componentes">
+      <figure id="mapa-componentes" class="sgbd-concept-map" aria-label="Diagrama que representa cliente, driver, linguagem SQL, SGBD e banco de dados">
         <div class="sgbd-concept-branches">
           <div class="sgbd-concept-branch">
             <div class="sgbd-concept-origin">Pessoa utilizando uma ferramenta</div>
@@ -349,7 +328,7 @@
     </div></section>
 
     <section class="sgbd-section" id="arquitetura"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">3 · Arquitetura e processamento</p><h2>O que acontece entre executar um SELECT e receber o resultado?</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">2 · Arquitetura e processamento</p><h2>O que acontece entre executar um SELECT e receber o resultado?</h2>
         <p>O DBeaver não procura os dados diretamente nos arquivos do banco. Ele envia uma solicitação ao servidor, que decide como atendê-la.</p>
       </div>
       <figure class="sgbd-flow">
@@ -386,7 +365,7 @@ WHERE cidade = 'Curitiba';</code></pre></div>
     </div></section>
 
     <section class="sgbd-section alt" id="funcionalidades"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">4 · Funcionalidades essenciais</p><h2>Que problemas cada mecanismo resolve?</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">3 · Funcionalidades essenciais</p><h2>Que problemas cada mecanismo resolve?</h2>
         <p>Vamos relacionar os recursos do PostgreSQL a necessidades concretas de Engenharia de Software.</p>
       </div>
       <div class="sgbd-matrix"><table>
@@ -455,7 +434,7 @@ ON oficinas FROM papel_consulta;</code></pre><div class="note">Os comandos ilust
     </div></section>
 
     <section class="sgbd-section" id="concorrencia"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">5 · Concorrência</p><h2>Por que várias pessoas podem consultar e atualizar ao mesmo tempo?</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">4 · Concorrência</p><h2>Por que várias pessoas podem consultar e atualizar ao mesmo tempo?</h2>
         <p>Em um sistema web, requisições chegam simultaneamente. O PostgreSQL precisa coordenar esse trabalho sem tornar todas as operações uma única fila.</p>
       </div>
       <h3>MVCC: múltiplas versões dos dados</h3>
@@ -489,7 +468,7 @@ RETURNING vagas_disponiveis;</code></pre></div>
     </div></section>
 
     <section class="sgbd-section alt" id="laboratorio"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">6 · Laboratório guiado</p><h2>Observe o SGBD protegendo as operações</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">5 · Laboratório guiado</p><h2>Observe o SGBD protegendo as operações</h2>
         <p>Estas demonstrações usam sintaxe do PostgreSQL, não do SQLite. Abra uma conexão no DBeaver ou no <code>psql</code> com um banco de testes em que seja permitido criar e apagar tabelas.</p>
       </div>
       <div class="sgbd-question"><strong>Preparação e segurança</strong><p>Execute o script somente em um <strong>banco de laboratório descartável</strong>. Os comandos <code>DROP TABLE</code> removem estruturas preexistentes com esses nomes no esquema atual.</p></div>
@@ -623,7 +602,7 @@ WHERE codigo = 867;</code></pre></div>
     </div></section>
 
     <section class="sgbd-section" id="aplicacoes"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">7 · Usos e decisões de projeto</p><h2>Quando um SGBD é uma boa escolha?</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">6 · Usos e decisões de projeto</p><h2>Quando um SGBD é uma boa escolha?</h2>
         <p>Não basta perguntar se há muitos dados. É necessário avaliar requisitos de integridade, concorrência, consultas, segurança e continuidade do serviço.</p>
       </div>
       <div class="sgbd-matrix"><table>
@@ -655,7 +634,7 @@ WHERE codigo = 867;</code></pre></div>
     </div></section>
 
     <section class="sgbd-section alt" id="sintese"><div class="sgbd-container">
-      <div class="sgbd-section-head"><p class="sgbd-kicker">8 · Síntese</p><h2>O papel do SGBD na arquitetura do software</h2>
+      <div class="sgbd-section-head"><p class="sgbd-kicker">7 · Síntese</p><h2>O papel do SGBD na arquitetura do software</h2>
         <p>O PostgreSQL não é apenas um programa capaz de executar <code>SELECT</code>. Ele coordena a interpretação dos comandos, o armazenamento físico, as operações concorrentes e os mecanismos que tornam os dados utilizáveis de forma confiável.</p>
       </div>
       <figure class="sgbd-flow">
