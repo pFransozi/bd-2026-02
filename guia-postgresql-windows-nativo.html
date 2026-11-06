@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Instalação nativa de PostgreSQL 18 no Windows, sem Docker, com pgAdmin 4, criação do usuário aluno e primeiro teste SQL.">
+  <title>Guia de laboratório · PostgreSQL no Windows sem Docker | Banco de Dados</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <style>
+    body.tutorial-pg{background:var(--bg);color:var(--text)}
+    .pg-hero{padding:3.4rem 0 2.8rem;border-bottom:1px solid var(--line);background:var(--bg)}
+    .pg-kicker{margin:0 0 .6rem;color:var(--primary);font-size:.78rem;font-weight:800;letter-spacing:.065em;text-transform:uppercase}
+    .pg-hero h1{font-size:clamp(2.25rem,4.4vw,4rem);line-height:1.07;letter-spacing:-.04em;margin:0;max-width:850px}
+    .pg-lead{max-width:800px;margin:1rem 0 1.1rem;color:var(--muted);font-size:1.075rem;line-height:1.65}
+    .pg-tags{display:flex;flex-wrap:wrap;gap:.48rem}.pg-tags span{border:1px solid var(--line);border-radius:8px;padding:.34rem .58rem;color:var(--muted);background:var(--surface);font-size:.82rem}
+    .pg-toc-shell{position:sticky;top:72px;z-index:45;border-bottom:1px solid var(--line);background:var(--surface)}
+    .pg-toc{display:flex;flex-wrap:wrap;gap:.35rem;padding:.58rem 0}.pg-toc a{color:var(--muted);text-decoration:none;font-size:.82rem;padding:.46rem .65rem;border-radius:8px}
+    .pg-toc a:hover,.pg-toc a:focus-visible{background:var(--surface-soft);color:var(--text)}
+    .pg-section{padding:2.75rem 0;scroll-margin-top:145px;border-bottom:1px solid var(--line)}
+    .pg-section:nth-of-type(even){background:var(--surface-soft)}
+    .pg-body{max-width:1010px}
+    .pg-section h2{margin:.1rem 0 .8rem;font-size:clamp(1.55rem,2.9vw,2.2rem);line-height:1.15;letter-spacing:-.025em}
+    .pg-section h3{margin:1.55rem 0 .6rem;font-size:1.13rem}
+    .pg-section p,.pg-section li{line-height:1.64;color:var(--muted)}
+    .pg-section p{margin:.6rem 0 1.05rem}
+    .pg-section code:not(pre code){font-family:ui-monospace,Consolas,monospace;font-size:.92em}
+    .pg-section ol,.pg-section ul{padding-left:1.4rem}
+    .pg-section li{margin:.43rem 0}
+    .pg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0 1.45rem}
+    .pg-card{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:1.05rem 1.1rem}
+    .pg-card strong{display:block;margin-bottom:.3rem}.pg-card p{font-size:.92rem;margin:.35rem 0}
+    .pg-arch{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:.55rem;margin:1.3rem 0 1.7rem}
+    .pg-arch .item{border:1px solid var(--line);background:var(--surface);padding:1.05rem .7rem;text-align:center;border-radius:12px;font-size:.9rem;font-weight:750}
+    .pg-arch .item small{display:block;margin-top:.3rem;color:var(--muted);font-size:.73rem;font-weight:500}
+    .pg-arch .arrow{color:var(--primary);font-weight:800}
+    .pg-code{border:1px solid var(--ensino-line,var(--line));border-radius:12px;margin:1.05rem 0 1.3rem;overflow:hidden;background:var(--ensino-code-bg,#151a23);color:var(--ensino-code-text,#f1f5f9)}
+    .pg-code-label{padding:.55rem .95rem;background:var(--surface);border-bottom:1px solid var(--line);color:var(--muted);font-size:.75rem;font-weight:750}
+    .pg-code pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;background:transparent;color:inherit;white-space:pre;line-height:1.65;font-size:.9rem}
+    .pg-code code{color:inherit;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:none}
+    .pg-table-scroll{overflow:auto;border-radius:12px;border:1px solid var(--line);margin:1.1rem 0 1.4rem;background:var(--surface)}
+    .pg-table{border-collapse:collapse;width:100%;min-width:580px}
+    .pg-table th,.pg-table td{border-bottom:1px solid var(--line);text-align:left;padding:.66rem .88rem;vertical-align:top;font-size:.91rem}
+    .pg-table th{font-weight:750;background:var(--surface-soft)}.pg-table tr:last-child td{border-bottom:none}
+    .pg-table td{color:var(--muted)}.pg-table td:first-child{color:var(--text);font-weight:600}
+    .pg-note{border-left:3px solid var(--primary);background:var(--surface);border-radius:0 9px 9px 0;padding:.9rem 1.05rem;margin:1.1rem 0}
+    .pg-note strong{display:block;margin-bottom:.28rem}
+    .pg-note p{font-size:.93rem;margin:0;color:var(--muted)}
+    .pg-warning{border-left-color:#c37a2a}
+    .pg-links{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin:.85rem 0 1.2rem}
+    .pg-links a{display:inline-block;font-size:.92rem;text-decoration:underline;text-underline-offset:3px}
+    .pg-checklist{border:1px solid var(--line);background:var(--surface);padding:1rem 1.25rem;border-radius:12px;margin:1rem 0}
+    .pg-checklist label{display:flex;gap:.6rem;align-items:baseline;margin:.62rem 0;color:var(--text);font-size:.93rem}
+    .pg-checklist input{accent-color:var(--primary)}
+    .pg-footer{padding:1.6rem 0}
+    .pg-footer a{color:var(--primary)}
+    @media(max-width:1100px){.pg-toc-shell{position:static}}
+    @media(max-width:900px){.pg-grid{grid-template-columns:1fr}}
+    @media(max-width:700px){
+      .pg-hero{padding:2.55rem 0 2rem}
+      .pg-section{padding:2rem 0;scroll-margin-top:90px}
+      .pg-toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+      .pg-toc a{white-space:nowrap}
+      .pg-arch{grid-template-columns:1fr;gap:.35rem}
+      .pg-arch .arrow{transform:rotate(90deg);justify-self:center}
+      .pg-code pre{font-size:.81rem}
+    }
+    /* Menu colapsável com zoom: o cabeçalho não ocupa a tela inteira. */
+    @media(max-width:1080px){
+      body.tutorial-pg .site-header .nav-wrap{display:flex;flex-wrap:nowrap;align-items:center;position:relative;gap:12px;min-height:58px}
+      body.tutorial-pg .site-header .brand{min-width:0;max-width:calc(100% - 56px)}
+      body.tutorial-pg .site-header .brand strong{font-size:clamp(.95rem,2.4vw,1.12rem)}
+      body.tutorial-pg .site-header .nav-toggle{display:block!important;flex:0 0 44px;width:44px;height:44px;margin-left:auto;cursor:pointer}
+      body.tutorial-pg .site-header .main-nav{display:none!important;position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:110;max-height:calc(100dvh - 82px);overflow-y:auto;flex-direction:column;align-items:stretch;gap:.25rem;padding:.65rem;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+      body.tutorial-pg .site-header .main-nav.is-open{display:flex!important}
+    }
+  </style>
+
+</head>
+<body class="teaching-page teaching-lesson lesson-dml tutorial-pg">
+<a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+<header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+  <a href="index.html">Página principal</a>
+  <a href="guia-postgresql-windows.html">Guia com Docker</a>
+  <a href="pratica-10-postgresql-salas.html">Prática 10</a>
+  <a href="#erros">Problemas comuns</a>
+  <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
+</nav>
+    </div>
+  </header>
+<main id="conteudo">
+<section class="pg-hero"><div class="container pg-body">
+<p class="pg-kicker">Banco de Dados · Guia do estudante · Instalação alternativa</p>
+<h1>Instalando o PostgreSQL no Windows — sem Docker</h1>
+<p class="pg-lead">Prepare um servidor PostgreSQL 18 diretamente no Windows, conecte pelo pgAdmin 4 e execute seu primeiro teste SQL. Este guia é uma alternativa ao ambiente com contêineres utilizado anteriormente.</p>
+<div class="pg-tags"><span>Windows 10/11</span><span>Instalador EDB</span><span>PostgreSQL 18</span><span>pgAdmin 4</span><span>Serviço Windows</span><span>PowerShell</span></div>
+</div></section>
+<div class="pg-toc-shell"><nav class="container pg-toc" aria-label="Etapas do tutorial">
+<a href="#objetivo">Visão</a><a href="#preparacao">Preparação</a><a href="#download">Download</a><a href="#instalacao">Instalação</a><a href="#servico">Serviço</a><a href="#usuario">Usuário</a><a href="#pgadmin">pgAdmin</a><a href="#sql">Primeiro SQL</a><a href="#manutencao">Uso diário</a><a href="#erros">Problemas</a><a href="#referencias">Referências</a>
+</nav></div>
+<section class="pg-section" id="objetivo"><div class="container pg-body">
+<p class="pg-kicker">0 · Escolha a instalação</p><h2>Quais ferramentas utilizaremos?</h2>
+
+<p>Este guia prepara o <strong>PostgreSQL 18 diretamente no Windows</strong>, utilizando o instalador gráfico. O servidor será instalado como serviço do Windows. O <strong>pgAdmin 4</strong> é a ferramenta gráfica utilizada para criar bancos e executar SQL.</p>
+<div class="pg-note"><strong>Como utilizar este roteiro</strong><p>Execute cada passo na ordem apresentada. Os comandos indicados como <strong>PowerShell</strong> são digitados no terminal do Windows; os comandos <strong>SQL</strong> são executados no <em>Query Tool</em> do pgAdmin. Confira o resultado de cada etapa antes de avançar.</p></div>
+<div class="pg-arch" aria-label="Arquitetura de acesso ao PostgreSQL instalado no Windows">
+<div class="item">pgAdmin 4<small>Cliente gráfico no Windows</small></div><span class="arrow" aria-hidden="true">→</span>
+<div class="item">PostgreSQL 18<small>Serviço local · porta 5432 ou 5433</small></div><span class="arrow" aria-hidden="true">↔</span>
+<div class="item">Banco laboratorio<small>Tabelas e dados persistidos em disco</small></div>
+</div>
+<div class="pg-grid">
+<article class="pg-card"><strong>O que será instalado?</strong><p>Servidor PostgreSQL, pgAdmin 4 (caso ainda não esteja instalado) e ferramentas de linha de comando. Não será necessário instalar WSL ou utilizar contêineres.</p></article>
+<article class="pg-card"><strong>Resultado ao final</strong><p>Você terá um servidor em funcionamento, o usuário <code>aluno</code>, o banco <code>laboratorio</code> e uma tabela de teste pronta para consultas.</p></article>
+</div>
+<p>Este roteiro é uma <strong>alternativa</strong> ao <a href="guia-postgresql-windows.html">guia anterior</a>. Ambos permitem realizar a <a href="pratica-10-postgresql-salas.html">Prática Guiada 10</a>. Escolha apenas um ambiente para trabalhar e mantenha suas informações de conexão organizadas.</p>
+</div></section>
+<section class="pg-section" id="preparacao"><div class="container pg-body">
+<p class="pg-kicker">1 · Verifique antes</p><h2>O computador está pronto?</h2>
+
+<ol>
+<li>Utilize <strong>Windows 10 ou Windows 11 de 64 bits</strong>. Verifique se sua conta permite instalar programas como administrador; computadores institucionais podem exigir suporte da equipe de TI.</li>
+<li>Confira se o PostgreSQL já está instalado: procure por <strong>PostgreSQL</strong> e <strong>pgAdmin 4</strong> no menu Iniciar. Se já tiver um servidor funcionando, não reinstale automaticamente; passe para o diagnóstico da conexão.</li>
+<li>Abra o <strong>PowerShell</strong> e confira se a porta padrão está em uso.</li>
+</ol>
+<div class="pg-code"><div class="pg-code-label">PowerShell · verificar a porta padrão</div><pre><code>Get-NetTCPConnection -LocalPort 5432 -State Listen -ErrorAction SilentlyContinue</code></pre></div>
+<div class="pg-note"><strong>Como interpretar a saída</strong><p>Se não aparecer nenhuma linha, não há um processo escutando nessa porta neste momento. Se aparecer um resultado, outro serviço poderá estar usando <code>5432</code>. Identifique-o antes de instalar; se necessário, configure o novo PostgreSQL na <strong>porta 5433</strong> durante a instalação. Depois use essa mesma porta no pgAdmin e no Python.</p></div>
+<p>Não é preciso alterar o firewall para acesso remoto: nesta prática utilizaremos apenas <code>127.0.0.1</code> (a própria máquina). Evite expor o serviço à rede sem necessidade.</p>
+</div></section>
+<section class="pg-section" id="download"><div class="container pg-body">
+<p class="pg-kicker">2 · Obtenha o instalador</p><h2>Baixe o PostgreSQL para Windows</h2>
+
+<ol>
+<li>Acesse a <a href="https://www.postgresql.org/download/windows/" target="_blank" rel="noopener noreferrer">página oficial de download para Windows</a>.</li>
+<li>Clique em <strong>Download the installer</strong>. O download é disponibilizado pelo projeto parceiro <strong>EDB</strong>.</li>
+<li>Selecione <strong>PostgreSQL 18</strong> para <strong>Windows x86-64</strong> e baixe o instalador interativo.</li>
+<li>Após o download, localize o arquivo <code>.exe</code> na pasta Downloads. Não execute instaladores de sites desconhecidos.</li>
+</ol>
+<div class="pg-links"><a href="https://www.postgresql.org/download/windows/" target="_blank" rel="noopener noreferrer">Página oficial do PostgreSQL →</a><a href="https://www.enterprisedb.com/downloads/postgres-postgresql-downloads" target="_blank" rel="noopener noreferrer">Página de instaladores da EDB →</a></div>
+<div class="pg-note"><strong>Não precisa baixar o pgAdmin à parte</strong><p>O instalador do PostgreSQL para Windows permite selecionar o pgAdmin 4 como componente. Se você já possui uma versão funcional, pode mantê-la.</p></div>
+
+</div></section>
+<section class="pg-section" id="instalacao"><div class="container pg-body">
+<p class="pg-kicker">3 · Instalação nativa</p><h2>Execute o assistente de instalação</h2>
+
+<p>Abra o instalador com permissões administrativas. As telas podem variar ligeiramente conforme a versão, mas os campos principais são os mesmos.</p>
+<div class="pg-table-scroll"><table class="pg-table"><thead><tr><th>Etapa do assistente</th><th>Como preencher</th></tr></thead><tbody>
+<tr><td><strong>Installation Directory</strong></td><td>Mantenha a pasta sugerida, normalmente <code>C:\Program Files\PostgreSQL\18</code>.</td></tr>
+<tr><td><strong>Select Components</strong></td><td>Marque <strong>PostgreSQL Server</strong>, <strong>pgAdmin 4</strong> e <strong>Command Line Tools</strong>. <strong>Stack Builder</strong> é opcional para esta prática.</td></tr>
+<tr><td><strong>Data Directory</strong></td><td>Mantenha o diretório de dados sugerido, a menos que exista uma orientação específica do laboratório.</td></tr>
+<tr><td><strong>Password</strong></td><td>Defina uma senha para o usuário administrador do servidor, <code>postgres</code>. <strong>Guarde essa senha</strong>; você precisará dela na configuração inicial.</td></tr>
+<tr><td><strong>Port</strong></td><td>Use <strong>5432</strong> se estiver livre. Se já estiver ocupada por outro serviço, use <strong>5433</strong> e anote a escolha.</td></tr>
+<tr><td><strong>Advanced Options / Locale</strong></td><td>Para a prática, mantenha a configuração padrão apresentada pelo instalador.</td></tr>
+<tr><td><strong>Summary / Install</strong></td><td>Revise as opções e conclua a instalação.</td></tr>
+</tbody></table></div>
+<div class="pg-note"><strong>Existem duas senhas diferentes</strong><p>A senha que você definir agora pertence ao usuário administrador <code>postgres</code>. Na etapa 5 criaremos o usuário didático <code>aluno</code>, com outra senha. Se o pgAdmin solicitar uma <em>master password</em>, essa é uma terceira senha, usada para proteger conexões salvas no aplicativo.</p></div>
+<p>Ao finalizar, desmarque a opção de abrir o <strong>Stack Builder</strong>, caso apareça. Não precisamos instalar extensões adicionais nesta aula.</p>
+<div class="pg-note"><strong>Permissão administrativa necessária</strong><p>Se o Windows bloquear a instalação ou a criação do serviço, solicite permissão à equipe de TI. Não tente contornar políticas de segurança do computador.</p></div>
+
+</div></section>
+<section class="pg-section" id="servico"><div class="container pg-body">
+<p class="pg-kicker">4 · Servidor em execução</p><h2>Confirme o serviço do PostgreSQL</h2>
+
+<ol>
+<li>Abra o menu Iniciar e procure <strong>Serviços</strong> ou pressione <code>Win + R</code>, digite <code>services.msc</code> e confirme.</li>
+<li>Procure um serviço semelhante a <code>postgresql-x64-18</code>. O nome exato pode variar.</li>
+<li>Verifique se o estado é <strong>Em execução</strong> e, quando aplicável, se o tipo de inicialização é <strong>Automático</strong>.</li>
+<li>Para confirmar pelo PowerShell, execute:</li>
+</ol>
+<div class="pg-code"><div class="pg-code-label">PowerShell · listar serviços PostgreSQL</div><pre><code>Get-Service | Where-Object { $_.Name -like "postgresql*" }</code></pre></div>
+<p>Se o serviço estiver parado, use a opção <strong>Iniciar</strong> na janela de Serviços (pode exigir administração). Se não aparecer nenhum serviço, revise a instalação.</p>
+<p>Você também pode testar a resposta da porta do banco (substitua <code>5432</code> por <code>5433</code> se essa foi a porta escolhida):</p>
+<div class="pg-code"><div class="pg-code-label">PowerShell · comando opcional com o caminho padrão</div><pre><code>&amp; "C:\Program Files\PostgreSQL\18\bin\pg_isready.exe" -h 127.0.0.1 -p 5432</code></pre></div>
+<div class="pg-note"><strong>Verificação desta etapa</strong><p>O <code>pg_isready</code> deve indicar que o servidor aceita conexões. Se aparecer “command not found” ou o arquivo não existir, confira o caminho da instalação e se marcou <strong>Command Line Tools</strong>.</p></div>
+
+</div></section>
+<section class="pg-section" id="usuario"><div class="container pg-body">
+<p class="pg-kicker">5 · Configuração inicial</p><h2>Crie o usuário aluno e o banco laboratorio</h2>
+
+<p>O instalador criou um usuário administrador chamado <code>postgres</code>. Para esta prática, vamos trabalhar com um usuário separado, chamado <code>aluno</code>, que poderá criar bancos de laboratório sem receber privilégios de superusuário.</p>
+<h3>5.1 · Entre como administrador no pgAdmin</h3>
+<ol>
+<li>Abra o <strong>pgAdmin 4</strong>.</li>
+<li>Se o servidor aparecer no painel <strong>Servers</strong>, tente conectá-lo com a senha <code>postgres</code> definida no instalador.</li>
+<li>Se não aparecer, clique com o botão direito em <strong>Servers → Register → Server…</strong>. Em <strong>General</strong>, escolha o nome <code>PostgreSQL 18 — Administração</code>.</li>
+<li>Em <strong>Connection</strong>, configure <strong>Host</strong> <code>127.0.0.1</code>, <strong>Port</strong> <code>5432</code> (ou sua porta), <strong>Maintenance database</strong> <code>postgres</code>, <strong>Username</strong> <code>postgres</code> e a senha definida na instalação. Clique em <strong>Save</strong>.</li>
+<li>Expanda <strong>Databases → postgres</strong>, selecione esse banco e abra <strong>Tools → Query Tool</strong>.</li>
+</ol>
+<h3>5.2 · Crie o usuário de laboratório</h3>
+<p>Copie o SQL abaixo no Query Tool do banco <code>postgres</code> e execute uma única vez.</p>
+<div class="pg-code"><div class="pg-code-label">SQL · criar a conta aluno</div><pre><code>CREATE ROLE aluno
+    WITH LOGIN CREATEDB
+    PASSWORD 'AulaBD2026_Local!';</code></pre></div>
+<div class="pg-note"><strong>Senha apenas de laboratório</strong><p>A senha acima foi escolhida para que a atividade seja igual nos dois guias. É uma credencial didática para conexão local: não use essa senha em sistemas externos ou de produção e não a compartilhe fora do contexto da disciplina.</p></div>
+<p>O comando concede <code>LOGIN</code> e <code>CREATEDB</code>. Isso é suficiente para o aluno criar o banco da prática, sem transformá-lo em administrador de todo o servidor.</p>
+<h3>5.3 · Crie o banco laboratorio</h3>
+<ol>
+<li>No painel lateral do pgAdmin, clique com o botão direito em <strong>Databases → Create → Database…</strong>.</li>
+<li>Preencha <strong>Database</strong> com <code>laboratorio</code> e <strong>Owner</strong> com <code>aluno</code>.</li>
+<li>Clique em <strong>Save</strong>. Se necessário, clique com o botão direito em <strong>Databases → Refresh</strong>.</li>
+</ol>
+<div class="pg-table-scroll"><table class="pg-table"><thead><tr><th>Objeto</th><th>Nome/valor usado</th><th>Função</th></tr></thead><tbody>
+<tr><td>Usuário administrador</td><td><code>postgres</code></td><td>Configuração inicial do servidor.</td></tr>
+<tr><td>Usuário da prática</td><td><code>aluno</code></td><td>Executar SQL e criar o banco posterior <code>pratica_salas</code>.</td></tr>
+<tr><td>Banco inicial</td><td><code>laboratorio</code></td><td>Primeiro teste SQL, separado do banco administrativo.</td></tr>
+</tbody></table></div>
+<div class="pg-note"><strong>Se surgir “role aluno already exists”</strong><p>Você provavelmente já criou o usuário nessa instância. Não repita <code>CREATE ROLE</code>. Para redefinir a senha dessa conta de laboratório, um administrador pode executar <code>ALTER ROLE aluno WITH LOGIN CREATEDB PASSWORD 'AulaBD2026_Local!';</code>. Não altere outras contas sem necessidade.</p></div>
+
+</div></section>
+<section class="pg-section" id="pgadmin"><div class="container pg-body">
+<p class="pg-kicker">6 · Conexão como aluno</p><h2>Registre uma conexão para o laboratório</h2>
+
+<p>Agora vamos utilizar a conta <code>aluno</code>, em vez da conta administrativa <code>postgres</code>. Isso também facilita acompanhar a Prática Guiada 10 sem mudar os arquivos Python.</p>
+<ol>
+<li>No painel <strong>Servers</strong>, clique com o botão direito em <strong>Register → Server…</strong>.</li>
+<li>Na guia <strong>General</strong>, digite <code>PostgreSQL — Laboratório (nativo)</code>.</li>
+<li>Na guia <strong>Connection</strong>, preencha os campos conforme a tabela a seguir.</li>
+</ol>
+<div class="pg-table-scroll"><table class="pg-table"><thead><tr><th>Campo</th><th>Valor</th></tr></thead><tbody>
+<tr><td>Name (General)</td><td><code>PostgreSQL — Laboratório (nativo)</code></td></tr>
+<tr><td>Host name/address</td><td><code>127.0.0.1</code></td></tr>
+<tr><td>Port</td><td><code>5432</code> ou <code>5433</code>, conforme a instalação</td></tr>
+<tr><td>Maintenance database</td><td><code>laboratorio</code></td></tr>
+<tr><td>Username</td><td><code>aluno</code></td></tr>
+<tr><td>Password</td><td><code>AulaBD2026_Local!</code></td></tr>
+</tbody></table></div>
+<ol start="4">
+<li>Clique em <strong>Save</strong>. Expanda <strong>Servers → PostgreSQL — Laboratório (nativo) → Databases → laboratorio → Schemas → public</strong>.</li>
+<li>Selecione o banco <code>laboratorio</code> e abra <strong>Tools → Query Tool</strong>.</li>
+<li>Execute o comando abaixo para confirmar a identidade, o banco e a porta do servidor:</li>
+</ol>
+<div class="pg-code"><div class="pg-code-label">SQL · verificar a conexão</div><pre><code>SELECT current_database() AS banco,
+       current_user AS usuario,
+       inet_server_port() AS porta,
+       version();</code></pre></div>
+<div class="pg-note"><strong>Verificação desta etapa</strong><p>O resultado deve mostrar <code>laboratorio</code>, <code>aluno</code> e a porta configurada (normalmente 5432). Se a consulta retornar <code>postgres</code> como usuário, você abriu a conexão administrativa, não a do laboratório.</p></div>
+
+</div></section>
+<section class="pg-section" id="sql"><div class="container pg-body">
+<p class="pg-kicker">7 · Primeiro teste SQL</p><h2>Crie uma tabela e realize consultas</h2>
+
+<p>No <strong>Query Tool</strong> do banco <code>laboratorio</code>, execute os blocos abaixo <strong>na ordem</strong>. Para executar apenas um bloco, selecione seu texto e clique em ▶.</p>
+<h3>7.1 · Criar a tabela</h3>
+<div class="pg-code"><div class="pg-code-label">SQL · criar tabela de exemplo</div><pre><code>CREATE TABLE centro_distribuicao (
+    id_centro INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(80) NOT NULL,
+    cidade VARCHAR(80) NOT NULL,
+    capacidade_diaria INTEGER NOT NULL CHECK (capacidade_diaria &gt; 0)
+);</code></pre></div>
+<p>Observe <code>PRIMARY KEY</code>, que identifica cada registro, e <code>CHECK</code>, que impede capacidades inválidas.</p>
+<h3>7.2 · Inserir quatro registros</h3>
+<div class="pg-code"><div class="pg-code-label">SQL · inserir dados</div><pre><code>INSERT INTO centro_distribuicao (nome, cidade, capacidade_diaria)
+VALUES
+    ('CD Curitiba Norte', 'Curitiba', 600),
+    ('CD Curitiba Sul', 'Curitiba', 800),
+    ('CD São José', 'São José dos Pinhais', 650),
+    ('CD Londrina', 'Londrina', 500);</code></pre></div>
+<h3>7.3 · Consultar os registros</h3>
+<div class="pg-code"><div class="pg-code-label">SQL · listar dados</div><pre><code>SELECT id_centro, nome, cidade, capacidade_diaria
+FROM centro_distribuicao
+ORDER BY id_centro;</code></pre></div>
+<div class="pg-note"><strong>Resultado esperado</strong><p>A consulta deve mostrar <strong>quatro centros de distribuição</strong>. Caso a tabela ainda não apareça no painel do pgAdmin, clique com o botão direito em <strong>Tables → Refresh</strong>.</p></div>
+<h3>7.4 · Retomar agrupamento e agregação</h3>
+<div class="pg-code"><div class="pg-code-label">SQL · agrupamento por cidade</div><pre><code>SELECT cidade,
+       COUNT(*) AS total_centros,
+       SUM(capacidade_diaria) AS capacidade_total
+FROM centro_distribuicao
+GROUP BY cidade
+ORDER BY capacidade_total DESC;</code></pre></div>
+<div class="pg-table-scroll"><table class="pg-table"><thead><tr><th>cidade</th><th>total_centros</th><th>capacidade_total</th></tr></thead><tbody>
+<tr><td>Curitiba</td><td>2</td><td>1400</td></tr>
+<tr><td>São José dos Pinhais</td><td>1</td><td>650</td></tr>
+<tr><td>Londrina</td><td>1</td><td>500</td></tr>
+</tbody></table></div>
+<div class="pg-note"><strong>Se a tabela já existir</strong><p>Não execute novamente <code>CREATE TABLE</code> nem os quatro <code>INSERT</code>. Execute apenas as consultas para evitar registros duplicados.</p></div>
+
+</div></section>
+<section class="pg-section" id="manutencao"><div class="container pg-body">
+<p class="pg-kicker">8 · Uso no dia a dia</p><h2>Como iniciar e parar o servidor?</h2>
+
+<p>Na instalação nativa, o PostgreSQL funciona como um <strong>serviço do Windows</strong>. Não é necessário abrir o pgAdmin para que o servidor exista ou para que o serviço continue ativo.</p>
+<ol>
+<li>Abra <strong>Serviços</strong> (<code>services.msc</code>).</li>
+<li>Localize o serviço do PostgreSQL, como <code>postgresql-x64-18</code>.</li>
+<li>Observe o estado e o tipo de inicialização. Se for necessário, use <strong>Iniciar</strong> ou <strong>Reiniciar</strong> (pode exigir privilégios administrativos).</li>
+<li>Após iniciar o serviço, reconecte pelo pgAdmin e execute a consulta de conferência.</li>
+</ol>
+<div class="pg-code"><div class="pg-code-label">SQL · conferir persistência</div><pre><code>SELECT COUNT(*) AS total
+FROM centro_distribuicao;</code></pre></div>
+<div class="pg-note"><strong>Verificação</strong><p>O resultado esperado é <strong>4</strong>, desde que a tabela tenha sido criada e preenchida apenas uma vez. Parar e iniciar o serviço não deve apagar os arquivos do banco.</p></div>
+<div class="pg-grid"><article class="pg-card"><strong>Em casa ou no laboratório</strong><p>Se o serviço estiver configurado como automático, ele normalmente iniciará com o Windows. O pgAdmin pode ser aberto somente quando for necessário executar SQL.</p></article>
+<article class="pg-card"><strong>Backup e recuperação</strong><p>Os dados persistem em disco, mas isso não dispensa cópias de segurança. O pgAdmin possui a opção <em>Backup…</em>, e o PostgreSQL oferece ferramentas como <code>pg_dump</code> e <code>pg_restore</code>.</p></article></div>
+
+</div></section>
+<section class="pg-section" id="erros"><div class="container pg-body">
+<p class="pg-kicker">9 · Diagnóstico</p><h2>Problemas comuns e como verificar</h2>
+
+<div class="pg-table-scroll"><table class="pg-table"><thead><tr><th>Problema</th><th>O que fazer</th></tr></thead><tbody>
+<tr><td><strong>Instalador pede administrador</strong></td><td>Use uma conta autorizada ou solicite ajuda à equipe de TI. A instalação do serviço precisa de permissão adequada.</td></tr>
+<tr><td><strong>Porta 5432 ocupada</strong></td><td>Verifique a porta com PowerShell. Identifique o processo que a usa ou instale o PostgreSQL na <strong>5433</strong>; ajuste a porta também no pgAdmin e no <code>.env</code> da prática.</td></tr>
+<tr><td><strong>Connection refused</strong></td><td>Confira se o serviço PostgreSQL está em execução e se host e porta correspondem à instalação.</td></tr>
+<tr><td><strong>Password authentication failed for user postgres</strong></td><td>Use a senha de administrador definida durante a instalação, não a senha didática do usuário aluno.</td></tr>
+<tr><td><strong>Password authentication failed for user aluno</strong></td><td>Confira se a conta <code>aluno</code> foi criada na instância correta e se está utilizando <code>AulaBD2026_Local!</code>.</td></tr>
+<tr><td><strong>Role aluno already exists</strong></td><td>O usuário já foi criado nessa instância. Não repita o comando <code>CREATE ROLE</code>.</td></tr>
+<tr><td><strong>Database laboratorio already exists</strong></td><td>Não crie o banco novamente. Abra a conexão que já existe e confira a propriedade Owner.</td></tr>
+<tr><td><strong>Permission denied to create database</strong></td><td>Verifique se o usuário <code>aluno</code> recebeu <code>CREATEDB</code> na etapa 5.</td></tr>
+<tr><td><strong>Relation already exists</strong></td><td>O SQL de criação já foi executado. Não execute o mesmo bloco novamente.</td></tr>
+<tr><td><strong>psql ou pg_isready não encontrado</strong></td><td>O instalador normalmente não adiciona o diretório <code>bin</code> ao <code>PATH</code>. Use o caminho completo ou configure o <code>PATH</code> corretamente.</td></tr>
+</tbody></table></div>
+<h3>Se você escolheu a porta 5433</h3>
+<p>É necessário utilizá-la nos locais em que se conecta ao servidor: campo <strong>Port</strong> do pgAdmin, comando <code>pg_isready</code> e variável <code>PGPORT</code> do Python.</p>
+<div class="pg-code"><div class="pg-code-label">Arquivo .env · quando usar a porta 5433</div><pre><code>PGHOST=127.0.0.1
+PGPORT=5433
+PGDATABASE=pratica_salas
+PGUSER=aluno
+PGPASSWORD=AulaBD2026_Local!</code></pre></div>
+<div class="pg-note"><strong>Não apague os dados para corrigir a conexão</strong><p>Problemas de senha ou de porta normalmente não exigem desinstalar o PostgreSQL, remover pastas de dados ou criar outro banco. Faça primeiro as verificações de serviço, porta, usuário e senha.</p></div>
+
+</div></section>
+<section class="pg-section" id="referencias"><div class="container pg-body">
+<p class="pg-kicker">10 · Continuação</p><h2>Fontes oficiais e próxima prática</h2>
+
+<p>As instruções de instalação são baseadas na documentação oficial de instalação do PostgreSQL para Windows e do instalador da EDB.</p>
+<ul>
+<li><a href="https://www.postgresql.org/download/windows/" target="_blank" rel="noopener noreferrer">PostgreSQL — instaladores para Windows</a></li>
+<li><a href="https://www.enterprisedb.com/docs/supported-open-source/postgresql/installing/windows/" target="_blank" rel="noopener noreferrer">EDB — instalação guiada do PostgreSQL no Windows</a></li>
+<li><a href="https://www.pgadmin.org/download/pgadmin-4-windows/" target="_blank" rel="noopener noreferrer">pgAdmin 4 — download para Windows</a></li>
+<li><a href="https://www.postgresql.org/docs/18/" target="_blank" rel="noopener noreferrer">PostgreSQL 18 — documentação</a></li>
+</ul>
+<div class="pg-checklist"><strong>Checklist de conclusão</strong>
+<label><input type="checkbox"> PostgreSQL 18 instalado como serviço do Windows.</label>
+<label><input type="checkbox"> Serviço respondendo na porta escolhida (5432 ou 5433).</label>
+<label><input type="checkbox"> Usuário <code>aluno</code> criado com permissão de criar bancos.</label>
+<label><input type="checkbox"> Banco <code>laboratorio</code> criado com proprietário <code>aluno</code>.</label>
+<label><input type="checkbox"> pgAdmin conectado como <code>aluno</code>.</label>
+<label><input type="checkbox"> Consulta de teste retorna quatro centros de distribuição.</label></div>
+<p>Ambiente pronto? Continue na <a href="pratica-10-postgresql-salas.html">Prática Guiada 10 — PostgreSQL: do SGBD à aplicação</a>. No início da prática, ignore as instruções específicas de inicialização por contêiner e confirme apenas que o serviço nativo está em execução. As demais etapas com o pgAdmin e o Python são compatíveis.</p>
+<p class="pg-footer"><a href="index.html">← Página principal da disciplina</a></p>
+
+</div></section>
+</main>
+<footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Guia de laboratório sem Docker</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+</body></html>
