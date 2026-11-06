@@ -113,6 +113,37 @@
     .sgbd-checklist .sgbd-card p{margin:.1rem 0}
     .sgbd-draft-questions{font-size:.88rem;border-top:1px solid var(--line);padding-top:1rem;margin-top:1.5rem}
     .sgbd-draft-questions strong{font-weight:750}
+
+    /* Mapa conceitual anterior à primeira tabela: cliente, driver, SQL, SGBD e banco. */
+    .sgbd-concept-map{margin:1.1rem 0 1.55rem;padding:1.4rem 1.25rem;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+    .sgbd-concept-intro{font-size:.94rem;color:var(--muted);margin:.2rem 0 1.25rem}
+    .sgbd-concept-branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem;max-width:840px;margin:0 auto}
+    .sgbd-concept-branch{text-align:center;display:flex;flex-direction:column;align-items:stretch;gap:.34rem}
+    .sgbd-concept-origin{font-size:.82rem;font-weight:650;color:var(--muted);min-height:1.5rem}
+    .sgbd-concept-arrow{font-size:1.4rem;line-height:1.1;color:var(--primary);text-align:center;font-weight:700}
+    .sgbd-concept-node{border:1px solid var(--line);border-radius:12px;background:var(--surface-soft);padding:.88rem 1rem;text-align:center}
+    .sgbd-concept-node strong{display:block;font-size:1.04rem;line-height:1.4;margin:.08rem 0 .2rem}
+    .sgbd-concept-node small{display:block;font-size:.83rem;line-height:1.5;color:var(--muted)}
+    .sgbd-concept-type{display:block;font-size:.69rem;letter-spacing:.085em;text-transform:uppercase;font-weight:800;color:var(--primary)}
+    .sgbd-concept-merge{display:flex;justify-content:center;gap:clamp(3rem,23vw,14rem);margin:.2rem 0 -.15rem;font-size:1.65rem;line-height:1.2;color:var(--primary);font-weight:700}
+    .sgbd-concept-center{max-width:610px;margin:0 auto}
+    .sgbd-concept-center .sgbd-concept-node{background:var(--surface);border:1px solid var(--line)}
+    .sgbd-concept-center .sgbd-concept-node.language{border-style:dashed}
+    .sgbd-concept-center .sgbd-concept-node.server{border-color:color-mix(in srgb,var(--primary) 32%,var(--line));background:color-mix(in srgb,var(--primary) 5%,var(--surface))}
+    .sgbd-concept-center .sgbd-concept-node.database{border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}
+    .sgbd-concept-center .sgbd-concept-node code{font-size:.86rem}
+    .sgbd-concept-down{text-align:center;color:var(--primary);font-size:1.45rem;line-height:1.25;margin:.26rem 0;font-weight:700}
+    .sgbd-concept-caption{font-size:.82rem;line-height:1.55;color:var(--muted);margin:1.1rem auto 0;max-width:790px;text-align:center}
+    @media(max-width:640px){
+      .sgbd-concept-map{padding:1rem .8rem}
+      .sgbd-concept-branches{gap:.55rem}
+      .sgbd-concept-node{padding:.65rem .52rem}
+      .sgbd-concept-origin{font-size:.75rem}
+      .sgbd-concept-node strong{font-size:.93rem}
+      .sgbd-concept-node small{font-size:.76rem}
+      .sgbd-concept-merge{gap:25%;font-size:1.35rem}
+      .sgbd-concept-caption{text-align:left}
+    }
     @media(max-width:1080px){
       body.lesson-sgbd .site-header .nav-wrap{display:flex;flex-wrap:nowrap;position:relative;align-items:center;gap:10px;min-height:58px}
       body.lesson-sgbd .site-header .brand{min-width:0;max-width:calc(100% - 54px)}
@@ -249,6 +280,52 @@
       <div class="sgbd-section-head"><p class="sgbd-kicker">2 · Conceitos fundamentais</p><h2>O banco de dados não é o SGBD</h2>
         <p>Embora os termos sejam usados informalmente como sinônimos, eles designam elementos diferentes da arquitetura.</p>
       </div>
+
+      <h3 id="mapa-componentes">Como esses cinco elementos se relacionam?</h3>
+      <p class="sgbd-concept-intro">O mesmo servidor pode receber comandos de uma ferramenta utilizada diretamente por uma pessoa ou de uma aplicação que usa um driver.</p>
+      <figure class="sgbd-concept-map" aria-labelledby="mapa-componentes">
+        <div class="sgbd-concept-branches">
+          <div class="sgbd-concept-branch">
+            <div class="sgbd-concept-origin">Pessoa utilizando uma ferramenta</div>
+            <div class="sgbd-concept-arrow" aria-hidden="true">↓</div>
+            <div class="sgbd-concept-node">
+              <span class="sgbd-concept-type">Cliente</span>
+              <strong>DBeaver ou psql</strong>
+              <small>Interface que permite escrever e enviar comandos.</small>
+            </div>
+          </div>
+          <div class="sgbd-concept-branch">
+            <div class="sgbd-concept-origin">Aplicação desenvolvida em Python</div>
+            <div class="sgbd-concept-arrow" aria-hidden="true">↓</div>
+            <div class="sgbd-concept-node">
+              <span class="sgbd-concept-type">Driver</span>
+              <strong>psycopg</strong>
+              <small>Biblioteca que conecta o código ao servidor.</small>
+            </div>
+          </div>
+        </div>
+        <div class="sgbd-concept-merge" aria-hidden="true"><span>↘</span><span>↙</span></div>
+        <div class="sgbd-concept-center">
+          <div class="sgbd-concept-node language">
+            <span class="sgbd-concept-type">SQL · linguagem das instruções</span>
+            <strong><code>SELECT</code> · <code>INSERT</code> · <code>UPDATE</code></strong>
+            <small>Descreve a operação solicitada. SQL não é um programa separado.</small>
+          </div>
+          <div class="sgbd-concept-down" aria-hidden="true">↓</div>
+          <div class="sgbd-concept-node server">
+            <span class="sgbd-concept-type">SGBD · software servidor</span>
+            <strong>PostgreSQL</strong>
+            <small>Interpreta, planeja e executa operações; administra segurança, integridade e transações.</small>
+          </div>
+          <div class="sgbd-concept-down" aria-hidden="true">↕</div>
+          <div class="sgbd-concept-node database">
+            <span class="sgbd-concept-type">Banco de dados · informações persistentes</span>
+            <strong>Oficinas e inscrições</strong>
+            <small>Tabelas, registros, relacionamentos e índices gerenciados pelo PostgreSQL.</small>
+          </div>
+        </div>
+        <figcaption class="sgbd-concept-caption">Os resultados seguem o caminho de volta ao cliente ou à aplicação. O desenho representa as responsabilidades lógicas, não todos os detalhes do protocolo de comunicação.</figcaption>
+      </figure>
       <div class="sgbd-matrix"><table>
         <thead><tr><th>Elemento</th><th>O que é</th><th>Exemplo no laboratório</th></tr></thead>
         <tbody>
