@@ -430,177 +430,92 @@ WHERE id_sala = 2
 </div></section>
 <section class="pg-section" id="parte3"><div class="container pg-body"><p class="pg-kicker">3 · Aplicação Python conectada ao PostgreSQL</p><h2>Parte 3 · Utilizar o mesmo banco em Python <small>50 minutos</small></h2>
 
-<section class="task" id="e9"><div class="task-h"><span class="step">09</span><h3>Preparar o ambiente Python</h3></div><div class="purpose"><strong>Conceito:</strong> o Python não abre arquivos internos do banco. Ele usa o driver <code>psycopg</code> para enviar SQL pela conexão com o servidor; o arquivo <code>.env</code> fornece os parâmetros da conexão.</div><p><strong>Onde executar:</strong> PowerShell, na pasta que contém os arquivos extraídos do pacote. Você vai preparar um pequeno programa de terminal que utiliza <code>psycopg</code> para conversar com o PostgreSQL.</p>
-<div class="guided"><h4>Passo a passo</h4><ol><li>Extraia o pacote da prática para uma pasta. Mantenha <a download="" href="pratica-10/app_salas.py"><code>app_salas.py</code></a> e <a download="" href="pratica-10/env-exemplo.txt"><code>env-exemplo.txt</code></a> no <strong>mesmo diretório</strong>.</li><li>Abra o PowerShell <strong>nessa pasta</strong> (no Explorador, use “Abrir no Terminal”).</li><li>Verifique a versão do Python e crie um ambiente virtual <code>.venv</code>.</li><li>Instale as duas dependências no ambiente virtual e copie o arquivo de configuração.</li><li>Execute a aplicação. Se necessário, edite <code>PGPORT</code> no <code>.env</code> para combinar com a porta que você configurou no Docker.</li></ol></div><div class="codebox"><div class="codebar"><span>PowerShell</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>py --version
-py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "psycopg[binary]" python-dotenv
-Copy-Item env-exemplo.txt .env
-.\.venv\Scripts\python.exe app_salas.py</code></pre></div><p>Se <code>py</code> não estiver disponível, use <code>python</code> nos dois primeiros comandos. O ambiente virtual mantém as bibliotecas desta prática separadas de outras instalações. O arquivo <code>.env</code> contém as credenciais didáticas do servidor local e <strong>não deve ser publicado</strong> em um repositório.</p><details><summary>Ver o exemplo de configuração .env</summary><div class="codebox"><div class="codebar"><span>Arquivo · env-exemplo.txt</span><a class="code-download" download="" href="pratica-10/env-exemplo.txt">Baixar arquivo</a><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code># Configuração de laboratório local, igual à do tutorial da disciplina.
-# Copie este arquivo com o nome .env e ajuste apenas se necessário.
-# NÃO utilize essas credenciais em um banco de produção nem publique o .env.
-PGHOST=127.0.0.1
-PGPORT=5432
-PGDATABASE=pratica_salas
-PGUSER=aluno
-PGPASSWORD=AulaBD2026_Local!</code></pre></div></details><div class="checkpoint"><h4>O que conferir</h4><p>Ao executar o programa, aparece um menu com as opções <strong>1 — Listar salas</strong>, <strong>2 — Listar usuários</strong>, <strong>3 — Listar reservas</strong>, <strong>4 — Criar reserva</strong> e <strong>0 — Sair</strong>. Se ocorrer erro de conexão, confira <code>PGHOST</code>, <code>PGPORT</code>, <code>PGDATABASE</code>, <code>PGUSER</code> e <code>PGPASSWORD</code>.</p></div><p><strong>Questão 9.</strong> Qual parte do programa identifica o servidor de banco? Qual biblioteca atua como driver?</p></section>
-<section class="task" id="e10"><div class="task-h"><span class="step">10</span><h3>Executar consultas a partir da aplicação</h3></div><div class="purpose"><strong>Conceito:</strong> o cliente muda, mas o banco e suas regras permanecem. A função <code>conectar()</code> estabelece a conexão; <code>cursor.execute()</code> envia a SQL e <code>fetchall()</code> lê o resultado.</div><p><strong>Onde executar:</strong> menu da aplicação Python; use o pgAdmin apenas para comparar os resultados. As duas ferramentas consultarão o mesmo banco <code>pratica_salas</code>.</p>
-<div class="guided"><h4>Observe em três etapas</h4><ol><li>Selecione a opção <strong>1</strong> e confira as quatro salas listadas.</li><li>Selecione a opção <strong>2</strong> e confira os três usuários.</li><li>Selecione a opção <strong>3</strong> e compare o total de reservas com o resultado no pgAdmin.</li><li>Abra <code>app_salas.py</code> e localize a função <code>listar_reservas()</code>. Identifique qual parte do SQL realiza o <code>JOIN</code>.</li></ol></div>
-<p>Compare uma das consultas Python com sua versão executada no pgAdmin. O resultado muda porque o cliente mudou?</p><details><summary>Consultar o código-fonte completo da aplicação</summary><div class="codebox"><div class="codebar"><span>Python · psycopg 3</span><a class="code-download" download="" href="pratica-10/app_salas.py">Baixar arquivo</a><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>"""Aula 10: pequeno cliente de reservas com PostgreSQL e psycopg 3.
-
-Pré-requisitos: executar 01_banco_salas.sql em pratica_salas e preparar .env.
-"""
-
-from datetime import date, time
-from os import getenv
-
-import psycopg
-from dotenv import load_dotenv
-from psycopg.errors import CheckViolation, ForeignKeyViolation
-
-load_dotenv()
-
-
-def conectar():
-    """O driver abre uma conexão com o servidor PostgreSQL."""
-    return psycopg.connect(
-        host=getenv("PGHOST", "127.0.0.1"),
-        port=int(getenv("PGPORT", "5432")),
-        dbname=getenv("PGDATABASE", "pratica_salas"),
-        user=getenv("PGUSER", "aluno"),
-        password=getenv("PGPASSWORD"),
-    )
-
-
-def listar_salas():
-    with conectar() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT s.id_sala, b.nome_bloco, s.nome, s.capacidade
-                FROM sala AS s
-                JOIN bloco AS b ON b.id_bloco = s.id_bloco
-                WHERE s.ativa = TRUE
-                ORDER BY s.id_sala
-            """)
-            linhas = cur.fetchall()
-
-    print("\nSALAS ATIVAS")
-    for identificador, bloco, nome, capacidade in linhas:
-        print(f"{identificador}: {nome} ({bloco}) - {capacidade} lugares")
-
-
-def listar_usuarios():
-    with conectar() as conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT id_usuario, nome FROM usuario ORDER BY id_usuario")
-            linhas = cur.fetchall()
-
-    print("\nUSUÁRIOS")
-    for identificador, nome in linhas:
-        print(f"{identificador}: {nome}")
-
-
-def listar_reservas():
-    with conectar() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
-                       s.nome, u.nome, r.finalidade
-                FROM reserva AS r
-                JOIN sala AS s ON s.id_sala = r.id_sala
-                JOIN usuario AS u ON u.id_usuario = r.id_usuario
-                ORDER BY r.data_reserva, r.hora_inicio, r.id_reserva
-            """)
-            linhas = cur.fetchall()
-
-    print("\nRESERVAS CADASTRADAS")
-    if not linhas:
-        print("Nenhuma reserva cadastrada.")
-    for identificador, data, hora, sala, usuario, finalidade in linhas:
-        print(f"#{identificador} | {data} {hora:%H:%M} | {sala} | {usuario} | {finalidade}")
-
-
-def criar_reserva():
-    print("\nNOVA RESERVA (horários de 1 hora, em hora cheia)")
-    try:
-        id_usuario = int(input("ID do usuário: ").strip())
-        id_sala = int(input("ID da sala: ").strip())
-        data = date.fromisoformat(input("Data (AAAA-MM-DD): ").strip())
-        hora = time.fromisoformat(input("Hora (HH:MM): ").strip())
-        finalidade = input("Finalidade: ").strip()
-        if not finalidade:
-            print("Informe uma finalidade.")
-            return
-    except ValueError:
-        print("Dados inválidos. Verifique os IDs, a data e a hora.")
-        return
-
-    try:
-        with conectar() as conn:
-            with conn.cursor() as cur:
-                # %s e a tupla de valores evitam concatenar dados à SQL.
-                cur.execute("""
-                    INSERT INTO reserva
-                        (id_usuario, id_sala, data_reserva, hora_inicio, finalidade)
-                    VALUES (%s, %s, %s, %s, %s)
-                    ON CONFLICT (id_sala, data_reserva, hora_inicio)
-                    DO NOTHING
-                    RETURNING id_reserva
-                """, (id_usuario, id_sala, data, hora, finalidade))
-                resultado = cur.fetchone()
-        # Ao sair do `with` sem erro, psycopg confirma a transação.
-        if resultado is None:
-            print("Horário indisponível: a sala já está reservada nesse período.")
-        else:
-            print(f"Reserva confirmada. ID: {resultado[0]}")
-    except ForeignKeyViolation:
-        print("Reserva rejeitada: sala ou usuário inexistente (FOREIGN KEY).")
-    except CheckViolation:
-        print("Reserva rejeitada: use hora cheia entre 08:00 e 21:00 (CHECK).")
-
-
-def main():
-    while True:
-        print("\n=== SISTEMA DE RESERVA DE SALAS ===")
-        print("1 - Listar salas")
-        print("2 - Listar usuários")
-        print("3 - Listar reservas")
-        print("4 - Criar reserva")
-        print("0 - Sair")
-        opcao = input("Opção: ").strip()
-        if opcao == "0":
-            print("Encerrado.")
-            break
-        try:
-            if opcao == "1":
-                listar_salas()
-            elif opcao == "2":
-                listar_usuarios()
-            elif opcao == "3":
-                listar_reservas()
-            elif opcao == "4":
-                criar_reserva()
-            else:
-                print("Escolha uma opção de 0 a 4.")
-        except psycopg.Error as exc:
-            print(f"Falha de banco de dados ({type(exc).__name__}).")
-            print("Confira o servidor, o banco e as configurações do .env.")
-
-
-if __name__ == "__main__":
-    main()</code></pre></div></details><table class="example-table"><thead><tr><th>Elemento do Python</th><th>O que faz</th></tr></thead><tbody><tr><td><code>psycopg.connect(...)</code></td><td>Abre a conexão com o PostgreSQL.</td></tr><tr><td><code>conn.cursor()</code></td><td>Cria o objeto por onde executamos operações.</td></tr><tr><td><code>cur.execute(SQL)</code></td><td>Envia a instrução SQL ao servidor.</td></tr><tr><td><code>cur.fetchall()</code></td><td>Recebe as linhas restantes do resultado.</td></tr></tbody></table><div class="checkpoint"><h4>O que conferir</h4><p>Os registros vistos no terminal também existem no pgAdmin. Isso demonstra que a aplicação não tem um “banco próprio”: ela acessa <strong>o mesmo PostgreSQL</strong> por outro cliente.</p></div><p><strong>Questão 10.</strong> Percorra o fluxo: teclado → Python → driver → PostgreSQL → consulta SQL → linhas devolvidas. Qual componente realmente lê as tabelas e executa o plano?</p>
+<section class="task" id="e9"><div class="task-h"><span class="step">09</span><h3>Baixar os arquivos e preparar o Python</h3></div>
+<p><strong>Onde executar:</strong> navegador, Explorador de Arquivos e PowerShell do Windows. O servidor PostgreSQL continua sendo o mesmo; agora vamos trocar o cliente pgAdmin por uma aplicação de terminal.</p>
+<p><strong>1.</strong> Crie uma pasta chamada <code>Pratica10</code> em um local de sua preferência, por exemplo em <strong>Documentos</strong>.</p>
+<p><strong>2.</strong> Baixe os <strong>dois arquivos</strong> abaixo para essa mesma pasta. No Explorador de Arquivos, confira se os nomes não receberam <code>.txt</code> adicional:</p>
+<div class="quick-links">
+<a download href="pratica-10/app_salas.py">Baixar app_salas.py →</a>
+<a download href="pratica-10/env-exemplo.txt">Baixar env-exemplo.txt →</a>
+</div>
+<p><strong>3.</strong> Abra a pasta <code>Pratica10</code> no Explorador de Arquivos. Clique com o botão direito em uma região vazia e selecione <strong>Abrir no Terminal</strong> (ou abra o PowerShell e navegue até a pasta).</p>
+<p><strong>4.</strong> Verifique os nomes dos arquivos e a disponibilidade do Python:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · conferir os arquivos e o Python</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Get-ChildItem app_salas.py, env-exemplo.txt
+py --version</code></pre></div>
+<p>Se o comando <code>py</code> não existir no seu Windows, utilize <code>python</code> nos comandos seguintes.</p>
+<p><strong>5.</strong> Crie um ambiente virtual para a atividade:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · criar ambiente virtual</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>py -m venv .venv</code></pre></div>
+<p><strong>6.</strong> Instale o driver do PostgreSQL e a biblioteca que lê as variáveis de configuração:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · instalar dependências</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe -m pip install "psycopg[binary]" python-dotenv</code></pre></div>
+<p><strong>7.</strong> Crie um arquivo chamado <code>.env</code> a partir do exemplo:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · preparar configuração</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Copy-Item env-exemplo.txt .env
+notepad .env</code></pre></div>
+<p>No Bloco de Notas, confira se os campos correspondem à instalação realizada no tutorial: <code>PGHOST=127.0.0.1</code>, <code>PGDATABASE=pratica_salas</code>, <code>PGUSER=aluno</code> e a porta publicada pelo Docker (normalmente <code>5432</code>). Salve e feche.</p>
+<div class="notice"><strong>Credenciais de laboratório:</strong> o arquivo <code>.env</code> possui a senha local de teste. Não envie esse arquivo ao GitHub nem reutilize a senha em outros sistemas.</div>
+<p><strong>8.</strong> Execute a aplicação no mesmo PowerShell:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · iniciar a aplicação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe app_salas.py</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Deve aparecer o menu <strong>1 — Listar salas</strong>, <strong>2 — Listar usuários</strong>, <strong>3 — Listar reservas</strong>, <strong>4 — Criar reserva</strong> e <strong>0 — Sair</strong>. Se ocorrer erro, verifique primeiro os nomes dos arquivos, a instalação das bibliotecas e os valores do <code>.env</code>.</p></div>
 </section>
-<section class="task" id="e11"><div class="task-h"><span class="step">11</span><h3>Cadastrar uma reserva e testar um conflito real</h3></div><div class="purpose"><strong>Conceito:</strong> a aplicação utiliza valores parametrizados (<code>%s</code>) e <code>ON CONFLICT ... DO NOTHING</code>. Mesmo que dois clientes tentem o mesmo horário, a restrição <code>UNIQUE</code> continua sendo aplicada no servidor.</div><p><strong>Onde executar:</strong> aplicação Python; depois consulte o resultado no pgAdmin. Você vai registrar uma reserva válida e, em seguida, tentar duas operações inválidas para observar a proteção do banco.</p>
-<div class="guided"><h4>Três tentativas, três resultados</h4><ol><li>Use a opção <strong>4</strong> e cadastre os valores indicados na tabela. Registre o identificador retornado.</li><li>Repita o cadastro com <strong>usuário 2</strong>, mantendo a mesma sala, data e horário. O sistema deve informar que o horário está ocupado e não criar outra linha.</li><li>Tente reservar a sala 4 para <strong>09:30</strong> na mesma data. O <code>CHECK</code> deve rejeitar o horário fracionado.</li><li>Volte à opção <strong>3</strong> e consulte o banco pelo pgAdmin usando o SQL fornecido.</li></ol></div>
-<table><thead><tr><th>Campo</th><th>Valor</th></tr></thead><tbody>
-<tr><td>ID usuário</td><td><code>1</code></td></tr><tr><td>ID sala</td><td><code>4</code></td></tr>
-<tr><td>Data</td><td><code>2026-11-21</code></td></tr><tr><td>Hora</td><td><code>09:00</code></td></tr><tr><td>Finalidade</td><td>Estudo em grupo</td></tr>
+<section class="task" id="e10"><div class="task-h"><span class="step">10</span><h3>Consultar o mesmo banco pela aplicação</h3></div>
+<p><strong>Onde executar:</strong> terminal da aplicação Python; use o pgAdmin apenas para comparar.</p>
+<p><strong>1.</strong> No menu do programa, digite <code>1</code> e pressione <strong>Enter</strong>. Devem aparecer as <strong>4 salas</strong> cadastradas, seus blocos e capacidades.</p>
+<p><strong>2.</strong> Digite <code>2</code> e pressione <strong>Enter</strong>. Devem aparecer <strong>3 usuários</strong>.</p>
+<p><strong>3.</strong> Digite <code>3</code>. Devem aparecer as reservas cadastradas até aqui: <strong>5</strong> se você realizou o teste com duas sessões da etapa 8, ou <strong>4</strong> se o pulou.</p>
+<p><strong>4.</strong> Volte ao pgAdmin, abra o Query Tool de <code>pratica_salas</code> e execute:</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · conferir as reservas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT COUNT(*) AS total
+FROM reserva;</code></pre></div>
+<p>O número de registros deve ser igual ao exibido pela aplicação.</p>
+<p><strong>5.</strong> Abra o arquivo <code>app_salas.py</code> no editor de sua preferência e encontre a função <code>listar_reservas()</code>. Observe o trecho responsável pela consulta:</p>
+<div class="codebox"><div class="codebar"><span>Python · trecho da aplicação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>with conectar() as conn:
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
+                   s.nome, u.nome, r.finalidade
+            FROM reserva AS r
+            JOIN sala AS s ON s.id_sala = r.id_sala
+            JOIN usuario AS u ON u.id_usuario = r.id_usuario
+            ORDER BY r.data_reserva, r.hora_inicio, r.id_reserva
+        """)
+        linhas = cur.fetchall()</code></pre></div>
+<p>O método <code>execute()</code> envia a SQL ao PostgreSQL; <code>fetchall()</code> recebe as linhas retornadas. O código Python não lê diretamente os arquivos internos do banco.</p>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Os registros consultados pelo Python e pelo pgAdmin são os mesmos, pois ambos utilizam o banco <code>pratica_salas</code>. A diferença está no <strong>cliente</strong> e na forma de apresentar o resultado, não no armazenamento.</p></div>
+</section>
+<section class="task" id="e11"><div class="task-h"><span class="step">11</span><h3>Criar uma reserva pelo Python e conferir no pgAdmin</h3></div>
+<p><strong>Onde executar:</strong> terminal da aplicação Python e, no final, Query Tool do pgAdmin.</p>
+<p><strong>1. Inserção válida.</strong> No menu da aplicação, digite <code>4</code> e preencha os campos um por vez:</p>
+<table><thead><tr><th>Solicitação do programa</th><th>O que digitar</th></tr></thead><tbody>
+<tr><td>ID do usuário</td><td><code>1</code></td></tr>
+<tr><td>ID da sala</td><td><code>4</code></td></tr>
+<tr><td>Data (AAAA-MM-DD)</td><td><code>2026-11-21</code></td></tr>
+<tr><td>Hora (HH:MM)</td><td><code>09:00</code></td></tr>
+<tr><td>Finalidade</td><td><code>Estudo em grupo</code></td></tr>
 </tbody></table>
-<p>Repita a mesma reserva para outro usuário, mantendo sala, data e horário. Depois tente reservar a sala 4 às <code>09:30</code>. Observe as duas mensagens de rejeição.</p><div class="codebox"><div class="codebar"><span>SQL</span><button aria-label="Copiar código" class="copy" type="button">Copiar</button></div><pre><code>SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
-       s.nome AS sala, u.nome AS solicitante
+<p>Ao confirmar, o programa deve mostrar <strong>“Reserva confirmada”</strong> com um identificador gerado pelo PostgreSQL.</p>
+<p><strong>2. Mesmo horário.</strong> Escolha novamente a opção <code>4</code>, informe <strong>usuário 2</strong> e mantenha sala 4, data 21/11/2026 e hora 09:00. Preencha uma finalidade qualquer.</p>
+<p>O programa deverá informar <strong>“Horário indisponível”</strong> e não inserir um segundo registro. A aplicação usa <code>ON CONFLICT ... DO NOTHING</code> porque o PostgreSQL possui a restrição <code>UNIQUE</code> apropriada.</p>
+<p><strong>3. Horário inválido.</strong> Escolha a opção <code>4</code> novamente. Informe usuário 1, sala 4, a mesma data e hora <code>09:30</code>.</p>
+<p>A aplicação deverá mostrar que a reserva foi rejeitada: a restrição <code>CHECK</code> aceita apenas horários de início em hora cheia.</p>
+<p><strong>4.</strong> Volte ao pgAdmin e confira as reservas da sala 4 nessa data:</p>
+<div class="codebox"><div class="codebar"><span>pgAdmin · verificar a reserva criada</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
+       s.nome AS sala, u.nome AS solicitante, r.finalidade
 FROM reserva AS r
 JOIN sala AS s ON s.id_sala = r.id_sala
 JOIN usuario AS u ON u.id_usuario = r.id_usuario
-WHERE r.id_sala = 4 AND r.data_reserva = DATE '2026-11-21';</code></pre></div><div class="checkpoint"><h4>O que conferir</h4><table class="example-table"><thead><tr><th>Tentativa</th><th>Retorno previsto</th><th>Recurso envolvido</th></tr></thead><tbody><tr><td>Reserva válida às 09:00</td><td>Reserva confirmada, com ID gerado.</td><td><code>INSERT</code> + transação confirmada</td></tr><tr><td>Mesmo horário, outro usuário</td><td>Horário indisponível; nenhuma linha nova.</td><td><code>UNIQUE</code> + <code>ON CONFLICT DO NOTHING</code></td></tr><tr><td>Reserva às 09:30</td><td>Reserva rejeitada.</td><td><code>CHECK</code></td></tr></tbody></table><p><strong>Diferença importante:</strong> no pgAdmin, o teste de duplicidade produziu um erro. A aplicação trata o mesmo conflito com <code>DO NOTHING</code>, recebendo um resultado vazio de <code>RETURNING</code> e exibindo uma mensagem amigável. Em ambos os casos, o SGBD impede a duplicidade.</p></div><p><strong>Questão 11.</strong> Localize no código o uso de <code>%s</code> e da tupla de parâmetros. Por que os dados do usuário não são concatenados diretamente ao texto SQL?</p></section>
+WHERE r.id_sala = 4
+  AND r.data_reserva = DATE '2026-11-21';</code></pre></div>
+<p><strong>5.</strong> No arquivo <code>app_salas.py</code>, localize <code>def criar_reserva():</code> e observe como a aplicação envia valores para o SQL:</p>
+<div class="codebox"><div class="codebar"><span>Python · passagem de parâmetros</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>cur.execute("""
+    INSERT INTO reserva
+        (id_usuario, id_sala, data_reserva, hora_inicio, finalidade)
+    VALUES (%s, %s, %s, %s, %s)
+    ON CONFLICT (id_sala, data_reserva, hora_inicio)
+    DO NOTHING
+    RETURNING id_reserva
+""", (id_usuario, id_sala, data, hora, finalidade))
+resultado = cur.fetchone()</code></pre></div>
+<p>Os marcadores <code>%s</code> recebem os valores enviados na tupla. A consulta permanece separada dos dados digitados pelo usuário.</p>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta no pgAdmin deve mostrar <strong>uma única reserva</strong> para a sala 4 em 21/11/2026 às 09:00. As duas tentativas seguintes não geram linhas. O PostgreSQL mantém as mesmas regras independentemente de o comando ter partido do pgAdmin ou do Python.</p></div>
+</section>
 <div class="trouble" id="ajuda">
 <h3>Se algo não funcionar: diagnóstico rápido</h3>
 <table><thead><tr><th>Sintoma</th><th>O que verificar</th></tr></thead><tbody>
@@ -615,39 +530,51 @@ WHERE r.id_sala = 4 AND r.data_reserva = DATE '2026-11-21';</code></pre></div><d
 </div>
 
 </div></section>
-<section class="pg-section" id="sintese"><div class="container pg-body"><p class="pg-kicker">4 · Verificação da aprendizagem</p><h2>Síntese · O que a prática demonstrou? <small>5 minutos</small></h2>
-
-<div class="wrapup"><p>Registre respostas curtas para as questões a seguir, usando exemplos observados na prática:</p>
-<ol><li>Qual é a diferença entre banco, SGBD, cliente e driver?</li>
-<li>Quais inconsistências foram impedidas pelas restrições do esquema?</li>
-<li>O que <code>COMMIT</code> e <code>ROLLBACK</code> demonstraram?</li>
-<li>Como o SGBD coordenou duas tentativas de gravar a mesma reserva?</li>
-<li>O que mudou — e o que permaneceu igual — ao substituir o pgAdmin pelo programa Python?</li></ol>
-<h3>Checklist de conclusão</h3>
-<ul class="checklist">
-<li><label><input type="checkbox"/> Consegui identificar servidor PostgreSQL, banco e cliente.</label></li>
-<li><label><input type="checkbox"/> Criei e consultei as quatro tabelas relacionadas.</label></li>
-<li><label><input type="checkbox"/> Observei erros esperados de <code>CHECK</code>, <code>FOREIGN KEY</code> e <code>UNIQUE</code>.</label></li>
-<li><label><input type="checkbox"/> Testei <code>ROLLBACK</code> e <code>COMMIT</code>.</label></li>
-<li><label><input type="checkbox"/> Observei um conflito entre duas sessões.</label></li>
-<li><label><input type="checkbox"/> Cadastrei uma reserva pelo Python e a encontrei no pgAdmin.</label></li>
-</ul>
-<p class="smallnote">Ao responder às questões, use evidências: uma linha retornada, o nome da restrição, uma alteração desfeita ou um registro confirmado. O importante é explicar o comportamento observado.</p>
+<section class="pg-section" id="sintese"><div class="container pg-body">
+<p class="pg-kicker">4 · Conferência final</p><h2>O que foi realizado?</h2>
+<p>Use a lista abaixo para conferir se todas as etapas foram concluídas. Caso algum resultado não corresponda ao esperado, volte à etapa indicada e consulte a seção de diagnóstico.</p>
+<div class="pg-checklist"><strong>Checklist da prática</strong>
+<label><input type="checkbox"> Conectei o pgAdmin ao banco <code>pratica_salas</code>.</label>
+<label><input type="checkbox"> Criei as quatro tabelas e inseri os dados de exemplo.</label>
+<label><input type="checkbox"> Consultei dados e metadados pelo Query Tool.</label>
+<label><input type="checkbox"> Observei rejeições esperadas de <code>CHECK</code>, <code>FOREIGN KEY</code> e <code>UNIQUE</code>.</label>
+<label><input type="checkbox"> Experimentei <code>ROLLBACK</code> e <code>COMMIT</code>.</label>
+<label><input type="checkbox"> Examinei um plano de consulta com <code>EXPLAIN</code>.</label>
+<label><input type="checkbox"> Verifiquei o conflito entre duas sessões.</label>
+<label><input type="checkbox"> Executei a aplicação Python, consultei as salas e cadastrei uma reserva.</label>
 </div>
-<div class="output"><strong>Produto da prática</strong> · Banco <code>pratica_salas</code> com quatro tabelas, evidências dos testes de integridade e transações, aplicação Python funcionando e respostas fundamentadas às questões de verificação.</div>
-
+<div class="checkpoint"><h4>Verificação final no pgAdmin</h4><p>Se você executou todas as etapas uma vez, o banco terá normalmente <strong>2 blocos, 4 salas, 3 usuários e 6 reservas</strong>. A capacidade da sala 1 terá sido alterada para <strong>40</strong>. A contagem pode ser diferente caso você tenha repetido exercícios válidos, utilizado outros horários ou pulado a simulação de concorrência.</p></div>
+<div class="codebox"><div class="codebar"><span>SQL · estado final esperado</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT
+    (SELECT COUNT(*) FROM bloco) AS blocos,
+    (SELECT COUNT(*) FROM sala) AS salas,
+    (SELECT COUNT(*) FROM usuario) AS usuarios,
+    (SELECT COUNT(*) FROM reserva) AS reservas;</code></pre></div>
+<p><strong>Para registrar o aprendizado:</strong> em duas ou três frases, descreva uma restrição que impediu um dado inválido e uma alteração que foi confirmada ou desfeita. Use o comportamento que você realmente observou.</p>
 </div></section>
-<section class="pg-section" id="extra"><div class="container pg-body"><p class="pg-kicker">5 · Para aprofundar</p><h2>Extensão opcional · Backup e recuperação <small>15–20 minutos</small></h2>
-
-<p>No pgAdmin, selecione <code>pratica_salas</code> e abra <em>Backup…</em>. Escolha um arquivo de destino e formato <em>Custom</em>, gere o backup e identifique onde ele foi salvo. <strong>Não exclua o banco</strong> para testar a restauração durante esta prática. Discuta como uma cópia lógica poderia ser restaurada em outro banco.</p>
-<p>Experimento de persistência: no PowerShell, execute <code>docker compose stop</code> e depois <code>docker compose start</code>. Reconecte o pgAdmin e consulte novamente as reservas. Não utilize <code>docker compose down -v</code>.</p>
-<p><strong>Discussão:</strong> por que a persistência do volume e o WAL não substituem um backup contra exclusão acidental dos dados?</p>
-
+<section class="pg-section" id="extra"><div class="container pg-body">
+<p class="pg-kicker">5 · Opcional</p><h2>Conferir a persistência após reiniciar o servidor</h2>
+<p>Este procedimento é opcional e deve ser realizado somente após finalizar os testes anteriores.</p>
+<ol>
+<li>Feche a aplicação Python (opção <code>0</code>) e volte ao PowerShell.</li>
+<li>Entre na pasta que contém o <code>compose.yaml</code> e execute <code>docker compose stop</code>.</li>
+<li>Reinicie o mesmo serviço com <code>docker compose start</code>.</li>
+<li>Abra novamente o pgAdmin e execute a consulta de contagem no banco <code>pratica_salas</code>.</li>
+</ol>
+<div class="codebox"><div class="codebar"><span>PowerShell · parar e iniciar o PostgreSQL</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Set-Location "$HOME\postgres-laboratorio"
+docker compose stop
+docker compose start</code></pre></div>
+<div class="important"><strong>Não execute <code>docker compose down -v</code>.</strong> Esse comando pode remover o volume de dados utilizado neste laboratório.</div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Após reiniciar o contêiner, as tabelas e reservas devem continuar armazenadas. A persistência depende do volume configurado no tutorial; isso não substitui uma política de backup para recuperar exclusões acidentais.</p></div>
 </div></section>
-<section class="pg-section" id="desafio"><div class="container pg-body"><p class="pg-kicker">6 · Desafio adicional</p><h2>Desafio adicional</h2>
-
-<p>Implemente uma consulta que liste as <strong>salas livres em uma data e horário informados</strong>. Uma possibilidade é partir de <code>sala</code> e usar <code>NOT EXISTS</code> contra <code>reserva</code>. Reutilize a mesma consulta, parametrizada, no Python. Não altere as restrições do banco para resolver o desafio.</p>
-<div class="refs"><strong>Material de apoio:</strong> <a href="https://pfransozi.github.io/bd-2026-02/guia-postgresql-windows.html">Tutorial PostgreSQL no Windows</a> · <a href="aula-10.html">Aula 10 — O SGBD por dentro</a> · <a href="https://www.postgresql.org/docs/18/">Documentação PostgreSQL 18</a> · <a href="https://www.psycopg.org/psycopg3/docs/">Documentação psycopg 3</a></div>
+<section class="pg-section" id="desafio"><div class="container pg-body">
+<p class="pg-kicker">6 · Material de apoio</p><h2>Para consultar durante a prática</h2>
+<div class="pg-grid">
+<article class="pg-card"><strong>Instalação e conexão</strong><p><a href="guia-postgresql-windows.html">Guia PostgreSQL no Windows</a> — Docker Desktop, pgAdmin e solução de problemas.</p></article>
+<article class="pg-card"><strong>Conteúdo da disciplina</strong><p><a href="aula-10.html">Aula 10: o SGBD por dentro</a> — integridade, transações, índices e arquitetura.</p></article>
+<article class="pg-card"><strong>Script SQL</strong><p><a href="pratica-10/01_banco_salas.sql" download>Baixar 01_banco_salas.sql</a> — mesmas tabelas e dados da etapa 3.</p></article>
+<article class="pg-card"><strong>Aplicação Python</strong><p><a href="pratica-10/app_salas.py" download>Baixar app_salas.py</a> e <a href="pratica-10/env-exemplo.txt" download>configuração de exemplo</a>.</p></article>
+</div>
+<p class="pg-footer"><a href="index.html">← Página principal da disciplina</a> · <a href="#inicio">Voltar ao início ↑</a></p>
 </div></section>
 </main>
 <footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Prática Guiada 10</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
