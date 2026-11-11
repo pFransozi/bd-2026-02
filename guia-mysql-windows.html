@@ -160,15 +160,13 @@ docker compose up -d --wait
 docker compose ps</code></pre>
         </div>
         <p>Na primeira execução, o Docker baixa a imagem e inicializa os dados. Confira se o serviço <code>mysql</code> aparece como <code>healthy</code>. Esse estado indica que o servidor responde. A autenticação será conferida no DBeaver.</p>
-        <details>
-          <summary>Ver os logs e testar a conexão pelo terminal</summary>
-          <div class="guia-codigo">
-            <div class="guia-codigo-label">PowerShell · diagnóstico do MySQL</div>
+        <h3>Ver os logs e testar a conexão pelo terminal</h3>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">PowerShell · diagnóstico do MySQL</div>
           <pre><code>docker compose logs --tail=30 mysql
 docker compose exec mysql mysql -h 127.0.0.1 -u aluno -p -D laboratorio -e "SELECT DATABASE() AS banco, CURRENT_USER() AS usuario;"</code></pre>
-          </div>
-          <p>Digite a senha de <code>MYSQL_PASSWORD</code> quando solicitada. Confira se o banco é <code>laboratorio</code> e a conta autenticada começa com <code>aluno@</code>.</p>
-        </details>
+        </div>
+        <p>Digite a senha de <code>MYSQL_PASSWORD</code> quando solicitada. Confira se o banco é <code>laboratorio</code> e a conta autenticada começa com <code>aluno@</code>.</p>
       </div>
     </section>
 
@@ -203,29 +201,27 @@ docker compose exec mysql mysql -h 127.0.0.1 -u aluno -p -D laboratorio -e "SELE
           <pre><code>SHOW SESSION STATUS LIKE 'Ssl_cipher';</code></pre>
         </div>
         <p>Um valor preenchido na coluna <strong>Value</strong> confirma que a sessão usa TLS.</p>
-        <details id="root-dbeaver">
-          <summary>Acesso administrativo pelo DBeaver (opcional)</summary>
-          <p>O Compose prepara <code>root@localhost</code> para o terminal do contêiner. Para administrar pelo DBeaver, cadastre uma conta <code>root</code> para o endereço que o MySQL enxerga na rede do Docker.</p>
-          <p>Na conexão de <code>aluno</code> do DBeaver, execute <code>SELECT USER() AS origem;</code>. Se o resultado for <code>aluno@172.19.0.1</code>, use o endereço do exemplo. Se aparecer outro endereço após criar ou recriar a rede, use o valor que aparece depois de <code>@</code> nas duas instruções SQL.</p>
-          <p>No PowerShell, abra a sessão administrativa e informe a senha de <code>MYSQL_ROOT_PASSWORD</code>.</p>
-          <div class="guia-codigo">
-            <div class="guia-codigo-label">PowerShell · abrir a sessão administrativa</div>
-            <pre><code>docker compose exec mysql mysql -u root -p</code></pre>
-          </div>
-          <p>No prompt <code>mysql&gt;</code>, substitua <code>troque-a-senha-root-dbeaver</code> pela senha escolhida para essa conta. Execute as duas instruções em ordem. A segunda concede privilégios administrativos no servidor.</p>
-          <div class="guia-codigo">
-            <div class="guia-codigo-label">SQL · cadastrar a conta administrativa com TLS</div>
-            <pre><code>CREATE USER 'root'@'172.19.0.1'
+        <h3 id="root-dbeaver">Acesso administrativo pelo DBeaver (opcional)</h3>
+        <p>O Compose prepara <code>root@localhost</code> para o terminal do contêiner. Para administrar pelo DBeaver, cadastre uma conta <code>root</code> para o endereço que o MySQL enxerga na rede do Docker.</p>
+        <p>Na conexão de <code>aluno</code> do DBeaver, execute <code>SELECT USER() AS origem;</code>. Se o resultado for <code>aluno@172.19.0.1</code>, use o endereço do exemplo. Se aparecer outro endereço após criar ou recriar a rede, use o valor que aparece depois de <code>@</code> nas duas instruções SQL.</p>
+        <p>No PowerShell, abra a sessão administrativa e informe a senha de <code>MYSQL_ROOT_PASSWORD</code>.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">PowerShell · abrir a sessão administrativa</div>
+          <pre><code>docker compose exec mysql mysql -u root -p</code></pre>
+        </div>
+        <p>No prompt <code>mysql&gt;</code>, substitua <code>troque-a-senha-root-dbeaver</code> pela senha escolhida para essa conta. Execute as duas instruções em ordem. A segunda concede privilégios administrativos no servidor.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · cadastrar a conta administrativa com TLS</div>
+          <pre><code>CREATE USER 'root'@'172.19.0.1'
     IDENTIFIED BY 'troque-a-senha-root-dbeaver'
     REQUIRE SSL;
 
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'172.19.0.1'
     WITH GRANT OPTION;</code></pre>
-          </div>
-          <p>Se a conta já existir e o <code>CREATE USER</code> retornar <code>1396</code>, execute a primeira instrução com <code>ALTER USER</code> para ajustar a senha e exigir TLS. Depois execute o <code>GRANT</code>.</p>
-          <p>Crie um perfil MySQL no DBeaver com host <code>127.0.0.1</code>, porta publicada <code>3307</code>, usuário <code>root</code> e a senha escolhida para essa conta. Deixe <strong>Database</strong> vazio. Em <strong>Driver properties</strong> desse perfil, defina <code>sslMode</code> como <code>REQUIRED</code> antes de clicar em <strong>Test Connection</strong>.</p>
-          <p>Após conectar, execute <code>SELECT CURRENT_USER();</code> para conferir a conta administrativa. No exemplo, o resultado é <code>root@172.19.0.1</code>.</p>
-        </details>
+        </div>
+        <p>Se a conta já existir e o <code>CREATE USER</code> retornar <code>1396</code>, execute a primeira instrução com <code>ALTER USER</code> para ajustar a senha e exigir TLS. Depois execute o <code>GRANT</code>.</p>
+        <p>Crie um perfil MySQL no DBeaver com host <code>127.0.0.1</code>, porta publicada <code>3307</code>, usuário <code>root</code> e a senha escolhida para essa conta. Deixe <strong>Database</strong> vazio. Em <strong>Driver properties</strong> desse perfil, defina <code>sslMode</code> como <code>REQUIRED</code> antes de clicar em <strong>Test Connection</strong>.</p>
+        <p>Após conectar, execute <code>SELECT CURRENT_USER();</code> para conferir a conta administrativa. No exemplo, o resultado é <code>root@172.19.0.1</code>.</p>
       </div>
     </section>
 
