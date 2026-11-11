@@ -191,8 +191,41 @@ docker compose exec mysql mysql -h 127.0.0.1 -u aluno -p -D laboratorio -e "SELE
             </tbody>
           </table>
         </div>
+        <div class="guia-nota">
+          <strong>Use TLS no DBeaver</strong>
+          <p>Na aba <strong>Driver properties</strong>, localize <code>sslMode</code> e altere seu valor para <code>REQUIRED</code>. Essa opção faz o driver exigir uma conexão criptografada com o MySQL.</p>
+        </div>
         <p>Clique em <strong>Test Connection</strong> (Testar conexão). Se aparecer uma solicitação para instalar o driver, clique em <strong>Download</strong>. Após a confirmação, clique em <strong>Finish</strong> (Concluir).</p>
         <p>Você pode nomear a conexão <strong>MySQL · Laboratório (Docker)</strong> para reconhecê-la no navegador de bancos.</p>
+        <p>Depois de conectar, abra um editor SQL nessa conexão para conferir o TLS.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · conferir a criptografia da sessão</div>
+          <pre><code>SHOW SESSION STATUS LIKE 'Ssl_cipher';</code></pre>
+        </div>
+        <p>Um valor preenchido na coluna <strong>Value</strong> confirma que a sessão usa TLS.</p>
+        <details id="root-dbeaver">
+          <summary>Acesso administrativo pelo DBeaver (opcional)</summary>
+          <p>O Compose prepara <code>root@localhost</code> para o terminal do contêiner. Para administrar pelo DBeaver, cadastre uma conta <code>root</code> para o endereço que o MySQL enxerga na rede do Docker.</p>
+          <p>Na conexão de <code>aluno</code> do DBeaver, execute <code>SELECT USER() AS origem;</code>. Se o resultado for <code>aluno@172.19.0.1</code>, use o endereço do exemplo. Se aparecer outro endereço após criar ou recriar a rede, use o valor que aparece depois de <code>@</code> nas duas instruções SQL.</p>
+          <p>No PowerShell, abra a sessão administrativa e informe a senha de <code>MYSQL_ROOT_PASSWORD</code>.</p>
+          <div class="guia-codigo">
+            <div class="guia-codigo-label">PowerShell · abrir a sessão administrativa</div>
+            <pre><code>docker compose exec mysql mysql -u root -p</code></pre>
+          </div>
+          <p>No prompt <code>mysql&gt;</code>, substitua <code>troque-a-senha-root-dbeaver</code> pela senha escolhida para essa conta. Execute as duas instruções em ordem. A segunda concede privilégios administrativos no servidor.</p>
+          <div class="guia-codigo">
+            <div class="guia-codigo-label">SQL · cadastrar a conta administrativa com TLS</div>
+            <pre><code>CREATE USER 'root'@'172.19.0.1'
+    IDENTIFIED BY 'troque-a-senha-root-dbeaver'
+    REQUIRE SSL;
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'172.19.0.1'
+    WITH GRANT OPTION;</code></pre>
+          </div>
+          <p>Se a conta já existir e o <code>CREATE USER</code> retornar <code>1396</code>, execute a primeira instrução com <code>ALTER USER</code> para ajustar a senha e exigir TLS. Depois execute o <code>GRANT</code>.</p>
+          <p>Crie um perfil MySQL no DBeaver com host <code>127.0.0.1</code>, porta publicada <code>3307</code>, usuário <code>root</code> e a senha escolhida para essa conta. Deixe <strong>Database</strong> vazio. Em <strong>Driver properties</strong> desse perfil, defina <code>sslMode</code> como <code>REQUIRED</code> antes de clicar em <strong>Test Connection</strong>.</p>
+          <p>Após conectar, execute <code>SELECT CURRENT_USER();</code> para conferir a conta administrativa. No exemplo, o resultado é <code>root@172.19.0.1</code>.</p>
+        </details>
       </div>
     </section>
 
@@ -313,7 +346,9 @@ FROM centro_distribuicao;</code></pre>
               <tr><td>Erro do WSL ou de virtualização</td><td>Verifique <code>wsl --version</code>, as atualizações do WSL e a virtualização do computador.</td></tr>
               <tr><td>Porta <code>3307</code> ocupada</td><td>Escolha outra porta livre no Windows, por exemplo <code>127.0.0.1:3308:3306</code>. Rode <code>docker compose up -d --wait</code> e use <code>3308</code> no DBeaver.</td></tr>
               <tr><td><code>Connection refused</code></td><td>Confira <code>docker compose ps</code>, os logs e a porta publicada.</td></tr>
-              <tr><td><code>Access denied</code></td><td>Confira a conta <code>aluno</code> e a senha registrada na primeira inicialização. Para alterar uma senha em um volume já inicializado, use uma sessão administrativa MySQL.</td></tr>
+              <tr><td><code>Public Key Retrieval is not allowed</code></td><td>Configure <a href="#dbeaver"><code>sslMode=REQUIRED</code></a> em <strong>Driver properties</strong> da conexão e repita o teste.</td></tr>
+              <tr><td><code>Access denied</code> para <code>aluno</code></td><td>Confira a conta <code>aluno</code> e a senha registrada na primeira inicialização. Para alterar uma senha em um volume já inicializado, use uma sessão administrativa MySQL.</td></tr>
+              <tr><td><code>Access denied</code> para <code>root</code> no DBeaver</td><td>Confira a conta para o endereço da rede Docker e <code>sslMode=REQUIRED</code> no perfil administrativo. Veja <a href="#root-dbeaver">Acesso administrativo pelo DBeaver</a>.</td></tr>
               <tr><td>Tabela já existente</td><td>Consulte a tabela. Se estiver vazia, execute só a inserção. Se já tiver os quatro registros, execute apenas as consultas.</td></tr>
             </tbody>
           </table>
@@ -352,6 +387,7 @@ GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'%';</code></pre>
           <li><a href="https://hub.docker.com/_/mysql" target="_blank" rel="noopener noreferrer">Imagem oficial do MySQL · Docker Hub</a></li>
           <li><a href="https://docs.docker.com/reference/cli/docker/compose/up/" target="_blank" rel="noopener noreferrer">Docker Compose · iniciar serviços</a></li>
           <li><a href="https://dbeaver.com/docs/dbeaver/Database-driver-MySQL/" target="_blank" rel="noopener noreferrer">DBeaver · conexão com MySQL</a></li>
+          <li><a href="https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-security.html" target="_blank" rel="noopener noreferrer">MySQL Connector/J · configuração de TLS com <code>sslMode</code></a></li>
           <li><a href="https://dbeaver.com/docs/dbeaver/SQL-Execution/" target="_blank" rel="noopener noreferrer">DBeaver · execução de SQL</a></li>
         </ul>
       </div>

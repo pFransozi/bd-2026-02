@@ -147,6 +147,10 @@
         <p>Se já usa o DBeaver Community nas aulas, abra a instalação existente. Para instalar no Windows em um PC Intel ou AMD, baixe o <strong>EXE</strong> na opção <strong>Windows · x86</strong> e siga o assistente. <a href="https://dbeaver.io/download/" target="_blank" rel="noopener noreferrer">Download do DBeaver Community</a>.</p>
         <p>No DBeaver, pressione <strong>Ctrl + Shift + N</strong>, pesquise <strong>MySQL</strong>, selecione esse driver e avance.</p>
         <p>Preencha o host com <code>127.0.0.1</code>, a porta com a escolhida no configurador, o usuário com <code>root</code> e a senha com a da conta administrativa. Deixe o campo <strong>Database</strong> em branco nesta conexão.</p>
+        <div class="guia-nota">
+          <strong>Use TLS no DBeaver</strong>
+          <p>Na aba <strong>Driver properties</strong>, localize <code>sslMode</code> e altere seu valor para <code>REQUIRED</code>. Essa opção faz o driver exigir uma conexão criptografada com o MySQL.</p>
+        </div>
         <p>Clique em <strong>Test Connection</strong> (Testar conexão). Se aparecer uma solicitação para instalar o driver, clique em <strong>Download</strong>. Após a confirmação, clique em <strong>Finish</strong> (Concluir).</p>
         <h3>Crie o banco e conceda acesso</h3>
         <p>Abra um editor SQL na conexão de <code>root</code>. Substitua o valor <code>troque-a-senha-aluno</code> por uma senha própria para o laboratório. Execute o bloco com <strong>Alt + X</strong>.</p>
@@ -186,8 +190,15 @@ GRANT ALL PRIVILEGES ON laboratorio.* TO 'aluno'@'127.0.0.1';</code></pre>
             </tbody>
           </table>
         </div>
+        <p>Abra <strong>Driver properties</strong> neste perfil de <code>aluno</code> e defina <code>sslMode</code> como <code>REQUIRED</code>.</p>
         <p>Clique em <strong>Test Connection</strong> (Testar conexão). Se aparecer uma solicitação para instalar o driver, clique em <strong>Download</strong>. Após a confirmação, clique em <strong>Finish</strong> (Concluir).</p>
         <p>Você pode nomear a conexão <strong>MySQL · Laboratório (nativo)</strong>. Use essa conexão para o teste SQL e para trabalhar com os dados do laboratório.</p>
+        <p>Depois de conectar, abra um editor SQL nessa conexão para conferir o TLS.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · conferir a criptografia da sessão</div>
+          <pre><code>SHOW SESSION STATUS LIKE 'Ssl_cipher';</code></pre>
+        </div>
+        <p>Um valor preenchido na coluna <strong>Value</strong> confirma que a sessão usa TLS.</p>
       </div>
     </section>
 
@@ -289,7 +300,8 @@ FROM centro_distribuicao;</code></pre>
               <tr><td>O instalador pede administrador</td><td>Use uma conta autorizada a instalar o servidor e a configurar serviços no Windows.</td></tr>
               <tr><td>Porta <code>3306</code> ocupada</td><td>Confira o processo que a utiliza. Para uma instalação separada, escolha uma porta livre no configurador e repita-a no DBeaver.</td></tr>
               <tr><td><code>Connection refused</code></td><td>Confira o estado do serviço em <code>services.msc</code> e teste o host e a porta.</td></tr>
-              <tr><td><code>Access denied</code> para <code>root</code></td><td>Redigite a senha definida em <strong>Accounts and Roles</strong> e confira a instância selecionada.</td></tr>
+              <tr><td><code>Public Key Retrieval is not allowed</code></td><td>Configure <a href="#dbeaver"><code>sslMode=REQUIRED</code></a> em <strong>Driver properties</strong> da conexão e repita o teste.</td></tr>
+              <tr><td><code>Access denied</code> para <code>root</code></td><td>Redigite a senha definida em <strong>Accounts and Roles</strong> e confira a instância selecionada e o <code>sslMode</code> no perfil de <code>root</code>.</td></tr>
               <tr><td><code>Access denied</code> para <code>aluno</code></td><td>Confira o host <code>127.0.0.1</code>, a porta e a senha cadastrada para essa conta.</td></tr>
               <tr><td>Banco <code>laboratorio</code> indisponível</td><td>Confira na conexão de <code>root</code> se o banco foi criado e se o <code>GRANT</code> foi executado na mesma instância.</td></tr>
               <tr><td>Tabela já existente</td><td>Consulte a tabela. Se estiver vazia, execute só a inserção. Se já tiver os quatro registros, execute apenas as consultas.</td></tr>
@@ -326,6 +338,7 @@ GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'127.0.0.1';</code></pre>
           <li><a href="https://dev.mysql.com/doc/refman/8.4/en/mysql-configurator-workflow-server.html" target="_blank" rel="noopener noreferrer">MySQL Configurator · instalação no Windows</a></li>
           <li><a href="https://dev.mysql.com/doc/refman/8.4/en/grant.html" target="_blank" rel="noopener noreferrer">MySQL · concessão de privilégios</a></li>
           <li><a href="https://dbeaver.com/docs/dbeaver/Database-driver-MySQL/" target="_blank" rel="noopener noreferrer">DBeaver · conexão com MySQL</a></li>
+          <li><a href="https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-security.html" target="_blank" rel="noopener noreferrer">MySQL Connector/J · configuração de TLS com <code>sslMode</code></a></li>
           <li><a href="https://dbeaver.com/docs/dbeaver/SQL-Execution/" target="_blank" rel="noopener noreferrer">DBeaver · execução de SQL</a></li>
         </ul>
       </div>
