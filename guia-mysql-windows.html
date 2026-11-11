@@ -362,23 +362,8 @@ FROM centro_distribuicao;</code></pre>
 
     <section class="guia-secao" id="referencias">
       <div class="container guia-largura">
-        <h2>Prática da Aula 10 e referências</h2>
-        <p>A prática de reservas usa o banco <code>pratica_salas</code>. Execute o roteiro no MySQL Workbench. Na etapa de concorrência, abra duas conexões com o mesmo servidor para observar o comportamento das transações.</p>
-        <details>
-          <summary>Preparar o banco e o acesso de aluno</summary>
-          <p>No PowerShell, entre no MySQL como administrador e informe a senha de <code>MYSQL_ROOT_PASSWORD</code>.</p>
-          <div class="guia-codigo">
-          <div class="guia-codigo-label">PowerShell · abrir a sessão administrativa</div>
-          <pre><code>docker compose exec mysql mysql -u root -p</code></pre>
-        </div>
-          <div class="guia-codigo">
-          <div class="guia-codigo-label">SQL · criar o banco da prática e conceder acesso</div>
-          <pre><code>CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
-GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'%';</code></pre>
-        </div>
-          <p>Depois, abra a conexão de <code>aluno</code> no MySQL Workbench e selecione <code>pratica_salas</code> com <code>USE pratica_salas;</code>. No arquivo <code>.env</code> da aplicação, use <code>MYSQL_DATABASE=pratica_salas</code>, <code>MYSQL_USER=aluno</code>, a senha dessa conta e <code>MYSQL_PORT=3307</code> se você usou a porta deste guia.</p>
-        </details>
-        <p><a href="pratica-10-mysql-salas.html">Abrir a prática guiada da Aula 10 →</a></p>
+        <h2>Referências</h2>
+        <p><a href="pratica-10-mysql-salas.html#e2">Preparar o banco na prática guiada da Aula 10 →</a></p>
         <ul>
           <li><a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener noreferrer">Docker Desktop · instalação no Windows</a></li>
           <li><a href="https://hub.docker.com/_/mysql" target="_blank" rel="noopener noreferrer">Imagem oficial do MySQL · Docker Hub</a></li>

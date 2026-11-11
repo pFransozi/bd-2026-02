@@ -183,7 +183,7 @@ body.pratica-mysql { background:var(--bg);color:var(--text) }
 </div>
 <div class="guide-banner"><strong>Ambiente para a prática</strong>
 <p>Os guias usam o MySQL Server <strong>8.4 LTS</strong>. Se o servidor já estiver instalado, use a versão <strong>8.0.16 ou posterior</strong> para que o MySQL verifique as restrições <code>CHECK</code>. Abra o <strong>MySQL Workbench</strong>. Para uma instalação local, use <code>127.0.0.1</code> e a porta configurada no seu ambiente. O guia nativo usa <code>3306</code> por padrão e o guia com Docker Desktop publica <code>3307</code>.</p>
-<p>Os guias mostram como testar a conexão e preparar a conta de <code>aluno</code> e o banco <code>pratica_salas</code>. <a href="guia-mysql-windows-nativo.html">Guia de instalação nativa</a> · <a href="guia-mysql-windows.html">Guia com Docker Desktop</a>.</p></div>
+<p>Os guias mostram como instalar o MySQL, preparar a conta de <code>aluno</code> e testar a conexão. Use a etapa 02 para preparar o banco da prática. <a href="guia-mysql-windows-nativo.html">Guia de instalação nativa</a> · <a href="guia-mysql-windows.html">Guia com Docker Desktop</a>.</p></div>
 <div class="notice"><strong>Banco da prática</strong><p>Use um esquema vazio chamado <code>pratica_salas</code> ou o esquema vazio atribuído para a atividade. Se usar outro nome, ajuste os comandos <code>USE</code> e o arquivo <code>.env</code>.</p></div>
 <div class="objective"><strong>Como acompanhar:</strong> em cada etapa, identifique o programa indicado (<strong>PowerShell</strong>, <strong>Workbench</strong> ou <strong>Python</strong>), execute os comandos na ordem apresentada e leia a caixa <strong>“Confira antes de avançar”</strong>. Em algumas etapas, uma mensagem de erro será o resultado esperado.</div>
 <p><a href="aula-10-mysql.html">Rever os conceitos da Aula 10 →</a></p>
@@ -205,14 +205,25 @@ body.pratica-mysql { background:var(--bg);color:var(--text) }
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>Confira a versão, a conta autenticada e a porta do servidor. Para configurar o Python, anote o host e a porta que você informou no cliente. A coluna <code>autocommit</code> vale <code>1</code> quando instruções individuais são confirmadas automaticamente fora de uma transação explícita.</p></div>
 </section>
 <section class="task" id="e2"><div class="task-h"><span class="step">02</span><h3>Criar e selecionar o esquema da prática</h3></div>
-<p><strong>Onde executar</strong> · editor SQL do Workbench, na conexão aberta para a prática.</p>
-<p>No MySQL, <strong>database</strong> e <strong>schema</strong> são nomes para a mesma estrutura. Execute o bloco para criar e selecionar <code>pratica_salas</code>. O conjunto de caracteres <code>utf8mb4</code> permite armazenar nomes com acentos.</p>
-<div class="codebox"><div class="codebar"><span>SQL · preparar e selecionar o esquema</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SET SESSION autocommit = 1;
-CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
+<p>No MySQL, <strong>database</strong> e <strong>schema</strong> são nomes para a mesma estrutura. Se o laboratório já forneceu um esquema vazio com acesso para a sua conta, avance para <strong>Selecionar o esquema no Workbench</strong>. Para preparar o banco local, siga os passos da sua instalação.</p>
+<h4>Instalação nativa do Windows</h4>
+<p>No MySQL Workbench, abra o editor SQL da conexão administrativa de <code>root</code> e execute o bloco.</p>
+<div class="codebox"><div class="codebar"><span>SQL · criar o banco e conceder acesso na instalação nativa</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
+GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'127.0.0.1';</code></pre></div>
+<h4>Docker Desktop</h4>
+<p>No PowerShell, na pasta do <code>compose.yaml</code>, abra o MySQL como <code>root</code>. Informe a senha de <code>MYSQL_ROOT_PASSWORD</code> quando solicitada.</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · abrir a sessão administrativa</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>docker compose exec mysql mysql -u root -p</code></pre></div>
+<p>No prompt <code>mysql&gt;</code>, execute o bloco para criar o banco e conceder acesso à conta <code>aluno</code> do contêiner.</p>
+<div class="codebox"><div class="codebar"><span>SQL · criar o banco e conceder acesso no Docker</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
+GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'%';</code></pre></div>
+<p>O conjunto de caracteres <code>utf8mb4</code> permite armazenar nomes com acentos. No <code>GRANT</code>, <code>\_</code> indica o sublinhado literal do nome do banco.</p>
+<h4>Selecionar o esquema no Workbench</h4>
+<p>Volte à conexão de <code>aluno</code> da etapa 01. Se o laboratório atribuiu outro esquema, substitua <code>pratica_salas</code> pelo nome recebido no <code>USE</code>. Selecione e execute o bloco.</p>
+<div class="codebox"><div class="codebar"><span>SQL · selecionar e conferir o esquema</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SET SESSION autocommit = 1;
 USE pratica_salas;
 SELECT DATABASE() AS banco;
 SHOW TABLES;</code></pre></div>
-<p>Se o esquema já foi preparado e a conta de <code>aluno</code> tem acesso a ele, execute <code>SET SESSION autocommit = 1;</code> e selecione as instruções a partir de <code>USE</code>. Use o nome do esquema que foi atribuído à sua conta. Atualize o painel <strong>Schemas</strong> para visualizá-lo.</p>
+<p>Atualize o painel <strong>Schemas</strong> para visualizar o esquema.</p>
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>O <strong>Result Grid</strong> deve mostrar o esquema escolhido em <code>banco</code>. Em um esquema vazio, <code>SHOW TABLES</code> devolve zero linhas. Se as quatro tabelas da prática já existirem, confira a carga na etapa 03 antes de inserir registros.</p></div>
 </section>
 <section class="task" id="e3"><div class="task-h"><span class="step">03</span><h3>Criar as tabelas e inserir os primeiros registros</h3></div>
@@ -443,7 +454,8 @@ py --version</code></pre></div>
 <p><strong>7.</strong> Crie um arquivo chamado <code>.env</code> a partir do exemplo:</p>
 <div class="codebox"><div class="codebar"><span>PowerShell · preparar configuração</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Copy-Item env-exemplo.txt .env
 notepad .env</code></pre></div>
-<p>No Bloco de Notas, preencha <code>MYSQL_HOST</code>, <code>MYSQL_PORT</code>, <code>MYSQL_USER</code> e <code>MYSQL_PASSWORD</code> com o host, a porta, o usuário e a senha usados na conexão do MySQL Workbench. Em <code>MYSQL_DATABASE</code>, informe <code>pratica_salas</code> ou o nome do esquema atribuído. Salve e feche.</p>
+<p>No Bloco de Notas, use os dados da conexão de laboratório no MySQL Workbench. Para o ambiente dos guias, use <code>MYSQL_DATABASE=pratica_salas</code>, <code>MYSQL_USER=aluno</code> e a senha dessa conta em <code>MYSQL_PASSWORD</code>. Se o laboratório atribuiu outra conta ou outro esquema, use os dados recebidos.</p>
+<p>Em <code>MYSQL_HOST</code> e <code>MYSQL_PORT</code>, informe o host e a porta da conexão. Nos guias, o host é <code>127.0.0.1</code> e a porta é <code>3306</code> para a instalação nativa ou <code>3307</code> para o Docker. Salve e feche.</p>
 <div class="notice"><strong>Credenciais de laboratório</strong><p>Mantenha o <code>.env</code> na sua máquina. Use <code>env-exemplo.txt</code> para compartilhar a estrutura da configuração.</p></div>
 <p><strong>8.</strong> Execute a aplicação no mesmo PowerShell:</p>
 <div class="codebox"><div class="codebar"><span>PowerShell · iniciar a aplicação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe app_salas.py</code></pre></div>

@@ -323,19 +323,8 @@ FROM centro_distribuicao;</code></pre>
 
     <section class="guia-secao" id="referencias">
       <div class="container guia-largura">
-        <h2>Prática da Aula 10 e referências</h2>
-        <p>A prática de reservas usa o banco <code>pratica_salas</code>. Execute o roteiro no MySQL Workbench. Na etapa de concorrência, abra duas conexões com o mesmo servidor para observar o comportamento das transações.</p>
-        <details>
-          <summary>Preparar o banco e o acesso de aluno</summary>
-          <p>No MySQL Workbench, abra o editor SQL da conexão administrativa de <code>root</code> e execute o bloco.</p>
-          <div class="guia-codigo">
-          <div class="guia-codigo-label">SQL · criar o banco da prática e conceder acesso</div>
-          <pre><code>CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
-GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'127.0.0.1';</code></pre>
-        </div>
-          <p>Depois, abra a conexão de <code>aluno</code> no MySQL Workbench e selecione <code>pratica_salas</code> com <code>USE pratica_salas;</code>. No arquivo <code>.env</code> da aplicação, use <code>MYSQL_DATABASE=pratica_salas</code>, <code>MYSQL_USER=aluno</code>, a senha dessa conta e <code>MYSQL_PORT=3306</code> se você usou a porta deste guia.</p>
-        </details>
-        <p><a href="pratica-10-mysql-salas.html">Abrir a prática guiada da Aula 10 →</a></p>
+        <h2>Referências</h2>
+        <p><a href="pratica-10-mysql-salas.html#e2">Preparar o banco na prática guiada da Aula 10 →</a></p>
         <ul>
           <li><a href="https://dev.mysql.com/downloads/mysql/8.4.html?os=3" target="_blank" rel="noopener noreferrer">MySQL Community Server 8.4 LTS · download</a></li>
           <li><a href="https://dev.mysql.com/doc/refman/8.4/en/mysql-configurator-workflow-server.html" target="_blank" rel="noopener noreferrer">MySQL Configurator · instalação no Windows</a></li>
