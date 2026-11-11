@@ -1,0 +1,7 @@
+# Copie este arquivo para .env ao lado de app_salas.py.
+# Use os dados da conexão configurada no cliente SQL.
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_DATABASE=pratica_salas
+MYSQL_USER=aluno
+MYSQL_PASSWORD=
