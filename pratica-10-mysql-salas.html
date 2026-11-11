@@ -182,7 +182,8 @@ body.pratica-mysql { background:var(--bg);color:var(--text) }
 <article class="pg-card"><strong>Tempo de referência</strong><p>Três blocos de aproximadamente 30, 50 e 50 minutos. Prossiga somente após conferir o resultado de cada etapa.</p></article>
 </div>
 <div class="guide-banner"><strong>Ambiente para a prática</strong>
-<p>Os guias usam o MySQL Server <strong>8.4 LTS</strong>. Se o servidor já estiver instalado, use a versão <strong>8.0.16 ou posterior</strong> para que o MySQL verifique as restrições <code>CHECK</code>. Abra o <strong>MySQL Workbench</strong>. Para uma instalação local, use <code>127.0.0.1</code> e a porta configurada no seu ambiente. O guia nativo usa <code>3306</code> por padrão e o guia com Docker Desktop publica <code>3307</code>.</p>
+<p>Nas máquinas da sala, o MySQL Server já está instalado diretamente no Windows. Abra o <strong>MySQL Workbench</strong> e use <code>127.0.0.1</code> com a porta configurada para o serviço, normalmente <code>3306</code>.</p>
+<p>Use MySQL Server <strong>8.0.16 ou posterior</strong> para que o MySQL verifique as restrições <code>CHECK</code>. Os guias usam a versão <strong>8.4 LTS</strong>. No exemplo com Docker Desktop, a porta publicada é <code>3307</code>.</p>
 <p>Os guias mostram como instalar o MySQL, preparar a conta de <code>aluno</code> e testar a conexão. Use a etapa 02 para preparar o banco da prática. <a href="guia-mysql-windows-nativo.html">Guia de instalação nativa</a> · <a href="guia-mysql-windows.html">Guia com Docker Desktop</a>.</p></div>
 <div class="notice"><strong>Banco da prática</strong><p>Use um esquema vazio chamado <code>pratica_salas</code> ou o esquema vazio atribuído para a atividade. Se usar outro nome, ajuste os comandos <code>USE</code> e o arquivo <code>.env</code>.</p></div>
 <div class="objective"><strong>Como acompanhar:</strong> em cada etapa, identifique o programa indicado (<strong>PowerShell</strong>, <strong>Workbench</strong> ou <strong>Python</strong>), execute os comandos na ordem apresentada e leia a caixa <strong>“Confira antes de avançar”</strong>. Em algumas etapas, uma mensagem de erro será o resultado esperado.</div>
@@ -190,11 +191,19 @@ body.pratica-mysql { background:var(--bg);color:var(--text) }
 </div></section>
 <section class="pg-section" id="parte1"><div class="container pg-body"><p class="pg-kicker">1 · Primeiro contato com o Workbench</p><h2>Parte 1 · Conhecer o ambiente e preparar o banco <small>30 minutos</small></h2>
 
-<section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Conferir a conexão com o MySQL</h3></div>
+<section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Preparar a conta de laboratório e conferir a conexão</h3></div>
 <p><strong>Onde executar</strong> · MySQL Workbench.</p>
+<h4>Criar a conta de aluno na instalação nativa</h4>
+<p>Nas máquinas da sala, abra a conexão administrativa de <code>root</code>. Para cadastrá-la, use <strong>Standard (TCP/IP)</strong>, o host <code>127.0.0.1</code>, a porta do servidor e as credenciais de <code>root</code>. Deixe <strong>Default Schema</strong> vazio. Na aba <strong>SSL</strong>, selecione <strong>Require</strong> no campo <strong>Use SSL</strong>.</p>
+<p>No editor SQL da conexão de <code>root</code>, substitua <code>troque-a-senha-aluno</code> pela senha escolhida para a conta. Execute a instrução com <strong>Ctrl + Enter</strong>.</p>
+<div class="codebox"><div class="codebar"><span>SQL como root · criar a conta de aluno</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE USER IF NOT EXISTS 'aluno'@'127.0.0.1'
+    IDENTIFIED BY 'troque-a-senha-aluno';</code></pre></div>
+<p>O endereço <code>127.0.0.1</code> permite usar essa conta na própria máquina. Se a conta já existir, use a senha cadastrada para ela. O acesso a <code>pratica_salas</code> será concedido na <a href="#e2">etapa 02</a>.</p>
+<h4>Conferir a conexão com a conta de laboratório</h4>
+<p>Use o usuário <code>aluno</code> e sua senha. Se o laboratório já forneceu uma conta ou você usou o guia Docker, use as credenciais desse ambiente.</p>
 <ol>
   <li>Na tela inicial do Workbench, abra a conexão do laboratório. Para cadastrar uma conexão, clique em <strong>+</strong> ao lado de <strong>MySQL Connections</strong>. Preencha <strong>Connection Name</strong> e escolha <strong>Standard (TCP/IP)</strong> em <strong>Connection Method</strong>.</li>
-  <li>Informe <strong>Hostname</strong>, <strong>Port</strong>, <strong>Username</strong> e a senha da conta. Em <strong>Default Schema</strong>, use o banco já preparado para sua conta, como <code>laboratorio</code>, ou deixe o campo vazio se ainda for criar o esquema. Você selecionará <code>pratica_salas</code> na próxima etapa.</li>
+  <li>Informe <strong>Hostname</strong>, <strong>Port</strong>, <strong>Username</strong> e a senha da conta. Para a conta recém-criada, deixe <strong>Default Schema</strong> vazio. Se a sua conta já tem acesso a um banco de laboratório, você pode informar o nome desse banco. Você selecionará <code>pratica_salas</code> na próxima etapa.</li>
   <li>Na aba <strong>SSL</strong>, selecione <strong>Require</strong> no campo <strong>Use SSL</strong>. Clique em <strong>Test Connection</strong> e, depois da confirmação, clique em <strong>OK</strong> e abra a conexão salva.</li>
   <li>No editor SQL, cole e selecione o bloco abaixo. Use <strong>Ctrl + Shift + Enter</strong> para executar a seleção. Para executar apenas a instrução em que está o cursor, use <strong>Ctrl + Enter</strong>.</li>
 </ol>
@@ -202,12 +211,12 @@ body.pratica-mysql { background:var(--bg);color:var(--text) }
        CURRENT_USER() AS conta,
        @@port AS porta_servidor,
        @@SESSION.autocommit AS autocommit;</code></pre></div>
-<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Confira a versão, a conta autenticada e a porta do servidor. Para configurar o Python, anote o host e a porta que você informou no cliente. A coluna <code>autocommit</code> vale <code>1</code> quando instruções individuais são confirmadas automaticamente fora de uma transação explícita.</p></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Confira a versão, a conta autenticada e a porta do servidor. Na instalação nativa, a conta criada nesta etapa deve aparecer como <code>aluno@127.0.0.1</code>. Para configurar o Python, anote o host e a porta que você informou no cliente. A coluna <code>autocommit</code> vale <code>1</code> quando instruções individuais são confirmadas automaticamente fora de uma transação explícita.</p></div>
 </section>
 <section class="task" id="e2"><div class="task-h"><span class="step">02</span><h3>Criar e selecionar o esquema da prática</h3></div>
 <p>No MySQL, <strong>database</strong> e <strong>schema</strong> são nomes para a mesma estrutura. Se o laboratório já forneceu um esquema vazio com acesso para a sua conta, avance para <strong>Selecionar o esquema no Workbench</strong>. Para preparar o banco local, siga os passos da sua instalação.</p>
 <h4>Instalação nativa do Windows</h4>
-<p>No MySQL Workbench, abra o editor SQL da conexão administrativa de <code>root</code> e execute o bloco.</p>
+<p>No MySQL Workbench, volte à conexão administrativa de <code>root</code> para criar o banco e conceder acesso à conta preparada na etapa 01.</p>
 <div class="codebox"><div class="codebar"><span>SQL · criar o banco e conceder acesso na instalação nativa</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
 GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'127.0.0.1';</code></pre></div>
 <h4>Docker Desktop</h4>
