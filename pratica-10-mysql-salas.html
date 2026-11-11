@@ -194,7 +194,7 @@ body.pratica-mysql { background:var(--bg);color:var(--text) }
 <p><strong>Onde executar</strong> · MySQL Workbench.</p>
 <ol>
   <li>Na tela inicial do Workbench, abra a conexão do laboratório. Para cadastrar uma conexão, clique em <strong>+</strong> ao lado de <strong>MySQL Connections</strong>. Preencha <strong>Connection Name</strong> e escolha <strong>Standard (TCP/IP)</strong> em <strong>Connection Method</strong>.</li>
-  <li>Informe <strong>Hostname</strong>, <strong>Port</strong>, <strong>Username</strong> e a senha da conta. Em <strong>Default Schema</strong>, use o banco já preparado para sua conta, como <code>laboratorio</code>. Você selecionará <code>pratica_salas</code> na próxima etapa.</li>
+  <li>Informe <strong>Hostname</strong>, <strong>Port</strong>, <strong>Username</strong> e a senha da conta. Em <strong>Default Schema</strong>, use o banco já preparado para sua conta, como <code>laboratorio</code>, ou deixe o campo vazio se ainda for criar o esquema. Você selecionará <code>pratica_salas</code> na próxima etapa.</li>
   <li>Na aba <strong>SSL</strong>, selecione <strong>Require</strong> no campo <strong>Use SSL</strong>. Clique em <strong>Test Connection</strong> e, depois da confirmação, clique em <strong>OK</strong> e abra a conexão salva.</li>
   <li>No editor SQL, cole e selecione o bloco abaixo. Use <strong>Ctrl + Shift + Enter</strong> para executar a seleção. Para executar apenas a instrução em que está o cursor, use <strong>Ctrl + Enter</strong>.</li>
 </ol>
@@ -212,7 +212,7 @@ CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
 USE pratica_salas;
 SELECT DATABASE() AS banco;
 SHOW TABLES;</code></pre></div>
-<p>Se o esquema já foi preparado e a conta de <code>aluno</code> tem acesso a ele, você pode selecionar e executar o bloco a partir de <code>USE</code>. Use o nome do esquema que foi atribuído à sua conta. Atualize o painel <strong>Schemas</strong> para visualizá-lo.</p>
+<p>Se o esquema já foi preparado e a conta de <code>aluno</code> tem acesso a ele, execute <code>SET SESSION autocommit = 1;</code> e selecione as instruções a partir de <code>USE</code>. Use o nome do esquema que foi atribuído à sua conta. Atualize o painel <strong>Schemas</strong> para visualizá-lo.</p>
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>O <strong>Result Grid</strong> deve mostrar o esquema escolhido em <code>banco</code>. Em um esquema vazio, <code>SHOW TABLES</code> devolve zero linhas. Se as quatro tabelas da prática já existirem, confira a carga na etapa 03 antes de inserir registros.</p></div>
 </section>
 <section class="task" id="e3"><div class="task-h"><span class="step">03</span><h3>Criar as tabelas e inserir os primeiros registros</h3></div>
