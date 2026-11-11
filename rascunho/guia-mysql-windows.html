@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Prepare o MySQL 8.4 LTS em um contêiner, conecte o DBeaver ao banco de laboratório e execute o primeiro teste SQL.">
+  <title>MySQL no Windows com Docker Desktop | Banco de Dados</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="../script.js"></script>
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <link rel="stylesheet" href="mysql-windows/guia.css">
+</head>
+<body class="teaching-page teaching-lesson lesson-dml tutorial-mysql">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Banco de Dados — página principal">
+        <span class="brand-mark" aria-hidden="true">BD</span>
+        <span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false">
+        <span class="sr-only">Abrir menu</span><span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+        <a href="../index.html">Página principal</a>
+        <a href="guia-mysql-windows-nativo.html">Guia de instalação nativa</a>
+        <a href="pratica-10-mysql-salas.html">Prática 10</a>
+        <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false">
+          <span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="guia-hero">
+      <div class="container guia-largura">
+        <p class="guia-rotulo">Banco de Dados · Guia de laboratório</p>
+        <h1>MySQL no Windows com Docker Desktop</h1>
+        <p class="guia-intro">Prepare o MySQL 8.4 LTS em um contêiner, conecte o DBeaver ao banco de laboratório e execute o primeiro teste SQL.</p>
+        <p class="guia-intro">Para configurar o MySQL como serviço do Windows, use o outro roteiro. <a href="guia-mysql-windows-nativo.html">Guia de instalação nativa →</a></p>
+      </div>
+    </section>
+    <div class="guia-toc-shell">
+      <nav class="container guia-largura guia-toc" aria-label="Etapas do guia">
+        <a href="#ambiente">Ambiente</a>
+        <a href="#preparacao">WSL 2</a>
+        <a href="#docker">Docker Desktop</a>
+        <a href="#compose">Servidor</a>
+        <a href="#dbeaver">DBeaver</a>
+        <a href="#sql">Primeiro SQL</a>
+        <a href="#manutencao">Uso diário</a>
+        <a href="#erros">Problemas</a>
+        <a href="#referencias">Prática e fontes</a>
+      </nav>
+    </div>
+
+    <section class="guia-secao" id="ambiente">
+      <div class="container guia-largura">
+        <h2>Como as ferramentas se conectam</h2>
+        <p>O Docker Desktop executa o servidor <strong>MySQL</strong> em um contêiner Linux. O <strong>DBeaver</strong>, instalado no Windows, é o cliente que envia comandos SQL. O MySQL grava os arquivos do banco no volume <code>mysql_dados</code>.</p>
+        <div class="guia-arquitetura" role="group" aria-label="Conexão do DBeaver ao MySQL e ao volume de dados">
+          <div><strong>DBeaver</strong><small>Windows · 127.0.0.1:3307</small></div>
+          <span class="guia-seta" aria-hidden="true">→</span>
+          <div><strong>MySQL 8.4 LTS</strong><small>Contêiner Linux · porta 3306</small></div>
+          <span class="guia-seta" aria-hidden="true">→</span>
+          <div><strong>Volume mysql_dados</strong><small>Arquivos persistentes do servidor</small></div>
+        </div>
+        <p>Execute os comandos de configuração no PowerShell e use o editor do DBeaver para os comandos SQL.</p>
+      </div>
+    </section>
+
+    <section class="guia-secao" id="preparacao">
+      <div class="container guia-largura">
+        <h2>1. Verifique o Windows e o WSL 2</h2>
+        <p>Para este roteiro, use Windows 11 de 64 bits com virtualização habilitada. Confira os requisitos oficiais para a sua versão do Windows e do WSL. <a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener noreferrer">Requisitos do Docker Desktop</a>.</p>
+        <p>Abra o PowerShell e verifique a versão instalada do WSL.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">PowerShell · verificar o WSL</div>
+          <pre><code>wsl --version</code></pre>
+        </div>
+        <p>Se precisar instalar o WSL, abra o PowerShell como administrador e execute o comando abaixo. Reinicie se o Windows solicitar.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">PowerShell como administrador · instalar o WSL</div>
+          <pre><code>wsl --install --no-distribution</code></pre>
+        </div>
+        <p>Para atualizar uma instalação existente, execute <code>wsl --update</code>. <a href="https://learn.microsoft.com/pt-br/windows/wsl/basic-commands" target="_blank" rel="noopener noreferrer">Comandos do WSL</a>.</p>
+      </div>
+    </section>
+
+    <section class="guia-secao" id="docker">
+      <div class="container guia-largura">
+        <h2>2. Instale e abra o Docker Desktop</h2>
+        <ol>
+          <li>Baixe o instalador para o seu Windows. <a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener noreferrer">Download do Docker Desktop</a>.</li>
+          <li>Use o backend <strong>WSL 2</strong> e abra o Docker Desktop. Aguarde a inicialização do mecanismo.</li>
+          <li>No PowerShell, confira o Compose e o tipo de contêiner.</li>
+        </ol>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">PowerShell · verificar o Docker</div>
+          <pre><code>docker compose version
+docker info --format '{{.OSType}}'</code></pre>
+        </div>
+        <p>O segundo comando deve retornar <code>linux</code>. Se a conexão com o mecanismo falhar, confira se o Docker Desktop terminou de iniciar.</p>
+      </div>
+    </section>
+
+    <section class="guia-secao" id="compose">
+      <div class="container guia-largura">
+        <h2>3. Inicie o MySQL com Docker Compose</h2>
+        <h3>Prepare a pasta e o arquivo</h3>
+        <p>O arquivo <code>compose.yaml</code> define a imagem, as contas, a porta e o volume. Crie uma pasta para ele e abra o arquivo no Bloco de Notas. Você também pode baixar o arquivo e salvá-lo nessa pasta. <a href="mysql-windows/compose.yaml" download>Baixar compose.yaml</a>.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">PowerShell · criar a pasta do laboratório</div>
+          <pre><code>$pasta = Join-Path $env:USERPROFILE "mysql-laboratorio"
+New-Item -ItemType Directory -Force -Path $pasta
+Set-Location $pasta
+notepad compose.yaml</code></pre>
+        </div>
+        <p>Salve o conteúdo com o nome <code>compose.yaml</code>. Substitua <code>troque-a-senha-root</code> e <code>troque-a-senha-aluno</code> por duas senhas próprias. Para representar um <code>$</code> em um valor no Compose, escreva <code>$$</code>.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">compose.yaml · MySQL 8.4 LTS</div>
+          <pre><code>services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_HOST: "localhost"
+      MYSQL_ROOT_PASSWORD: "troque-a-senha-root"
+      MYSQL_DATABASE: "laboratorio"
+      MYSQL_USER: "aluno"
+      MYSQL_PASSWORD: "troque-a-senha-aluno"
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - mysql_dados:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 5s
+      timeout: 5s
+      start_period: 30s
+      retries: 12
+
+volumes:
+  mysql_dados:</code></pre>
+        </div>
+        <div class="guia-nota">
+          <strong>Porta do Windows e porta do contêiner</strong>
+          <p>O DBeaver usa <code>127.0.0.1:3307</code>. O Docker encaminha essa conexão para a porta <code>3306</code> do MySQL no contêiner. A porta externa <code>3307</code> permite usar o guia junto de uma instalação nativa na <code>3306</code>.</p>
+        </div>
+        <p>Na primeira inicialização de um volume vazio, a imagem cria <code>laboratorio</code> e dá à conta <code>aluno</code> acesso a esse banco. A conta administrativa <code>root</code> é usada pelo terminal do contêiner neste roteiro.</p>
+        <h3>Inicie e confira o serviço</h3>
+        <p>No PowerShell, na pasta que contém o arquivo, execute os três comandos.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">PowerShell · validar, iniciar e conferir</div>
+          <pre><code>docker compose config --quiet
+docker compose up -d --wait
+docker compose ps</code></pre>
+        </div>
+        <p>Na primeira execução, o Docker baixa a imagem e inicializa os dados. Confira se o serviço <code>mysql</code> aparece como <code>healthy</code>. Esse estado indica que o servidor responde. A autenticação será conferida no DBeaver.</p>
+        <details>
+          <summary>Ver os logs e testar a conexão pelo terminal</summary>
+          <div class="guia-codigo">
+            <div class="guia-codigo-label">PowerShell · diagnóstico do MySQL</div>
+          <pre><code>docker compose logs --tail=30 mysql
+docker compose exec mysql mysql -h 127.0.0.1 -u aluno -p -D laboratorio -e "SELECT DATABASE() AS banco, CURRENT_USER() AS usuario;"</code></pre>
+          </div>
+          <p>Digite a senha de <code>MYSQL_PASSWORD</code> quando solicitada. Confira se o banco é <code>laboratorio</code> e a conta autenticada começa com <code>aluno@</code>.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="guia-secao" id="dbeaver">
+      <div class="container guia-largura">
+        <h2>4. Configure a conexão no DBeaver</h2>
+        <p>Se já usa o DBeaver Community nas aulas, abra a instalação existente. Para instalar no Windows em um PC Intel ou AMD, baixe o <strong>EXE</strong> na opção <strong>Windows · x86</strong> e siga o assistente. <a href="https://dbeaver.io/download/" target="_blank" rel="noopener noreferrer">Download do DBeaver Community</a>.</p>
+        <p>No DBeaver, pressione <strong>Ctrl + Shift + N</strong>, pesquise <strong>MySQL</strong>, selecione esse driver e avance.</p>
+        <div class="guia-tabela" role="region" aria-label="Campos da conexão com o MySQL em Docker" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">Campo</th><th scope="col">Valor</th><th scope="col">O que indica</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Host</td><td><code>127.0.0.1</code></td><td>O próprio computador.</td></tr>
+              <tr><td>Port (Porta)</td><td><code>3307</code></td><td>Porta publicada pelo Docker no Windows.</td></tr>
+              <tr><td>Database (Banco de dados)</td><td><code>laboratorio</code></td><td>Banco selecionado ao abrir a conexão.</td></tr>
+              <tr><td>Username (Usuário)</td><td><code>aluno</code></td><td>Conta utilizada para executar os comandos.</td></tr>
+              <tr><td>Password (Senha)</td><td>Valor de <code>MYSQL_PASSWORD</code></td><td>Senha da conta MySQL.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Clique em <strong>Test Connection</strong> (Testar conexão). Se aparecer uma solicitação para instalar o driver, clique em <strong>Download</strong>. Após a confirmação, clique em <strong>Finish</strong> (Concluir).</p>
+        <p>Você pode nomear a conexão <strong>MySQL · Laboratório (Docker)</strong> para reconhecê-la no navegador de bancos.</p>
+      </div>
+    </section>
+
+    <section class="guia-secao" id="sql">
+      <div class="container guia-largura">
+        <h2>5. Crie uma tabela e execute consultas</h2>
+        <p>Selecione a conexão de <code>aluno</code> no DBeaver e abra <strong>SQL Editor → New SQL Editor</strong>. Posicione o cursor no comando e pressione <strong>Ctrl + Enter</strong> para executá-lo. Comece pela conferência da conexão.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · conferir a conexão</div>
+          <pre><code>SELECT DATABASE() AS banco,
+       CURRENT_USER() AS usuario,
+       @@port AS porta_servidor,
+       VERSION() AS versao;</code></pre>
+        </div>
+        <p>Confira <code>laboratorio</code>, a conta <code>aluno@%</code> e a versão <code>8.4.x</code>. A coluna <code>porta_servidor</code> mostra <code>3306</code>, a porta interna. O DBeaver acessa o contêiner pela porta publicada <code>3307</code>.</p>
+        <h3>Crie a tabela de centros de distribuição</h3>
+        <p>A chave primária identifica cada centro. O MySQL gera o <code>id_centro</code> com <code>AUTO_INCREMENT</code> e verifica a capacidade com <code>CHECK</code>.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · criar a tabela</div>
+          <pre><code>CREATE TABLE centro_distribuicao (
+    id_centro INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(80) NOT NULL,
+    cidade VARCHAR(80) NOT NULL,
+    capacidade_diaria INT NOT NULL CHECK (capacidade_diaria &gt; 0)
+) ENGINE=InnoDB;</code></pre>
+        </div>
+        <h3>Insira quatro registros</h3>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · cadastrar os centros</div>
+          <pre><code>INSERT INTO centro_distribuicao (nome, cidade, capacidade_diaria)
+VALUES
+    ('CD Curitiba Norte', 'Curitiba', 600),
+    ('CD Curitiba Sul', 'Curitiba', 800),
+    ('CD São José', 'São José dos Pinhais', 650),
+    ('CD Londrina', 'Londrina', 500);</code></pre>
+        </div>
+        <p>Se o DBeaver estiver no modo de confirmação manual, clique em <strong>Commit</strong> após a inserção.</p>
+        <h3>Consulte os registros</h3>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · listar os centros</div>
+          <pre><code>SELECT id_centro, nome, cidade, capacidade_diaria
+FROM centro_distribuicao
+ORDER BY id_centro;</code></pre>
+        </div>
+        <div class="guia-nota">
+          <strong>Resultado esperado</strong>
+          <p>A consulta retorna quatro linhas. Para ver a tabela na árvore do DBeaver, atualize a pasta <strong>Tables</strong> do banco <code>laboratorio</code>.</p>
+        </div>
+        <h3>Retome a agregação da Aula 09</h3>
+        <p>O <code>GROUP BY</code> reúne os centros por cidade. Para cada grupo, <code>COUNT(*)</code> conta os centros e <code>SUM</code> soma suas capacidades. <a href="../aula-09.html">Revisar a Aula 09</a>.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · agrupar os centros por cidade</div>
+          <pre><code>SELECT cidade,
+       COUNT(*) AS total_centros,
+       SUM(capacidade_diaria) AS capacidade_total
+FROM centro_distribuicao
+GROUP BY cidade
+ORDER BY capacidade_total DESC;</code></pre>
+        </div>
+        <div class="guia-tabela" role="region" aria-label="Resultado do agrupamento por cidade" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">cidade</th><th scope="col">total_centros</th><th scope="col">capacidade_total</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Curitiba</td><td>2</td><td>1400</td></tr>
+              <tr><td>São José dos Pinhais</td><td>1</td><td>650</td></tr>
+              <tr><td>Londrina</td><td>1</td><td>500</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Em um banco <code>laboratorio</code> recém-preparado, você também pode colar o script completo no editor e pressionar <strong>Alt + X</strong> para executá-lo. Faça a criação e a inserção uma vez. Nas próximas execuções, selecione apenas as consultas. <a href="mysql-windows/teste.sql" download>Baixar o script de teste (.sql)</a>.</p>
+      </div>
+    </section>
+
+    <section class="guia-secao" id="manutencao">
+      <div class="container guia-largura">
+        <h2>6. Pare, inicie e verifique a persistência</h2>
+        <p>Rode os comandos do Compose na pasta do <code>compose.yaml</code>.</p>
+        <div class="guia-tabela" role="region" aria-label="Comandos do Docker Compose" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">Comando</th><th scope="col">Efeito</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>docker compose stop</code></td><td>Para o servidor e conserva o contêiner e o volume.</td></tr>
+              <tr><td><code>docker compose start</code></td><td>Inicia o contêiner já criado.</td></tr>
+              <tr><td><code>docker compose up -d --wait</code></td><td>Cria ou inicia o serviço e aguarda a verificação de saúde.</td></tr>
+              <tr><td><code>docker compose ps</code></td><td>Mostra o estado do serviço e a porta publicada.</td></tr>
+              <tr><td><code>docker compose logs --tail=30 mysql</code></td><td>Exibe as mensagens mais recentes do servidor.</td></tr>
+              <tr><td><code>docker compose down</code></td><td>Remove o contêiner e a rede. O volume nomeado conserva os arquivos do banco.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="guia-nota">
+          <strong>Remoção do volume</strong>
+          <p>O comando <code>docker compose down -v</code> também remove o volume <code>mysql_dados</code> e apaga os dados persistidos neste ambiente.</p>
+        </div>
+        <p>Para conferir a persistência, pare e inicie o contêiner. Depois que o serviço estiver saudável, reconecte no DBeaver e execute a consulta. O resultado esperado é <strong>4</strong>.</p>
+        <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · contar os centros após reiniciar</div>
+          <pre><code>SELECT COUNT(*) AS total
+FROM centro_distribuicao;</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="guia-secao" id="erros">
+      <div class="container guia-largura">
+        <h2>7. Diagnostique problemas comuns</h2>
+        <div class="guia-tabela" role="region" aria-label="Problemas no MySQL em Docker" tabindex="0">
+          <table>
+            <thead>
+              <tr><th scope="col">Problema</th><th scope="col">O que conferir</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Docker indisponível</td><td>Abra o Docker Desktop, aguarde o mecanismo iniciar e confira <code>docker info</code>.</td></tr>
+              <tr><td>Erro do WSL ou de virtualização</td><td>Verifique <code>wsl --version</code>, as atualizações do WSL e a virtualização do computador.</td></tr>
+              <tr><td>Porta <code>3307</code> ocupada</td><td>Escolha outra porta livre no Windows, por exemplo <code>127.0.0.1:3308:3306</code>. Rode <code>docker compose up -d --wait</code> e use <code>3308</code> no DBeaver.</td></tr>
+              <tr><td><code>Connection refused</code></td><td>Confira <code>docker compose ps</code>, os logs e a porta publicada.</td></tr>
+              <tr><td><code>Access denied</code></td><td>Confira a conta <code>aluno</code> e a senha registrada na primeira inicialização. Para alterar uma senha em um volume já inicializado, use uma sessão administrativa MySQL.</td></tr>
+              <tr><td>Tabela já existente</td><td>Consulte a tabela. Se estiver vazia, execute só a inserção. Se já tiver os quatro registros, execute apenas as consultas.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <fieldset class="guia-checklist">
+          <legend>Confira antes de concluir</legend>
+          <label><input type="checkbox"> <span>O serviço <code>mysql</code> aparece como <code>healthy</code>.</span></label>
+          <label><input type="checkbox"> <span>O DBeaver conecta a <code>laboratorio</code> como <code>aluno</code>.</span></label>
+          <label><input type="checkbox"> <span>A tabela contém quatro centros e o agrupamento mostra três cidades.</span></label>
+          <label><input type="checkbox"> <span>Os quatro registros continuam disponíveis após reiniciar o contêiner.</span></label>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="guia-secao" id="referencias">
+      <div class="container guia-largura">
+        <h2>Prática da Aula 10 e referências</h2>
+        <p>A prática de reservas usa um banco próprio, <code>pratica_salas</code>. Você pode executar no DBeaver os mesmos comandos SQL do roteiro e usar duas conexões separadas para o teste de concorrência.</p>
+        <details>
+          <summary>Preparar o banco e o acesso de aluno</summary>
+          <p>No PowerShell, entre no MySQL como administrador e informe a senha de <code>MYSQL_ROOT_PASSWORD</code>.</p>
+          <div class="guia-codigo">
+          <div class="guia-codigo-label">PowerShell · abrir a sessão administrativa</div>
+          <pre><code>docker compose exec mysql mysql -u root -p</code></pre>
+        </div>
+          <div class="guia-codigo">
+          <div class="guia-codigo-label">SQL · criar o banco da prática e conceder acesso</div>
+          <pre><code>CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
+GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'%';</code></pre>
+        </div>
+          <p>Depois, abra a conexão de <code>aluno</code> para <code>pratica_salas</code>. No arquivo <code>.env</code> da aplicação, use <code>MYSQL_DATABASE=pratica_salas</code>, <code>MYSQL_USER=aluno</code>, a senha dessa conta e <code>MYSQL_PORT=3307</code> se você usou a porta deste guia.</p>
+        </details>
+        <p><a href="pratica-10-mysql-salas.html">Abrir a prática guiada da Aula 10 →</a></p>
+        <ul>
+          <li><a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener noreferrer">Docker Desktop · instalação no Windows</a></li>
+          <li><a href="https://hub.docker.com/_/mysql" target="_blank" rel="noopener noreferrer">Imagem oficial do MySQL · Docker Hub</a></li>
+          <li><a href="https://docs.docker.com/reference/cli/docker/compose/up/" target="_blank" rel="noopener noreferrer">Docker Compose · iniciar serviços</a></li>
+          <li><a href="https://dbeaver.com/docs/dbeaver/Database-driver-MySQL/" target="_blank" rel="noopener noreferrer">DBeaver · conexão com MySQL</a></li>
+          <li><a href="https://dbeaver.com/docs/dbeaver/SQL-Execution/" target="_blank" rel="noopener noreferrer">DBeaver · execução de SQL</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Guia de laboratório</p></div>
+      <a href="#inicio">Voltar ao início ↑</a>
+    </div>
+  </footer>
+</body>
+</html>
