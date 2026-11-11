@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f172a">
-  <meta name="description" content="Instale o MySQL 8.4 LTS como serviço do Windows, prepare a conta de laboratório e execute o primeiro teste SQL no DBeaver.">
+  <meta name="description" content="Instale o MySQL 8.4 LTS como serviço do Windows, prepare a conta de laboratório e execute o primeiro teste SQL no MySQL Workbench.">
   <title>MySQL no Windows com instalação nativa | Banco de Dados</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="script.js"></script>
@@ -39,7 +39,7 @@
       <div class="container guia-largura">
         <p class="guia-rotulo">Banco de Dados · Guia de laboratório</p>
         <h1>MySQL no Windows com instalação nativa</h1>
-        <p class="guia-intro">Instale o MySQL 8.4 LTS como serviço do Windows, prepare a conta de laboratório e execute o primeiro teste SQL no DBeaver.</p>
+        <p class="guia-intro">Instale o MySQL 8.4 LTS como serviço do Windows, prepare a conta de laboratório e execute o primeiro teste SQL no MySQL Workbench.</p>
         <p class="guia-intro">Para preparar o servidor em um contêiner, siga o outro roteiro. <a href="guia-mysql-windows.html">Guia com Docker Desktop →</a></p>
       </div>
     </section>
@@ -51,7 +51,7 @@
         <a href="#instalacao">Instalação</a>
         <a href="#servico">Serviço</a>
         <a href="#usuario">Banco e usuário</a>
-        <a href="#dbeaver">DBeaver</a>
+        <a href="#workbench">MySQL Workbench</a>
         <a href="#sql">Primeiro SQL</a>
         <a href="#manutencao">Uso diário</a>
         <a href="#erros">Problemas</a>
@@ -62,9 +62,9 @@
     <section class="guia-secao" id="ambiente">
       <div class="container guia-largura">
         <h2>Como as ferramentas se conectam</h2>
-        <p>O <strong>MySQL Community Server</strong> roda como serviço do Windows e mantém os dados em disco. O <strong>DBeaver</strong> é o cliente gráfico que se conecta ao serviço para executar SQL e consultar tabelas.</p>
-        <div class="guia-arquitetura" role="group" aria-label="Conexão do DBeaver ao serviço MySQL e ao banco de laboratório">
-          <div><strong>DBeaver</strong><small>Cliente gráfico no Windows</small></div>
+        <p>O <strong>MySQL Community Server</strong> roda como serviço do Windows e mantém os dados em disco. O <strong>MySQL Workbench</strong> é o cliente gráfico que se conecta ao serviço para executar SQL e consultar tabelas.</p>
+        <div class="guia-arquitetura" role="group" aria-label="Conexão do MySQL Workbench ao serviço MySQL e ao banco de laboratório">
+          <div><strong>MySQL Workbench</strong><small>Cliente gráfico no Windows</small></div>
           <span class="guia-seta" aria-hidden="true">→</span>
           <div><strong>MySQL 8.4 LTS</strong><small>Serviço do Windows · porta 3306</small></div>
           <span class="guia-seta" aria-hidden="true">→</span>
@@ -86,7 +86,7 @@
           <div class="guia-codigo-label">PowerShell · consultar a porta 3306</div>
           <pre><code>Get-NetTCPConnection -LocalPort 3306 -State Listen -ErrorAction SilentlyContinue</code></pre>
         </div>
-        <p>Uma saída com registros indica que a porta está em uso. Se for instalar outra instância, escolha uma porta livre, como <code>3308</code>, e anote-a para usar no DBeaver e na prática.</p>
+        <p>Uma saída com registros indica que a porta está em uso. Se for instalar outra instância, escolha uma porta livre, como <code>3308</code>, e anote-a para usar no MySQL Workbench e na prática.</p>
       </div>
     </section>
 
@@ -98,7 +98,7 @@
           <li>Na série <strong>8.4 LTS</strong>, selecione <strong>Microsoft Windows</strong> e baixe <strong>Windows (x86, 64-bit), MSI Installer</strong>. <a href="https://dev.mysql.com/downloads/mysql/8.4.html?os=3" target="_blank" rel="noopener noreferrer">Download oficial do MySQL Community Server</a>.</li>
           <li>Se aparecer a tela de cadastro, escolha <strong>No thanks, just start my download</strong>.</li>
         </ol>
-        <p>O MSI inclui o MySQL Configurator, usado na próxima etapa. O instalador do DBeaver fica disponível separadamente na etapa de configuração da conexão.</p>
+        <p>O MSI inclui o MySQL Configurator, usado na próxima etapa. O instalador do MySQL Workbench fica disponível separadamente na etapa de configuração da conexão.</p>
       </div>
     </section>
 
@@ -136,7 +136,7 @@
           <div class="guia-codigo-label">PowerShell · testar a porta do MySQL</div>
           <pre><code>Test-NetConnection -ComputerName 127.0.0.1 -Port 3306</code></pre>
         </div>
-        <p><code>TcpTestSucceeded</code> deve mostrar <code>True</code>. O teste SQL no DBeaver vai confirmar o banco e a conta utilizados.</p>
+        <p><code>TcpTestSucceeded</code> deve mostrar <code>True</code>. O teste SQL no MySQL Workbench vai confirmar o banco e a conta utilizados.</p>
       </div>
     </section>
 
@@ -144,16 +144,16 @@
       <div class="container guia-largura">
         <h2>5. Prepare o banco e a conta de laboratório</h2>
         <h3>Abra a conexão administrativa</h3>
-        <p>Se já usa o DBeaver Community nas aulas, abra a instalação existente. Para instalar no Windows em um PC Intel ou AMD, baixe o <strong>EXE</strong> na opção <strong>Windows · x86</strong> e siga o assistente. <a href="https://dbeaver.io/download/" target="_blank" rel="noopener noreferrer">Download do DBeaver Community</a>.</p>
-        <p>No DBeaver, pressione <strong>Ctrl + Shift + N</strong>, pesquise <strong>MySQL</strong>, selecione esse driver e avance.</p>
-        <p>Preencha o host com <code>127.0.0.1</code>, a porta com a escolhida no configurador, o usuário com <code>root</code> e a senha com a da conta administrativa. Deixe o campo <strong>Database</strong> em branco nesta conexão.</p>
+        <p>Se o MySQL Workbench ainda não estiver instalado, selecione <strong>Microsoft Windows</strong> na página de download, baixe o <strong>MSI Installer</strong> de 64 bits e siga o assistente. <a href="https://dev.mysql.com/downloads/workbench/" target="_blank" rel="noopener noreferrer">Download do MySQL Workbench</a>.</p>
+        <p>Na tela inicial do MySQL Workbench, clique em <strong>+</strong> ao lado de <strong>MySQL Connections</strong>. Em <strong>Connection Name</strong>, digite <strong>MySQL · Administração (nativo)</strong> e selecione <strong>Standard (TCP/IP)</strong> em <strong>Connection Method</strong>.</p>
+        <p>Use <code>127.0.0.1</code> em <strong>Hostname</strong>, a porta definida no configurador em <strong>Port</strong> e <code>root</code> em <strong>Username</strong>. Informe a senha administrativa e deixe <strong>Default Schema</strong> vazio.</p>
         <div class="guia-nota">
-          <strong>Use TLS no DBeaver</strong>
-          <p>Na aba <strong>Driver properties</strong>, localize <code>sslMode</code> e altere seu valor para <code>REQUIRED</code>. Essa opção faz o driver exigir uma conexão criptografada com o MySQL.</p>
+          <strong>Use TLS no MySQL Workbench</strong>
+          <p>Na aba <strong>SSL</strong>, selecione <strong>Require</strong> no campo <strong>Use SSL</strong>. O Workbench exigirá uma conexão criptografada com o MySQL.</p>
         </div>
-        <p>Clique em <strong>Test Connection</strong> (Testar conexão). Se aparecer uma solicitação para instalar o driver, clique em <strong>Download</strong>. Após a confirmação, clique em <strong>Finish</strong> (Concluir).</p>
+        <p>Clique em <strong>Test Connection</strong> e informe a senha se o Workbench solicitar. Quando o teste confirmar a conexão, clique em <strong>OK</strong> para salvá-la. Na tela inicial, abra a conexão salva para acessar o editor SQL.</p>
         <h3>Crie o banco e conceda acesso</h3>
-        <p>Abra um editor SQL na conexão de <code>root</code>. Substitua o valor <code>troque-a-senha-aluno</code> por uma senha própria para o laboratório. Execute o bloco com <strong>Alt + X</strong>.</p>
+        <p>Abra um editor SQL na conexão de <code>root</code>. Substitua o valor <code>troque-a-senha-aluno</code> por uma senha própria para o laboratório. Execute o bloco com <strong>Ctrl + Shift + Enter</strong>.</p>
         <div class="guia-codigo">
           <div class="guia-codigo-label">SQL como root · preparar o laboratório</div>
           <pre><code>CREATE DATABASE IF NOT EXISTS laboratorio
@@ -172,27 +172,30 @@ GRANT ALL PRIVILEGES ON laboratorio.* TO 'aluno'@'127.0.0.1';</code></pre>
       </div>
     </section>
 
-    <section class="guia-secao" id="dbeaver">
+    <section class="guia-secao" id="workbench">
       <div class="container guia-largura">
-        <h2>6. Registre a conexão de aluno no DBeaver</h2>
-        <p>Abra uma nova conexão <strong>MySQL</strong> com <strong>Ctrl + Shift + N</strong> e preencha os campos.</p>
+        <span id="dbeaver" aria-hidden="true" style="display:block;scroll-margin-top:9rem"></span>
+        <h2>6. Registre a conexão de aluno no MySQL Workbench</h2>
+        <p>Na tela inicial do MySQL Workbench, clique em <strong>+</strong> ao lado de <strong>MySQL Connections</strong>. Em <strong>Connection Name</strong>, digite <strong>MySQL · Laboratório (nativo)</strong> e selecione <strong>Standard (TCP/IP)</strong> em <strong>Connection Method</strong>.</p>
         <div class="guia-tabela" role="region" aria-label="Campos da conexão com o MySQL nativo" tabindex="0">
           <table>
             <thead>
               <tr><th scope="col">Campo</th><th scope="col">Valor</th><th scope="col">O que indica</th></tr>
             </thead>
             <tbody>
-              <tr><td>Host</td><td><code>127.0.0.1</code></td><td>O próprio computador.</td></tr>
+              <tr><td>Hostname (Endereço)</td><td><code>127.0.0.1</code></td><td>O próprio computador.</td></tr>
               <tr><td>Port (Porta)</td><td><code>3306</code> ou a porta escolhida</td><td>Porta em que o serviço do Windows está escutando.</td></tr>
-              <tr><td>Database (Banco de dados)</td><td><code>laboratorio</code></td><td>Banco selecionado ao abrir a conexão.</td></tr>
               <tr><td>Username (Usuário)</td><td><code>aluno</code></td><td>Conta utilizada para executar os comandos.</td></tr>
-              <tr><td>Password (Senha)</td><td>Senha definida no <code>CREATE USER</code></td><td>Senha da conta MySQL.</td></tr>
+              <tr><td>Password (Senha)</td><td>Senha definida no <code>CREATE USER</code></td><td>Senha da conta MySQL. Você também pode informá-la quando o Workbench solicitar.</td></tr>
+              <tr><td>Default Schema (Esquema padrão)</td><td><code>laboratorio</code></td><td>Banco selecionado ao abrir a conexão.</td></tr>
             </tbody>
           </table>
         </div>
-        <p>Abra <strong>Driver properties</strong> neste perfil de <code>aluno</code> e defina <code>sslMode</code> como <code>REQUIRED</code>.</p>
-        <p>Clique em <strong>Test Connection</strong> (Testar conexão). Se aparecer uma solicitação para instalar o driver, clique em <strong>Download</strong>. Após a confirmação, clique em <strong>Finish</strong> (Concluir).</p>
-        <p>Você pode nomear a conexão <strong>MySQL · Laboratório (nativo)</strong>. Use essa conexão para o teste SQL e para trabalhar com os dados do laboratório.</p>
+        <div class="guia-nota">
+          <strong>Use TLS no MySQL Workbench</strong>
+          <p>Na aba <strong>SSL</strong>, selecione <strong>Require</strong> no campo <strong>Use SSL</strong>. O Workbench exigirá uma conexão criptografada com o MySQL.</p>
+        </div>
+        <p>Clique em <strong>Test Connection</strong> e informe a senha se o Workbench solicitar. Quando o teste confirmar a conexão, clique em <strong>OK</strong> para salvá-la. Na tela inicial, abra a conexão salva para acessar o editor SQL.</p>
         <p>Depois de conectar, abra um editor SQL nessa conexão para conferir o TLS.</p>
         <div class="guia-codigo">
           <div class="guia-codigo-label">SQL · conferir a criptografia da sessão</div>
@@ -205,7 +208,7 @@ GRANT ALL PRIVILEGES ON laboratorio.* TO 'aluno'@'127.0.0.1';</code></pre>
     <section class="guia-secao" id="sql">
       <div class="container guia-largura">
         <h2>7. Crie uma tabela e execute consultas</h2>
-        <p>Selecione a conexão de <code>aluno</code> no DBeaver e abra <strong>SQL Editor → New SQL Editor</strong>. Posicione o cursor no comando e pressione <strong>Ctrl + Enter</strong> para executá-lo. Comece pela conferência da conexão.</p>
+        <p>Abra a conexão de <code>aluno</code> no MySQL Workbench. No editor SQL, posicione o cursor no comando e pressione <strong>Ctrl + Enter</strong> para executar a instrução atual. Confira a consulta no <strong>Result Grid</strong> e as mensagens no <strong>Action Output</strong>.</p>
         <div class="guia-codigo">
           <div class="guia-codigo-label">SQL · conferir a conexão</div>
           <pre><code>SELECT DATABASE() AS banco,
@@ -235,7 +238,7 @@ VALUES
     ('CD São José', 'São José dos Pinhais', 650),
     ('CD Londrina', 'Londrina', 500);</code></pre>
         </div>
-        <p>Se o DBeaver estiver no modo de confirmação manual, clique em <strong>Commit</strong> após a inserção.</p>
+        <p>Se o MySQL Workbench estiver no modo de confirmação manual, clique em <strong>Commit</strong> após a inserção.</p>
         <h3>Consulte os registros</h3>
         <div class="guia-codigo">
           <div class="guia-codigo-label">SQL · listar os centros</div>
@@ -245,7 +248,7 @@ ORDER BY id_centro;</code></pre>
         </div>
         <div class="guia-nota">
           <strong>Resultado esperado</strong>
-          <p>A consulta retorna quatro linhas. Para ver a tabela na árvore do DBeaver, atualize a pasta <strong>Tables</strong> do banco <code>laboratorio</code>.</p>
+          <p>A consulta retorna quatro linhas no <strong>Result Grid</strong>. Para ver a tabela, atualize o painel <strong>Schemas</strong> e expanda <strong>Tables</strong> em <code>laboratorio</code>.</p>
         </div>
         <h3>Retome a agregação da Aula 09</h3>
         <p>O <code>GROUP BY</code> reúne os centros por cidade. Para cada grupo, <code>COUNT(*)</code> conta os centros e <code>SUM</code> soma suas capacidades. <a href="aula-09.html">Revisar a Aula 09</a>.</p>
@@ -270,7 +273,7 @@ ORDER BY capacidade_total DESC;</code></pre>
             </tbody>
           </table>
         </div>
-        <p>Em um banco <code>laboratorio</code> recém-preparado, você também pode colar o script completo no editor e pressionar <strong>Alt + X</strong> para executá-lo. Faça a criação e a inserção uma vez. Nas próximas execuções, selecione apenas as consultas. <a href="mysql-windows/teste.sql" download>Baixar o script de teste (.sql)</a>.</p>
+        <p>Em um banco <code>laboratorio</code> recém-preparado, você também pode colar o script completo no editor SQL e pressionar <strong>Ctrl + Shift + Enter</strong> para executá-lo. Faça a criação e a inserção uma vez. Nas próximas execuções, selecione apenas as consultas. <a href="mysql-windows/teste.sql" download>Baixar o script de teste (.sql)</a>.</p>
       </div>
     </section>
 
@@ -278,7 +281,7 @@ ORDER BY capacidade_total DESC;</code></pre>
       <div class="container guia-largura">
         <h2>8. Inicie o serviço e confira os dados</h2>
         <p>No painel <strong>Serviços</strong> do Windows, use <strong>Iniciar</strong>, <strong>Parar</strong> ou <strong>Reiniciar</strong> conforme necessário. O início automático faz o MySQL iniciar com o sistema.</p>
-        <p>Para conferir a persistência, reinicie o serviço, reconecte no DBeaver e execute a consulta abaixo. O resultado esperado é <strong>4</strong>.</p>
+        <p>Para conferir a persistência, reinicie o serviço, reconecte no MySQL Workbench e execute a consulta abaixo. O resultado esperado é <strong>4</strong>.</p>
         <div class="guia-codigo">
           <div class="guia-codigo-label">SQL · contar os centros após reiniciar</div>
           <pre><code>SELECT COUNT(*) AS total
@@ -298,10 +301,10 @@ FROM centro_distribuicao;</code></pre>
             </thead>
             <tbody>
               <tr><td>O instalador pede administrador</td><td>Use uma conta autorizada a instalar o servidor e a configurar serviços no Windows.</td></tr>
-              <tr><td>Porta <code>3306</code> ocupada</td><td>Confira o processo que a utiliza. Para uma instalação separada, escolha uma porta livre no configurador e repita-a no DBeaver.</td></tr>
+              <tr><td>Porta <code>3306</code> ocupada</td><td>Confira o processo que a utiliza. Para uma instalação separada, escolha uma porta livre no configurador e repita-a no MySQL Workbench.</td></tr>
               <tr><td><code>Connection refused</code></td><td>Confira o estado do serviço em <code>services.msc</code> e teste o host e a porta.</td></tr>
-              <tr><td><code>Public Key Retrieval is not allowed</code></td><td>Configure <a href="#dbeaver"><code>sslMode=REQUIRED</code></a> em <strong>Driver properties</strong> da conexão e repita o teste.</td></tr>
-              <tr><td><code>Access denied</code> para <code>root</code></td><td>Redigite a senha definida em <strong>Accounts and Roles</strong> e confira a instância selecionada e o <code>sslMode</code> no perfil de <code>root</code>.</td></tr>
+              <tr><td>Falha na conexão SSL</td><td>Na configuração do perfil, confira <a href="#workbench"><strong>SSL → Use SSL → Require</strong></a> e repita o teste de conexão.</td></tr>
+              <tr><td><code>Access denied</code> para <code>root</code></td><td>Redigite a senha definida em <strong>Accounts and Roles</strong> e confira a instância selecionada e a opção <strong>SSL → Use SSL → Require</strong> no perfil de <code>root</code>.</td></tr>
               <tr><td><code>Access denied</code> para <code>aluno</code></td><td>Confira o host <code>127.0.0.1</code>, a porta e a senha cadastrada para essa conta.</td></tr>
               <tr><td>Banco <code>laboratorio</code> indisponível</td><td>Confira na conexão de <code>root</code> se o banco foi criado e se o <code>GRANT</code> foi executado na mesma instância.</td></tr>
               <tr><td>Tabela já existente</td><td>Consulte a tabela. Se estiver vazia, execute só a inserção. Se já tiver os quatro registros, execute apenas as consultas.</td></tr>
@@ -311,7 +314,7 @@ FROM centro_distribuicao;</code></pre>
         <fieldset class="guia-checklist">
           <legend>Confira antes de concluir</legend>
           <label><input type="checkbox"> <span>O serviço MySQL está em execução na porta escolhida.</span></label>
-          <label><input type="checkbox"> <span>O DBeaver conecta a <code>laboratorio</code> como <code>aluno</code>.</span></label>
+          <label><input type="checkbox"> <span>O MySQL Workbench conecta a <code>laboratorio</code> como <code>aluno</code>.</span></label>
           <label><input type="checkbox"> <span>A tabela contém quatro centros e o agrupamento mostra três cidades.</span></label>
           <label><input type="checkbox"> <span>Os quatro registros continuam disponíveis após reiniciar o serviço.</span></label>
         </fieldset>
@@ -321,25 +324,24 @@ FROM centro_distribuicao;</code></pre>
     <section class="guia-secao" id="referencias">
       <div class="container guia-largura">
         <h2>Prática da Aula 10 e referências</h2>
-        <p>A prática de reservas usa um banco próprio, <code>pratica_salas</code>. Você pode executar no DBeaver os mesmos comandos SQL do roteiro e usar duas conexões separadas para o teste de concorrência.</p>
+        <p>A prática de reservas usa o banco <code>pratica_salas</code>. Execute o roteiro no MySQL Workbench. Na etapa de concorrência, abra duas conexões com o mesmo servidor para observar o comportamento das transações.</p>
         <details>
           <summary>Preparar o banco e o acesso de aluno</summary>
-          <p>No DBeaver, abra o editor SQL da conexão administrativa de <code>root</code> e execute o bloco.</p>
+          <p>No MySQL Workbench, abra o editor SQL da conexão administrativa de <code>root</code> e execute o bloco.</p>
           <div class="guia-codigo">
           <div class="guia-codigo-label">SQL · criar o banco da prática e conceder acesso</div>
           <pre><code>CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
 GRANT ALL PRIVILEGES ON `pratica\_salas`.* TO 'aluno'@'127.0.0.1';</code></pre>
         </div>
-          <p>Depois, abra a conexão de <code>aluno</code> para <code>pratica_salas</code>. No arquivo <code>.env</code> da aplicação, use <code>MYSQL_DATABASE=pratica_salas</code>, <code>MYSQL_USER=aluno</code>, a senha dessa conta e <code>MYSQL_PORT=3306</code> se você usou a porta deste guia.</p>
+          <p>Depois, abra a conexão de <code>aluno</code> no MySQL Workbench e selecione <code>pratica_salas</code> com <code>USE pratica_salas;</code>. No arquivo <code>.env</code> da aplicação, use <code>MYSQL_DATABASE=pratica_salas</code>, <code>MYSQL_USER=aluno</code>, a senha dessa conta e <code>MYSQL_PORT=3306</code> se você usou a porta deste guia.</p>
         </details>
         <p><a href="pratica-10-mysql-salas.html">Abrir a prática guiada da Aula 10 →</a></p>
         <ul>
           <li><a href="https://dev.mysql.com/downloads/mysql/8.4.html?os=3" target="_blank" rel="noopener noreferrer">MySQL Community Server 8.4 LTS · download</a></li>
           <li><a href="https://dev.mysql.com/doc/refman/8.4/en/mysql-configurator-workflow-server.html" target="_blank" rel="noopener noreferrer">MySQL Configurator · instalação no Windows</a></li>
           <li><a href="https://dev.mysql.com/doc/refman/8.4/en/grant.html" target="_blank" rel="noopener noreferrer">MySQL · concessão de privilégios</a></li>
-          <li><a href="https://dbeaver.com/docs/dbeaver/Database-driver-MySQL/" target="_blank" rel="noopener noreferrer">DBeaver · conexão com MySQL</a></li>
-          <li><a href="https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-security.html" target="_blank" rel="noopener noreferrer">MySQL Connector/J · configuração de TLS com <code>sslMode</code></a></li>
-          <li><a href="https://dbeaver.com/docs/dbeaver/SQL-Execution/" target="_blank" rel="noopener noreferrer">DBeaver · execução de SQL</a></li>
+          <li><a href="https://dev.mysql.com/doc/workbench/en/wb-mysql-connections-methods-standard.html" target="_blank" rel="noopener noreferrer">MySQL Workbench · conexão TCP/IP e SSL</a></li>
+          <li><a href="https://dev.mysql.com/doc/workbench/en/wb-sql-editor-toolbar.html" target="_blank" rel="noopener noreferrer">MySQL Workbench · execução de SQL</a></li>
         </ul>
       </div>
     </section>

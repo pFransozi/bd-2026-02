@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f172a">
-  <meta name="description" content="Prática guiada de MySQL 8, InnoDB, DBeaver e Connector/Python. Exercícios de integridade, transações, concorrência e reserva de salas.">
+  <meta name="description" content="Prática guiada de MySQL 8, InnoDB, MySQL Workbench e Connector/Python. Exercícios de integridade, transações, concorrência e reserva de salas.">
   <title>Prática Guiada 10 · MySQL e Reserva de Salas | Banco de Dados</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="script.js"></script>
@@ -165,39 +165,39 @@ body.pratica-mysql { background:var(--bg);color:var(--text) }
 <section class="pg-hero"><div class="container pg-body">
 <p class="pg-kicker">Banco de Dados · Aula 10</p>
 <h1>MySQL do SGBD à aplicação</h1>
-<p class="pg-lead">Prática integrada no domínio de reserva de salas. Crie o banco no DBeaver, observe como o InnoDB protege os dados e acesse as mesmas tabelas em uma aplicação Python.</p>
-<div class="pg-tags"><span>MySQL 8</span><span>InnoDB</span><span>DBeaver</span><span>Integridade</span><span>Transações</span><span>Concorrência</span><span>Python + Connector/Python</span></div>
+<p class="pg-lead">Prática integrada no domínio de reserva de salas. Crie o banco no MySQL Workbench, observe como o InnoDB protege os dados e acesse as mesmas tabelas em uma aplicação Python.</p>
+<div class="pg-tags"><span>MySQL 8</span><span>InnoDB</span><span>MySQL Workbench</span><span>Integridade</span><span>Transações</span><span>Concorrência</span><span>Python + Connector/Python</span></div>
 </div></section>
 <div class="pg-toc-shell"><nav class="container pg-toc" aria-label="Etapas da prática">
-<a href="#objetivo">Contexto</a><a href="#parte1">DBeaver</a><a href="#e3">Tabelas</a><a href="#parte2">SGBD</a><a href="#e8">Concorrência</a><a href="#parte3">Python</a><a href="#sintese">Síntese</a><a href="#extra">Extensão</a><a href="#ajuda">Diagnóstico</a>
+<a href="#objetivo">Contexto</a><a href="#parte1">Workbench</a><a href="#e3">Tabelas</a><a href="#parte2">SGBD</a><a href="#e8">Concorrência</a><a href="#parte3">Python</a><a href="#sintese">Síntese</a><a href="#extra">Extensão</a><a href="#ajuda">Diagnóstico</a>
 </nav></div>
 <section class="pg-section" id="objetivo"><div class="container pg-body">
 <p class="pg-kicker">0 · Orientações iniciais</p>
 <h2>Preparação para a prática</h2>
-<p>Este material é um <strong>roteiro de execução</strong>. Você utilizará primeiro o DBeaver para criar e consultar tabelas, observará mecanismos do MySQL e, ao final, executará uma aplicação Python conectada ao mesmo banco.</p>
+<p>Este material é um <strong>roteiro de execução</strong>. Você utilizará primeiro o Workbench para criar e consultar tabelas, observará mecanismos do MySQL e, ao final, executará uma aplicação Python conectada ao mesmo banco.</p>
 <div class="pg-grid">
-<article class="pg-card"><strong>Parte 1 · DBeaver</strong><p>Conferir a conexão, criar um esquema para a prática, construir quatro tabelas e cadastrar registros iniciais.</p></article>
+<article class="pg-card"><strong>Parte 1 · Workbench</strong><p>Conferir a conexão, criar um esquema para a prática, construir quatro tabelas e cadastrar registros iniciais.</p></article>
 <article class="pg-card"><strong>Parte 2 · Recursos do SGBD</strong><p>Consultas, restrições, transações, índices e dois acessos simultâneos.</p></article>
 <article class="pg-card"><strong>Parte 3 · Python</strong><p>Preparar os arquivos, conectar com o Connector/Python, consultar registros e testar novas reservas.</p></article>
 <article class="pg-card"><strong>Tempo de referência</strong><p>Três blocos de aproximadamente 30, 50 e 50 minutos. Prossiga somente após conferir o resultado de cada etapa.</p></article>
 </div>
 <div class="guide-banner"><strong>Ambiente para a prática</strong>
-<p>Use MySQL Server <strong>8.0.16 ou posterior</strong> para que as restrições <code>CHECK</code> sejam verificadas. Abra o <strong>DBeaver</strong> e tenha em mãos o endereço, a porta e as credenciais do laboratório. No próprio computador, use <code>127.0.0.1</code> e a porta configurada para o seu ambiente. A instalação nativa normalmente usa <code>3306</code> e o exemplo com Docker Desktop publica <code>3307</code>.</p>
-<p>Os guias mostram como conectar pelo DBeaver e preparar o acesso ao banco da prática. <a href="guia-mysql-windows-nativo.html#dbeaver">Instalação nativa</a> · <a href="guia-mysql-windows.html#dbeaver">Docker Desktop</a>.</p></div>
+<p>Os guias usam o MySQL Server <strong>8.4 LTS</strong>. Se o servidor já estiver instalado, use a versão <strong>8.0.16 ou posterior</strong> para que o MySQL verifique as restrições <code>CHECK</code>. Abra o <strong>MySQL Workbench</strong>. Para uma instalação local, use <code>127.0.0.1</code> e a porta configurada no seu ambiente. O guia nativo usa <code>3306</code> por padrão e o guia com Docker Desktop publica <code>3307</code>.</p>
+<p>Os guias mostram como testar a conexão e preparar a conta de <code>aluno</code> e o banco <code>pratica_salas</code>. <a href="guia-mysql-windows-nativo.html">Guia de instalação nativa</a> · <a href="guia-mysql-windows.html">Guia com Docker Desktop</a>.</p></div>
 <div class="notice"><strong>Banco da prática</strong><p>Use um esquema vazio chamado <code>pratica_salas</code> ou o esquema vazio atribuído para a atividade. Se usar outro nome, ajuste os comandos <code>USE</code> e o arquivo <code>.env</code>.</p></div>
-<div class="objective"><strong>Como acompanhar:</strong> em cada etapa, identifique o programa indicado (<strong>PowerShell</strong>, <strong>DBeaver</strong> ou <strong>Python</strong>), execute os comandos na ordem apresentada e leia a caixa <strong>“Confira antes de avançar”</strong>. Em algumas etapas, uma mensagem de erro será o resultado esperado.</div>
+<div class="objective"><strong>Como acompanhar:</strong> em cada etapa, identifique o programa indicado (<strong>PowerShell</strong>, <strong>Workbench</strong> ou <strong>Python</strong>), execute os comandos na ordem apresentada e leia a caixa <strong>“Confira antes de avançar”</strong>. Em algumas etapas, uma mensagem de erro será o resultado esperado.</div>
 <p><a href="aula-10-mysql.html">Rever os conceitos da Aula 10 →</a></p>
 </div></section>
-<section class="pg-section" id="parte1"><div class="container pg-body"><p class="pg-kicker">1 · Primeiro contato com o DBeaver</p><h2>Parte 1 · Conhecer o ambiente e preparar o banco <small>30 minutos</small></h2>
+<section class="pg-section" id="parte1"><div class="container pg-body"><p class="pg-kicker">1 · Primeiro contato com o Workbench</p><h2>Parte 1 · Conhecer o ambiente e preparar o banco <small>30 minutos</small></h2>
 
 <section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Conferir a conexão com o MySQL</h3></div>
-<p><strong>Onde executar</strong> · Editor SQL do DBeaver.</p>
+<p><strong>Onde executar</strong> · MySQL Workbench.</p>
 <ol>
-  <li>Abra a conexão MySQL do laboratório no <strong>Navegador de Banco de Dados</strong> (<em>Database Navigator</em>). Para cadastrá-la, pressione <strong>Ctrl + Shift + N</strong>, selecione <strong>MySQL</strong> e informe <strong>Host</strong>, <strong>Port</strong>, <strong>Username</strong> e <strong>Password</strong>. Preencha <strong>Database</strong> se o esquema já tiver sido criado.</li>
-  <li>Para a conexão configurada pelos guias da disciplina, abra <strong>Driver properties</strong> e defina <code>sslMode</code> como <code>REQUIRED</code>. Clique em <strong>Test Connection</strong> e depois em <strong>Finish</strong>.</li>
-  <li>Selecione a conexão e abra <strong>SQL Editor → New SQL Editor</strong>. Na barra de ferramentas, selecione <strong>Auto-commit</strong> antes de iniciar a prática. Cole a consulta abaixo, posicione o cursor nela e pressione <strong>Ctrl + Enter</strong>.</li>
+  <li>Na tela inicial do Workbench, abra a conexão do laboratório. Para cadastrar uma conexão, clique em <strong>+</strong> ao lado de <strong>MySQL Connections</strong>. Preencha <strong>Connection Name</strong> e escolha <strong>Standard (TCP/IP)</strong> em <strong>Connection Method</strong>.</li>
+  <li>Informe <strong>Hostname</strong>, <strong>Port</strong>, <strong>Username</strong> e a senha da conta. Em <strong>Default Schema</strong>, use o banco já preparado para sua conta, como <code>laboratorio</code>. Você selecionará <code>pratica_salas</code> na próxima etapa.</li>
+  <li>Na aba <strong>SSL</strong>, selecione <strong>Require</strong> no campo <strong>Use SSL</strong>. Clique em <strong>Test Connection</strong> e, depois da confirmação, clique em <strong>OK</strong> e abra a conexão salva.</li>
+  <li>No editor SQL, cole e selecione o bloco abaixo. Use <strong>Ctrl + Shift + Enter</strong> para executar a seleção. Para executar apenas a instrução em que está o cursor, use <strong>Ctrl + Enter</strong>.</li>
 </ol>
-<div class="nav-tip"><strong>Execução no editor SQL</strong><p>Para uma instrução, posicione o cursor nela e use <strong>Ctrl + Enter</strong>. Para várias instruções, selecione o trecho indicado e use <strong>Alt + X</strong> (Executar script SQL). Nas etapas 06 e 08, execute cada instrução separadamente com <strong>Ctrl + Enter</strong> para observar a transação.</p></div>
 <div class="codebox"><div class="codebar"><span>SQL · conferir a sessão</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT VERSION() AS versao,
        CURRENT_USER() AS conta,
        @@port AS porta_servidor,
@@ -205,26 +205,26 @@ body.pratica-mysql { background:var(--bg);color:var(--text) }
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>Confira a versão, a conta autenticada e a porta do servidor. Para configurar o Python, anote o host e a porta que você informou no cliente. A coluna <code>autocommit</code> vale <code>1</code> quando instruções individuais são confirmadas automaticamente fora de uma transação explícita.</p></div>
 </section>
 <section class="task" id="e2"><div class="task-h"><span class="step">02</span><h3>Criar e selecionar o esquema da prática</h3></div>
-<p><strong>Onde executar</strong> · editor SQL do DBeaver, na conexão aberta para a prática.</p>
-<p>No MySQL, <strong>database</strong> e <strong>schema</strong> são nomes para a mesma estrutura. Se a sua conta pode criar <code>pratica_salas</code>, selecione o bloco inteiro e execute com <strong>Alt + X</strong>. Se o laboratório já preparou um esquema, execute a partir de <code>USE</code> e use o nome que você recebeu. O conjunto de caracteres <code>utf8mb4</code> permite armazenar nomes com acentos.</p>
+<p><strong>Onde executar</strong> · editor SQL do Workbench, na conexão aberta para a prática.</p>
+<p>No MySQL, <strong>database</strong> e <strong>schema</strong> são nomes para a mesma estrutura. Execute o bloco para criar e selecionar <code>pratica_salas</code>. O conjunto de caracteres <code>utf8mb4</code> permite armazenar nomes com acentos.</p>
 <div class="codebox"><div class="codebar"><span>SQL · preparar e selecionar o esquema</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SET SESSION autocommit = 1;
 CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
 USE pratica_salas;
 SELECT DATABASE() AS banco;
 SHOW TABLES;</code></pre></div>
-<p>Para visualizar o esquema no <strong>Navegador de Banco de Dados</strong>, clique com o botão direito na conexão e selecione <strong>Atualizar</strong> (<em>Refresh</em>). Se houver uma pasta <strong>Databases</strong>, expanda-a para localizar o banco.</p>
-<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O resultado de <code>SELECT DATABASE()</code> deve mostrar o esquema escolhido na coluna <code>banco</code>. Em um esquema vazio, <code>SHOW TABLES</code> devolve zero linhas. Se as quatro tabelas da prática já existirem, confira a carga na etapa 03 antes de inserir registros.</p></div>
+<p>Se o esquema já foi preparado e a conta de <code>aluno</code> tem acesso a ele, você pode selecionar e executar o bloco a partir de <code>USE</code>. Use o nome do esquema que foi atribuído à sua conta. Atualize o painel <strong>Schemas</strong> para visualizá-lo.</p>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O <strong>Result Grid</strong> deve mostrar o esquema escolhido em <code>banco</code>. Em um esquema vazio, <code>SHOW TABLES</code> devolve zero linhas. Se as quatro tabelas da prática já existirem, confira a carga na etapa 03 antes de inserir registros.</p></div>
 </section>
 <section class="task" id="e3"><div class="task-h"><span class="step">03</span><h3>Criar as tabelas e inserir os primeiros registros</h3></div>
 <p><strong>Onde executar:</strong> editor SQL do banco <code>pratica_salas</code>. Você criará as tabelas <code>bloco</code>, <code>sala</code>, <code>usuario</code> e <code>reserva</code>, nesta ordem.</p>
 <div class="diagram" aria-label="Relações entre as quatro tabelas"><span>bloco</span><i>1 → N</i><span>sala</span><i>1 → N</i><span>reserva</span><i>N ← 1</i><span>usuario</span></div>
 <p><strong>1.</strong> Abra uma nova consulta e crie a tabela <code>bloco</code>. Observe que <code>AUTO_INCREMENT</code> gera <code>id_bloco</code> e que <code>ENGINE=InnoDB</code> define o mecanismo da tabela.</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · SQL · tabela bloco</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE bloco (
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · tabela bloco</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE bloco (
     id_bloco INT AUTO_INCREMENT PRIMARY KEY,
     nome_bloco VARCHAR(60) NOT NULL UNIQUE
 ) ENGINE=InnoDB;</code></pre></div>
 <p><strong>2.</strong> Crie a tabela <code>sala</code>. A declaração <code>FOREIGN KEY</code> faz <code>id_bloco</code> referenciar a tabela anterior. A restrição <code>CHECK</code> permite capacidades entre 1 e 80.</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · SQL · tabela sala</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE sala (
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · tabela sala</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE sala (
     id_sala INT AUTO_INCREMENT PRIMARY KEY,
     id_bloco INT NOT NULL,
     nome VARCHAR(60) NOT NULL,
@@ -235,13 +235,13 @@ SHOW TABLES;</code></pre></div>
     CONSTRAINT uq_sala_bloco UNIQUE (id_bloco, nome)
 ) ENGINE=InnoDB;</code></pre></div>
 <p><strong>3.</strong> Crie <code>usuario</code>. O <code>UNIQUE</code> evita dois registros com o mesmo e-mail.</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · SQL · tabela usuario</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE usuario (
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · tabela usuario</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE
 ) ENGINE=InnoDB;</code></pre></div>
 <p><strong>4.</strong> Crie <code>reserva</code>. Cada registro apontará para uma sala e um usuário. O sistema considerará horários de uma hora, começando em hora cheia entre 08:00 e 21:00.</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · SQL · tabela reserva</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE reserva (
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · tabela reserva</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE reserva (
     id_reserva INT AUTO_INCREMENT PRIMARY KEY,
     id_sala INT NOT NULL,
     id_usuario INT NOT NULL,
@@ -259,8 +259,8 @@ SHOW TABLES;</code></pre></div>
     ),
     CONSTRAINT uq_sala_horario UNIQUE (id_sala, data_reserva, hora_inicio)
 ) ENGINE=InnoDB;</code></pre></div>
-<p><strong>5.</strong> No <strong>Navegador de Banco de Dados</strong> do DBeaver, atualize o banco <code>pratica_salas</code> com <strong>Atualizar</strong> (<em>Refresh</em>) e expanda <strong>Tabelas</strong> (<em>Tables</em>). Confira se as quatro tabelas aparecem. Depois, insira dois blocos e quatro salas.</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · SQL · inserir blocos e salas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO bloco (nome_bloco)
+<p><strong>5.</strong> No painel <strong>Schemas</strong> do Workbench, atualize a lista e expanda <strong>pratica_salas → Tables</strong>. Confira se as quatro tabelas aparecem. Depois insira dois blocos e quatro salas:</p>
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · inserir blocos e salas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO bloco (nome_bloco)
 VALUES ('Bloco A'), ('Bloco B');
 
 INSERT INTO sala (id_bloco, nome, capacidade, ativa)
@@ -270,7 +270,7 @@ VALUES
     (2, 'Sala 201', 30, TRUE),
     (2, 'Laboratório 202', 24, TRUE);</code></pre></div>
 <p><strong>6.</strong> Insira três usuários e quatro reservas iniciais:</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · SQL · inserir usuários e reservas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO usuario (nome, email)
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · inserir usuários e reservas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO usuario (nome, email)
 VALUES
     ('Ana Martins', 'ana.martins@exemplo.edu'),
     ('Bruno Costa', 'bruno.costa@exemplo.edu'),
@@ -283,7 +283,7 @@ VALUES
     (1, 3, '2026-11-12', '10:00:00', 'Monitoria'),
     (3, 2, '2026-11-13', '14:00:00', 'Reunião de projeto');</code></pre></div>
 <p><strong>7.</strong> Conte os registros cadastrados:</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · SQL · conferir a carga</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · conferir a carga</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT
     (SELECT COUNT(*) FROM bloco) AS blocos,
     (SELECT COUNT(*) FROM sala) AS salas,
     (SELECT COUNT(*) FROM usuario) AS usuarios,
@@ -303,7 +303,7 @@ VALUES
 FROM sala AS s
 JOIN bloco AS b ON b.id_bloco = s.id_bloco
 ORDER BY s.id_sala;</code></pre></div>
-<p>Na grade de resultados, identifique a coluna <code>bloco</code>. Ela foi obtida da tabela <code>bloco</code> por meio do <code>JOIN</code>. O resultado deve ter <strong>4 linhas</strong>.</p>
+<p>Na aba <strong>Result Grid</strong>, identifique a coluna <code>bloco</code>. Ela foi obtida da tabela <code>bloco</code> por meio do <code>JOIN</code>. O resultado deve ter <strong>4 linhas</strong>.</p>
 <p><strong>2.</strong> Agora inclua <code>WHERE</code> antes de <code>ORDER BY</code> e consulte apenas salas com capacidade de pelo menos 30 lugares:</p>
 <div class="codebox"><div class="codebar"><span>SQL · filtrar capacidade</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT s.nome AS sala, s.capacidade
 FROM sala AS s
@@ -327,7 +327,7 @@ ORDER BY ordinal_position;</code></pre></div>
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta de metadados deve listar as colunas da tabela <code>reserva</code>, como <code>id_reserva</code>, <code>id_sala</code>, <code>id_usuario</code> e <code>hora_inicio</code>. O <code>information_schema</code> descreve as estruturas. Experimente também <code>SHOW CREATE TABLE reserva;</code> para ver as restrições e o mecanismo <code>InnoDB</code>.</p></div>
 </section>
 <section class="task" id="e5"><div class="task-h"><span class="step">05</span><h3>Observar como o MySQL rejeita dados inválidos</h3></div>
-<p><strong>Onde executar</strong> · Editor SQL do DBeaver. Cada tentativa abaixo é <strong>intencionalmente inválida</strong>. Execute uma instrução por vez com <strong>Ctrl + Enter</strong> e leia a mensagem de erro exibida.</p>
+<p><strong>Onde executar:</strong> editor SQL. Cada tentativa abaixo é <strong>intencionalmente inválida</strong>. Execute os comandos <strong>separadamente</strong> e leia a mensagem no painel <strong>Action Output</strong>.</p>
 <div class="notice"><strong>Uma mensagem de erro é esperada.</strong> Compare o código do erro com a restrição que a instrução testa. Faça os três testes separadamente, fora da transação da etapa seguinte.</div>
 <p><strong>1. Teste de capacidade:</strong> tente cadastrar uma sala com capacidade negativa.</p>
 <div class="codebox"><div class="codebar"><span>SQL · teste A · CHECK</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO sala (id_bloco, nome, capacidade)
@@ -346,7 +346,7 @@ VALUES (1, 2, '2026-11-12', '08:00:00', 'Reserva conflitante');</code></pre></di
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>O total ainda deve ser <strong>4 reservas</strong>. Os erros correspondem, na ordem, a <code>CHECK</code>, <code>FOREIGN KEY</code> e <code>UNIQUE</code>. O InnoDB e o servidor MySQL verificam essas regras quando o cliente envia cada <code>INSERT</code>.</p></div>
 </section>
 <section class="task" id="e6"><div class="task-h"><span class="step">06</span><h3>Desfazer e confirmar uma alteração</h3></div>
-<p><strong>Onde executar</strong> · A mesma aba do editor SQL do DBeaver durante toda a etapa. Execute cada instrução com <strong>Ctrl + Enter</strong> e observe o resultado após cada consulta. A transação explícita agrupa as operações mesmo com <em>autocommit</em> ativo. Use os comandos <code>COMMIT</code> e <code>ROLLBACK</code> da etapa para encerrá-la.</p>
+<p><strong>Onde executar:</strong> editor SQL, <strong>na mesma aba</strong> durante toda a etapa. Execute um bloco por vez e confira o valor apresentado em cada consulta. A transação explícita agrupa as operações mesmo com <em>autocommit</em> ativo.</p>
 <p><strong>1.</strong> Consulte a capacidade atual da sala 1:</p>
 <div class="codebox"><div class="codebar"><span>SQL · valor inicial</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT id_sala, nome, capacidade
 FROM sala WHERE id_sala = 1;</code></pre></div>
@@ -392,17 +392,16 @@ SHOW GRANTS FOR CURRENT_USER();</code></pre></div>
 <section class="task" id="e8"><div class="task-h"><span class="step">08</span><h3>Usar duas conexões para observar um conflito</h3></div>
 <p><strong>Onde executar</strong> · duas conexões com o mesmo servidor MySQL e o mesmo esquema.</p>
 <p>Usaremos a sala 2 no dia 20/11/2026 às 15:00. Se a reserva já existir, escolha um horário livre e use a mesma combinação nos dois <code>INSERT</code> e na consulta final.</p>
-<p><strong>1.</strong> Mantenha o editor atual como <strong>sessão A</strong>. No DBeaver, cadastre outra conexão MySQL com <strong>Ctrl + Shift + N</strong>, usando os mesmos dados e propriedades do driver da etapa 01. Dê a ela o nome <strong>Sessão B</strong> e abra um editor SQL associado a essa conexão.</p>
-<p>Confira <strong>Auto-commit</strong> nos dois editores antes do teste. Execute as duas instruções abaixo em A e em B, uma por vez com <strong>Ctrl + Enter</strong>. Se o laboratório atribuiu outro esquema, ajuste <code>USE</code> nos dois editores.</p>
+<p><strong>1.</strong> Mantenha a conexão atual como <strong>A</strong>. No Workbench, abra <strong>Database → Connect to Database…</strong>, selecione a conexão do laboratório em <strong>Stored Connection</strong> e confirme para abrir a sessão <strong>B</strong>. As abas de consulta de uma mesma conexão compartilham a sessão. Execute o bloco em A e B.</p>
 <div class="codebox"><div class="codebar"><span>SQL · identificar cada conexão</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>USE pratica_salas;
 SELECT CONNECTION_ID() AS sessao, DATABASE() AS banco;</code></pre></div>
-<p>Prossiga quando os números de <code>sessao</code> forem diferentes e a coluna <code>banco</code> indicar o mesmo esquema nas duas conexões. Durante todo o teste, execute uma instrução por vez com <strong>Ctrl + Enter</strong> no editor indicado.</p>
-<p><strong>2.</strong> Na <strong>sessão A</strong>, execute <code>START TRANSACTION</code> e depois o <code>INSERT</code>. Deixe a transação aberta.</p>
+<p>Os números de <code>sessao</code> precisam ser diferentes e a coluna <code>banco</code> precisa indicar o mesmo esquema nas duas conexões.</p>
+<p><strong>2.</strong> Na <strong>sessão A</strong>, execute o bloco e deixe a transação aberta.</p>
 <div class="codebox"><div class="codebar"><span>Sessão A · inserir e manter a transação aberta</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>START TRANSACTION;
 
 INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
 VALUES (2, 1, '2026-11-20', '15:00:00', 'Solicitação A');</code></pre></div>
-<p><strong>3.</strong> Na <strong>sessão B</strong>, execute <code>START TRANSACTION</code> e depois o <code>INSERT</code> para tentar reservar o mesmo horário para outro usuário.</p>
+<p><strong>3.</strong> Na <strong>sessão B</strong>, tente reservar o mesmo horário para outro usuário.</p>
 <div class="codebox"><div class="codebar"><span>Sessão B · tentar a mesma reserva</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>START TRANSACTION;
 
 INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
@@ -410,7 +409,7 @@ VALUES (2, 2, '2026-11-20', '15:00:00', 'Solicitação B');</code></pre></div>
 <p>B fica aguardando o desfecho de A porque os dois comandos disputam a mesma chave no índice <code>uq_sala_horario</code>.</p>
 <p><strong>4.</strong> Assim que B estiver aguardando, volte à <strong>sessão A</strong> e confirme.</p>
 <div class="codebox"><div class="codebar"><span>Sessão A · confirmar</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>COMMIT;</code></pre></div>
-<p><strong>5.</strong> Na <strong>sessão B</strong>, confira o erro <code>1062</code> (<em>Duplicate entry</em>) exibido pelo DBeaver e encerre a transação.</p>
+<p><strong>5.</strong> Na <strong>sessão B</strong>, confira o erro <code>1062</code> (<em>Duplicate entry</em>) no <strong>Action Output</strong> e encerre a transação.</p>
 <div class="codebox"><div class="codebar"><span>Sessão B · encerrar após a rejeição</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>ROLLBACK;</code></pre></div>
 <p><strong>6.</strong> Em qualquer sessão, confira qual reserva foi registrada.</p>
 <div class="codebox"><div class="codebar"><span>SQL · conferir a reserva final</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT id_reserva, id_usuario, id_sala, data_reserva, hora_inicio
@@ -425,7 +424,7 @@ WHERE id_sala = 2
 <section class="pg-section" id="parte3"><div class="container pg-body"><p class="pg-kicker">3 · Aplicação Python conectada ao MySQL</p><h2>Parte 3 · Utilizar o mesmo banco em Python <small>50 minutos</small></h2>
 
 <section class="task" id="e9"><div class="task-h"><span class="step">09</span><h3>Baixar os arquivos e preparar o Python</h3></div>
-<p><strong>Onde executar</strong> · Navegador, Explorador de Arquivos e PowerShell do Windows. A aplicação Python vai se conectar ao mesmo servidor MySQL e ao mesmo esquema usados no DBeaver.</p>
+<p><strong>Onde executar:</strong> navegador, Explorador de Arquivos e PowerShell do Windows. O servidor MySQL continua sendo o mesmo; agora vamos trocar o cliente Workbench por uma aplicação de terminal.</p>
 <p><strong>1.</strong> Crie uma pasta chamada <code>Pratica10</code> em um local de sua preferência, por exemplo em <strong>Documentos</strong>.</p>
 <p><strong>2.</strong> Baixe os <strong>dois arquivos</strong> abaixo para essa mesma pasta. No Explorador de Arquivos, confira se os nomes não receberam <code>.txt</code> adicional:</p>
 <div class="quick-links">
@@ -444,19 +443,19 @@ py --version</code></pre></div>
 <p><strong>7.</strong> Crie um arquivo chamado <code>.env</code> a partir do exemplo:</p>
 <div class="codebox"><div class="codebar"><span>PowerShell · preparar configuração</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Copy-Item env-exemplo.txt .env
 notepad .env</code></pre></div>
-<p>No Bloco de Notas, preencha <code>MYSQL_HOST</code>, <code>MYSQL_PORT</code>, <code>MYSQL_USER</code> e <code>MYSQL_PASSWORD</code> com o host, a porta, o usuário e a senha usados na conexão do DBeaver. Em <code>MYSQL_DATABASE</code>, informe <code>pratica_salas</code> ou o nome do esquema atribuído. Salve e feche.</p>
+<p>No Bloco de Notas, preencha <code>MYSQL_HOST</code>, <code>MYSQL_PORT</code>, <code>MYSQL_USER</code> e <code>MYSQL_PASSWORD</code> com o host, a porta, o usuário e a senha usados na conexão do MySQL Workbench. Em <code>MYSQL_DATABASE</code>, informe <code>pratica_salas</code> ou o nome do esquema atribuído. Salve e feche.</p>
 <div class="notice"><strong>Credenciais de laboratório</strong><p>Mantenha o <code>.env</code> na sua máquina. Use <code>env-exemplo.txt</code> para compartilhar a estrutura da configuração.</p></div>
 <p><strong>8.</strong> Execute a aplicação no mesmo PowerShell:</p>
 <div class="codebox"><div class="codebar"><span>PowerShell · iniciar a aplicação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe app_salas.py</code></pre></div>
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>Deve aparecer o menu <strong>1 — Listar salas</strong>, <strong>2 — Listar usuários</strong>, <strong>3 — Listar reservas</strong>, <strong>4 — Criar reserva</strong> e <strong>0 — Sair</strong>. Escolha <strong>1 — Listar salas</strong> para verificar se o programa consegue conectar e consultar o banco.</p></div>
 </section>
 <section class="task" id="e10"><div class="task-h"><span class="step">10</span><h3>Consultar o mesmo banco pela aplicação</h3></div>
-<p><strong>Onde executar</strong> · Terminal da aplicação Python. Use o editor SQL do DBeaver para comparar os resultados.</p>
+<p><strong>Onde executar:</strong> terminal da aplicação Python; use o Workbench apenas para comparar.</p>
 <p><strong>1.</strong> No menu do programa, digite <code>1</code> e pressione <strong>Enter</strong>. Devem aparecer as <strong>4 salas</strong> cadastradas, seus blocos e capacidades.</p>
 <p><strong>2.</strong> Digite <code>2</code> e pressione <strong>Enter</strong>. Devem aparecer <strong>3 usuários</strong>.</p>
 <p><strong>3.</strong> Digite <code>3</code>. Devem aparecer as reservas cadastradas até aqui: <strong>5</strong> se você realizou o teste com duas sessões da etapa 8, ou <strong>4</strong> se o pulou.</p>
-<p><strong>4.</strong> Volte ao DBeaver, abra o editor SQL de <code>pratica_salas</code> e execute:</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · conferir as reservas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT COUNT(*) AS total
+<p><strong>4.</strong> Volte ao Workbench, abra o editor SQL de <code>pratica_salas</code> e execute:</p>
+<div class="codebox"><div class="codebar"><span>Workbench · conferir as reservas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT COUNT(*) AS total
 FROM reserva;</code></pre></div>
 <p>O número de registros deve ser igual ao exibido pela aplicação.</p>
 <p><strong>5.</strong> Abra o arquivo <code>app_salas.py</code> no editor de sua preferência e encontre a função <code>listar_reservas()</code>. Observe o trecho responsável pela consulta:</p>
@@ -474,8 +473,8 @@ FROM reserva;</code></pre></div>
 <p>O método <code>execute()</code> envia a SQL ao MySQL. <code>fetchall()</code> obtém as linhas retornadas, e <code>TIME_FORMAT</code> apresenta a hora como <code>HH:MM</code>.</p>
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>Compare a contagem de reservas nos dois clientes. Ambos consultam o mesmo esquema <code>pratica_salas</code>.</p></div>
 </section>
-<section class="task" id="e11"><div class="task-h"><span class="step">11</span><h3>Criar uma reserva pelo Python e conferir no DBeaver</h3></div>
-<p><strong>Onde executar:</strong> terminal da aplicação Python e, no final, editor SQL do DBeaver.</p>
+<section class="task" id="e11"><div class="task-h"><span class="step">11</span><h3>Criar uma reserva pelo Python e conferir no Workbench</h3></div>
+<p><strong>Onde executar:</strong> terminal da aplicação Python e, no final, editor SQL do Workbench.</p>
 <p><strong>1. Inserção válida.</strong> No menu da aplicação, digite <code>4</code> e preencha os campos um por vez:</p>
 <table><thead><tr><th>Solicitação do programa</th><th>O que digitar</th></tr></thead><tbody>
 <tr><td>ID do usuário</td><td><code>1</code></td></tr>
@@ -489,8 +488,8 @@ FROM reserva;</code></pre></div>
 <p>O programa deverá informar <strong>“Horário indisponível”</strong> e não inserir um segundo registro. A restrição <code>UNIQUE</code> faz o MySQL devolver o erro <code>1062</code>, que o programa apresenta como horário ocupado.</p>
 <p><strong>3. Horário inválido.</strong> Escolha a opção <code>4</code> novamente. Informe usuário 1, sala 4, a mesma data e hora <code>09:30</code>.</p>
 <p>A aplicação deverá mostrar que a reserva foi rejeitada: o MySQL devolve <code>3819</code> porque a restrição <code>CHECK</code> exige início em hora cheia.</p>
-<p><strong>4.</strong> Volte ao DBeaver e confira as reservas da sala 4 nessa data:</p>
-<div class="codebox"><div class="codebar"><span>DBeaver · verificar a reserva criada</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
+<p><strong>4.</strong> Volte ao Workbench e confira as reservas da sala 4 nessa data:</p>
+<div class="codebox"><div class="codebar"><span>Workbench · verificar a reserva criada</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
        s.nome AS sala, u.nome AS solicitante, r.finalidade
 FROM reserva AS r
 JOIN sala AS s ON s.id_sala = r.id_sala
@@ -506,7 +505,7 @@ WHERE r.id_sala = 4
 identificador = cur.lastrowid
 conn.commit()</code></pre></div>
 <p>O driver associa os valores da tupla aos marcadores <code>%s</code>. O cursor obtém o ID gerado em <code>lastrowid</code>, e <code>commit()</code> confirma a gravação. Se a inserção falhar, o programa executa <code>rollback()</code> e interpreta o erro.</p>
-<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta no DBeaver deve mostrar <strong>uma única reserva</strong> para a sala 4 em 21/11/2026 às 09:00. As duas tentativas seguintes não geram linhas. O MySQL mantém as mesmas regras independentemente de o comando ter partido do DBeaver ou do Python.</p></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta no Workbench deve mostrar <strong>uma única reserva</strong> para a sala 4 em 21/11/2026 às 09:00. As duas tentativas seguintes não geram linhas. O MySQL mantém as mesmas regras independentemente de o comando ter partido do Workbench ou do Python.</p></div>
 </section>
 <div class="trouble" id="ajuda">
 <h3>Diagnóstico rápido</h3>
@@ -516,7 +515,6 @@ conn.commit()</code></pre></div>
 <tr><td><code>No database selected</code> ou <code>Table ... doesn't exist</code></td><td>Execute <code>SELECT DATABASE();</code>. Selecione o esquema com <code>USE</code> e confira as tabelas com <code>SHOW TABLES;</code>.</td></tr>
 <tr><td><code>Table ... already exists</code></td><td>Confira a carga na etapa 03 para localizar de onde retomar.</td></tr>
 <tr><td><code>ModuleNotFoundError</code> no Python</td><td>Execute o Python da pasta <code>.venv</code> e confira a instalação de <code>mysql-connector-python</code> e <code>python-dotenv</code>.</td></tr>
-<tr><td>A e B têm o mesmo <code>CONNECTION_ID()</code></td><td>Abra cada editor SQL em um perfil de conexão separado no DBeaver e confira novamente os identificadores da etapa 08.</td></tr>
 <tr><td>B ficou aguardando na etapa 08</td><td>Finalize A com <code>COMMIT;</code>. Se B retornar <code>1205</code> (<em>Lock wait timeout</em>), execute <code>ROLLBACK;</code> em B. Use um horário livre para observar novamente o conflito.</td></tr>
 </tbody></table>
 </div>
@@ -526,7 +524,7 @@ conn.commit()</code></pre></div>
 <p class="pg-kicker">4 · Conferência final</p><h2>O que foi realizado?</h2>
 <p>Use a lista abaixo para conferir se todas as etapas foram concluídas. Caso algum resultado não corresponda ao esperado, volte à etapa indicada e consulte a seção de diagnóstico.</p>
 <div class="pg-checklist"><strong>Checklist da prática</strong>
-<label><input type="checkbox"> Conectei o DBeaver ao banco <code>pratica_salas</code>.</label>
+<label><input type="checkbox"> Conectei o Workbench ao banco <code>pratica_salas</code>.</label>
 <label><input type="checkbox"> Criei as quatro tabelas e inseri os dados de exemplo.</label>
 <label><input type="checkbox"> Consultei dados e metadados pelo editor SQL.</label>
 <label><input type="checkbox"> Observei rejeições esperadas de <code>CHECK</code>, <code>FOREIGN KEY</code> e <code>UNIQUE</code>.</label>
@@ -535,7 +533,7 @@ conn.commit()</code></pre></div>
 <label><input type="checkbox"> Verifiquei o conflito entre duas sessões.</label>
 <label><input type="checkbox"> Executei a aplicação Python, consultei as salas e cadastrei uma reserva.</label>
 </div>
-<div class="checkpoint"><h4>Verificação final no DBeaver</h4><p>Se você executou todas as etapas uma vez, o banco terá normalmente <strong>2 blocos, 4 salas, 3 usuários e 6 reservas</strong>. A capacidade da sala 1 terá sido alterada para <strong>40</strong>. A contagem pode ser diferente caso você tenha repetido exercícios válidos, utilizado outros horários ou pulado a simulação de concorrência.</p></div>
+<div class="checkpoint"><h4>Verificação final no Workbench</h4><p>Se você executou todas as etapas uma vez, o banco terá normalmente <strong>2 blocos, 4 salas, 3 usuários e 6 reservas</strong>. A capacidade da sala 1 terá sido alterada para <strong>40</strong>. A contagem pode ser diferente caso você tenha repetido exercícios válidos, utilizado outros horários ou pulado a simulação de concorrência.</p></div>
 <div class="codebox"><div class="codebar"><span>SQL · estado final esperado</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT
     (SELECT COUNT(*) FROM bloco) AS blocos,
     (SELECT COUNT(*) FROM sala) AS salas,
@@ -547,12 +545,12 @@ SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
 </div></section>
 <section class="pg-section" id="extra"><div class="container pg-body">
 <p class="pg-kicker">5 · Opcional</p><h2>Conferir a persistência em outra conexão</h2>
-<p>Feche o programa Python. No <strong>Navegador de Banco de Dados</strong> do DBeaver, clique com o botão direito na conexão e selecione <strong>Desconectar</strong> (<em>Disconnect</em>). Reconecte, selecione o esquema da prática e repita a consulta de conferência final. As reservas confirmadas continuam disponíveis em outra sessão.</p>
+<p>Feche o programa Python e desconecte o Workbench. Abra uma nova conexão, selecione o esquema da prática e repita a consulta de conferência final. As reservas confirmadas continuam disponíveis em outra sessão.</p>
 <details><summary>Teste adicional em um servidor MySQL local</summary>
 <ol>
 <li>Depois de fechar os clientes, abra a ferramenta <strong>Serviços</strong> do Windows com <code>services.msc</code>.</li>
 <li>Localize o serviço MySQL da sua instalação. Se você administra esse servidor local, use <strong>Reiniciar</strong>.</li>
-<li>Reconecte o DBeaver, execute <code>USE pratica_salas;</code> e repita a consulta final.</li>
+<li>Reconecte o Workbench, execute <code>USE pratica_salas;</code> e repita a consulta final.</li>
 </ol>
 </details>
 <div class="checkpoint"><h4>Confira antes de avançar</h4><p>Compare a contagem de reservas e a capacidade da sala 1 antes e depois da reconexão ou reinicialização. Registros confirmados com <code>COMMIT</code> devem permanecer disponíveis.</p></div>
@@ -560,7 +558,7 @@ SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
 <section class="pg-section" id="desafio"><div class="container pg-body">
 <p class="pg-kicker">6 · Material de apoio</p><h2>Para consultar durante a prática</h2>
 <div class="pg-grid">
-<article class="pg-card"><strong>DBeaver</strong><p>Consulte a documentação oficial para configurar a conexão e executar consultas no editor SQL. <a href="https://dbeaver.com/docs/dbeaver/Create-Connection/">Conexões</a> · <a href="https://dbeaver.com/docs/dbeaver/SQL-Execution/">Execução de SQL</a>.</p></article>
+<article class="pg-card"><strong>MySQL Workbench</strong><p>Consulte o manual para <a href="https://dev.mysql.com/doc/workbench/en/wb-mysql-connections-new.html">configurar uma conexão</a> e revisar as <a href="https://dev.mysql.com/doc/workbench/en/wb-preferences-sql-editor.html">preferências do editor SQL</a>.</p></article>
 <article class="pg-card"><strong>Conteúdo da disciplina</strong><p><a href="aula-10-mysql.html">Aula 10: o SGBD por dentro</a> — integridade, transações, índices e arquitetura.</p></article>
 <article class="pg-card"><strong>Script SQL</strong><p><a href="pratica-10-mysql/01_banco_salas.sql" download>Baixar 01_banco_salas.sql</a> — mesmas tabelas e dados da etapa 3.</p></article>
 <article class="pg-card"><strong>Aplicação Python</strong><p><a href="pratica-10-mysql/app_salas.py" download>Baixar app_salas.py</a> e <a href="pratica-10-mysql/env-exemplo.txt" download>configuração de exemplo</a>.</p></article>
