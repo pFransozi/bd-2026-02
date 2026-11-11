@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Rascunho da prática guiada de MySQL 8, InnoDB, MySQL Workbench e Connector/Python. Exercícios de integridade, transações, concorrência e reserva de salas.">
+  <title>Prática Guiada 10 (rascunho) · MySQL e Reserva de Salas | Banco de Dados</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="../script.js"></script>
+  <script src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <style>
+    body.tutorial-mysql{background:var(--bg);color:var(--text)}
+    .pg-hero{padding:3.4rem 0 2.8rem;border-bottom:1px solid var(--line);background:var(--bg)}
+    .pg-kicker{margin:0 0 .6rem;color:var(--primary);font-size:.78rem;font-weight:800;letter-spacing:.065em;text-transform:uppercase}
+    .pg-hero h1{font-size:clamp(2.25rem,4.4vw,4rem);line-height:1.07;letter-spacing:-.04em;margin:0;max-width:850px}
+    .pg-lead{max-width:800px;margin:1rem 0 1.1rem;color:var(--muted);font-size:1.075rem;line-height:1.65}
+    .pg-tags{display:flex;flex-wrap:wrap;gap:.48rem}.pg-tags span{border:1px solid var(--line);border-radius:8px;padding:.34rem .58rem;color:var(--muted);background:var(--surface);font-size:.82rem}
+    .pg-toc-shell{position:sticky;top:72px;z-index:45;border-bottom:1px solid var(--line);background:var(--surface)}
+    .pg-toc{display:flex;flex-wrap:wrap;gap:.35rem;padding:.58rem 0}.pg-toc a{color:var(--muted);text-decoration:none;font-size:.82rem;padding:.46rem .65rem;border-radius:8px}
+    .pg-toc a:hover,.pg-toc a:focus-visible{background:var(--surface-soft);color:var(--text)}
+    .pg-section{padding:2.75rem 0;scroll-margin-top:145px;border-bottom:1px solid var(--line)}
+    .pg-section:nth-of-type(even){background:var(--surface-soft)}
+    .pg-body{max-width:1010px}
+    .pg-section h2{margin:.1rem 0 .8rem;font-size:clamp(1.55rem,2.9vw,2.2rem);line-height:1.15;letter-spacing:-.025em}
+    .pg-section h3{margin:1.55rem 0 .6rem;font-size:1.13rem}
+    .pg-section p,.pg-section li{line-height:1.64;color:var(--muted)}
+    .pg-section p{margin:.6rem 0 1.05rem}
+    .pg-section code:not(pre code){font-family:ui-monospace,Consolas,monospace;font-size:.92em}
+    .pg-section ol,.pg-section ul{padding-left:1.4rem}
+    .pg-section li{margin:.43rem 0}
+    .pg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0 1.45rem}
+    .pg-card{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:1.05rem 1.1rem}
+    .pg-card strong{display:block;margin-bottom:.3rem}.pg-card p{font-size:.92rem;margin:.35rem 0}
+    .pg-arch{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:.55rem;margin:1.3rem 0 1.7rem}
+    .pg-arch .item{border:1px solid var(--line);background:var(--surface);padding:1.05rem .7rem;text-align:center;border-radius:12px;font-size:.9rem;font-weight:750}
+    .pg-arch .item small{display:block;margin-top:.3rem;color:var(--muted);font-size:.73rem;font-weight:500}
+    .pg-arch .arrow{color:var(--primary);font-weight:800}
+    .pg-code{border:1px solid var(--ensino-line,var(--line));border-radius:12px;margin:1.05rem 0 1.3rem;overflow:hidden;background:var(--ensino-code-bg,#151a23);color:var(--ensino-code-text,#f1f5f9)}
+    .pg-code-label{padding:.55rem .95rem;background:var(--surface);border-bottom:1px solid var(--line);color:var(--muted);font-size:.75rem;font-weight:750}
+    .pg-code pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;background:transparent;color:inherit;white-space:pre;line-height:1.65;font-size:.9rem}
+    .pg-code code{color:inherit;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:none}
+    .pg-table-scroll{overflow:auto;border-radius:12px;border:1px solid var(--line);margin:1.1rem 0 1.4rem;background:var(--surface)}
+    .pg-table{border-collapse:collapse;width:100%;min-width:580px}
+    .pg-table th,.pg-table td{border-bottom:1px solid var(--line);text-align:left;padding:.66rem .88rem;vertical-align:top;font-size:.91rem}
+    .pg-table th{font-weight:750;background:var(--surface-soft)}.pg-table tr:last-child td{border-bottom:none}
+    .pg-table td{color:var(--muted)}.pg-table td:first-child{color:var(--text);font-weight:600}
+    .pg-note{border-left:3px solid var(--primary);background:var(--surface);border-radius:0 9px 9px 0;padding:.9rem 1.05rem;margin:1.1rem 0}
+    .pg-note strong{display:block;margin-bottom:.28rem}
+    .pg-note p{font-size:.93rem;margin:0;color:var(--muted)}
+    .pg-warning{border-left-color:#c37a2a}
+    .pg-links{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin:.85rem 0 1.2rem}
+    .pg-links a{display:inline-block;font-size:.92rem;text-decoration:underline;text-underline-offset:3px}
+    .pg-checklist{border:1px solid var(--line);background:var(--surface);padding:1rem 1.25rem;border-radius:12px;margin:1rem 0}
+    .pg-checklist label{display:flex;gap:.6rem;align-items:baseline;margin:.62rem 0;color:var(--text);font-size:.93rem}
+    .pg-checklist input{accent-color:var(--primary)}
+    .pg-footer{padding:1.6rem 0}
+    .pg-footer a{color:var(--primary)}
+    @media(max-width:1100px){.pg-toc-shell{position:static}}
+    @media(max-width:900px){.pg-grid{grid-template-columns:1fr}}
+    @media(max-width:700px){
+      .pg-hero{padding:2.55rem 0 2rem}
+      .pg-section{padding:2rem 0;scroll-margin-top:90px}
+      .pg-toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+      .pg-toc a{white-space:nowrap}
+      .pg-arch{grid-template-columns:1fr;gap:.35rem}
+      .pg-arch .arrow{transform:rotate(90deg);justify-self:center}
+      .pg-code pre{font-size:.81rem}
+    }
+    /* Menu colapsável com zoom: o cabeçalho não ocupa a tela inteira. */
+    @media(max-width:1080px){
+      body.tutorial-mysql .site-header .nav-wrap{display:flex;flex-wrap:nowrap;align-items:center;position:relative;gap:12px;min-height:58px}
+      body.tutorial-mysql .site-header .brand{min-width:0;max-width:calc(100% - 56px)}
+      body.tutorial-mysql .site-header .brand strong{font-size:clamp(.95rem,2.4vw,1.12rem)}
+      body.tutorial-mysql .site-header .nav-toggle{display:block!important;flex:0 0 44px;width:44px;height:44px;margin-left:auto;cursor:pointer}
+      body.tutorial-mysql .site-header .main-nav{display:none!important;position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:110;max-height:calc(100dvh - 82px);overflow-y:auto;flex-direction:column;align-items:stretch;gap:.25rem;padding:.65rem;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+      body.tutorial-mysql .site-header .main-nav.is-open{display:flex!important}
+    }
+  </style>
+<style>
+/* Prática 10: extensão do mesmo sistema visual do tutorial MySQL. */
+body.pratica-mysql { background:var(--bg);color:var(--text) }
+.pratica-mysql .pg-hero{padding:3.35rem 0 2.5rem}
+.pratica-mysql .pg-hero h1{max-width:920px}
+.pratica-mysql .pg-toc-shell{top:60px}
+.pratica-mysql .pg-toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+.pratica-mysql .pg-toc a{white-space:nowrap;flex:none}
+.pratica-mysql .pg-section{scroll-margin-top:140px}
+.pratica-mysql .pg-section:nth-of-type(even){background:var(--surface-soft)}
+.pratica-mysql .pg-section h2 small{display:block;margin-top:.3rem;font-size:.86rem;font-weight:500;color:var(--muted);letter-spacing:0}
+.pratica-mysql .guide-banner,.pratica-mysql .intro,.pratica-mysql .scenario,.pratica-mysql .method,.pratica-mysql .trouble,.pratica-mysql .wrapup,.pratica-mysql .output,.pratica-mysql .refs{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:1.2rem 1.35rem;margin:1rem 0 1.4rem}
+.pratica-mysql .guide-banner{border-left:3px solid var(--primary)}
+.pratica-mysql .guide-banner strong{display:block;margin:.05rem 0 .2rem}
+.pratica-mysql .guide-banner p{margin:.35rem 0 .7rem}
+.pratica-mysql .guide-banner a,.pratica-mysql .quick-links a{font-weight:750}
+.pratica-mysql .quick-links{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0}
+.pratica-mysql .intro{border:none;background:transparent;padding:0}
+.pratica-mysql .intro p:first-child{margin-top:0}
+.pratica-mysql .meta,.pratica-mysql .concept-flow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:1rem 0}
+.pratica-mysql .meta span,.pratica-mysql .concept-flow b{display:inline-block;border:1px solid var(--line);background:var(--surface);border-radius:8px;color:var(--muted);font-size:.83rem;font-weight:650;padding:.35rem .65rem}
+.pratica-mysql .concept-flow span{font-size:.83rem;color:var(--muted)}
+.pratica-mysql .objective,.pratica-mysql .notice,.pratica-mysql .purpose,.pratica-mysql .guided,.pratica-mysql .predict,.pratica-mysql .checkpoint,.pratica-mysql .important,.pratica-mysql .hint,.pratica-mysql .nav-tip{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem;margin:1rem 0}
+.pratica-mysql .objective,.pratica-mysql .checkpoint,.pratica-mysql .purpose{border-left:3px solid var(--primary)}
+.pratica-mysql .guided{background:var(--surface-soft)}
+.pratica-mysql .important,.pratica-mysql .notice{border-left:3px solid #ba9547}
+.pratica-mysql .predict{border-style:dashed}
+.pratica-mysql .guided h4,.pratica-mysql .predict h4,.pratica-mysql .checkpoint h4{margin:.05rem 0 .4rem;font-size:.95rem;color:var(--text)}
+.pratica-mysql .guided p,.pratica-mysql .predict p,.pratica-mysql .checkpoint p{margin:.4rem 0}
+.pratica-mysql .scenario h3,.pratica-mysql .method h3,.pratica-mysql .trouble h3{margin:.05rem 0 .6rem}
+.pratica-mysql .task{scroll-margin-top:150px;border:1px solid var(--line);border-radius:13px;background:var(--surface);margin:1.25rem 0 1.5rem;padding:1.45rem 1.55rem}
+.pratica-mysql .task-h{display:flex;align-items:center;gap:.7rem;margin:0 0 .85rem}
+.pratica-mysql .task-h h3{margin:0;font-size:1.17rem}
+.pratica-mysql .step{display:inline-grid;place-items:center;flex:none;width:2.5rem;height:2.5rem;border:1px solid var(--line);background:var(--surface-soft);color:var(--primary);font-weight:800;border-radius:9px}
+.pratica-mysql .task h4{font-size:1rem;margin:1.15rem 0 .5rem}
+.pratica-mysql .task p,.pratica-mysql .task li{line-height:1.7}
+.pratica-mysql .task p{margin:.65rem 0 1rem}
+.pratica-mysql table{width:100%;border-collapse:collapse;margin:1.05rem 0;font-size:.9rem}
+.pratica-mysql th,.pratica-mysql td{border:1px solid var(--line);padding:.57rem .68rem;text-align:left;vertical-align:top}
+.pratica-mysql th{background:var(--surface-soft);color:var(--text)}
+.pratica-mysql td{color:var(--muted)}
+.pratica-mysql .codebox{border:1px solid var(--ensino-line,var(--line));border-radius:12px;margin:1rem 0 1.3rem;overflow:hidden;background:var(--ensino-code-bg,#151a23);color:var(--ensino-code-text,#f1f5f9)}
+.pratica-mysql .codebar{padding:.48rem .95rem;background:var(--surface);border-bottom:1px solid var(--line);color:var(--muted);font-size:.78rem;font-weight:750;display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
+.pratica-mysql .codebar .copy{margin-left:auto;background:var(--surface-soft);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:.2rem .65rem;font-size:.78rem;cursor:pointer}
+.pratica-mysql .codebar .copy:hover{border-color:var(--primary)}
+.pratica-mysql .codebox pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;white-space:pre;color:inherit;background:transparent;font-size:.87rem;line-height:1.65}
+.pratica-mysql .codebox pre code{font:inherit;background:none;color:inherit;padding:0;border:0;white-space:inherit}
+.pratica-mysql .code-download{margin-left:.2rem;font-size:.78rem}
+.pratica-mysql code:not(pre code){font-family:ui-monospace,Consolas,monospace;font-size:.91em}
+.pratica-mysql .diagram{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center;justify-content:center;padding:1rem;border:1px solid var(--line);border-radius:9px;background:var(--surface-soft)}
+.pratica-mysql .diagram span{border:1px solid var(--line);border-radius:7px;padding:.6rem;background:var(--surface);font-weight:700}
+.pratica-mysql .diagram i{color:var(--muted);font-size:.86rem}
+.pratica-mysql .concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin:1rem 0}
+.pratica-mysql .concept{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:.85rem 1rem}
+.pratica-mysql .concept b{display:block;margin-bottom:.2rem}
+.pratica-mysql .concept p{font-size:.91rem;margin:0}
+.pratica-mysql details{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:1.1rem 0;padding:0 1rem}
+.pratica-mysql details summary{cursor:pointer;font-weight:700;padding:.65rem .1rem}
+.pratica-mysql details[open] summary{border-bottom:1px solid var(--line)}
+.pratica-mysql .prompt{border-top:1px solid var(--line);padding-top:1rem;margin-top:1.2rem}
+.pratica-mysql .smallnote,.pratica-mysql .mini-outcome{font-size:.9rem;color:var(--muted)}
+.pratica-mysql .checklist{list-style:none;padding-left:0!important}
+.pratica-mysql .checklist li{margin:.45rem 0}
+.pratica-mysql .checklist input{margin-right:.45rem;accent-color:var(--primary)}
+.pratica-mysql .refs{font-size:.9rem;color:var(--muted)}
+.pratica-mysql .output{border-left:3px solid var(--primary)}
+.pratica-mysql .pg-footer{margin-top:2rem}
+@media(max-width:700px){.pratica-mysql .task{padding:1rem}.pratica-mysql .intro,.pratica-mysql .guide-banner{padding:1rem}.pratica-mysql .intro{padding:0}.pratica-mysql .concept-grid{grid-template-columns:1fr}.pratica-mysql .pg-section{padding:2.15rem 0}.pratica-mysql .pg-toc-shell{top:60px}.pratica-mysql .task table{display:block;overflow-x:auto}}
+@media print{.pratica-mysql .site-header,.pratica-mysql .pg-toc-shell,.pratica-mysql .copy{display:none!important}.pratica-mysql .task{break-inside:avoid}.pratica-mysql .codebox pre{white-space:pre-wrap}.pratica-mysql .codebox,.pratica-mysql .codebox pre,.pratica-mysql .codebox code{background:#fff!important;color:#000!important}}
+</style>
+</head>
+<body class="teaching-page teaching-lesson lesson-dml tutorial-mysql pratica-mysql">
+<a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+<header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Banco de Dados — página principal"><span class="brand-mark" aria-hidden="true">BD</span><span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span></a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false"><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+<a href="../index.html">Página principal</a><a href="aula-10-sgbd-mysql.html">Aula 10</a><a href="#objetivo">Preparação</a><a href="#parte3">Python</a>
+<button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span></button>
+</nav>
+    </div>
+  </header>
+<main id="conteudo">
+<section class="pg-hero"><div class="container pg-body">
+<p class="pg-kicker">Banco de Dados · Aula 10 · Rascunho</p>
+<h1>MySQL do SGBD à aplicação</h1>
+<p class="pg-lead">Prática integrada no domínio de reserva de salas. Crie o banco no MySQL Workbench, observe como o InnoDB protege os dados e acesse as mesmas tabelas em uma aplicação Python.</p>
+<div class="pg-tags"><span>MySQL 8</span><span>InnoDB</span><span>MySQL Workbench</span><span>Integridade</span><span>Transações</span><span>Concorrência</span><span>Python + Connector/Python</span></div>
+</div></section>
+<div class="pg-toc-shell"><nav class="container pg-toc" aria-label="Etapas da prática">
+<a href="#objetivo">Contexto</a><a href="#parte1">Workbench</a><a href="#e3">Tabelas</a><a href="#parte2">SGBD</a><a href="#e8">Concorrência</a><a href="#parte3">Python</a><a href="#sintese">Síntese</a><a href="#extra">Extensão</a><a href="#ajuda">Diagnóstico</a>
+</nav></div>
+<section class="pg-section" id="objetivo"><div class="container pg-body">
+<p class="pg-kicker">0 · Orientações iniciais</p>
+<h2>Preparação para a prática</h2>
+<p>Este material é um <strong>roteiro de execução</strong>. Você utilizará primeiro o Workbench para criar e consultar tabelas, observará mecanismos do MySQL e, ao final, executará uma aplicação Python conectada ao mesmo banco.</p>
+<div class="pg-grid">
+<article class="pg-card"><strong>Parte 1 · Workbench</strong><p>Conferir a conexão, criar um esquema para a prática, construir quatro tabelas e cadastrar registros iniciais.</p></article>
+<article class="pg-card"><strong>Parte 2 · Recursos do SGBD</strong><p>Consultas, restrições, transações, índices e dois acessos simultâneos.</p></article>
+<article class="pg-card"><strong>Parte 3 · Python</strong><p>Preparar os arquivos, conectar com o Connector/Python, consultar registros e testar novas reservas.</p></article>
+<article class="pg-card"><strong>Tempo de referência</strong><p>Três blocos de aproximadamente 30, 50 e 50 minutos. Prossiga somente após conferir o resultado de cada etapa.</p></article>
+</div>
+<div class="guide-banner"><strong>Ambiente para a prática</strong>
+<p>Use MySQL Server <strong>8.0.16 ou posterior</strong> para que as restrições <code>CHECK</code> sejam verificadas. Abra o MySQL Workbench e tenha em mãos o endereço, a porta e as credenciais do laboratório. Em uma instalação local, o endereço costuma ser <code>127.0.0.1</code> e a porta, <code>3306</code>.</p>
+<p>O roteiro usa o Workbench para mostrar os resultados. Se estiver no DBeaver, execute os mesmos comandos no editor SQL e use duas conexões distintas no teste de concorrência.</p></div>
+<div class="notice"><strong>Banco da prática</strong><p>Use um esquema vazio chamado <code>pratica_salas</code> ou o esquema vazio atribuído para a atividade. Se usar outro nome, ajuste os comandos <code>USE</code> e o arquivo <code>.env</code>.</p></div>
+<div class="objective"><strong>Como acompanhar:</strong> em cada etapa, identifique o programa indicado (<strong>PowerShell</strong>, <strong>Workbench</strong> ou <strong>Python</strong>), execute os comandos na ordem apresentada e leia a caixa <strong>“Confira antes de avançar”</strong>. Em algumas etapas, uma mensagem de erro será o resultado esperado.</div>
+<p><a href="aula-10-sgbd-mysql.html">Rever os conceitos da Aula 10 →</a></p>
+</div></section>
+<section class="pg-section" id="parte1"><div class="container pg-body"><p class="pg-kicker">1 · Primeiro contato com o Workbench</p><h2>Parte 1 · Conhecer o ambiente e preparar o banco <small>30 minutos</small></h2>
+
+<section class="task" id="e1"><div class="task-h"><span class="step">01</span><h3>Conferir a conexão com o MySQL</h3></div>
+<p><strong>Onde executar</strong> · MySQL Workbench.</p>
+<ol>
+  <li>Na tela inicial, abra a conexão do laboratório. Para configurá-la, clique em <strong>+</strong> em <strong>MySQL Connections</strong>, escolha <strong>Standard (TCP/IP)</strong> e informe <strong>Hostname</strong>, <strong>Port</strong> e <strong>Username</strong>. Use <strong>Test Connection</strong> e abra a conexão salva.</li>
+  <li>Na aba de consulta, cole o bloco abaixo. Selecione o bloco e use o botão de raio que executa a seleção.</li>
+</ol>
+<div class="codebox"><div class="codebar"><span>SQL · conferir a sessão</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT VERSION() AS versao,
+       CURRENT_USER() AS conta,
+       @@port AS porta_servidor,
+       @@SESSION.autocommit AS autocommit;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Confira a versão, a conta autenticada e a porta do servidor. Para configurar o Python, anote o host e a porta que você informou no cliente. A coluna <code>autocommit</code> vale <code>1</code> quando instruções individuais são confirmadas automaticamente fora de uma transação explícita.</p></div>
+</section>
+<section class="task" id="e2"><div class="task-h"><span class="step">02</span><h3>Criar e selecionar o esquema da prática</h3></div>
+<p><strong>Onde executar</strong> · editor SQL do Workbench, na conexão aberta para a prática.</p>
+<p>No MySQL, <strong>database</strong> e <strong>schema</strong> são nomes para a mesma estrutura. Execute o bloco para criar e selecionar <code>pratica_salas</code>. O conjunto de caracteres <code>utf8mb4</code> permite armazenar nomes com acentos.</p>
+<div class="codebox"><div class="codebar"><span>SQL · preparar e selecionar o esquema</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SET SESSION autocommit = 1;
+CREATE DATABASE IF NOT EXISTS pratica_salas CHARACTER SET utf8mb4;
+USE pratica_salas;
+SELECT DATABASE() AS banco;
+SHOW TABLES;</code></pre></div>
+<p>Se o laboratório disponibilizou um esquema próprio e a sua conta recebeu acesso apenas a ele, selecione esse esquema com <code>USE</code> e execute as consultas de conferência. Atualize o painel <strong>Schemas</strong> para visualizar o esquema.</p>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O <strong>Result Grid</strong> deve mostrar o esquema escolhido em <code>banco</code>. Em um esquema vazio, <code>SHOW TABLES</code> devolve zero linhas. Se as quatro tabelas da prática já existirem, confira a carga na etapa 03 antes de inserir registros.</p></div>
+</section>
+<section class="task" id="e3"><div class="task-h"><span class="step">03</span><h3>Criar as tabelas e inserir os primeiros registros</h3></div>
+<p><strong>Onde executar:</strong> editor SQL do banco <code>pratica_salas</code>. Você criará as tabelas <code>bloco</code>, <code>sala</code>, <code>usuario</code> e <code>reserva</code>, nesta ordem.</p>
+<div class="diagram" aria-label="Relações entre as quatro tabelas"><span>bloco</span><i>1 → N</i><span>sala</span><i>1 → N</i><span>reserva</span><i>N ← 1</i><span>usuario</span></div>
+<p><strong>1.</strong> Abra uma nova consulta e crie a tabela <code>bloco</code>. Observe que <code>AUTO_INCREMENT</code> gera <code>id_bloco</code> e que <code>ENGINE=InnoDB</code> define o mecanismo da tabela.</p>
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · tabela bloco</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE bloco (
+    id_bloco INT AUTO_INCREMENT PRIMARY KEY,
+    nome_bloco VARCHAR(60) NOT NULL UNIQUE
+) ENGINE=InnoDB;</code></pre></div>
+<p><strong>2.</strong> Crie a tabela <code>sala</code>. A declaração <code>FOREIGN KEY</code> faz <code>id_bloco</code> referenciar a tabela anterior. A restrição <code>CHECK</code> permite capacidades entre 1 e 80.</p>
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · tabela sala</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE sala (
+    id_sala INT AUTO_INCREMENT PRIMARY KEY,
+    id_bloco INT NOT NULL,
+    nome VARCHAR(60) NOT NULL,
+    capacidade INT NOT NULL,
+    ativa BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT fk_sala_bloco FOREIGN KEY (id_bloco) REFERENCES bloco (id_bloco),
+    CONSTRAINT ck_sala_capacidade CHECK (capacidade BETWEEN 1 AND 80),
+    CONSTRAINT uq_sala_bloco UNIQUE (id_bloco, nome)
+) ENGINE=InnoDB;</code></pre></div>
+<p><strong>3.</strong> Crie <code>usuario</code>. O <code>UNIQUE</code> evita dois registros com o mesmo e-mail.</p>
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · tabela usuario</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE usuario (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(120) NOT NULL UNIQUE
+) ENGINE=InnoDB;</code></pre></div>
+<p><strong>4.</strong> Crie <code>reserva</code>. Cada registro apontará para uma sala e um usuário. O sistema considerará horários de uma hora, começando em hora cheia entre 08:00 e 21:00.</p>
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · tabela reserva</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>CREATE TABLE reserva (
+    id_reserva INT AUTO_INCREMENT PRIMARY KEY,
+    id_sala INT NOT NULL,
+    id_usuario INT NOT NULL,
+    data_reserva DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    finalidade VARCHAR(160) NOT NULL,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_reserva_sala FOREIGN KEY (id_sala) REFERENCES sala (id_sala),
+    CONSTRAINT fk_reserva_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
+    CONSTRAINT ck_reserva_hora CHECK (
+        hora_inicio &gt;= TIME '08:00:00'
+        AND hora_inicio &lt; TIME '22:00:00'
+        AND MINUTE(hora_inicio) = 0
+        AND SECOND(hora_inicio) = 0
+    ),
+    CONSTRAINT uq_sala_horario UNIQUE (id_sala, data_reserva, hora_inicio)
+) ENGINE=InnoDB;</code></pre></div>
+<p><strong>5.</strong> No painel <strong>Schemas</strong> do Workbench, atualize a lista e expanda <strong>pratica_salas → Tables</strong>. Confira se as quatro tabelas aparecem. Depois insira dois blocos e quatro salas:</p>
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · inserir blocos e salas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO bloco (nome_bloco)
+VALUES ('Bloco A'), ('Bloco B');
+
+INSERT INTO sala (id_bloco, nome, capacidade, ativa)
+VALUES
+    (1, 'Laboratório 101', 36, TRUE),
+    (1, 'Sala 102', 45, TRUE),
+    (2, 'Sala 201', 30, TRUE),
+    (2, 'Laboratório 202', 24, TRUE);</code></pre></div>
+<p><strong>6.</strong> Insira três usuários e quatro reservas iniciais:</p>
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · inserir usuários e reservas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO usuario (nome, email)
+VALUES
+    ('Ana Martins', 'ana.martins@exemplo.edu'),
+    ('Bruno Costa', 'bruno.costa@exemplo.edu'),
+    ('Carla Souza', 'carla.souza@exemplo.edu');
+
+INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES
+    (1, 1, '2026-11-12', '08:00:00', 'Aula de Banco de Dados'),
+    (2, 2, '2026-11-12', '08:00:00', 'Projeto de Software'),
+    (1, 3, '2026-11-12', '10:00:00', 'Monitoria'),
+    (3, 2, '2026-11-13', '14:00:00', 'Reunião de projeto');</code></pre></div>
+<p><strong>7.</strong> Conte os registros cadastrados:</p>
+<div class="codebox"><div class="codebar"><span>Workbench · SQL · conferir a carga</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT
+    (SELECT COUNT(*) FROM bloco) AS blocos,
+    (SELECT COUNT(*) FROM sala) AS salas,
+    (SELECT COUNT(*) FROM usuario) AS usuarios,
+    (SELECT COUNT(*) FROM reserva) AS reservas;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O resultado deve ser <strong>2 blocos, 4 salas, 3 usuários e 4 reservas</strong>. Se aparecer <code>Table already exists</code> ou um e-mail duplicado, use a contagem para identificar quais tabelas e registros já existem antes de retomar a etapa.</p></div>
+<p class="smallnote"><strong>Arquivo de apoio:</strong> <a href="pratica-10-mysql/01_banco_salas.sql" download>baixar o SQL completo</a>. O arquivo reúne a criação, a carga e a conferência em um só lugar. Escolha a execução por etapas ou pelo arquivo para carregar os dados uma vez.</p>
+</section>
+
+</div></section>
+<section class="pg-section" id="parte2"><div class="container pg-body"><p class="pg-kicker">2 · Como o SGBD garante consistência</p><h2>Parte 2 · Observar o trabalho do SGBD <small>50 minutos</small></h2>
+
+<section class="task" id="e4"><div class="task-h"><span class="step">04</span><h3>Consultar salas, reservas e estrutura das tabelas</h3></div>
+<p><strong>Onde executar:</strong> editor SQL do banco <code>pratica_salas</code>.</p>
+<p><strong>1.</strong> Execute uma consulta que relacione cada sala ao seu bloco:</p>
+<div class="codebox"><div class="codebar"><span>SQL · listar salas e blocos</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT s.id_sala, s.nome AS sala,
+       b.nome_bloco AS bloco, s.capacidade
+FROM sala AS s
+JOIN bloco AS b ON b.id_bloco = s.id_bloco
+ORDER BY s.id_sala;</code></pre></div>
+<p>Na aba <strong>Result Grid</strong>, identifique a coluna <code>bloco</code>. Ela foi obtida da tabela <code>bloco</code> por meio do <code>JOIN</code>. O resultado deve ter <strong>4 linhas</strong>.</p>
+<p><strong>2.</strong> Agora inclua <code>WHERE</code> antes de <code>ORDER BY</code> e consulte apenas salas com capacidade de pelo menos 30 lugares:</p>
+<div class="codebox"><div class="codebar"><span>SQL · filtrar capacidade</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT s.nome AS sala, s.capacidade
+FROM sala AS s
+WHERE s.capacidade &gt;= 30
+ORDER BY s.nome;</code></pre></div>
+<p>O resultado deve mostrar <strong>3 salas</strong>. O <code>Laboratório 202</code> não aparece porque tem capacidade 24.</p>
+<p><strong>3.</strong> Execute uma consulta que combina três tabelas para mostrar as reservas iniciais:</p>
+<div class="codebox"><div class="codebar"><span>SQL · reservas com nomes</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT r.data_reserva, r.hora_inicio,
+       s.nome AS sala, u.nome AS solicitante, r.finalidade
+FROM reserva AS r
+JOIN sala AS s ON s.id_sala = r.id_sala
+JOIN usuario AS u ON u.id_usuario = r.id_usuario
+ORDER BY r.data_reserva, r.hora_inicio, s.nome;</code></pre></div>
+<p>Confira as <strong>4 reservas</strong>. Os nomes das salas e dos usuários não estão gravados na tabela <code>reserva</code>; foram recuperados pelas chaves estrangeiras.</p>
+<p><strong>4.</strong> Por último, veja como o MySQL descreve a própria tabela <code>reserva</code>:</p>
+<div class="codebox"><div class="codebar"><span>SQL · metadados</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = DATABASE()
+  AND table_name = 'reserva'
+ORDER BY ordinal_position;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta de metadados deve listar as colunas da tabela <code>reserva</code>, como <code>id_reserva</code>, <code>id_sala</code>, <code>id_usuario</code> e <code>hora_inicio</code>. O <code>information_schema</code> descreve as estruturas. Experimente também <code>SHOW CREATE TABLE reserva;</code> para ver as restrições e o mecanismo <code>InnoDB</code>.</p></div>
+</section>
+<section class="task" id="e5"><div class="task-h"><span class="step">05</span><h3>Observar como o MySQL rejeita dados inválidos</h3></div>
+<p><strong>Onde executar:</strong> editor SQL. Cada tentativa abaixo é <strong>intencionalmente inválida</strong>. Execute os comandos <strong>separadamente</strong> e leia a mensagem no painel <strong>Action Output</strong>.</p>
+<div class="notice"><strong>Uma mensagem de erro é esperada.</strong> Compare o código do erro com a restrição que a instrução testa. Faça os três testes separadamente, fora da transação da etapa seguinte.</div>
+<p><strong>1. Teste de capacidade:</strong> tente cadastrar uma sala com capacidade negativa.</p>
+<div class="codebox"><div class="codebar"><span>SQL · teste A · CHECK</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO sala (id_bloco, nome, capacidade)
+VALUES (1, 'Sala impossível', -5);</code></pre></div>
+<p>O erro esperado é <code>3819</code> e aponta para <code>ck_sala_capacidade</code>. A tabela <code>sala</code> possui a condição <code>capacidade BETWEEN 1 AND 80</code>.</p>
+<p><strong>2. Teste de chave estrangeira:</strong> tente cadastrar uma reserva associada ao usuário 999, que não existe.</p>
+<div class="codebox"><div class="codebar"><span>SQL · teste B · FOREIGN KEY</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (1, 999, '2026-11-12', '12:00:00', 'Teste de referência');</code></pre></div>
+<p>O erro esperado é <code>1452</code> e aponta para a chave estrangeira <code>fk_reserva_usuario</code>.</p>
+<p><strong>3. Teste de duplicidade:</strong> tente reservar a sala 1 no mesmo dia e horário de uma reserva já cadastrada.</p>
+<div class="codebox"><div class="codebar"><span>SQL · teste C · UNIQUE</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (1, 2, '2026-11-12', '08:00:00', 'Reserva conflitante');</code></pre></div>
+<p>O erro esperado é <code>1062</code> (<em>Duplicate entry</em>) e aponta para o índice único <code>uq_sala_horario</code>.</p>
+<p><strong>4.</strong> Execute a consulta para conferir que nenhum dos testes inválidos criou registros:</p>
+<div class="codebox"><div class="codebar"><span>SQL · conferir total</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT COUNT(*) AS total_reservas FROM reserva;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>O total ainda deve ser <strong>4 reservas</strong>. Os erros correspondem, na ordem, a <code>CHECK</code>, <code>FOREIGN KEY</code> e <code>UNIQUE</code>. O InnoDB e o servidor MySQL verificam essas regras quando o cliente envia cada <code>INSERT</code>.</p></div>
+</section>
+<section class="task" id="e6"><div class="task-h"><span class="step">06</span><h3>Desfazer e confirmar uma alteração</h3></div>
+<p><strong>Onde executar:</strong> editor SQL, <strong>na mesma aba</strong> durante toda a etapa. Execute um bloco por vez e confira o valor apresentado em cada consulta. A transação explícita agrupa as operações mesmo com <em>autocommit</em> ativo.</p>
+<p><strong>1.</strong> Consulte a capacidade atual da sala 1:</p>
+<div class="codebox"><div class="codebar"><span>SQL · valor inicial</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT id_sala, nome, capacidade
+FROM sala WHERE id_sala = 1;</code></pre></div>
+<p>O valor inicial deve ser <strong>36</strong>.</p>
+<p><strong>2.</strong> Inicie uma transação:</p>
+<div class="codebox"><div class="codebar"><span>SQL · iniciar transação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>START TRANSACTION;</code></pre></div>
+<p><strong>3.</strong> Altere temporariamente a capacidade para 50 e consulte novamente:</p>
+<div class="codebox"><div class="codebar"><span>SQL · alterar e observar</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>UPDATE sala SET capacidade = 50 WHERE id_sala = 1;
+
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
+<p>O resultado na mesma sessão deve ser <strong>50</strong>. Essa mudança ainda não foi confirmada.</p>
+<p><strong>4.</strong> Desfaça a alteração e consulte mais uma vez:</p>
+<div class="codebox"><div class="codebar"><span>SQL · desfazer</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>ROLLBACK;
+
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
+<p>O valor deve voltar para <strong>36</strong>.</p>
+<p><strong>5.</strong> Inicie uma nova transação, atualize a capacidade para 40 e confirme:</p>
+<div class="codebox"><div class="codebar"><span>SQL · confirmar</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>START TRANSACTION;
+UPDATE sala SET capacidade = 40 WHERE id_sala = 1;
+COMMIT;
+
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A sequência é <strong>36 → 50 → 36 → 40</strong>. Depois do <code>ROLLBACK</code>, o valor volta a 36. Depois do <code>COMMIT</code>, o valor confirmado é 40.</p></div>
+</section>
+<section class="task" id="e7"><div class="task-h"><span class="step">07</span><h3>Visualizar índices, plano de execução e permissões</h3></div>
+<p><strong>Onde executar:</strong> editor SQL do banco <code>pratica_salas</code>.</p>
+<p><strong>1.</strong> Descubra quais índices o MySQL mantém para a tabela <code>reserva</code>:</p>
+<div class="codebox"><div class="codebar"><span>SQL · consultar índices</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SHOW INDEX FROM reserva;</code></pre></div>
+<p>Na coluna <code>Key_name</code>, localize <code>PRIMARY</code> e <code>uq_sala_horario</code>. Cada linha de <code>uq_sala_horario</code> descreve uma coluna do índice. Use <code>Seq_in_index</code> para conferir a ordem.</p>
+<p><strong>2.</strong> Peça ao MySQL para mostrar o plano que escolheria para localizar uma reserva específica:</p>
+<div class="codebox"><div class="codebar"><span>SQL · observar plano</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>EXPLAIN FORMAT=TRADITIONAL
+SELECT id_reserva, id_usuario
+FROM reserva
+WHERE id_sala = 1
+  AND data_reserva = '2026-11-12'
+  AND hora_inicio = '08:00:00';</code></pre></div>
+<p>Leia <code>type</code>, <code>key</code> e <code>rows</code>. A busca usa todos os campos de uma chave única, por isso o resultado esperado é <code>type = const</code> e <code>key = uq_sala_horario</code>.</p>
+<p><strong>3.</strong> Verifique o usuário conectado e seus privilégios básicos na tabela:</p>
+<div class="codebox"><div class="codebar"><span>SQL · consultar permissões</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT CURRENT_USER() AS conta;
+SHOW GRANTS FOR CURRENT_USER();</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Identifique o índice escolhido e a estimativa de linhas em <code>rows</code>. Nas concessões, procure <code>SELECT</code>, <code>INSERT</code> ou <code>ALL PRIVILEGES</code> e confira a quais bancos ou tabelas se aplicam. Se a conta usa papéis, <code>SELECT CURRENT_ROLE();</code> mostra os papéis ativos.</p></div>
+</section>
+<section class="task" id="e8"><div class="task-h"><span class="step">08</span><h3>Usar duas conexões para observar um conflito</h3></div>
+<p><strong>Onde executar</strong> · duas conexões com o mesmo servidor MySQL e o mesmo esquema.</p>
+<p>Usaremos a sala 2 no dia 20/11/2026 às 15:00. Se a reserva já existir, escolha um horário livre e use a mesma combinação nos dois <code>INSERT</code> e na consulta final.</p>
+<p><strong>1.</strong> Mantenha a conexão atual como <strong>A</strong>. No Workbench, abra <strong>Database → Connect to Database…</strong> e faça uma nova conexão com os mesmos dados para criar a sessão <strong>B</strong>. Abas de consulta do mesmo editor compartilham a sessão. Execute em A e B:</p>
+<div class="codebox"><div class="codebar"><span>SQL · identificar cada conexão</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>USE pratica_salas;
+SELECT CONNECTION_ID() AS sessao, DATABASE() AS banco;</code></pre></div>
+<p>Os números de <code>sessao</code> precisam ser diferentes e a coluna <code>banco</code> precisa indicar o mesmo esquema nas duas conexões.</p>
+<p><strong>2.</strong> Na <strong>sessão A</strong>, execute o bloco e deixe a transação aberta.</p>
+<div class="codebox"><div class="codebar"><span>Sessão A · inserir e manter a transação aberta</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>START TRANSACTION;
+
+INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (2, 1, '2026-11-20', '15:00:00', 'Solicitação A');</code></pre></div>
+<p><strong>3.</strong> Na <strong>sessão B</strong>, tente reservar o mesmo horário para outro usuário.</p>
+<div class="codebox"><div class="codebar"><span>Sessão B · tentar a mesma reserva</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>START TRANSACTION;
+
+INSERT INTO reserva (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES (2, 2, '2026-11-20', '15:00:00', 'Solicitação B');</code></pre></div>
+<p>B fica aguardando o desfecho de A porque os dois comandos disputam a mesma chave no índice <code>uq_sala_horario</code>.</p>
+<p><strong>4.</strong> Assim que B estiver aguardando, volte à <strong>sessão A</strong> e confirme.</p>
+<div class="codebox"><div class="codebar"><span>Sessão A · confirmar</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>COMMIT;</code></pre></div>
+<p><strong>5.</strong> Na <strong>sessão B</strong>, confira o erro <code>1062</code> (<em>Duplicate entry</em>) no <strong>Action Output</strong> e encerre a transação.</p>
+<div class="codebox"><div class="codebar"><span>Sessão B · encerrar após a rejeição</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>ROLLBACK;</code></pre></div>
+<p><strong>6.</strong> Em qualquer sessão, confira qual reserva foi registrada.</p>
+<div class="codebox"><div class="codebar"><span>SQL · conferir a reserva final</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT id_reserva, id_usuario, id_sala, data_reserva, hora_inicio
+FROM reserva
+WHERE id_sala = 2
+  AND data_reserva = '2026-11-20'
+  AND hora_inicio = '15:00:00';</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Deve aparecer uma reserva para o usuário 1, que fez o pedido na sessão A. Com o teste realizado uma vez, o esquema passa de quatro para cinco reservas.</p></div>
+</section>
+
+</div></section>
+<section class="pg-section" id="parte3"><div class="container pg-body"><p class="pg-kicker">3 · Aplicação Python conectada ao MySQL</p><h2>Parte 3 · Utilizar o mesmo banco em Python <small>50 minutos</small></h2>
+
+<section class="task" id="e9"><div class="task-h"><span class="step">09</span><h3>Baixar os arquivos e preparar o Python</h3></div>
+<p><strong>Onde executar:</strong> navegador, Explorador de Arquivos e PowerShell do Windows. O servidor MySQL continua sendo o mesmo; agora vamos trocar o cliente Workbench por uma aplicação de terminal.</p>
+<p><strong>1.</strong> Crie uma pasta chamada <code>Pratica10</code> em um local de sua preferência, por exemplo em <strong>Documentos</strong>.</p>
+<p><strong>2.</strong> Baixe os <strong>dois arquivos</strong> abaixo para essa mesma pasta. No Explorador de Arquivos, confira se os nomes não receberam <code>.txt</code> adicional:</p>
+<div class="quick-links">
+<a download href="pratica-10-mysql/app_salas.py">Baixar app_salas.py →</a>
+<a download href="pratica-10-mysql/env-exemplo.txt">Baixar env-exemplo.txt →</a>
+</div>
+<p><strong>3.</strong> Abra a pasta <code>Pratica10</code> no Explorador de Arquivos. Clique com o botão direito em uma região vazia e selecione <strong>Abrir no Terminal</strong> (ou abra o PowerShell e navegue até a pasta).</p>
+<p><strong>4.</strong> Verifique os nomes dos arquivos e a disponibilidade do Python:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · conferir os arquivos e o Python</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Get-ChildItem app_salas.py, env-exemplo.txt
+py --version</code></pre></div>
+<p>Se o comando <code>py</code> não existir no seu Windows, utilize <code>python</code> nos comandos seguintes.</p>
+<p><strong>5.</strong> Crie um ambiente virtual para a atividade:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · criar ambiente virtual</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>py -m venv .venv</code></pre></div>
+<p><strong>6.</strong> Instale o Connector/Python e a biblioteca que lê o arquivo <code>.env</code>:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · instalar dependências</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe -m pip install mysql-connector-python python-dotenv</code></pre></div>
+<p><strong>7.</strong> Crie um arquivo chamado <code>.env</code> a partir do exemplo:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · preparar configuração</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>Copy-Item env-exemplo.txt .env
+notepad .env</code></pre></div>
+<p>No Bloco de Notas, copie do cliente SQL os valores de <code>MYSQL_HOST</code>, <code>MYSQL_PORT</code> e <code>MYSQL_USER</code>. Preencha <code>MYSQL_PASSWORD</code> e confira <code>MYSQL_DATABASE=pratica_salas</code> ou o nome do esquema usado. Salve e feche.</p>
+<div class="notice"><strong>Credenciais de laboratório</strong><p>Mantenha o <code>.env</code> na sua máquina. Use <code>env-exemplo.txt</code> para compartilhar a estrutura da configuração.</p></div>
+<p><strong>8.</strong> Execute a aplicação no mesmo PowerShell:</p>
+<div class="codebox"><div class="codebar"><span>PowerShell · iniciar a aplicação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe app_salas.py</code></pre></div>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Deve aparecer o menu <strong>1 — Listar salas</strong>, <strong>2 — Listar usuários</strong>, <strong>3 — Listar reservas</strong>, <strong>4 — Criar reserva</strong> e <strong>0 — Sair</strong>. Escolha <strong>1 — Listar salas</strong> para verificar se o programa consegue conectar e consultar o banco.</p></div>
+</section>
+<section class="task" id="e10"><div class="task-h"><span class="step">10</span><h3>Consultar o mesmo banco pela aplicação</h3></div>
+<p><strong>Onde executar:</strong> terminal da aplicação Python; use o Workbench apenas para comparar.</p>
+<p><strong>1.</strong> No menu do programa, digite <code>1</code> e pressione <strong>Enter</strong>. Devem aparecer as <strong>4 salas</strong> cadastradas, seus blocos e capacidades.</p>
+<p><strong>2.</strong> Digite <code>2</code> e pressione <strong>Enter</strong>. Devem aparecer <strong>3 usuários</strong>.</p>
+<p><strong>3.</strong> Digite <code>3</code>. Devem aparecer as reservas cadastradas até aqui: <strong>5</strong> se você realizou o teste com duas sessões da etapa 8, ou <strong>4</strong> se o pulou.</p>
+<p><strong>4.</strong> Volte ao Workbench, abra o editor SQL de <code>pratica_salas</code> e execute:</p>
+<div class="codebox"><div class="codebar"><span>Workbench · conferir as reservas</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT COUNT(*) AS total
+FROM reserva;</code></pre></div>
+<p>O número de registros deve ser igual ao exibido pela aplicação.</p>
+<p><strong>5.</strong> Abra o arquivo <code>app_salas.py</code> no editor de sua preferência e encontre a função <code>listar_reservas()</code>. Observe o trecho responsável pela consulta:</p>
+<div class="codebox"><div class="codebar"><span>Python · trecho da aplicação</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>with conectar() as conn, conn.cursor() as cur:
+    cur.execute("""
+        SELECT r.id_reserva, r.data_reserva,
+               TIME_FORMAT(r.hora_inicio, '%H:%i') AS hora,
+               s.nome, u.nome, r.finalidade
+        FROM reserva AS r
+        JOIN sala AS s ON s.id_sala = r.id_sala
+        JOIN usuario AS u ON u.id_usuario = r.id_usuario
+        ORDER BY r.data_reserva, r.hora_inicio, r.id_reserva
+    """)
+    linhas = cur.fetchall()</code></pre></div>
+<p>O método <code>execute()</code> envia a SQL ao MySQL. <code>fetchall()</code> obtém as linhas retornadas, e <code>TIME_FORMAT</code> apresenta a hora como <code>HH:MM</code>.</p>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Compare a contagem de reservas nos dois clientes. Ambos consultam o mesmo esquema <code>pratica_salas</code>.</p></div>
+</section>
+<section class="task" id="e11"><div class="task-h"><span class="step">11</span><h3>Criar uma reserva pelo Python e conferir no Workbench</h3></div>
+<p><strong>Onde executar:</strong> terminal da aplicação Python e, no final, editor SQL do Workbench.</p>
+<p><strong>1. Inserção válida.</strong> No menu da aplicação, digite <code>4</code> e preencha os campos um por vez:</p>
+<table><thead><tr><th>Solicitação do programa</th><th>O que digitar</th></tr></thead><tbody>
+<tr><td>ID do usuário</td><td><code>1</code></td></tr>
+<tr><td>ID da sala</td><td><code>4</code></td></tr>
+<tr><td>Data (AAAA-MM-DD)</td><td><code>2026-11-21</code></td></tr>
+<tr><td>Hora (HH:MM)</td><td><code>09:00</code></td></tr>
+<tr><td>Finalidade</td><td><code>Estudo em grupo</code></td></tr>
+</tbody></table>
+<p>Ao confirmar, o programa deve mostrar <strong>“Reserva confirmada”</strong> com um identificador gerado pelo MySQL.</p>
+<p><strong>2. Mesmo horário.</strong> Escolha novamente a opção <code>4</code>, informe <strong>usuário 2</strong> e mantenha sala 4, data 21/11/2026 e hora 09:00. Preencha uma finalidade qualquer.</p>
+<p>O programa deverá informar <strong>“Horário indisponível”</strong> e não inserir um segundo registro. A restrição <code>UNIQUE</code> faz o MySQL devolver o erro <code>1062</code>, que o programa apresenta como horário ocupado.</p>
+<p><strong>3. Horário inválido.</strong> Escolha a opção <code>4</code> novamente. Informe usuário 1, sala 4, a mesma data e hora <code>09:30</code>.</p>
+<p>A aplicação deverá mostrar que a reserva foi rejeitada: o MySQL devolve <code>3819</code> porque a restrição <code>CHECK</code> exige início em hora cheia.</p>
+<p><strong>4.</strong> Volte ao Workbench e confira as reservas da sala 4 nessa data:</p>
+<div class="codebox"><div class="codebar"><span>Workbench · verificar a reserva criada</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT r.id_reserva, r.data_reserva, r.hora_inicio,
+       s.nome AS sala, u.nome AS solicitante, r.finalidade
+FROM reserva AS r
+JOIN sala AS s ON s.id_sala = r.id_sala
+JOIN usuario AS u ON u.id_usuario = r.id_usuario
+WHERE r.id_sala = 4
+  AND r.data_reserva = '2026-11-21';</code></pre></div>
+<p><strong>5.</strong> No arquivo <code>app_salas.py</code>, localize <code>def criar_reserva():</code> e observe como a aplicação envia valores para o SQL:</p>
+<div class="codebox"><div class="codebar"><span>Python · passagem de parâmetros</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>cur.execute("""
+    INSERT INTO reserva
+        (id_usuario, id_sala, data_reserva, hora_inicio, finalidade)
+    VALUES (%s, %s, %s, %s, %s)
+""", (id_usuario, id_sala, data, hora, finalidade))
+identificador = cur.lastrowid
+conn.commit()</code></pre></div>
+<p>O driver associa os valores da tupla aos marcadores <code>%s</code>. O cursor obtém o ID gerado em <code>lastrowid</code>, e <code>commit()</code> confirma a gravação. Se a inserção falhar, o programa executa <code>rollback()</code> e interpreta o erro.</p>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>A consulta no Workbench deve mostrar <strong>uma única reserva</strong> para a sala 4 em 21/11/2026 às 09:00. As duas tentativas seguintes não geram linhas. O MySQL mantém as mesmas regras independentemente de o comando ter partido do Workbench ou do Python.</p></div>
+</section>
+<div class="trouble" id="ajuda">
+<h3>Diagnóstico rápido</h3>
+<table><thead><tr><th>Sintoma</th><th>O que verificar</th></tr></thead><tbody>
+<tr><td><code>Can't connect</code></td><td>Verifique se o serviço MySQL está em execução e confirme o host e a porta informados no cliente.</td></tr>
+<tr><td><code>Access denied</code></td><td>Confira conta e senha. Para criar tabelas ou inserir dados, verifique os privilégios no esquema da prática.</td></tr>
+<tr><td><code>No database selected</code> ou <code>Table ... doesn't exist</code></td><td>Execute <code>SELECT DATABASE();</code>. Selecione o esquema com <code>USE</code> e confira as tabelas com <code>SHOW TABLES;</code>.</td></tr>
+<tr><td><code>Table ... already exists</code></td><td>Confira a carga na etapa 03 para localizar de onde retomar.</td></tr>
+<tr><td><code>ModuleNotFoundError</code> no Python</td><td>Execute o Python da pasta <code>.venv</code> e confira a instalação de <code>mysql-connector-python</code> e <code>python-dotenv</code>.</td></tr>
+<tr><td>B ficou aguardando na etapa 08</td><td>Finalize A com <code>COMMIT;</code>. Se B retornar <code>1205</code> (<em>Lock wait timeout</em>), execute <code>ROLLBACK;</code> em B. Use um horário livre para observar novamente o conflito.</td></tr>
+</tbody></table>
+</div>
+
+</div></section>
+<section class="pg-section" id="sintese"><div class="container pg-body">
+<p class="pg-kicker">4 · Conferência final</p><h2>O que foi realizado?</h2>
+<p>Use a lista abaixo para conferir se todas as etapas foram concluídas. Caso algum resultado não corresponda ao esperado, volte à etapa indicada e consulte a seção de diagnóstico.</p>
+<div class="pg-checklist"><strong>Checklist da prática</strong>
+<label><input type="checkbox"> Conectei o Workbench ao banco <code>pratica_salas</code>.</label>
+<label><input type="checkbox"> Criei as quatro tabelas e inseri os dados de exemplo.</label>
+<label><input type="checkbox"> Consultei dados e metadados pelo editor SQL.</label>
+<label><input type="checkbox"> Observei rejeições esperadas de <code>CHECK</code>, <code>FOREIGN KEY</code> e <code>UNIQUE</code>.</label>
+<label><input type="checkbox"> Experimentei <code>ROLLBACK</code> e <code>COMMIT</code>.</label>
+<label><input type="checkbox"> Examinei um plano de consulta com <code>EXPLAIN</code>.</label>
+<label><input type="checkbox"> Verifiquei o conflito entre duas sessões.</label>
+<label><input type="checkbox"> Executei a aplicação Python, consultei as salas e cadastrei uma reserva.</label>
+</div>
+<div class="checkpoint"><h4>Verificação final no Workbench</h4><p>Se você executou todas as etapas uma vez, o banco terá normalmente <strong>2 blocos, 4 salas, 3 usuários e 6 reservas</strong>. A capacidade da sala 1 terá sido alterada para <strong>40</strong>. A contagem pode ser diferente caso você tenha repetido exercícios válidos, utilizado outros horários ou pulado a simulação de concorrência.</p></div>
+<div class="codebox"><div class="codebar"><span>SQL · estado final esperado</span><button class="copy" type="button" aria-label="Copiar código">Copiar</button></div><pre><code>SELECT
+    (SELECT COUNT(*) FROM bloco) AS blocos,
+    (SELECT COUNT(*) FROM sala) AS salas,
+    (SELECT COUNT(*) FROM usuario) AS usuarios,
+    (SELECT COUNT(*) FROM reserva) AS reservas;
+
+SELECT capacidade FROM sala WHERE id_sala = 1;</code></pre></div>
+<p><strong>Para registrar o aprendizado:</strong> em duas ou três frases, descreva uma restrição que impediu um dado inválido e uma alteração que foi confirmada ou desfeita. Use o comportamento que você realmente observou.</p>
+</div></section>
+<section class="pg-section" id="extra"><div class="container pg-body">
+<p class="pg-kicker">5 · Opcional</p><h2>Conferir a persistência em outra conexão</h2>
+<p>Feche o programa Python e desconecte o Workbench. Abra uma nova conexão, selecione o esquema da prática e repita a consulta de conferência final. As reservas confirmadas continuam disponíveis em outra sessão.</p>
+<details><summary>Teste adicional em um servidor MySQL local</summary>
+<ol>
+<li>Depois de fechar os clientes, abra a ferramenta <strong>Serviços</strong> do Windows com <code>services.msc</code>.</li>
+<li>Localize o serviço MySQL da sua instalação. Se você administra esse servidor local, use <strong>Reiniciar</strong>.</li>
+<li>Reconecte o Workbench, execute <code>USE pratica_salas;</code> e repita a consulta final.</li>
+</ol>
+</details>
+<div class="checkpoint"><h4>Confira antes de avançar</h4><p>Compare a contagem de reservas e a capacidade da sala 1 antes e depois da reconexão ou reinicialização. Registros confirmados com <code>COMMIT</code> devem permanecer disponíveis.</p></div>
+</div></section>
+<section class="pg-section" id="desafio"><div class="container pg-body">
+<p class="pg-kicker">6 · Material de apoio</p><h2>Para consultar durante a prática</h2>
+<div class="pg-grid">
+<article class="pg-card"><strong>MySQL Workbench</strong><p>Consulte o manual para <a href="https://dev.mysql.com/doc/workbench/en/wb-mysql-connections-new.html">configurar uma conexão</a> e revisar as <a href="https://dev.mysql.com/doc/workbench/en/wb-preferences-sql-editor.html">preferências do editor SQL</a>.</p></article>
+<article class="pg-card"><strong>Conteúdo da disciplina</strong><p><a href="aula-10-sgbd-mysql.html">Aula 10: o SGBD por dentro</a> — integridade, transações, índices e arquitetura.</p></article>
+<article class="pg-card"><strong>Script SQL</strong><p><a href="pratica-10-mysql/01_banco_salas.sql" download>Baixar 01_banco_salas.sql</a> — mesmas tabelas e dados da etapa 3.</p></article>
+<article class="pg-card"><strong>Aplicação Python</strong><p><a href="pratica-10-mysql/app_salas.py" download>Baixar app_salas.py</a> e <a href="pratica-10-mysql/env-exemplo.txt" download>configuração de exemplo</a>.</p></article>
+</div>
+<p class="pg-footer"><a href="../index.html">← Página principal da disciplina</a> · <a href="#inicio">Voltar ao início ↑</a></p>
+</div></section>
+</main>
+<footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Prática Guiada 10 · MySQL</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+<script>
+(function () {
+  async function copyText(value) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+    const box = document.createElement('textarea');
+    box.value = value;
+    box.setAttribute('readonly', '');
+    box.style.position = 'fixed';
+    box.style.left = '-9999px';
+    document.body.appendChild(box);
+    box.select();
+    const ok = document.execCommand('copy');
+    box.remove();
+    return ok;
+  }
+  document.querySelectorAll('.codebox .copy').forEach(button => {
+    button.addEventListener('click', async () => {
+      const text = button.closest('.codebox').querySelector('pre code').textContent;
+      try {
+        const ok = await copyText(text);
+        button.textContent = ok ? 'Copiado' : 'Selecione e copie o código';
+      } catch (error) {
+        button.textContent = 'Selecione e copie o código';
+      }
+      window.setTimeout(() => { button.textContent = 'Copiar'; }, 1800);
+    });
+  });
+})();
+</script>
+</body></html>

@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rascunho da Aula 10 de Banco de Dados: o papel do SGBD, arquitetura do MySQL, processamento de consultas, armazenamento, integridade, transações, MVCC, segurança, recuperação e aplicações.">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Aula 10 (rascunho) · O SGBD por dentro com MySQL | Banco de Dados</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="https://pfransozi.github.io/assets/css/ensino.css?v=14">
+  <script defer src="../script.js"></script>
+  <script defer src="https://pfransozi.github.io/assets/js/ensino.js?v=10"></script>
+  <style>
+    .lesson-sgbd{background:var(--bg);color:var(--text)}
+    .lesson-sgbd .sgbd-container{width:min(calc(100% - 2.2rem),1050px);margin-inline:auto}
+    .lesson-sgbd .site-header .nav-wrap{min-height:60px;gap:1rem}
+    .lesson-sgbd .site-header .brand-mark{width:36px;border-radius:10px}
+    .lesson-sgbd .site-header .brand strong{font-size:1rem}
+    .lesson-sgbd .site-header .brand small{font-size:.68rem}
+    .lesson-sgbd .site-header .main-nav{gap:.85rem}
+    .lesson-sgbd .site-header .main-nav a{font-size:.83rem}
+    .lesson-sgbd .site-header .theme-toggle{font-size:.78rem;min-height:34px;padding:.35rem .55rem}
+    .sgbd-hero{padding:3.2rem 0 2.9rem;background:radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--primary) 7%,transparent),transparent 35rem),var(--bg)}
+    .sgbd-hero-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(245px,.65fr);align-items:center;gap:2rem}
+    .sgbd-kicker{margin:0 0 .65rem;color:var(--primary);font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;font-weight:800}
+    .sgbd-hero h1{margin:0;font-size:clamp(2.2rem,4.5vw,3.65rem);line-height:1.06;letter-spacing:-.045em}
+    .sgbd-hero .lead{max-width:780px;margin:1.05rem 0 1rem;font-size:1.07rem;line-height:1.68;color:var(--muted)}
+    .sgbd-tags{display:flex;flex-wrap:wrap;gap:.42rem;margin-top:1.2rem}
+    .sgbd-tags span{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.26rem .68rem;font-size:.76rem;color:var(--muted)}
+    .sgbd-guide{padding:1.25rem;border:1px solid var(--line);border-radius:15px;background:var(--surface);box-shadow:var(--shadow)}
+    .sgbd-guide strong{font-size:.79rem;color:var(--primary);letter-spacing:.05em;text-transform:uppercase}
+    .sgbd-guide p{font-size:1.05rem;font-weight:650;line-height:1.45;margin:.5rem 0 0}
+    
+    
+    .sgbd-toc-shell{position:sticky;top:60px;z-index:70;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 96%,transparent);backdrop-filter:blur(10px)}
+    .sgbd-toc{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:.5rem 0}
+    .sgbd-toc a{padding:.36rem .61rem;text-decoration:none;font-size:.8rem;font-weight:650;color:var(--muted);border-radius:8px;border:1px solid transparent}
+    .sgbd-toc a:hover,.sgbd-toc a:focus-visible{background:var(--surface);border-color:var(--line);color:var(--primary)}
+    .sgbd-section{padding:3rem 0;scroll-margin-top:135px}
+    .sgbd-section.alt{background:var(--surface-soft)}
+    .sgbd-section-head{max-width:850px;margin:0 0 1.55rem;text-align:left}
+    .sgbd-section-head .sgbd-kicker{margin-bottom:.25rem}
+    .sgbd-section-head h2{font-size:clamp(1.65rem,3vw,2.3rem);margin:0;line-height:1.17;letter-spacing:-.035em}
+    .sgbd-section-head p{margin:.72rem 0 0;color:var(--muted);line-height:1.7}
+    .sgbd-section p,.sgbd-section li{line-height:1.7}
+    .sgbd-section .quiet{color:var(--muted)}
+    .sgbd-section h3{font-size:1.23rem;letter-spacing:-.02em;line-height:1.25;margin:1.85rem 0 .55rem}
+    .sgbd-section h4{font-size:1rem;margin:1rem 0 .3rem}
+    .sgbd-section a:not(.plain-link){color:var(--primary)}
+    .sgbd-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+    .sgbd-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .sgbd-card,.sgbd-question,.sgbd-case{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:1.2rem}
+    .sgbd-card h3,.sgbd-card h4{margin:.05rem 0 .5rem}
+    .sgbd-card p{margin:.3rem 0 .45rem;color:var(--muted)}
+    .sgbd-card ul{margin:.5rem 0 0;padding-left:1.15rem}
+    .sgbd-number{font-size:.76rem;letter-spacing:.06em;color:var(--primary);font-weight:800}
+    .sgbd-question{margin:1.4rem 0;border-left:3px solid var(--primary);border-radius:0 12px 12px 0;background:color-mix(in srgb,var(--primary) 4%,var(--surface))}
+    .sgbd-question > strong{display:block;margin-bottom:.25rem;color:var(--primary);font-size:.87rem}.sgbd-question p strong{display:inline;margin:0;font-size:inherit;line-height:inherit;font-weight:700}
+    .sgbd-question p{margin:.15rem 0}
+    .sgbd-question p:last-child{color:var(--muted)}
+    .sgbd-flow{border:1px solid var(--line);border-radius:14px;padding:1rem;margin:1.1rem 0;background:var(--surface)}
+    .sgbd-flow-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem}
+    .sgbd-flow-node{padding:.65rem .84rem;border:1px solid var(--line);background:var(--surface-soft);border-radius:10px;text-align:center;min-width:120px;flex:1}
+    .sgbd-flow-node strong,.sgbd-flow-node small{display:block}
+    .sgbd-flow-node strong{font-size:.88rem}.sgbd-flow-node small{font-size:.76rem;color:var(--muted)}
+    .sgbd-flow-arrow{color:var(--primary);font-weight:850;font-size:1.1rem}
+    .sgbd-flow figcaption,.sgbd-flow .sgbd-caption{margin-top:.8rem;font-size:.8rem;color:var(--muted);text-align:center}
+    .sgbd-stack{display:grid;gap:.6rem;margin:.8rem 0}
+    .sgbd-stack .stage{display:grid;grid-template-columns:52px 1fr;gap:.8rem;align-items:start;border:1px solid var(--line);border-radius:12px;padding:.85rem;background:var(--surface)}
+    .sgbd-stack .stage .order{display:grid;place-items:center;border-radius:9px;background:var(--surface-soft);font-size:.9rem;font-weight:850;color:var(--primary);min-height:40px}
+    .sgbd-stack .stage strong{display:block;margin-bottom:.15rem}
+    .sgbd-stack .stage p{margin:0;font-size:.9rem;color:var(--muted)}
+    .sgbd-matrix{overflow-x:auto;margin:1.1rem 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+    .sgbd-matrix table{width:100%;min-width:620px;border-collapse:collapse}
+    .sgbd-matrix th,.sgbd-matrix td{padding:.8rem .95rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:.9rem}
+    .sgbd-matrix th{background:color-mix(in srgb,var(--primary) 5%,var(--surface));font-weight:750}
+    .sgbd-matrix td{color:var(--muted)}
+    .sgbd-matrix td:first-child{font-weight:650;color:var(--text)}
+    .sgbd-matrix tr:last-child td{border-bottom:0}
+    .sgbd-sql{overflow:hidden;margin:1.1rem 0;border:1px solid var(--line);border-radius:12px;background:var(--ensino-code-bg,#101725)}
+    .sgbd-sql .label{display:flex;justify-content:space-between;gap:.6rem;align-items:center;padding:.5rem .8rem;background:var(--surface);border-bottom:1px solid var(--line);font-size:.76rem;color:var(--muted);font-weight:650}
+    .lesson-sgbd .sgbd-sql pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;background:transparent!important;color:var(--ensino-code-text,#eff4ff)!important;border:0!important;box-shadow:none!important;font-size:.9rem;line-height:1.6;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .lesson-sgbd .sgbd-sql code{background:transparent!important;color:inherit!important;padding:0!important;border:0!important;font-family:inherit!important}
+    .sgbd-sql .note{padding:.72rem .9rem;background:var(--surface);color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+    .sgbd-emphasis{padding:.9rem 1rem;margin:1.25rem 0;border-left:3px solid var(--primary);background:color-mix(in srgb,var(--primary) 5%,var(--surface));border-radius:0 10px 10px 0}
+    .sgbd-emphasis p{margin:0}
+    .sgbd-small-list{margin:.5rem 0 0;padding-left:1.2rem}
+    .sgbd-small-list li{margin:.35rem 0}
+    .sgbd-case{margin-top:1.1rem}
+    .sgbd-case h3{margin:.1rem 0 .5rem}
+    .sgbd-case p{margin:.4rem 0;color:var(--muted)}
+    
+    
+    
+    
+    
+    
+    
+    
+    .sgbd-details{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:.9rem 1.1rem;margin:.65rem 0}
+    .sgbd-details summary{cursor:pointer;font-weight:700;list-style:auto}
+    .sgbd-details[open] summary{margin-bottom:.5rem}
+    .sgbd-details p{color:var(--muted);margin:.4rem 0}
+    
+    
+    
+    
+    .sgbd-footer-refs{font-size:.86rem;color:var(--muted);line-height:1.8}
+    .sgbd-bottom-nav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:1.8rem 0 0}
+    .sgbd-bottom-nav a{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.68rem .9rem;background:var(--surface);text-decoration:none;font-weight:700;font-size:.89rem}
+    .sgbd-checklist{display:grid;gap:.7rem}
+    .sgbd-checklist .sgbd-card p{margin:.1rem 0}
+    
+    .sgbd-draft-questions strong{font-weight:750}
+
+    /* Ilustração conceitual da arquitetura: recurso SVG do próprio repositório. */
+    .sgbd-concept-map{margin:1.05rem 0 1.6rem;padding:1rem;border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden}
+    .sgbd-concept-map img,.sgbd-concept-map svg{display:block;width:100%;max-width:100%;height:auto;margin:0 auto}
+    @media(max-width:640px){.sgbd-concept-map{padding:.35rem;border-radius:11px}}
+    
+    /* Diagrama conceitual dos mecanismos do SGBD e tabela associada */
+    .sgbd-layer-figure{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem;margin:1.1rem 0 1.4rem;overflow:hidden}
+    .sgbd-layer-figure svg{display:block;width:100%;max-width:1080px;height:auto;margin:0 auto}
+    .sgbd-layer-figure figcaption{margin:.7rem auto 0;max-width:900px;font-size:.83rem;color:#5d6b82;line-height:1.6}
+    .sgbd-layer-table{margin-top:1.15rem}
+    @media(max-width:650px){.sgbd-layer-figure{overflow-x:auto;padding:.5rem}.sgbd-layer-figure svg{min-width:770px}.sgbd-layer-figure figcaption{min-width:0}}
+
+  /* Fluxo visual de SELECT e explicação do Connector/Python */
+  .sgbd-select-figure{max-width:780px;margin:1rem auto 1.55rem;padding:1rem;border:1px solid var(--line);border-radius:16px;background:#fff}
+  .sgbd-select-figure svg{display:block;width:100%;max-width:610px;height:auto;margin:0 auto}
+  .sgbd-select-figure figcaption{font-size:.83rem;color:#63758b;margin:.6rem 0 0;line-height:1.55;text-align:center}
+  .sgbd-select-steps .sgbd-card{padding:1.05rem}
+  .sgbd-select-steps .sgbd-card h4{margin:.3rem 0 .25rem}
+  .sgbd-select-steps .sgbd-card p{margin:.25rem 0}
+
+    /* Comparação de alternativas de armazenamento */
+    .sgbd-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem;margin:1.1rem 0 1.25rem}
+    .sgbd-choice{display:flex;flex-direction:column;min-width:0;padding:1.05rem;border:1px solid var(--line);border-radius:13px;background:var(--surface)}
+    .sgbd-choice h4{font-size:1.07rem;margin:0 0 .55rem;line-height:1.3}
+    .sgbd-choice p{font-size:.9rem;color:var(--muted);line-height:1.6;margin:0 0 .75rem}
+    .sgbd-choice .sgbd-choice-example{margin:auto 0 0;border-top:1px solid var(--line);padding-top:.65rem}
+    .sgbd-choice-example strong{color:var(--text);font-weight:700}
+    .sgbd-context-note{font-size:.94rem;color:var(--muted)}
+    .sgbd-decision-table td{line-height:1.55}
+    @media(max-width:850px){.sgbd-choice-grid{grid-template-columns:1fr}}
+    @media(max-width:1080px){
+      body.lesson-sgbd .site-header .nav-wrap{display:flex;flex-wrap:nowrap;position:relative;align-items:center;gap:10px;min-height:58px}
+      body.lesson-sgbd .site-header .brand{min-width:0;max-width:calc(100% - 54px)}
+      body.lesson-sgbd .site-header .brand strong{font-size:clamp(.9rem,2.5vw,1rem);line-height:1.15}
+      body.lesson-sgbd .site-header .nav-toggle{display:block!important;flex:0 0 44px;width:44px;height:44px;margin-left:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer}
+      body.lesson-sgbd .site-header .main-nav{display:none!important;position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:150;flex-direction:column;align-items:stretch;gap:4px;padding:10px;max-height:calc(100dvh - 84px);overflow-y:auto;width:100%;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}
+      body.lesson-sgbd .site-header .main-nav.is-open{display:flex!important}
+      body.lesson-sgbd .site-header .main-nav a{display:block;padding:.58rem .65rem;font-size:.9rem}
+      body.lesson-sgbd .site-header .main-nav a[href^="#"]{display:none}
+      body.lesson-sgbd .site-header .main-nav .theme-toggle{align-self:flex-start;margin:.3rem}
+    }
+    @media(max-width:900px){
+      .sgbd-hero-grid{grid-template-columns:1fr}
+      .sgbd-toc-shell{position:static}
+      .sgbd-grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+      
+    }
+    @media(max-width:640px){
+      .sgbd-hero{padding:2.5rem 0 2rem}
+      .sgbd-section{padding:2.25rem 0;scroll-margin-top:72px}
+      .sgbd-grid,.sgbd-grid.three{grid-template-columns:1fr}
+      .sgbd-flow-row{flex-direction:column}
+      .sgbd-flow-node{min-width:0;width:100%}
+      .sgbd-flow-arrow{transform:rotate(90deg)}
+      .sgbd-toc{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap}
+      
+      .sgbd-hero h1{font-size:clamp(2.05rem,8vw,2.8rem)}
+      .sgbd-matrix table{min-width:570px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
+</head>
+<body class="teaching-page teaching-lesson lesson-sgbd">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header" id="inicio">
+    <div class="container nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Banco de Dados — página principal">
+        <span class="brand-mark" aria-hidden="true">BD</span>
+        <span><strong>Banco de Dados</strong><small>Engenharia de Software</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-controls="menu-principal" aria-expanded="false">
+        <span class="sr-only">Abrir menu</span><span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav" id="menu-principal" aria-label="Navegação principal">
+        <a href="../index.html">Página principal</a>
+        <a href="../aula-09.html">Aula 09</a>
+        <a href="#arquitetura">Arquitetura</a>
+        <a href="#funcionalidades">Funcionalidades</a>
+        <a href="pratica-10-mysql-salas.html">Prática guiada</a>
+        
+        <a href="#sintese">Síntese</a>
+        <button class="theme-toggle" type="button" aria-label="Ativar modo noturno" aria-pressed="false">
+          <span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Modo noturno</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="standard-shell standard-page-grid">
+  <main id="conteudo">
+    <section class="sgbd-hero">
+      <div class="sgbd-container sgbd-hero-grid">
+        <div>
+          <p class="sgbd-kicker">Aula 10 · Rascunho</p>
+          <h1>O SGBD por dentro com MySQL</h1>
+          <p class="lead">Já aprendemos a modelar dados e a formular consultas. Agora vamos examinar o sistema responsável por executá-las: como ele recebe pedidos, encontra registros, controla acessos simultâneos e protege as informações contra erros e falhas.</p>
+          <div class="sgbd-tags">
+            <span>SGBD</span><span>MySQL 8</span><span>Arquitetura</span><span>Transações</span><span>MVCC</span><span>Índices</span><span>Segurança</span><span>Recuperação</span>
+          </div>
+        </div>
+        <aside class="sgbd-guide" aria-label="Pergunta orientadora">
+          <strong>Pergunta-guia</strong>
+          <p>Se uma aplicação consegue gravar dados em arquivos, por que precisamos de um sistema gerenciador de banco de dados?</p>
+        </aside>
+      </div>
+    </section>
+
+  
+    <div class="sgbd-container" style="margin:1.2rem auto 1.35rem">
+      <div class="sgbd-card" style="border-left:3px solid var(--primary);padding:1.1rem 1.3rem">
+        <p class="sgbd-kicker" style="margin:0 0 .35rem">Laboratório guiado · Aula 10</p>
+        <h3 style="margin:.05rem 0 .5rem">Prática de reserva de salas</h3>
+        <p style="margin:.3rem 0 .7rem">Crie o banco no MySQL Workbench, teste integridade, transações e concorrência e use o mesmo banco em uma aplicação Python com o Connector/Python.</p>
+        <a href="pratica-10-mysql-salas.html"><strong>Abrir prática guiada →</strong></a>
+      </div>
+    </div>
+
+    <div class="sgbd-toc-shell">
+      <nav class="sgbd-container sgbd-toc" aria-label="Seções da aula">
+        <a href="#visao">Objetivos</a><a href="#conceitos">Conceitos</a><a href="#arquitetura">Arquitetura</a><a href="#funcionalidades">Funções</a><a href="#concorrencia">Concorrência</a><a href="#aplicacoes">Aplicações</a><a href="#sintese">Síntese</a>
+      </nav>
+    </div>
+
+    <section class="sgbd-section alt" id="visao"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">Visão da aula</p><h2>O que o estudante deverá compreender</h2>
+        <p>O foco não é memorizar comandos ou administrar um servidor completo. É reconhecer as responsabilidades de um SGBD e relacioná-las a requisitos de sistemas reais.</p>
+      </div>
+      <div class="sgbd-grid">
+        <article class="sgbd-card"><h3>Objetivos de aprendizagem</h3>
+          <ul class="sgbd-small-list">
+            <li>Diferenciar dados, banco de dados, SGBD, SQL e cliente de banco.</li>
+            <li>Descrever a arquitetura cliente-servidor do MySQL e o papel do InnoDB.</li>
+            <li>Explicar o percurso de uma consulta: análise, planejamento, execução e retorno.</li>
+            <li>Identificar as funções de integridade, transações, concorrência, segurança e recuperação.</li>
+            <li>Justificar quando um SGBD é adequado a determinado sistema.</li>
+          </ul>
+        </article>
+        <article class="sgbd-card"><h3>Competências e habilidades</h3>
+          <p><strong>C2 · H6/H8:</strong> compreender recursos necessários à construção e à manutenção confiável de software.</p>
+          <p><strong>C3 · H9/H10:</strong> identificar requisitos de armazenamento e analisar opções tecnológicas.</p>
+          <p><strong>C10 · H34:</strong> comunicar o funcionamento de um SGBD com precisão.</p>
+          <p><strong>C11 · H36/H38:</strong> aplicar mecanismos de integridade e transações em soluções práticas.</p>
+        </article>
+      </div>
+    </div></section>
+
+    <section class="sgbd-section alt" id="conceitos"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">1 · Conceitos fundamentais</p><h2>Banco de dados, SGBD e SQL</h2>
+        <p>Embora os termos sejam usados informalmente como sinônimos, eles designam elementos diferentes da arquitetura.</p>
+      </div>
+
+      <figure id="mapa-componentes" class="sgbd-concept-map" aria-label="Arquitetura conceitual de acesso ao MySQL">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1680" height="670" viewBox="0 0 1680 670" role="img" aria-labelledby="titulo descricao">
+<title id="titulo">Arquitetura conceitual de acesso ao MySQL</title>
+<desc id="descricao">O MySQL Workbench e uma aplicação Python são clientes do mesmo servidor. A aplicação usa o Connector/Python para enviar SQL. No servidor, o InnoDB gerencia o armazenamento e o acesso aos dados das tabelas.</desc>
+<defs>
+  <linearGradient id="azul" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#EFF7FF"/><stop offset="1" stop-color="#DDEEFF"/></linearGradient>
+  <linearGradient id="principal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ECF7FF"/><stop offset="1" stop-color="#D3EAFF"/></linearGradient>
+  <linearGradient id="roxo" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F7F1FF"/><stop offset="1" stop-color="#E9DFFA"/></linearGradient>
+  <linearGradient id="verde" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F1FBF2"/><stop offset="1" stop-color="#DBF1DE"/></linearGradient>
+  <linearGradient id="amarelo" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFCF5"/><stop offset="1" stop-color="#FFF0D6"/></linearGradient>
+  <filter id="sombra" x="-10%" y="-20%" width="120%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#123553" flood-opacity=".08"/></filter>
+  <marker id="seta" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L8 5L1 9Z" fill="#174C7F"/></marker>
+  <marker id="setaDupla" markerWidth="10" markerHeight="10" refX="2" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M8 1L1 5L8 9Z" fill="#174C7F"/></marker>
+  <style>
+    .label{font-family:Inter,"Segoe UI",Arial,sans-serif;fill:#152B49;font-weight:750}
+    .sub{font-family:Inter,"Segoe UI",Arial,sans-serif;fill:#43556F;font-weight:520}
+    .line{fill:none;stroke:#174C7F;stroke-width:5;stroke-linejoin:round;stroke-linecap:round}
+    .box{filter:url(#sombra);stroke-width:3.3}
+    .small{font-size:25px}
+    .medium{font-size:31px}
+    .large{font-size:39px}
+  </style>
+</defs>
+<rect width="1680" height="670" fill="#FFFFFF"/>
+<!-- Usuário -->
+<rect x="25" y="244" width="213" height="262" rx="24" fill="url(#azul)" stroke="#174C7F" class="box"/>
+<circle cx="130" cy="308" r="28" fill="#C1DCF4" stroke="#174C7F" stroke-width="6"/>
+<path d="M100 312q30-36 60 0" stroke="#174C7F" stroke-width="6" fill="none" stroke-linecap="round"/>
+<path d="M68 400q2-62 61-62q61 0 66 62v25H68Z" fill="#80AFE1" stroke="#174C7F" stroke-width="6"/>
+<rect x="91" y="382" width="83" height="51" rx="6" fill="#E4F4FF" stroke="#174C7F" stroke-width="5"/>
+<text x="131" y="466" text-anchor="middle" font-size="30" class="label">Usuário</text>
+<text x="131" y="493" text-anchor="middle" font-size="22" class="sub">/ sistema</text>
+<!-- Duas rotas -->
+<path d="M239 370H260V290H285" class="line" marker-end="url(#seta)"/>
+<path d="M260 370V471H285" class="line" marker-end="url(#seta)"/>
+<!-- Cliente -->
+<rect x="300" y="238" width="279" height="126" rx="20" fill="url(#azul)" stroke="#1470B0" class="box"/>
+<ellipse cx="355" cy="269" rx="28" ry="11" fill="#C4E4F9" stroke="#1470B0" stroke-width="4"/>
+<path d="M327 269v47q28 19 56 0v-47M327 285q28 18 56 0M327 301q28 18 56 0" fill="none" stroke="#1470B0" stroke-width="4"/>
+<text x="399" y="288" class="label medium">Cliente</text>
+<text x="399" y="326" class="sub small">Workbench</text>
+<!-- Aplicação -->
+<rect x="300" y="419" width="279" height="126" rx="20" fill="url(#azul)" stroke="#1470B0" class="box"/>
+<path d="M362 455l-20 24l20 24M387 455l20 24l-20 24M383 451l-14 58" fill="none" stroke="#1470B0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="414" y="468" class="label medium">Aplicação</text>
+<text x="414" y="507" class="sub small">Python</text>
+<!-- Conexões ao servidor -->
+<path d="M580 300H612" class="line" marker-end="url(#seta)"/>
+<path d="M580 483H612" class="line" marker-end="url(#seta)"/>
+<!-- Protocolo MySQL e driver Python -->
+<rect x="627" y="252" width="214" height="99" rx="18" fill="url(#roxo)" stroke="#6A4CB1" class="box"/>
+<g transform="translate(670 301)" fill="none" stroke="#7150B7" stroke-width="5">
+  <circle r="22"/><circle r="9"/><path d="M0-36v13M0 23v13M-36 0h13M23 0h13M-25-25l9 9M16 16l9 9M25-25l-9 9M-16 16l-9 9"/>
+</g>
+<text x="708" y="292" class="label" font-size="24">Protocolo</text><text x="708" y="326" class="sub small">MySQL</text>
+<rect x="627" y="434" width="214" height="99" rx="18" fill="url(#roxo)" stroke="#6A4CB1" class="box"/>
+<g transform="translate(670 483)" fill="none" stroke="#7150B7" stroke-width="5">
+  <circle r="22"/><circle r="9"/><path d="M0-36v13M0 23v13M-36 0h13M23 0h13M-25-25l9 9M16 16l9 9M25-25l-9 9M-16 16l-9 9"/>
+</g>
+<text x="710" y="474" class="label medium">Driver</text><text x="710" y="507" class="sub" font-size="15">Connector/Python</text>
+<!-- Servidor -->
+<path d="M842 302H862Q884 302 884 325V376H914" class="line" marker-end="url(#seta)"/>
+<path d="M842 484H862Q884 484 884 462V410H914" class="line" marker-end="url(#seta)"/>
+<rect x="923" y="238" width="382" height="308" rx="26" fill="url(#principal)" stroke="#174C7F" class="box"/>
+<!-- Servidor -->
+<g transform="translate(975 327)" fill="#E4F4FF" stroke="#174C7F" stroke-width="5">
+  <rect width="86" height="31" rx="7"/>
+  <rect y="42" width="86" height="31" rx="7"/>
+  <path d="M36 15h34M36 57h34" stroke-linecap="round"/>
+  <circle cx="17" cy="15" r="2" fill="#174C7F"/>
+  <circle cx="17" cy="57" r="2" fill="#174C7F"/>
+</g>
+<text x="1091" y="360" class="label large">MySQL</text>
+<text x="1091" y="405" class="sub large">(SGBD)</text>
+<text x="1113" y="477" text-anchor="middle" class="sub" font-size="23">Servidor de banco de dados</text>
+<text x="1113" y="508" text-anchor="middle" class="sub" font-size="21">InnoDB · motor das tabelas</text>
+<!-- SQL -->
+<rect x="944" y="60" width="350" height="117" rx="22" fill="url(#amarelo)" stroke="#C89422" class="box"/>
+<path d="M1000 83h44l20 21v47h-64zM1044 83v22h20" fill="none" stroke="#174C7F" stroke-width="5" stroke-linejoin="round"/>
+<path d="M1011 121l-8 6l8 6M1050 121l8 6l-8 6M1034 118l-6 20" fill="none" stroke="#174C7F" stroke-width="4"/>
+<text x="1090" y="132" class="label" font-size="48">SQL</text>
+<path d="M1118 178V225" stroke="#174C7F" stroke-width="5" stroke-dasharray="9 11" fill="none" marker-end="url(#seta)"/>
+<!-- Banco de dados -->
+<path d="M1308 383H1390" class="line" marker-start="url(#setaDupla)" marker-end="url(#seta)"/>
+<rect x="1402" y="254" width="252" height="286" rx="25" fill="url(#verde)" stroke="#27814C" class="box"/>
+<ellipse cx="1529" cy="317" rx="67" ry="25" fill="#BFE7CF" stroke="#27814C" stroke-width="6"/>
+<path d="M1462 317v84q67 41 134 0v-84M1462 358q67 41 134 0M1462 399q67 41 134 0" stroke="#27814C" stroke-width="6" fill="none"/>
+<text x="1528" y="464" text-anchor="middle" class="label medium">Banco de</text>
+<text x="1528" y="503" text-anchor="middle" class="label medium">dados</text>
+</svg>
+      </figure>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Elemento</th><th>O que é</th><th>Exemplo</th></tr></thead>
+        <tbody>
+          <tr><td>Banco de dados</td><td>Conjunto organizado de informações persistentes, estruturadas em tabelas e relacionamentos para representar um domínio e permitir sua recuperação.</td><td>Banco que armazena salas, usuários, blocos e reservas.</td></tr>
+          <tr><td>SGBD</td><td>Software que gerencia o armazenamento e o acesso aos bancos de dados, executa consultas e controla integridade, transações e permissões.</td><td>Servidor MySQL.</td></tr>
+          <tr><td>SQL</td><td>Linguagem declarativa utilizada para criar estruturas, consultar e modificar dados; descreve a operação desejada, sem definir todos os passos de execução.</td><td><code>SELECT</code>, <code>UPDATE</code>, <code>CREATE TABLE</code>.</td></tr>
+          <tr><td>Cliente</td><td>Programa usado para conectar-se ao SGBD, enviar comandos SQL e apresentar os resultados das operações.</td><td>MySQL Workbench, DBeaver ou <code>mysql</code>.</td></tr>
+          <tr><td>Driver</td><td>Biblioteca que permite à aplicação estabelecer conexões, enviar comandos e receber resultados do SGBD por meio de código.</td><td>MySQL Connector/Python, importado como <code>mysql.connector</code>.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Onde entra o InnoDB?</h3>
+      <p>O MySQL é um SGBD relacional com arquitetura cliente-servidor. O servidor autentica as conexões, analisa SQL e escolhe como executar cada consulta. Para acessar as tabelas, ele utiliza um <strong>mecanismo de armazenamento</strong>.</p>
+      <p>O <strong>InnoDB</strong> é o mecanismo padrão do MySQL. Ele organiza os dados em páginas e índices e oferece chaves estrangeiras, transações e controle de concorrência. Na prática, <code>ENGINE=InnoDB</code> torna explícito o mecanismo usado pelas tabelas de reserva.</p>
+      <h3>O que um SGBD acrescenta a um conjunto de arquivos?</h3>
+      <p>Os arquivos armazenam os dados, mas o gerenciamento confiável exige mecanismos adicionais. No MySQL, essas responsabilidades são concentradas no SGBD, que coordena como as informações são organizadas, consultadas, protegidas e recuperadas.</p>
+      <figure id="camadas-sgbd" class="sgbd-layer-figure" aria-label="Diagrama dos arquivos de dados encapsulados pelas funcionalidades do MySQL">
+        <svg viewBox="0 0 1080 735" width="1080" height="735" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="titulo-camadas-sgbd descricao-camadas-sgbd">
+<title id="titulo-camadas-sgbd">Dez funcionalidades agregadas pelo MySQL ao armazenamento de dados</title>
+<desc id="descricao-camadas-sgbd">Os arquivos de dados estão no centro, encapsulados pelo SGBD MySQL. Cinco recursos à esquerda: organização e metadados, consultas SQL, integridade, transações ACID e concorrência. Cinco à direita: segurança e permissões, índices e otimização, backup e recuperação, replicação e disponibilidade, desempenho e escalabilidade.</desc>
+<rect width="1080" height="735" fill="#ffffff"/>
+<rect x="19" y="85" width="1042" height="626" rx="40" fill="#f2f8ff" stroke="#32699c" stroke-width="4"/>
+<rect x="360" y="29" width="360" height="96" rx="22" fill="#215889"/>
+<text x="540" y="70" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="31" font-weight="750" fill="#fff">SGBD · MySQL</text>
+<text x="540" y="100" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="17" fill="#e1f0ff">Camada de gerenciamento</text>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<path d="M353 191.5 H381 V291 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M353 305.5 H381 V344 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M353 419.5 H381 V411 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M353 533.5 H381 V475 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M353 647.5 H381 V532 H404" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 191.5 H699 V291 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 305.5 H699 V344 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 419.5 H699 V411 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 533.5 H699 V475 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M727 647.5 H699 V532 H676" fill="none" stroke="#426b91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<g class="feature-card-svg"><rect x="48" y="146" width="305" height="91" rx="17" fill="#e7f3ff" stroke="#3d77ac" stroke-width="2.2"/><circle cx="83" cy="191.5" r="23" fill="white" stroke="#3d77ac" stroke-width="2"/><text x="83" y="199.5" text-anchor="middle" font-size="21" fill="#3d77ac" font-weight="800">01</text><text x="128" y="186" font-size="22" font-weight="700" fill="#162e4e">Organização e</text>
+<text x="128" y="213" font-size="22" font-weight="700" fill="#162e4e">metadados</text></g>
+<g class="feature-card-svg"><rect x="48" y="260" width="305" height="91" rx="17" fill="#e9f5eb" stroke="#589568" stroke-width="2.2"/><circle cx="83" cy="305.5" r="23" fill="white" stroke="#589568" stroke-width="2"/><text x="83" y="313.5" text-anchor="middle" font-size="21" fill="#589568" font-weight="800">02</text><text x="128" y="313" font-size="23" font-weight="700" fill="#162e4e">Consultas SQL</text></g>
+<g class="feature-card-svg"><rect x="48" y="374" width="305" height="91" rx="17" fill="#eeeafa" stroke="#7160ae" stroke-width="2.2"/><circle cx="83" cy="419.5" r="23" fill="white" stroke="#7160ae" stroke-width="2"/><text x="83" y="427.5" text-anchor="middle" font-size="21" fill="#7160ae" font-weight="800">03</text><text x="128" y="427" font-size="23" font-weight="700" fill="#162e4e">Integridade</text></g>
+<g class="feature-card-svg"><rect x="48" y="488" width="305" height="91" rx="17" fill="#e7f3ff" stroke="#3d77ac" stroke-width="2.2"/><circle cx="83" cy="533.5" r="23" fill="white" stroke="#3d77ac" stroke-width="2"/><text x="83" y="541.5" text-anchor="middle" font-size="21" fill="#3d77ac" font-weight="800">04</text><text x="128" y="541" font-size="23" font-weight="700" fill="#162e4e">Transações ACID</text></g>
+<g class="feature-card-svg"><rect x="48" y="602" width="305" height="91" rx="17" fill="#eeeafa" stroke="#7160ae" stroke-width="2.2"/><circle cx="83" cy="647.5" r="23" fill="white" stroke="#7160ae" stroke-width="2"/><text x="83" y="655.5" text-anchor="middle" font-size="21" fill="#7160ae" font-weight="800">05</text><text x="128" y="642" font-size="22" font-weight="700" fill="#162e4e">Controle de</text>
+<text x="128" y="669" font-size="22" font-weight="700" fill="#162e4e">concorrência</text></g>
+<g class="feature-card-svg"><rect x="727" y="146" width="305" height="91" rx="17" fill="#e9f5eb" stroke="#589568" stroke-width="2.2"/><circle cx="762" cy="191.5" r="23" fill="white" stroke="#589568" stroke-width="2"/><text x="762" y="199.5" text-anchor="middle" font-size="21" fill="#589568" font-weight="800">06</text><text x="807" y="186" font-size="22" font-weight="700" fill="#162e4e">Segurança e</text>
+<text x="807" y="213" font-size="22" font-weight="700" fill="#162e4e">permissões</text></g>
+<g class="feature-card-svg"><rect x="727" y="260" width="305" height="91" rx="17" fill="#e7f3ff" stroke="#3d77ac" stroke-width="2.2"/><circle cx="762" cy="305.5" r="23" fill="white" stroke="#3d77ac" stroke-width="2"/><text x="762" y="313.5" text-anchor="middle" font-size="21" fill="#3d77ac" font-weight="800">07</text><text x="807" y="300" font-size="22" font-weight="700" fill="#162e4e">Índices e</text>
+<text x="807" y="327" font-size="22" font-weight="700" fill="#162e4e">otimização</text></g>
+<g class="feature-card-svg"><rect x="727" y="374" width="305" height="91" rx="17" fill="#eeeafa" stroke="#7160ae" stroke-width="2.2"/><circle cx="762" cy="419.5" r="23" fill="white" stroke="#7160ae" stroke-width="2"/><text x="762" y="427.5" text-anchor="middle" font-size="21" fill="#7160ae" font-weight="800">08</text><text x="807" y="414" font-size="22" font-weight="700" fill="#162e4e">Backup e</text>
+<text x="807" y="441" font-size="22" font-weight="700" fill="#162e4e">recuperação</text></g>
+<g class="feature-card-svg"><rect x="727" y="488" width="305" height="91" rx="17" fill="#e9f5eb" stroke="#589568" stroke-width="2.2"/><circle cx="762" cy="533.5" r="23" fill="white" stroke="#589568" stroke-width="2"/><text x="762" y="541.5" text-anchor="middle" font-size="21" fill="#589568" font-weight="800">09</text><text x="807" y="528" font-size="22" font-weight="700" fill="#162e4e">Replicação e</text>
+<text x="807" y="555" font-size="22" font-weight="700" fill="#162e4e">disponibilidade</text></g>
+<g class="feature-card-svg"><rect x="727" y="602" width="305" height="91" rx="17" fill="#e7f3ff" stroke="#3d77ac" stroke-width="2.2"/><circle cx="762" cy="647.5" r="23" fill="white" stroke="#3d77ac" stroke-width="2"/><text x="762" y="655.5" text-anchor="middle" font-size="21" fill="#3d77ac" font-weight="800">10</text><text x="807" y="642" font-size="22" font-weight="700" fill="#162e4e">Desempenho e</text>
+<text x="807" y="669" font-size="22" font-weight="700" fill="#162e4e">escalabilidade</text></g>
+<rect x="404" y="272" width="272" height="277" rx="23" fill="#fff" stroke="#225480" stroke-width="3.5"/>
+<text x="540" y="311" text-anchor="middle" font-size="26" font-weight="750" fill="#152d4d">Arquivos de dados</text>
+<text x="540" y="337" text-anchor="middle" font-size="16" fill="#64778e">Dados persistentes</text>
+<g fill="#f5fbff" stroke="#1e5d96" stroke-width="3.5" stroke-linejoin="round">
+<path d="M450 362 H512 L529 378 V490 H450 Z"/>
+<path d="M512 362 V379 H529"/>
+<path d="M552 362 H615 L630 378 V490 H552 Z"/>
+<path d="M615 362 V379 H630"/>
+</g>
+<g stroke="#4b88bf" stroke-width="2.5" fill="none">
+<rect x="463" y="402" width="51" height="54" rx="2"/>
+<path d="M463 420 H514 M463 438 H514 M480 402 V456 M497 402 V456"/>
+<rect x="564" y="402" width="51" height="54" rx="2"/>
+<path d="M564 420 H615 M564 438 H615 M581 402 V456 M598 402 V456"/>
+</g>
+<rect x="494" y="437" width="90" height="79" rx="9" fill="#e0f0ff" stroke="#1e5d96" stroke-width="3.5"/>
+<rect x="511" y="456" width="56" height="42" rx="2" fill="#fff" stroke="#4b88bf" stroke-width="2.5"/>
+<path d="M511 470 H567 M511 484 H567 M530 456 V498 M548 456 V498" stroke="#4b88bf" stroke-width="2"/>
+</g>
+</svg>
+        <figcaption>Os arquivos de dados aparecem no centro. Ao redor, estão os mecanismos do SGBD que administram seu uso.</figcaption>
+      </figure>
+      <div class="sgbd-matrix sgbd-layer-table"><table>
+        <thead><tr><th>Funcionalidade</th><th>O que o SGBD acrescenta</th><th>Exemplo no MySQL</th></tr></thead>
+        <tbody>
+          <tr><td>Organização e metadados</td><td>Define a estrutura lógica dos bancos e das tabelas. O dicionário de dados registra as definições, e o InnoDB gerencia os arquivos e páginas em disco.</td><td><code>CREATE TABLE</code> define uma tabela. <code>SHOW CREATE TABLE</code> e <code>information_schema</code> permitem consultar a estrutura.</td></tr>
+          <tr><td>Consultas SQL</td><td>Recebe comandos que descrevem quais dados devem ser consultados ou modificados. Analisa a instrução, verifica referências e permissões, e executa as operações sem exigir que a aplicação manipule os arquivos diretamente.</td><td><code>SELECT</code> com <code>JOIN</code> combina tabelas; <code>INSERT</code>, <code>UPDATE</code> e <code>DELETE</code> alteram registros.</td></tr>
+          <tr><td>Integridade</td><td>Aplica regras declaradas no esquema para impedir registros incompatíveis, como identificadores duplicados, valores fora do domínio ou referências a entidades inexistentes. As regras de negócio precisam ser explicitamente modeladas.</td><td><code>UNIQUE</code> evita duplicidade; <code>CHECK</code> rejeita valores inválidos; <code>FOREIGN KEY</code> protege relacionamentos.</td></tr>
+          <tr><td>Transações ACID</td><td>Permite reunir várias alterações em uma única unidade de trabalho. A transação pode ser confirmada ou desfeita, enquanto o SGBD oferece garantias de atomicidade, consistência, isolamento e durabilidade conforme o esquema e as configurações.</td><td>Registrar e atualizar uma reserva dentro de <code>START TRANSACTION</code> ... <code>COMMIT</code>; utilizar <code>ROLLBACK</code> se a operação precisar ser desfeita.</td></tr>
+          <tr><td>Controle de concorrência</td><td>Coordena leituras e escritas simultâneas para que diferentes usuários trabalhem sobre estados coerentes dos dados. O MVCC mantém versões de registros; bloqueios e níveis de isolamento tratam situações de conflito entre transações.</td><td>Duas sessões tentam reservar a mesma sala no mesmo horário; a restrição <code>UNIQUE</code> e o controle de concorrência evitam dois registros incompatíveis.</td></tr>
+          <tr><td>Segurança e permissões</td><td>Autentica conexões e controla as operações permitidas para cada conta. Papéis agrupam privilégios que podem ser atribuídos a várias contas.</td><td><code>CREATE ROLE</code>, <code>GRANT</code>, <code>REVOKE</code> e <code>SHOW GRANTS</code>.</td></tr>
+          <tr><td>Índices e otimização</td><td>Mantém estruturas auxiliares para acelerar certos filtros, junções e ordenações. O otimizador compara alternativas com base nas estatísticas e nos custos estimados.</td><td>O InnoDB organiza índices comuns em árvores B. <code>EXPLAIN</code> mostra como o otimizador pretende acessar as tabelas.</td></tr>
+          <tr><td>Backup e recuperação</td><td>O <em>redo log</em> do InnoDB ajuda a recuperar a base após uma falha. Backups permitem restaurar uma cópia dos dados.</td><td><code>mysqldump</code> gera um backup lógico. Um backup e os <em>binary logs</em> posteriores permitem restaurar até determinado ponto no tempo.</td></tr>
+          <tr><td>Replicação e disponibilidade</td><td>Mantém réplicas atualizadas com as alterações do servidor de origem. Réplicas podem atender consultas e apoiar a continuidade do serviço.</td><td>A replicação do MySQL pode usar o <em>binary log</em>. A configuração determina como as réplicas recebem e aplicam as mudanças.</td></tr>
+          <tr><td>Desempenho e escalabilidade</td><td>Mantém páginas em memória e atualiza estatísticas que orientam as escolhas do otimizador.</td><td>O <em>buffer pool</em> do InnoDB armazena páginas de dados e índices em memória. <code>ANALYZE TABLE</code> atualiza estatísticas da tabela.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="sgbd-emphasis"><p><strong>Ideia central:</strong> o SQL expressa o que a aplicação solicita; o MySQL implementa os mecanismos necessários para realizar a solicitação dentro das garantias configuradas.</p></div>
+    </div></section>
+
+    <section class="sgbd-section" id="arquitetura"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">2 · Arquitetura e processamento</p><h2>O que acontece entre executar um SELECT e receber o resultado?</h2>
+        <p>O MySQL Workbench e a aplicação Python enviam SQL ao mesmo servidor. O servidor interpreta e planeja a consulta, acessa as tabelas pelo InnoDB e devolve as linhas ao cliente.</p>
+      </div>
+      <figure id="fluxo-select" class="sgbd-select-figure">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 1170" width="940" height="1170" role="img" aria-labelledby="flux-title flux-desc">
+<title id="flux-title">Fluxo de uma consulta SELECT no MySQL</title>
+<desc id="flux-desc">Fluxo vertical: aplicação Python, Connector/Python, comando SELECT, servidor MySQL com análise, planejamento, execução e acesso a dados, resultado e retorno ao Python.</desc>
+<defs><marker id="flux-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5L1 9Z" fill="#1A568E"/></marker></defs>
+<rect x="215" y="30" width="510" height="76" rx="18" fill="#E9F4FF" stroke="#327AB4" stroke-width="3"/><text x="470" y="78" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="32" font-weight="700" fill="#193558">Aplicação Python</text>
+<path d="M470 109V141" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="215" y="152" width="510" height="76" rx="18" fill="#E9F4FF" stroke="#327AB4" stroke-width="3"/><text x="470" y="200" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#193558">MySQL Connector/Python</text>
+<path d="M470 231V263" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="215" y="274" width="510" height="76" rx="18" fill="#F0E7FD" stroke="#7352B5" stroke-width="3"/><text x="470" y="322" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#4D317F">SQL · SELECT</text>
+<path d="M470 353V392" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="200" y="407" width="540" height="501" rx="23" fill="#F8F2FF" stroke="#7352B5" stroke-width="3"/>
+<text x="470" y="453" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="34" font-weight="700" fill="#4D317F">MySQL (SGBD)</text>
+<text x="470" y="480" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18" font-weight="700" fill="#725C9B">Processamento da consulta</text>
+<rect x="270" y="502" width="400" height="80" rx="14" fill="#F4EEFF" stroke="#B49ADB" stroke-width="3"/><text x="470" y="552" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#51378A">Análise e validação</text><circle cx="307" cy="542" r="22" fill="#EEE0FA" stroke="#8F72BF" stroke-width="2"/><text x="307" y="550" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#6947A7">1</text><path d="M470 585V598" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="270" y="606" width="400" height="80" rx="14" fill="#F4EEFF" stroke="#B49ADB" stroke-width="3"/><text x="470" y="656" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#51378A">Planejador / otimizador</text><circle cx="307" cy="646" r="22" fill="#EEE0FA" stroke="#8F72BF" stroke-width="2"/><text x="307" y="654" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#6947A7">2</text><path d="M470 689V702" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="270" y="710" width="400" height="80" rx="14" fill="#F4EEFF" stroke="#B49ADB" stroke-width="3"/><text x="470" y="760" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#51378A">Executor</text><circle cx="307" cy="750" r="22" fill="#EEE0FA" stroke="#8F72BF" stroke-width="2"/><text x="307" y="758" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#6947A7">3</text><path d="M470 793V806" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="270" y="814" width="400" height="80" rx="14" fill="#F4EEFF" stroke="#B49ADB" stroke-width="3"/><text x="470" y="864" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#51378A">InnoDB · páginas e índices</text><circle cx="307" cy="854" r="22" fill="#EEE0FA" stroke="#8F72BF" stroke-width="2"/><text x="307" y="862" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#6947A7">4</text>
+<path d="M470 911V947" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="215" y="959" width="510" height="74" rx="18" fill="#E3F7E8" stroke="#2E8851" stroke-width="3"/><text x="470" y="1005" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#24633C">Resultado da consulta</text>
+<path d="M470 1036V1069" fill="none" stroke="#1A568E" stroke-width="4" marker-end="url(#flux-arrow)" stroke-linecap="round"/>
+<rect x="215" y="1081" width="510" height="74" rx="18" fill="#E9F4FF" stroke="#327AB4" stroke-width="3"/><text x="470" y="1128" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#193558">Retorno ao Python</text>
+</svg>
+  <figcaption>Percurso de um <code>SELECT</code> desde a aplicação Python até o acesso às tabelas no InnoDB e o retorno das linhas.</figcaption>
+</figure>
+<h3>As etapas do processo</h3>
+<div class="sgbd-grid sgbd-select-steps">
+<article class="sgbd-card"><span class="sgbd-number">01 · Conexão</span><h4>Python e Connector/Python</h4><p>O código utiliza <code>mysql.connector.connect()</code> para abrir uma conexão. O driver implementa a comunicação entre a aplicação e o servidor.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">02 · Envio</span><h4>SQL parametrizada</h4><p>O cursor envia a instrução com <code>execute(sql, params)</code>. Parâmetros são passados separadamente do texto SQL.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">03 · Análise</span><h4>Interpretação e validação</h4><p>O MySQL verifica sintaxe, referências a objetos, tipos e permissões necessárias.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">04 · Planejamento</span><h4>Estratégia de execução</h4><p>O otimizador compara planos e estima custos, podendo escolher varredura sequencial, índices e diferentes algoritmos de junção.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">05 · Execução</span><h4>Acesso aos dados</h4><p>O executor solicita os registros ao InnoDB. O mecanismo acessa páginas e índices e aplica as regras de visibilidade da transação.</p></article>
+<article class="sgbd-card"><span class="sgbd-number">06 · Retorno</span><h4>Linhas no Python</h4><p>O resultado volta ao programa, que pode recuperar uma linha com <code>fetchone()</code> ou todas as linhas restantes com <code>fetchall()</code>.</p></article>
+</div>
+<h3>Exemplo de uma consulta SQL executada pelo Python</h3>
+<p>O <strong>MySQL Connector/Python</strong> fornece a biblioteca <code>mysql.connector</code>. O exemplo consulta as salas com pelo menos 30 lugares e indica o bloco de cada sala.</p>
+<div class="sgbd-sql"><div class="label"><span>Instalação das dependências</span><span>Terminal</span></div><pre><code>python -m pip install mysql-connector-python python-dotenv</code></pre></div>
+<div class="sgbd-sql"><div class="label"><span>Python · conexão, SELECT e retorno de linhas</span><span>Connector/Python</span></div><pre><code>import os
+
+import mysql.connector
+from dotenv import load_dotenv
+
+load_dotenv()
+
+with mysql.connector.connect(
+    host=os.getenv("MYSQL_HOST", "127.0.0.1"),
+    port=int(os.getenv("MYSQL_PORT", "3306")),
+    database=os.getenv("MYSQL_DATABASE", "pratica_salas"),
+    user=os.getenv("MYSQL_USER", "aluno"),
+    password=os.getenv("MYSQL_PASSWORD", ""),
+) as conn, conn.cursor() as cur:
+    cur.execute(
+        """
+        SELECT s.nome AS sala,
+               b.nome_bloco AS bloco,
+               s.capacidade
+        FROM sala AS s
+        JOIN bloco AS b ON b.id_bloco = s.id_bloco
+        WHERE s.capacidade &gt;= %s
+        ORDER BY s.nome
+        """,
+        (30,),
+    )
+
+    for sala, bloco, capacidade in cur.fetchall():
+        print(f"{sala} ({bloco}) tem {capacidade} lugares")</code></pre></div>
+<p class="quiet">Execute o exemplo depois de criar as tabelas e preparar o <code>.env</code> na prática guiada. A conexão utiliza <code>MYSQL_HOST</code>, <code>MYSQL_PORT</code>, <code>MYSQL_DATABASE</code>, <code>MYSQL_USER</code> e <code>MYSQL_PASSWORD</code>.</p>
+<div class="sgbd-emphasis"><p><strong>Como o valor 30 chega ao SQL?</strong> O marcador <code>%s</code> indica a posição do parâmetro. O driver associa o valor recebido em <code>(30,)</code>, uma tupla de um elemento. Assim, o valor digitado entra como dado da consulta.</p></div>
+<h3>Principais funções e métodos do Connector/Python</h3>
+<p>O objeto de conexão representa a sessão com o servidor. O cursor envia os comandos e percorre os resultados.</p>
+<div class="sgbd-matrix"><table>
+<thead><tr><th>Função ou método</th><th>O que faz</th><th>Quando utilizar</th></tr></thead>
+<tbody>
+<tr><td><code>mysql.connector.connect()</code></td><td>Estabelece a conexão com o servidor MySQL.</td><td>Início do acesso ao banco de dados.</td></tr>
+<tr><td><code>conn.cursor()</code></td><td>Cria um cursor para enviar comandos e ler resultados.</td><td>Antes de executar operações SQL.</td></tr>
+<tr><td><code>cur.execute(sql, params)</code></td><td>Executa uma instrução SQL, opcionalmente com valores parametrizados.</td><td>Consultas e modificações de registros.</td></tr>
+<tr><td><code>cur.fetchone()</code></td><td>Lê a próxima linha do resultado, ou <code>None</code> ao terminarem as linhas.</td><td>Obter um registro por vez.</td></tr>
+<tr><td><code>cur.fetchmany(n)</code> / <code>cur.fetchall()</code></td><td>Recupera várias linhas ou todas as restantes; resultados grandes exigem atenção à memória.</td><td>Obter conjuntos de registros.</td></tr>
+<tr><td><code>conn.commit()</code> / <code>conn.rollback()</code></td><td>Confirmam ou desfazem uma transação não confirmada.</td><td>Operações que modificam dados.</td></tr>
+<tr><td><code>cur.lastrowid</code></td><td>Informa o identificador gerado pelo último <code>INSERT</code> com <code>AUTO_INCREMENT</code>.</td><td>Recuperar o ID de uma reserva recém-inserida.</td></tr>
+<tr><td><code>close()</code> / <code>with</code></td><td>Encerram os objetos ou gerenciam automaticamente o fechamento de cursores e conexões.</td><td>Evitar recursos abertos desnecessariamente.</td></tr>
+</tbody>
+</table></div>
+<p class="quiet">O bloco <code>with</code> fecha o cursor e a conexão. Para gravar com o Connector/Python, confirme explicitamente com <code>conn.commit()</code> ou desfaça com <code>conn.rollback()</code>. O driver desativa o autocommit por padrão.</p>
+
+
+      <h3>Como os dados são armazenados?</h3>
+      <p>A aplicação vê tabelas, colunas e registros. No InnoDB, os registros são organizados em páginas do índice da chave primária. O <em>buffer pool</em> mantém em memória páginas de dados e índices usadas nas leituras e escritas.</p>
+      <div class="sgbd-grid">
+        <article class="sgbd-card"><h4>Visão lógica</h4><p><strong>Banco (esquema) → tabela → linha/coluna.</strong> No MySQL, <code>DATABASE</code> e <code>SCHEMA</code> nomeiam a mesma estrutura.</p></article>
+        <article class="sgbd-card"><h4>Visão física</h4><p><strong>Páginas de dados e índices, arquivos e memória.</strong> O InnoDB gerencia a passagem das páginas entre o disco e o <em>buffer pool</em>.</p></article>
+      </div>
+      <p class="quiet">Essa separação é uma forma de independência de dados: aplicações normalmente não precisam conhecer a posição física de cada registro.</p>
+      <div class="sgbd-question"><strong>Pergunta de análise</strong><p>Se duas consultas devolvem as mesmas linhas, como o MySQL escolhe por onde começar?</p><p>O otimizador compara alternativas de acesso com base nos índices e nas estatísticas. A ordem das junções e a quantidade de linhas estimadas podem mudar o plano.</p></div>
+    </div></section>
+
+    <section class="sgbd-section alt" id="funcionalidades"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">3 · Funcionalidades essenciais</p><h2>Que problemas cada mecanismo resolve?</h2>
+        <p>Vamos relacionar os recursos do MySQL a necessidades concretas de Engenharia de Software.</p>
+      </div>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Função do SGBD</th><th>Problema resolvido</th><th>Recursos observáveis</th></tr></thead>
+        <tbody>
+          <tr><td>Definição e manipulação</td><td>Organizar estruturas e alterar dados de maneira controlada.</td><td>SQL, esquemas, tabelas, <code>INSERT</code>, <code>UPDATE</code>.</td></tr>
+          <tr><td>Integridade</td><td>Evitar valores inválidos e referências inconsistentes.</td><td><code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>CHECK</code>, <code>UNIQUE</code>.</td></tr>
+          <tr><td>Transações</td><td>Confirmar ou desfazer um conjunto de operações.</td><td><code>START TRANSACTION</code>, <code>COMMIT</code>, <code>ROLLBACK</code>.</td></tr>
+          <tr><td>Concorrência</td><td>Coordenar acessos simultâneos à mesma informação.</td><td>MVCC, bloqueios e níveis de isolamento.</td></tr>
+          <tr><td>Otimização</td><td>Escolher estratégias eficientes para recuperar dados.</td><td>Índices, estatísticas, <code>EXPLAIN</code>.</td></tr>
+          <tr><td>Segurança</td><td>Limitar quem pode consultar e modificar objetos.</td><td>Roles, autenticação, <code>GRANT</code>, <code>REVOKE</code>.</td></tr>
+          <tr><td>Recuperação</td><td>Restabelecer estado consistente após falhas e restaurar cópias.</td><td><em>Redo log</em> do InnoDB, <em>binary log</em> e backups.</td></tr>
+          <tr><td>Automação e reutilização</td><td>Reutilizar operações e ampliar recursos do banco.</td><td>Views, funções, procedimentos e triggers.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>3.1 · Integridade: impedir estados inválidos</h3>
+      <p>Ao definir <code>CHECK (capacidade BETWEEN 1 AND 80)</code> na tabela <code>sala</code>, impedimos capacidades inválidas. Uma chave estrangeira na tabela <code>reserva</code> impede que uma reserva seja associada a um usuário ou a uma sala inexistente.</p>
+      <p>Outras regras exigem uma modelagem apropriada. Por exemplo, <code>UNIQUE (id_sala, data_reserva, hora_inicio)</code> impede que a mesma sala seja reservada duas vezes para a mesma data e hora de início.</p>
+
+      <h3>3.2 · Transações: uma unidade lógica de trabalho</h3>
+      <p>Use <code>START TRANSACTION</code> para agrupar alterações em tabelas InnoDB. Com <em>autocommit</em> ativo, uma alteração bem-sucedida fora de uma transação explícita é confirmada ao terminar a instrução.</p>
+      <p>Nos testes de <code>ROLLBACK</code>, mantenha apenas operações de dados na transação. Comandos DDL como <code>CREATE TABLE</code> e <code>ALTER TABLE</code> provocam confirmação implícita no MySQL.</p>
+      <div class="sgbd-grid">
+        <article class="sgbd-card"><h4><code>COMMIT</code></h4><p>Confirma as alterações da transação, tornando-as permanentes segundo as garantias configuradas.</p></article>
+        <article class="sgbd-card"><h4><code>ROLLBACK</code></h4><p>Desfaz as alterações não confirmadas da transação.</p></article>
+      </div>
+      <h4>As quatro propriedades ACID</h4>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Propriedade</th><th>Significado didático</th><th>No sistema de reservas</th></tr></thead>
+        <tbody>
+          <tr><td>Atomicidade</td><td>As alterações da transação são confirmadas ou desfeitas como uma unidade.</td><td>Não confirmar alterações parciais de uma reserva.</td></tr>
+          <tr><td>Consistência</td><td>Preservar os invariantes e restrições efetivamente declarados.</td><td>Uma reserva deve referenciar uma sala existente e respeitar as restrições do esquema.</td></tr>
+          <tr><td>Isolamento</td><td>Controlar como transações concorrentes observam ou interferem nos dados.</td><td>Duas tentativas simultâneas de reservar o mesmo horário precisam ser coordenadas.</td></tr>
+          <tr><td>Durabilidade</td><td>Manter alterações confirmadas apesar de falhas, dentro das garantias configuradas.</td><td>Uma reserva confirmada deve permanecer registrada após uma falha.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>3.3 · Índices e processamento de consultas</h3>
+      <p>Um índice é uma estrutura auxiliar utilizada para localizar registros com menos trabalho em determinadas consultas. Ele pode acelerar filtros seletivos, mas ocupa espaço e precisa ser mantido quando os dados mudam.</p>
+      <div class="sgbd-sql"><div class="label"><span>Observar o plano antes de otimizar</span><span>SQL</span></div><pre><code>EXPLAIN FORMAT=TRADITIONAL
+SELECT id_sala, nome, capacidade
+FROM sala
+WHERE id_sala = 1;</code></pre></div>
+      <p>Na saída tabular, <code>key</code> mostra o índice escolhido, <code>type</code> descreve o acesso e <code>rows</code> indica quantas linhas o otimizador estima examinar. Na busca pela chave primária, espere <code>key = PRIMARY</code> e <code>type = const</code> para uma sala existente. Um acesso <code>ALL</code> percorre a tabela.</p>
+      <div class="sgbd-emphasis"><p><code>EXPLAIN</code> descreve o plano estimado. A partir do MySQL 8.0.18, <code>EXPLAIN ANALYZE</code> executa a consulta e registra tempos e quantidades de linhas observados.</p></div>
+
+      <h3>3.4 · Segurança: autenticação e autorização</h3>
+      <p>Autenticação responde <em>“quem está tentando acessar?”</em>. Autorização responde <em>“o que essa identidade pode fazer?”</em>. No MySQL, uma conta tem a forma <code>'usuario'@'host'</code>. Ela recebe privilégios diretamente ou por meio de papéis, que agrupam permissões.</p>
+      <div class="sgbd-sql"><div class="label"><span>Exemplo de autorização · requer privilégios administrativos</span><span>SQL</span></div><pre><code>CREATE ROLE 'consulta_salas';
+GRANT SELECT ON pratica_salas.sala TO 'consulta_salas';
+GRANT SELECT ON pratica_salas.reserva TO 'consulta_salas';
+REVOKE SELECT ON pratica_salas.reserva FROM 'consulta_salas';</code></pre><div class="note">O exemplo concede leitura em duas tabelas e depois retira a concessão para <code>reserva</code>. Na prática, você consultará os privilégios da sua conta com <code>SHOW GRANTS</code>.</div></div>
+      <p>O SGBD pode restringir operações, mas a segurança do sistema também depende da aplicação, da rede, das credenciais e das práticas de desenvolvimento.</p>
+
+      <h3>3.5 · Recuperação após falhas e restauração</h3>
+      <p>Após uma interrupção, o InnoDB usa o <em>redo log</em> para refazer alterações necessárias às páginas e desfaz transações que ficaram incompletas. Recuperar registros excluídos por engano exige uma estratégia de restauração.</p>
+      <div class="sgbd-grid three">
+        <article class="sgbd-card"><h4>Redo log</h4><p>Registra mudanças para que o InnoDB possa reaplicá-las durante a recuperação após uma falha.</p></article>
+        <article class="sgbd-card"><h4>Backup</h4><p>Uma exportação lógica com <code>mysqldump</code> pode ser restaurada com o cliente <code>mysql</code>.</p></article>
+        <article class="sgbd-card"><h4>Binary log</h4><p>Registra mudanças para replicação e, em conjunto com um backup, permite recuperar a base até um ponto no tempo.</p></article>
+      </div>
+      <div class="sgbd-question"><strong>Discussão</strong><p>Uma exclusão por engano chegou à réplica. Como restaurar as reservas até o instante anterior à exclusão?</p><p>Restaure um backup e reaplique os eventos posteriores do <em>binary log</em> até o ponto imediatamente anterior à exclusão.</p></div>
+
+      <h3>3.6 · Recursos para além da SQL básica</h3>
+      <p><strong>Views</strong> dão um nome a uma consulta reutilizável. <strong>Funções</strong> e <strong>procedimentos</strong> organizam rotinas, e <strong>triggers</strong> disparam ações em eventos como <code>INSERT</code> e <code>UPDATE</code>. O MySQL também oferece o tipo <code>JSON</code> para dados semiestruturados.</p>
+      <p>A escolha de onde implementar uma regra depende dos requisitos de integridade, manutenção e desempenho da aplicação.</p>
+    </div></section>
+
+    <section class="sgbd-section" id="concorrencia"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">4 · Concorrência</p><h2>Por que várias pessoas podem consultar e atualizar ao mesmo tempo?</h2>
+        <p>Em um sistema web, requisições chegam simultaneamente. O MySQL precisa coordenar esse trabalho sem tornar todas as operações uma única fila.</p>
+      </div>
+      <h3>MVCC: múltiplas versões dos dados</h3>
+      <p>O InnoDB usa <strong>MVCC</strong> (<em>Multiversion Concurrency Control</em>) para oferecer leituras consistentes. Quando uma consulta precisa enxergar uma versão anterior de um registro, o InnoDB pode reconstruí-la com informações do <em>undo log</em>. O nível de isolamento determina quais versões são visíveis.</p>
+      <p>Leituras comuns podem prosseguir enquanto outra transação escreve. Quando duas transações tentam inserir a mesma chave única, a segunda aguarda a primeira confirmar ou desfazer a inserção.</p>
+      <div class="sgbd-flow">
+        <div class="sgbd-flow-row">
+          <div class="sgbd-flow-node"><strong>Transação A</strong><small>Reserva a sala 2 às 15h</small></div>
+          <span class="sgbd-flow-arrow">↔</span>
+          <div class="sgbd-flow-node"><strong>InnoDB</strong><small>Versões, bloqueios e restrições</small></div>
+          <span class="sgbd-flow-arrow">↔</span>
+          <div class="sgbd-flow-node"><strong>Transação B</strong><small>Tenta reservar a mesma sala e horário</small></div>
+        </div>
+        <p class="sgbd-caption">O gerenciamento de concorrência combina visibilidade de versões, coordenação de conflitos e verificação das restrições.</p>
+      </div>
+      <h3>O erro de separar verificação e reserva</h3>
+      <div class="sgbd-sql"><div class="label"><span>Estratégia frágil · verificação seguida de uma operação independente</span><span>Exemplo</span></div><pre><code>SELECT COUNT(*) AS reservas_existentes
+FROM reserva
+WHERE id_sala = 2
+  AND data_reserva = '2026-11-20'
+  AND hora_inicio = '15:00:00';
+
+-- A aplicação decide, depois, se fará INSERT.</code></pre></div>
+      <p>Se duas aplicações consultarem o horário ao mesmo tempo, ambas poderão encontrar zero reservas. Essa leitura, isoladamente, não garante exclusividade: outra transação pode registrar uma reserva antes da inserção.</p>
+      <h3>Uma inserção protegida pela restrição de unicidade</h3>
+      <div class="sgbd-sql"><div class="label"><span>Reserva de sala · conflito verificado pelo SGBD</span><span>SQL</span></div><pre><code>INSERT INTO reserva
+    (id_sala, id_usuario, data_reserva, hora_inicio, finalidade)
+VALUES
+    (2, 1, '2026-11-20', '15:00:00', 'Solicitação A');</code></pre></div>
+      <p>A restrição <code>UNIQUE (id_sala, data_reserva, hora_inicio)</code> protege a reserva. Se a primeira inserção for confirmada, o segundo <code>INSERT</code> recebe o erro <code>1062</code> (<em>Duplicate entry</em>). A aplicação pode interpretar esse erro como horário indisponível.</p>
+      <div class="sgbd-emphasis"><p><strong>Por que a regra funciona?</strong> Cada reserva ocupa uma hora e começa em hora cheia. Assim, a combinação sala, data e início identifica um horário completo. Reservas com duração variável exigiriam tratar a sobreposição de intervalos.</p></div>
+    </div></section>
+
+    
+
+    <section class="sgbd-section" id="aplicacoes"><div class="sgbd-container">
+      <div class="sgbd-section-head">
+        <p class="sgbd-kicker">5 · Usos e decisões de projeto</p>
+        <h2>Quando um SGBD é uma boa escolha?</h2>
+        <p>Quando precisamos de mais do que armazenar registros: garantir operações corretas, coordenar acessos, recuperar informações e consultar dados com eficiência.</p>
+      </div>
+      <div class="sgbd-matrix"><table>
+        <thead><tr><th>Necessidade</th><th>O que o MySQL oferece</th><th>Exemplo nas reservas de salas</th></tr></thead>
+        <tbody>
+          <tr><td>Transações ACID</td><td><code>START TRANSACTION</code>, <code>COMMIT</code> e <code>ROLLBACK</code> agrupam alterações e oferecem garantias transacionais.</td><td>Atualizar uma reserva e registrar operações relacionadas sem deixar alterações parciais.</td></tr>
+          <tr><td>Concorrência</td><td>MVCC, bloqueios e níveis de isolamento coordenam leituras e escritas simultâneas.</td><td>Dois usuários tentam reservar a mesma sala e horário; a restrição <code>UNIQUE</code> evita a duplicidade.</td></tr>
+          <tr><td>Integridade dos dados</td><td><code>PRIMARY KEY</code>, <code>FOREIGN KEY</code>, <code>CHECK</code> e <code>UNIQUE</code> verificam as regras declaradas.</td><td>Impedir uma reserva para uma sala inexistente ou uma capacidade inválida.</td></tr>
+          <tr><td>Segurança e permissões</td><td>Papéis, autenticação, <code>GRANT</code> e <code>REVOKE</code> restringem operações.</td><td>Permitir que um perfil consulte salas, mas não modifique reservas.</td></tr>
+          <tr><td>Backup e recuperação</td><td><em>Redo log</em> para falhas, backups para restauração e <em>binary log</em> para recuperar até um ponto no tempo.</td><td>Recuperar reservas após falha do servidor ou exclusão indevida.</td></tr>
+          <tr><td>Replicação e disponibilidade</td><td>Replicação para manter cópias em outros servidores. O failover depende de configuração e coordenação adicionais.</td><td>Distribuir consultas entre servidores e apoiar a continuidade do sistema.</td></tr>
+          <tr><td>Consultas SQL e análise de desempenho</td><td><code>JOIN</code>, agregações, índices, estatísticas e <code>EXPLAIN</code> ajudam a consultar e investigar custos.</td><td>Listar salas mais reservadas e analisar um <code>SELECT</code> lento por sala e data.</td></tr>
+          <tr><td>Escalabilidade</td><td>O <em>buffer pool</em>, os índices e as estatísticas atualizadas com <code>ANALYZE TABLE</code> ajudam a sustentar a carga de consultas.</td><td>Sustentar consultas à medida que cresce o histórico de reservas.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="quiet">Nem todos os sistemas exigem todos esses mecanismos. Arquivos CSV e JSON podem atender a dados simples e exportações; o SQLite também oferece SQL e transações em aplicações locais. O MySQL é especialmente adequado quando precisamos de um SGBD cliente-servidor com múltiplas conexões e administração centralizada.</p>
+      <div class="sgbd-question"><strong>Pergunta de análise</strong>
+        <p>Em um sistema de reservas acessado simultaneamente por vários setores, quais dessas necessidades são indispensáveis e quais poderiam surgir com o crescimento da aplicação?</p>
+      </div>
+    </div></section>
+
+    <section class="sgbd-section alt" id="sintese"><div class="sgbd-container">
+      <div class="sgbd-section-head"><p class="sgbd-kicker">6 · Síntese</p><h2>O papel do SGBD na arquitetura do software</h2>
+        <p>O MySQL interpreta comandos, coordena acessos simultâneos e delega ao InnoDB o acesso aos dados e o gerenciamento das transações das tabelas da prática.</p>
+      </div>
+      <figure class="sgbd-flow">
+        <div class="sgbd-flow-row">
+          <div class="sgbd-flow-node"><strong>Aplicação</strong><small>Requisitos e regras de negócio</small></div>
+          <span class="sgbd-flow-arrow">→</span>
+          <div class="sgbd-flow-node"><strong>SQL</strong><small>Operações solicitadas</small></div>
+          <span class="sgbd-flow-arrow">→</span>
+          <div class="sgbd-flow-node"><strong>MySQL</strong><small>Execução + garantias declaradas</small></div>
+          <span class="sgbd-flow-arrow">→</span>
+          <div class="sgbd-flow-node"><strong>Dados</strong><small>Persistência e recuperação</small></div>
+        </div>
+        <figcaption>O SGBD oferece mecanismos, mas a correção do sistema também depende da modelagem, das operações da aplicação e das decisões de implantação.</figcaption>
+      </figure>
+      <div class="sgbd-grid">
+        <article class="sgbd-card"><h4>O SGBD faz</h4><p>Executa consultas, verifica restrições declaradas, controla transações, gerencia concorrência, administra permissões e oferece recuperação.</p></article>
+        <article class="sgbd-card"><h4>O projeto precisa definir</h4><p>Regras do domínio, esquema e índices, transações corretas, políticas de acesso, estratégias de backup e requisitos de operação.</p></article>
+      </div>
+      <h3>Referências de apoio</h3>
+      <p class="sgbd-footer-refs">SILBERSCHATZ, A.; KORTH, H.; SUDARSHAN, S. <em>Database System Concepts</em>, 7. ed., especialmente os capítulos 1, 14–19. ELMASRI, R.; NAVATHE, S. <em>Sistemas de Banco de Dados</em>, partes sobre introdução, armazenamento, transações, concorrência e recuperação. Documentação oficial do MySQL sobre <a href="https://dev.mysql.com/doc/refman/8.4/en/innodb-introduction.html">InnoDB</a>, <a href="https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html">leituras consistentes</a>, <a href="https://dev.mysql.com/doc/refman/8.4/en/commit.html">transações</a>, <a href="https://dev.mysql.com/doc/refman/8.4/en/explain-output.html">planos de execução</a>, <a href="https://dev.mysql.com/doc/refman/8.4/en/point-in-time-recovery.html">recuperação por ponto no tempo</a> e <a href="https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html">Connector/Python</a>.</p>
+      <nav class="sgbd-bottom-nav" aria-label="Navegação da aula">
+        <a href="../aula-09.html">← Aula 09</a>
+        <a href="pratica-10-mysql-salas.html">Prática guiada em MySQL →</a>
+        <a href="../index.html">Página principal da disciplina</a>
+        <a href="#inicio">Voltar ao início ↑</a>
+      </nav>
+    </div></section>
+  </main>
+  </div>
+  <footer class="site-footer"><div class="container footer-grid"><div><strong>Banco de Dados</strong><p>Engenharia de Software · 2026/2 · Prof. Philipe Fransozi</p></div><a href="#inicio">Voltar ao início ↑</a></div></footer>
+</body>
+</html>
